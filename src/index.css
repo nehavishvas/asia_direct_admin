@@ -21,3 +21,9 @@ li {
 a {
   text-decoration: none;
 }
+
+/* Prevent SweetAlert2 popups from showing behind MUI or other modals */
+.swal2-container {
+  z-index: 99999 !important;
+}
+

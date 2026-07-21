@@ -6,6 +6,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import FormControl from "@mui/material/FormControl";
 import { InputLabel, MenuItem, Select } from "@mui/material";
+import Swal from "sweetalert2";
+
 const pageSize = 10;
 export default function ClearanceOrder() {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -70,17 +72,30 @@ export default function ClearanceOrder() {
   const [clearanceid, setClearanceid] = useState("");
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
+  const deletedIdsRef = useRef(new Set());
+
   useEffect(() => {
     getdata();
   }, []);
-  const getdata = async (page) => {
+  const getdata = async (page = currentPage) => {
     setLoader(true);
     try {
+      const payload = { user_id: userid, user_type: usertype, page: page };
+      if (searchQuery) {
+        payload.search = searchQuery;
+      }
       const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}getCleranceOrder`, { user_id: userid, user_type: usertype, page: page }
+        `${process.env.REACT_APP_BASE_URL}getCleranceOrder`, payload
       );
       console.log(response.data.data);
-      setData1(response.data.data);
+      const list = Array.isArray(response.data.data) ? response.data.data : [];
+      const filteredList = list.filter(
+        (order) =>
+          !deletedIdsRef.current.has(order.id) &&
+          !deletedIdsRef.current.has(order.clearance_id) &&
+          !deletedIdsRef.current.has(order.clearance_order_id)
+      );
+      setData1(filteredList);
       setPagenationdata(response.data);
     } catch (error) {
       console.error(error?.response?.data || error.message);
@@ -249,7 +264,14 @@ export default function ClearanceOrder() {
         `${process.env.REACT_APP_BASE_URL}getCleranceOrder`, { user_id: userid, user_type: usertype, search: page }
       );
       console.log(response.data.data);
-      setData1(response.data.data);
+      const list = Array.isArray(response.data.data) ? response.data.data : [];
+      const filteredList = list.filter(
+        (order) =>
+          !deletedIdsRef.current.has(order.id) &&
+          !deletedIdsRef.current.has(order.clearance_id) &&
+          !deletedIdsRef.current.has(order.clearance_order_id)
+      );
+      setData1(filteredList);
       setPagenationdata(response.data);
     } catch (error) {
       console.error(error?.response?.data || error.message);
@@ -328,6 +350,7 @@ export default function ClearanceOrder() {
       state: { data: [datauser], data1 },
     });
   };
+
   const handleclickdelete = async (item) => {
     try {
       const datapost = {
@@ -341,30 +364,78 @@ export default function ClearanceOrder() {
       );
       if (permission.data.success === true) {
         console.log(item);
-        try {
-          const response = await axios.post(
-            `${process.env.REACT_APP_BASE_URL}DeleteClearanceOrder`,
-            {
-              clearance_order_id: item.clearance_id,
+
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to delete this Order?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, delete it!",
+        });
+        if (result.isConfirmed) {
+          try {
+            const targetId = item.clearance_id || item.id;
+
+            // Track deleted IDs locally to prevent re-adding on API refresh
+            if (item.id) deletedIdsRef.current.add(item.id);
+            if (item.clearance_id) deletedIdsRef.current.add(item.clearance_id);
+            if (targetId) deletedIdsRef.current.add(targetId);
+
+            // Immediately remove deleted order from local state
+            setData1((prevData) =>
+              prevData.filter(
+                (order) =>
+                  order.id !== item.id &&
+                  order.id !== targetId &&
+                  order.clearance_id !== item.clearance_id &&
+                  order.clearance_id !== targetId
+              )
+            );
+
+            const response = await axios.post(
+              `${process.env.REACT_APP_BASE_URL}DeleteClearanceOrder`,
+              {
+                clearance_order_id: targetId,
+                clearance_id: targetId,
+                clerance_id: targetId,
+                id: item.id || targetId,
+                user_id: userid,
+                user_type: usertype,
+              }
+            );
+            if (response.data.success) {
+              await getdata(currentPage);
+              Swal.fire({
+                icon: "success",
+                title: "Deleted!",
+                text: response.data.message || "Order deleted successfully.",
+                confirmButtonColor: "#3085d6",
+              });
+            } else {
+              toast.error(response.data.message || "Failed to delete order");
+              if (item.id) deletedIdsRef.current.delete(item.id);
+              if (item.clearance_id) deletedIdsRef.current.delete(item.clearance_id);
+              if (targetId) deletedIdsRef.current.delete(targetId);
+              await getdata(currentPage);
             }
-          );
-          if (response.data.success) {
-            getdata();
-            toast.success(
-              response.data.message || "Order deleted successfully"
-            );
-          } else {
-            toast.error(response.data.message || "Failed to delete order");
-          }
-        } catch (error) {
-          console.error("Error deleting clearance order:", error);
-          if (error.response && error.response.status === 400) {
-            toast.error(
-              error.response.data.message ||
-              "Permission Denied: You don’t have access to delete this order"
-            );
-          } else {
-            toast.error("Something went wrong while deleting the order.");
+          } catch (error) {
+            console.error("Error deleting clearance order:", error);
+            const targetId = item.clearance_id || item.id;
+            if (item.id) deletedIdsRef.current.delete(item.id);
+            if (item.clearance_id) deletedIdsRef.current.delete(item.clearance_id);
+            if (targetId) deletedIdsRef.current.delete(targetId);
+            await getdata(currentPage);
+
+            if (error.response && error.response.status === 400) {
+              toast.error(
+                error.response.data.message ||
+                "Permission Denied: You don’t have access to delete this order"
+              );
+            } else {
+              toast.error("Something went wrong while deleting the order.");
+            }
           }
         }
       } else {

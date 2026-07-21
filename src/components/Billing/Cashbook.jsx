@@ -334,6 +334,7 @@ export default function Cashbook() {
               setViewSplitsData(fetchRes.data.data || []);
             }
           }
+          setOpenViewSplitsModal(false);
           getCashbookList(currentPage);
         } else {
           toast.error(response.data.message || "Failed to delete split.");
@@ -544,14 +545,14 @@ export default function Cashbook() {
         payload
       );
       if (response.data.success) {
-        toast.success("Splits saved successfully!");
+        toast.success(response.data.message || "Splits saved successfully!");
         setOpenAddSplitsModal(false);
         getCashbookList(currentPage);
       } else {
         toast.error(response.data.message || "Failed to save splits.");
       }
     } catch (error) {
-      toast.error("Error saving splits.");
+      toast.error(error?.response?.data?.message || "Error saving splits.");
     } finally {
       setLoader(false);
     }

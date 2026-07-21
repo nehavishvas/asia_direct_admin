@@ -433,7 +433,7 @@ export default function CompanyAddresses() {
               ) : (
                 <button
                   type="button"
-                  className="btn btn-primary supplier-modal-submit"
+                  className="btn btn-secondary supplier-modal-submit"
                   onClick={handleUpdate}
                 >
                   Update Address

@@ -49,8 +49,8 @@ export default function SupplierEstimation() {
   };
 
   const handleclicknav = () => {
-    // navigate("/Admin/FreightSupplier");
-    window.history.back();
+    navigate("/Admin/managefreight");
+    // window.history.back();
   }
   const querryinQChat = (item) => {
     console.log("item", item);

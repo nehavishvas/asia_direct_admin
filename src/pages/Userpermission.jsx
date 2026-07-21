@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { ArrowBack } from "@mui/icons-material";
 
 const TreeNode = ({ node, handleCheck }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-const navigate= useNavigate();
+  const navigate = useNavigate();
   return (
     <div className="ml-4 staffPer">
       <div className="flex items-center gap-2 p-2">
@@ -51,11 +52,11 @@ const UserPermission = ({ staffId }) => {
           isChecked: menu.is_checked === 1,
           children: menu.menu_Routes
             ? menu.menu_Routes.map((route) => ({
-                id: route.id,
-                name: route.name || route.route_url,
-                isChecked: route.is_checked === 1,
-                children: [],
-              }))
+              id: route.id,
+              name: route.name || route.route_url,
+              isChecked: route.is_checked === 1,
+              children: [],
+            }))
             : [],
         }));
 
@@ -116,6 +117,11 @@ const UserPermission = ({ staffId }) => {
     }
   };
 
+  const handleclicknav = () => {
+    navigate("/Admin/manage-staff");
+    // window.history.back();
+  }
+
   return (
     <div className="wpWrapper">
       <div className="container-fluid">
@@ -133,7 +139,7 @@ const UserPermission = ({ staffId }) => {
                   <div class="cardContent">
                     <p className="para_dash">
                         {/* <CountUp end={countdata?.no_of_clients} /> */}
-                        {/* </p>
+            {/* </p>
                   </div>
                   <div class="iconGrad">
                     <i className="fa fa-user"></i>
@@ -154,7 +160,7 @@ const UserPermission = ({ staffId }) => {
                   <div class="cardContent">                                                
                     <p className="para_dash">
                         {/* <CountUp end={countdata?.no_of_freights} /> */}
-                        {/* </p>                                                
+            {/* </p>                                                
                   </div>                                                
                   <div class="iconGrad">                                                
                     <i className="fa fa-plane"></i>                                                
@@ -175,7 +181,7 @@ const UserPermission = ({ staffId }) => {
                   <div class="cardContent">
                     <p className="para_dash">
                         {/* <CountUp end={countdata?.no_of_orders} /> */}
-                        {/* </p>
+            {/* </p>
                   </div>
                   <div class="iconGrad">
                     <i className="fa fa-truck"></i>
@@ -211,7 +217,11 @@ const UserPermission = ({ staffId }) => {
           </div>
           </div> */}
             <div>
-              <h2 className="text-xl font-bold mb-2">Staff Permissions</h2>
+              <div className="d-flex">
+                <ArrowBack style={{ cursor: "pointer" }} onClick={handleclicknav} />
+                {" "}<h4 className="text-xl font-bold mb-2">Staff Permissions</h4>
+              </div>
+
               <div className="bg-white shadow-md rounded mainPer">
                 {treeData.map((node) => (
                   <TreeNode key={node.id} node={node} handleCheck={handleCheck} />

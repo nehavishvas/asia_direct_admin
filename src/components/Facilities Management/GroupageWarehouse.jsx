@@ -7,6 +7,7 @@ import { Box, Button, Modal } from "@mui/material";
 import { FaEdit } from "react-icons/fa";
 import CloseIcon from "@mui/icons-material/Close";
 const pageSize = 10;
+
 export default function GroupageWarehouse() {
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
@@ -158,14 +159,14 @@ export default function GroupageWarehouse() {
 
   // ---------------- UPDATE SUPPLIER ----------------
   const postData1234 = () => {
-const formdata={
-    id:inputdata.id,
-    email:inputdata.email,
-    name:inputdata.name,
-    phone:inputdata.phone,
-    address:inputdata.address,
-    country_id:inputdata.country_id
-}
+    const formdata = {
+      id: inputdata.id,
+      email: inputdata.email,
+      name: inputdata.name,
+      phone: inputdata.phone,
+      address: inputdata.address,
+      country_id: inputdata.country_id
+    }
     axios
       .post(
         `${process.env.REACT_APP_BASE_URL}updateGroupageHandler`,
@@ -200,7 +201,7 @@ const formdata={
     const value = e.target.value;
     setSearchQuery(value);
     setCurrentPage(1);
-    getdata(1, value); 
+    getdata(1, value);
   };
   return (
     <>
@@ -278,13 +279,13 @@ const formdata={
                 <div className="d-flex justify-content-end align-items-end my-3">
                   <button
                     disabled={currentPage === 1}
-                     className="bg_page"
+                    className="bg_page"
                     onClick={() => {
                       setCurrentPage(currentPage - 1);
                       getdata(currentPage - 1, searchQuery);
                     }}
                   >
-                       <i class="fi fi-rr-angle-small-left page_icon"></i>
+                    <i class="fi fi-rr-angle-small-left page_icon"></i>
                   </button>
 
                   <span className="mx-2">
@@ -293,13 +294,13 @@ const formdata={
 
                   <button
                     disabled={currentPage === totalPages}
-                     className="bg_page"
+                    className="bg_page"
                     onClick={() => {
                       setCurrentPage(currentPage + 1);
                       getdata(currentPage + 1, searchQuery);
                     }}
                   >
-                            <i class="fi fi-rr-angle-small-right page_icon"></i>
+                    <i class="fi fi-rr-angle-small-right page_icon"></i>
                   </button>
                 </div>
               </div>
@@ -319,7 +320,7 @@ const formdata={
                   <CloseIcon />
                 </button>
               </div>
-              <div className="custom-modal-body">
+              <div className="newModalGap  noFormaControl">
                 <label>Email</label>
                 <input
                   type="email"
@@ -372,7 +373,7 @@ const formdata={
                 />
               </div>
               <div className="custom-modal-footer">
-                <button className="btn btn-primary" onClick={handleAddSupplier}>
+                <button variant="contained" className="blueBtn" onClick={handleAddSupplier}>
                   Add Groupage Warehouse
                 </button>
               </div>
@@ -386,14 +387,13 @@ const formdata={
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              bgcolor: "white",
-              p: 3,
-              borderRadius: 2,
+              bgcolor: "background.paper",
+              boxShadow: 24,
               width: "30%",
             }}
           >
             <div className="modal-header">
-              <h4>Edit Groupage Warehouse</h4>
+              <h2 className="modal-title">Edit Groupage Warehouse</h2>
               <button
                 className="btn-close"
                 onClick={() => setIsModalOpen2(false)}
@@ -401,61 +401,67 @@ const formdata={
                 <CloseIcon />
               </button>
             </div>
-            <label>Email</label>
-            <input
-              type="email"
-              className="form-control mb-2"
-              name="email"
-              value={inputdata.email}
-              onChange={handleupdateapi}
-            />
-            <label>Name</label>
-            <input
-              type="text"
-              className="form-control mb-2"
-              name="name"
-              value={inputdata.name}
-              onChange={handleupdateapi}
-            />
-            <label>Phone</label>
-            <input
-              type="text"
-              className="form-control mb-2"
-              name="phone"
-              value={inputdata.phone}
-              onChange={handleupdateapi}
-            />
-            <label>Country of Origin</label>
-            <select
-              name="country_id"
-              onChange={handleupdateapi}
-              className="form-control mb-2"
-              value={inputdata.country_id}
-            >
-              <option>Select</option>
-              {countruies &&
-                countruies.length > 0 &&
-                countruies.map((item, index) => {
-                  return (
-                    <>
-                      <option key={index} value={item.id}>
-                        {item.name}
-                      </option>
-                    </>
-                  );
-                })}
-            </select>
-            <label>address</label>
-            <input
-              type="address"
-              className="form-control mb-2"
-              value="address"
-              name="inputdata.address"
-              onChange={handleupdateapi}
-            />
-            <Button variant="contained" fullWidth onClick={postData1234}>
-              Update Groupage Warehouse
-            </Button>
+            <div className="newModalGap  noFormaControl">
+
+              <label>Email</label>
+              <input
+                type="email"
+                className="form-control mb-2"
+                name="email"
+                value={inputdata.email}
+                onChange={handleupdateapi}
+              />
+              <label>Name</label>
+              <input
+                type="text"
+                className="form-control mb-2"
+                name="name"
+                value={inputdata.name}
+                onChange={handleupdateapi}
+              />
+              <label>Phone</label>
+              <input
+                type="text"
+                className="form-control mb-2"
+                name="phone"
+                value={inputdata.phone}
+                onChange={handleupdateapi}
+              />
+              <label>Country of Origin</label>
+              <select
+                name="country_id"
+                onChange={handleupdateapi}
+                className="form-control mb-2"
+                value={inputdata.country_id}
+              >
+                <option>Select</option>
+                {countruies &&
+                  countruies.length > 0 &&
+                  countruies.map((item, index) => {
+                    return (
+                      <>
+                        <option key={index} value={item.id}>
+                          {item.name}
+                        </option>
+                      </>
+                    );
+                  })}
+              </select>
+              <label>address</label>
+              <input
+                type="address"
+                className="form-control mb-2"
+                value="address"
+                name="inputdata.address"
+                onChange={handleupdateapi}
+              />
+              <div className="d-flex justify-content-center  mt-3">
+                <button variant="contained" className="blueBtn" onClick={postData1234}>
+                  Update Groupage Warehouse
+                </button>
+              </div>
+
+            </div>
           </Box>
         </Modal>
         <ToastContainer />

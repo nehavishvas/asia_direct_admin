@@ -247,11 +247,28 @@ export default function WarehouseOrder() {
     console.log(data);
     setOrderID(order_id);
     setErd(warehouse_assign_order_id);
-    const selectedData = data.find(
+    const selectedItem = data.find(
       (item) => (item.freight_ID ?? item.freight_id) === freight_ID,
     );
-    console.log(selectedData);
-    setSelectedData(selectedData);
+    console.log(selectedItem);
+    if (selectedItem) {
+      const freightVal =
+        selectedItem.freight ||
+        selectedItem.Freight ||
+        selectedItem.freight_type ||
+        "";
+      const clientVal = selectedItem.client_id || "";
+      setSelectedData({
+        ...selectedItem,
+        freight: freightVal,
+      });
+      setNameData((prev) => ({
+        ...(typeof prev === "object" && prev !== null ? prev : {}),
+        client_id: clientVal,
+      }));
+    } else {
+      setSelectedData(selectedItem);
+    }
     handleOpenModal();
   };
   const handleEditClickAssign = (freight_ID, order_id) => {
@@ -343,7 +360,10 @@ export default function WarehouseOrder() {
     formdata1.append("package_type", selectedData.package_type);
     formdata1.append("no_of_packages", selectedData.no_of_packages);
     formdata1.append("customer_name", selectedData.customer_name);
-    formdata1.append("client_id", nameData.client_id);
+    formdata1.append(
+      "client_id",
+      nameData?.client_id ?? selectedData?.client_id ?? "",
+    );
     formdata1.append("total_dimension", selectedData.total_dimension);
     formdata1.append("goods_description", selectedData.goods_description);
     formdata1.append("weight", selectedData.weight);
@@ -1029,6 +1049,12 @@ export default function WarehouseOrder() {
                             <h2 className="modal-title" id="modal-modal-title text-dark">
                               Assign Supplier
                             </h2>
+                             <button
+                              className="btn btn-close"
+                              onClick={handleclose}
+                            >
+                              <CloseIcon />
+                            </button>
                           </div>
                           <div className="newModalGap  noFormaControl">
                             <select
@@ -1410,22 +1436,30 @@ export default function WarehouseOrder() {
                                     value={
                                       clientData.find(
                                         (item) =>
-                                          item.id === nameData.client_id,
+                                          Number(item.id) ===
+                                          Number(
+                                            nameData?.client_id ??
+                                              selectedData?.client_id,
+                                          ),
                                       ) || null
                                     }
                                     onChange={(event, newValue) => {
+                                      const newClientId = newValue
+                                        ? newValue.id
+                                        : "";
                                       handlechangewarehouse({
                                         target: {
                                           name: "client_id",
-                                          value: newValue ? newValue.id : "",
+                                          value: newClientId,
                                         },
                                       });
-                                      // allOrder({
-                                      //   client_id: newValue ? newValue.id : "",
-                                      // });
+                                      setSelectedData((prev) => ({
+                                        ...prev,
+                                        client_id: newClientId,
+                                      }));
                                     }}
                                     isOptionEqualToValue={(option, value) =>
-                                      option.id === value.id
+                                      Number(option.id) === Number(value.id)
                                     }
                                     renderInput={(params) => (
                                       <TextField {...params} />
@@ -1437,11 +1471,18 @@ export default function WarehouseOrder() {
 
                                   <select
                                     className="form-control py-3"
-                                    value={selectedData.freight}
+                                    value={
+                                      (
+                                        selectedData?.freight ||
+                                        selectedData?.Freight ||
+                                        selectedData?.freight_type ||
+                                        ""
+                                      ).toLowerCase()
+                                    }
                                     name="freight"
                                     onChange={handleInputChange}
                                   >
-                                    <option>select</option>
+                                    <option value="">select</option>
                                     <option value="sea">Sea</option>
                                     <option value="air">Air</option>
                                     <option value="road">Road</option>

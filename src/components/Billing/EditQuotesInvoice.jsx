@@ -728,10 +728,10 @@ export default function EditQuotesInvoice() {
       toast.error("Please select a freight first.");
       return;
     }
-    if (!selectedSupplier) {
-      toast.error("Please select a supplier first.");
-      return;
-    }
+    // if (!selectedSupplier) {
+    //   toast.error("Please select a supplier first.");
+    //   return;
+    // }
 
     try {
       const allComponents = [];

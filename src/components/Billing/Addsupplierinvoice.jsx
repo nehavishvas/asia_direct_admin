@@ -56,6 +56,52 @@ const VAT_OPTIONS = [
   { value: "Manual VAT (Capital Goods)", label: "Manual VAT (Capital Goods)" }
 ];
 
+const formatValue = (val, dec = 2, isPercent = false) => {
+  if (val === null || val === undefined || val === "") {
+    return isPercent ? "0.00 %" : "0.00";
+  }
+  const cleanVal = String(val).replace(/,/g, '').replace(/%/g, '').trim();
+  const num = parseFloat(cleanVal);
+  if (isNaN(num)) {
+    return val;
+  }
+  const formatted = num.toLocaleString("en-US", {
+    minimumFractionDigits: dec,
+    maximumFractionDigits: dec
+  });
+  return isPercent ? `${formatted} %` : formatted;
+};
+
+const handleBlur = (setter, id, field, value, dec = 2, isPercent = false) => {
+  setter((prev) =>
+    prev.map((row) =>
+      row.id === id ? { ...row, [field]: formatValue(value, dec, isPercent) } : row
+    )
+  );
+};
+
+const handleFocus = (setter, id, field, value) => {
+  setter((prev) =>
+    prev.map((row) =>
+      row.id === id
+        ? {
+          ...row,
+          [field]: String(value || "")
+            .replace(/,/g, "")
+            .replace(/%/g, "")
+            .trim(),
+        }
+        : row
+    )
+  );
+};
+
+const handlepresss = (e) => {
+  if (e.charCode < 42 || e.charCode > 57) {
+    e.preventDefault();
+  }
+};
+
 export default function Addsupplierinvoice() {
   const location = useLocation();
   const navigate = useNavigate();

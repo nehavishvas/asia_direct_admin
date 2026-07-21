@@ -28,6 +28,8 @@ import {
 import { FaEdit } from "react-icons/fa";
 import CloseIcon from "@mui/icons-material/Close";
 import { AssignmentTurnedIn } from "@mui/icons-material";
+import Swal from "sweetalert2";
+
 const pageSize = 10;
 export default function CustomebyUserap() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -207,17 +209,51 @@ export default function CustomebyUserap() {
       postdata
     );
     if (permisssion.data.success === true) {
-      axios
-        .post(`${process.env.REACT_APP_BASE_URL}delete-clearing`, {
-          clearing_id: id,
-        })
-        .then((response) => {
-          toast.success(response.data.message);
-          getdata();
-        })
-        .catch((error) => {
-          toast.error(error.response.data.message);
-        });
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to delete this Clearance?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+      });
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.post(`${process.env.REACT_APP_BASE_URL}delete-clearing`, {
+            clearing_id: id,
+          });
+          if (response.data.success) {
+            Swal.fire({
+              icon: "success",
+              title: "Deleted!",
+              text: response?.data?.message || "Clearance Deleted successfully.",
+              confirmButtonColor: "#3085d6",
+            });
+            getdata();
+          } else {
+            toast.error(response.data.message || "Failed to delete Clearance.");
+          }
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error?.response?.data?.message || "Something went wrong!",
+            confirmButtonColor: "#d33",
+          });
+        }
+      }
+      // axios
+      //   .post(`${process.env.REACT_APP_BASE_URL}delete-clearing`, {
+      //     clearing_id: id,
+      //   })
+      //   .then((response) => {
+      //     toast.success(response.data.message);
+      //     getdata();
+      //   })
+      //   .catch((error) => {
+      //     toast.error(error.response.data.message);
+      //   });
     } else {
       toast.error(permisssion.data.message);
     }

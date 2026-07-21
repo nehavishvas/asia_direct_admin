@@ -17,7 +17,10 @@ import { useNavigate } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ClearIcon from '@mui/icons-material/Clear';
+import CancelIcon from '@mui/icons-material/Cancel';
 import Swal from "sweetalert2";
+
 const pageSize = 10;
 export default function MAnageshipments() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -698,29 +701,27 @@ export default function MAnageshipments() {
                             <td className="w-25">
                               <div className="progress">
                                 <div
-                                  className={`progress-bar progress-bar-striped ${
-                                    item.status === "Customs Released"
-                                      ? "bg-secondary"
-                                      : "bg-success"
-                                  }`}
+                                  className={`progress-bar progress-bar-striped ${item.status === "Customs Released"
+                                    ? "bg-secondary"
+                                    : "bg-success"
+                                    }`}
                                   role="progressbar"
                                   style={{
-                                    width: `${
-                                      item.status === "Goods at origin port"
-                                        ? "20%"
-                                        : item.status === "Goods are in transit"
-                                          ? "40%"
+                                    width: `${item.status === "Goods at origin port"
+                                      ? "20%"
+                                      : item.status === "Goods are in transit"
+                                        ? "40%"
+                                        : item.status ===
+                                          "Arrived at destination port"
+                                          ? "60%"
                                           : item.status ===
-                                              "Arrived at destination port"
-                                            ? "60%"
+                                            "Customs clearing in progress"
+                                            ? "80%"
                                             : item.status ===
-                                                "Customs clearing in progress"
-                                              ? "80%"
-                                              : item.status ===
-                                                  "Customs Released"
-                                                ? "100%"
-                                                : "25%"
-                                    }`,
+                                              "Customs Released"
+                                              ? "100%"
+                                              : "25%"
+                                      }`,
                                   }}
                                 />
                               </div>
@@ -958,9 +959,15 @@ export default function MAnageshipments() {
                   }}
                 >
                   <div className="row">
-                    <h5 className=" fw-bold fs-5 mb-3">
-                      Update Shipment Detail / Form
-                    </h5>
+                    <div className="d-flex justify-content-between">
+                      <h5 className=" fw-bold fs-5 mb-3">
+                        Update Shipment Detail / Form
+                      </h5>
+                      <div style={{ cursor: "pointer" }}>
+                        <ClearIcon onClick={closeModal2} style={{color:"red", background:"#eeee"}} />
+                      </div>
+                    </div>
+
                     <div className="col-3">
                       <label className="ware_label">Waybill</label>
                       <input

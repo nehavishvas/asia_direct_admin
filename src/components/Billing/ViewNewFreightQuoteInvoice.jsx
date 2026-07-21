@@ -69,6 +69,45 @@ const VAT_OPTIONS = [
   { value: "Manual VAT (Capital Goods)", label: "Manual VAT (Capital Goods)" }
 ];
 
+// const DEFAULT_TERMS_AND_CONDITIONS = {
+//   intro:
+//     "All business is undertaken subject to our General Trading Conditions, a copy of which is available on request. (E&OE) Errors and Omissions Excepted.",
+//   items: [
+//     {
+//       label: "Insurance",
+//       text: "All goods are shipped at the customer's risk. If insurance is required, it must be arranged and paid for by the customer.",
+//     },
+//     {
+//       label: "Weight and Dimensions",
+//       text: "Changes in the actual weight, dimensions of the goods from the initial quote may affect the final pricing at billing. The customer will be notified of any price adjustments.",
+//     },
+//     {
+//       label: "Misdeclaration of Goods",
+//       text: "Any misdeclaration of goods will result in additional charges and potential legal consequences. Misdeclaration may include cargo description, costs, hazardous e.t.c.",
+//     },
+//     {
+//       label: "Customs Duties & VAT",
+//       text: "The customer is responsible for all customs duties and VAT applicable to their shipment.",
+//     },
+//     {
+//       label: "Customs Stops & Inspections",
+//       text: "Any costs incurred due to customs stops and inspections will be billed to the customer.",
+//     },
+//     {
+//       label: "Late Collection & Storage Fees",
+//       text: "Goods not collected within the agreed timeframe will incur storage fees. These fees are payable by the customer.",
+//     },
+//     {
+//       label: "Late Payment of Invoices",
+//       text: "Late payment of invoices will attract interest charges as per the company's policy.",
+//     },
+//     {
+//       label: "Abandoned Cargo",
+//       text: "Cargo not collected within 28 days will be regarded abandoned, the customer will be liable for any disposal costs and associated fees.",
+//     },
+//   ],
+// };
+
 export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintComplete }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -83,10 +122,13 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
     chargable_rate: "",
     company_id: "",
     company_address: null,
+    bank_details: null,
     created_at: "",
   });
 
   const [getdata, setGetdata] = useState({});
+  // const [termsAndConditions, setTermsAndConditions] = useState(DEFAULT_TERMS_AND_CONDITIONS);
+
 
   // Dropdown Options state
   const [originDropdown, setOriginDropdown] = useState([]);
@@ -167,6 +209,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
             chargable_rate: invoiceData.chargeable || "",
             company_id: invoiceData.company_id || "",
             company_address: invoiceData.company_address || null,
+            bank_details: invoiceData.bank_details || null,
             created_at: invoiceData.created_at || "",
           });
 
@@ -263,6 +306,71 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
       console.error("PDF generation failed:", error);
       toast.error("Failed to generate PDF");
     }
+  };
+
+  const downloadPDF = () => {
+    const allComponents = [];
+
+    const mapRowToComponent = (row, calc) => ({
+      ...(row.db_id && { id: row.db_id }),
+      admin_frieght_component_id: row.admin_frieght_component_id || null,
+      description: row.description || "",
+      qty: cleanParseFloat(row.qty),
+      currency: row.currency || "",
+      cost: cleanParseFloat(row.cost),
+      unit_type: row.unitType || "",
+      unit: cleanParseFloat(calc.unit),
+      total_cost: cleanParseFloat(calc.tCost),
+      gp_percent: cleanParseFloat(row.gp_percent),
+      sales_price: cleanParseFloat(calc.salesPrice),
+      roe: cleanParseFloat(row.roe),
+      final_amount: cleanParseFloat(calc.finalAmt),
+      vat_type: row.vatTyp || "",
+      disc_percent: cleanParseFloat(row.discPercent),
+      discount: cleanParseFloat(calc.disc),
+      exclusive: cleanParseFloat(calc.exclusive),
+      vat: cleanParseFloat(calc.vat),
+      vat_incl: cleanParseFloat(calc.inclusive),
+      comment: row.comment || ""
+    });
+
+    originRowsData.forEach(({ row, calc }) => {
+      if (row.description) {
+        allComponents.push({ ...mapRowToComponent(row, calc), name: "Origin Charges" });
+      }
+    });
+    freightRowsData.forEach(({ row, calc }) => {
+      if (row.description) {
+        allComponents.push({ ...mapRowToComponent(row, calc), name: "Freight Charges" });
+      }
+    });
+    transitRowsData.forEach(({ row, calc }) => {
+      if (row.description) {
+        allComponents.push({ ...mapRowToComponent(row, calc), name: "Transit Charges" });
+      }
+    });
+    destinationRowsData.forEach(({ row, calc }) => {
+      if (row.description) {
+        allComponents.push({ ...mapRowToComponent(row, calc), name: "Destination Charges" });
+      }
+    });
+    adminRowsData.forEach(({ row, calc }) => {
+      if (row.description) {
+        allComponents.push({ ...mapRowToComponent(row, calc), name: "Admin Charges" });
+      }
+    });
+    customsRowsData.forEach(({ row, calc }) => {
+      if (row.description) {
+        allComponents.push({ ...mapRowToComponent(row, calc), name: "Customs Charges" });
+      }
+    });
+
+    const currentFreightState = {
+      ...freight,
+      components: allComponents
+    };
+
+    navigate("/Admin/DownloadNewFreightQuoteInvoice", { state: { data: getdata, freight: currentFreightState } });
   };
 
   const isPrintingRef = useRef(false);
@@ -723,6 +831,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
               </div>
               <div className="d-flex gap-3 align-items-center blueText">
                 <FaDownload onClick={downloadPDF1} style={{ cursor: "pointer" }} />
+                <i className="fa fa-address-card ms-2" onClick={downloadPDF} style={{ cursor: "pointer" }} title="Customer Download"></i>
               </div>
             </div>
           )}
@@ -1147,6 +1256,80 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                   </tbody>
                 </table>
               </div>
+
+              {/* Terms and Conditions & Banking Details */}
+              {/* <table
+                style={{
+                  width: "100%",
+                  marginTop: "20px",
+                  borderCollapse: "collapse",
+                }}
+              >
+                <tbody>
+                  <tr>
+                    <td>
+                      <div
+                        style={{
+                          border: "1px solid black",
+                          width: "33%",
+                          borderBottom: "0px solid transparent",
+                          height: 22,
+                          borderTop: "unset",
+                        }}
+                      >
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: 13,
+                            fontWeight: 700,
+                            textTransform: "uppercase",
+                            paddingLeft: 5,
+                          }}
+                        >
+                          TERMS & CONDITIONS
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ border: "1px solid black", padding: "10px 12px", verticalAlign: "top" }}>
+                      <div style={{ fontSize: 12, color: "#333", lineHeight: 1.6 }}>
+                        <div style={{ marginBottom: 6 }}>{termsAndConditions.intro}</div>
+                        {termsAndConditions.items.map((item, index) => (
+                          <div key={index} style={{ marginBottom: 4 }}>
+                            {index + 1}. <strong>{item.label}</strong>: {item.text}
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table> */}
+
+              {/* <div style={{ marginTop: 16, breakInside: "avoid", pageBreakInside: "avoid" }}>
+                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 8 }}>Banking Details</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12, maxWidth: 700 }}>
+                  {[
+                    ["Account Name", freight?.bank_details?.account_name],
+                    ["Bank Name", freight?.bank_details?.bank_name],
+                    ["Branch Code", freight?.bank_details?.branch_code],
+                    ["Account Number", freight?.bank_details?.account_no],
+                    ["Swift Code", freight?.bank_details?.swift_code],
+                  ].map(([label, value]) => (
+                    <div key={label}>
+                      <div style={{ fontSize: 12, marginBottom: 4 }}>{label}</div>
+                      <div style={{ borderBottom: "1px solid #ccc", height: 18, fontSize: 12, fontWeight: 500 }}>
+                        {value || ""}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {freight?.bank_details?.note && (
+                  <div style={{ marginTop: 12, fontSize: 12, color: "#666", whiteSpace: "pre-line", fontStyle: "italic", lineHeight: 1.5 }}>
+                    {freight?.bank_details?.note}
+                  </div>
+                )}
+              </div> */}
             </div>
           </section>
         </div>

@@ -56,6 +56,12 @@ const VAT_OPTIONS = [
   { value: "Manual VAT (Capital Goods)", label: "Manual VAT (Capital Goods)" }
 ];
 
+const handlepresss = (e) => {
+  if (e.charCode < 42 || e.charCode > 57) {
+    e.preventDefault();
+  }
+};
+
 export default function Editsupplierinvoiceedit() {
   const location = useLocation();
   const navigate = useNavigate();

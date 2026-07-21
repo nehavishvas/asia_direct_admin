@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { ToastContainer, toast } from "react-toastify";
+import CloseIcon from "@mui/icons-material/Close";
 
 const ManageCollectionDelivery = () => {
     const [collection, setCollection] = useState([]);
@@ -15,6 +16,14 @@ const ManageCollectionDelivery = () => {
     const [modalData, setModalData] = useState({ item: null, type: "", status: "" });
     const [supplierList, setSupplierList] = useState([]);
     const [selectedSupplier, setSelectedSupplier] = useState("");
+
+    // Collection completion states
+    const [completeModalOpen, setCompleteModalOpen] = useState(false);
+    const [completeModalItem, setCompleteModalItem] = useState(null);
+    const [completeAction, setCompleteAction] = useState("");
+    const [waybillList, setWaybillList] = useState([]);
+    const [selectedShipmentId, setSelectedShipmentId] = useState("");
+    const [completeLoader, setCompleteLoader] = useState(false);
     const userid = JSON.parse(localStorage.getItem("data123"))?.id;
     const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
 
@@ -73,6 +82,12 @@ const ManageCollectionDelivery = () => {
             setModalData({ item, type, status: newStatus });
             setModalOpen(true);
             setSelectedSupplier("");
+        } else if (newStatus === "Complete" && type === "collection") {
+            setCompleteModalItem(item);
+            setCompleteAction("");
+            setSelectedShipmentId("");
+            setWaybillList([]);
+            setCompleteModalOpen(true);
         } else {
             const existingSupplierId = type === "collection" ? item.collection_supplier_id : item.delivery_supplier_id;
             updateStatus(item.freight_id, type, newStatus, existingSupplierId || "");
@@ -98,6 +113,50 @@ const ManageCollectionDelivery = () => {
         } finally {
             setLoader(false);
             setModalOpen(false);
+        }
+    };
+
+    const handleActionChange = async (action) => {
+        setCompleteAction(action);
+        if (action === "shipment") {
+            try {
+                setCompleteLoader(true);
+                const res = await axios.get(`${process.env.REACT_APP_BASE_URL}getWaybillDropdown`);
+                if (res.data.success) {
+                    setWaybillList(res.data.data || []);
+                } else {
+                    toast.error(res.data.message || "Failed to fetch waybills");
+                }
+            } catch (err) {
+                console.error("Error fetching waybills:", err);
+                toast.error("Error fetching waybills");
+            } finally {
+                setCompleteLoader(false);
+            }
+        }
+    };
+
+    const submitCollectionCompletion = async () => {
+        if (!completeModalItem) return;
+        try {
+            setLoader(true);
+            const payload = {
+                freight_id: Number(completeModalItem.freight_id),
+                action: completeAction
+            };
+            if (completeAction === "shipment") {
+                payload.shipment_id = Number(selectedShipmentId);
+            }
+            
+            const response = await axios.post(`${process.env.REACT_APP_BASE_URL}confirmCollectionCompletion`, payload);
+            toast.success(response.data?.message || "Collection completed successfully");
+            setCompleteModalOpen(false);
+            FetchCollectDeliveryList(currentPage, searchQuery);
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || "Something went wrong");
+        } finally {
+            setLoader(false);
         }
     };
 
@@ -178,7 +237,7 @@ const ManageCollectionDelivery = () => {
                                                                     <p className="client_nm" style={{ fontSize: "14px" }}>
                                                                         {item.client_name}
                                                                     </p>
-                                                                    <p>{item.freight_number}</p>
+                                                                    <p>{item.freight_number} | {item.order_number}</p>
                                                                     <p>
                                                                         <span className="bold600">Type:</span> {item.type}
                                                                     </p>
@@ -219,7 +278,7 @@ const ManageCollectionDelivery = () => {
                                                                                 >
                                                                                     <option value="Pending">Pending</option>
                                                                                     <option value="Assigned">Assigned</option>
-                                                                                    <option value="Complete">Complete</option>
+                                                                                    <option value="Complete">Confirm</option>
                                                                                 </select>
                                                                             ) : (
                                                                                 item.ready_for_collection_status || "-"
@@ -289,7 +348,7 @@ const ManageCollectionDelivery = () => {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title">Assign Supplier</h5>
-                                <button type="button" className="btn-close" onClick={() => setModalOpen(false)}></button>
+                                <button type="button" className="btn btn-close" onClick={() => setModalOpen(false)}><CloseIcon /></button>
                             </div>
                             <div className="modal-body">
                                 <div className="mb-3">
@@ -314,6 +373,86 @@ const ManageCollectionDelivery = () => {
                     </div>
                 </div>
             )}
+
+            {completeModalOpen && (
+                <div className="modal" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Complete Collection</h5>
+                                <button type="button" className="btn btn-close" onClick={() => setCompleteModalOpen(false)}><CloseIcon /></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="mb-3">
+                                    <label className="form-label d-block fw-bold">Select Action</label>
+                                    <div className="form-check form-check-inline">
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="completeAction"
+                                            id="actionShipment"
+                                            value="shipment"
+                                            checked={completeAction === "shipment"}
+                                            onChange={(e) => handleActionChange(e.target.value)}
+                                        />
+                                        <label className="form-check-label" htmlFor="actionShipment">Shipment</label>
+                                    </div>
+                                    <div className="form-check form-check-inline">
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="completeAction"
+                                            id="actionWarehouse"
+                                            value="warehouse"
+                                            checked={completeAction === "warehouse"}
+                                            onChange={(e) => handleActionChange(e.target.value)}
+                                        />
+                                        <label className="form-check-label" htmlFor="actionWarehouse">Warehouse</label>
+                                    </div>
+                                </div>
+
+                                {completeAction === "shipment" && (
+                                    <div className="mb-3">
+                                        <label className="form-label fw-bold">Select Waybill</label>
+                                        {completeLoader ? (
+                                            <div>Loading waybills...</div>
+                                        ) : (
+                                            <select
+                                                className="form-select"
+                                                value={selectedShipmentId}
+                                                onChange={(e) => setSelectedShipmentId(e.target.value)}
+                                            >
+                                                <option value="">-- Select Waybill --</option>
+                                                {waybillList.map((wb, idx) => (
+                                                    <option key={`${wb.shipment_id}-${idx}`} value={wb.shipment_id}>
+                                                        {wb.waybill}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => setCompleteModalOpen(false)}>Cancel</button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                    onClick={submitCollectionCompletion}
+                                    disabled={
+                                        !completeAction || 
+                                        (completeAction === "shipment" && !selectedShipmentId) || 
+                                        completeLoader
+                                    }
+                                >
+                                    Confirm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <ToastContainer />
         </>
     )

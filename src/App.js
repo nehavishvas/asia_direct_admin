@@ -114,6 +114,7 @@ import ViewQuotesInvoice from "./components/Billing/ViewQuotesInvoice";
 import AddNewFreightQuoteInvoice from "./components/Billing/AddNewFreightQuoteInvoice";
 import EditNewFreightQuoteInvoice from "./components/Billing/EditNewFreightQuoteInvoice";
 import ViewNewFreightQuoteInvoice from "./components/Billing/ViewNewFreightQuoteInvoice";
+import DownloadNewFreightQuoteInvoice from "./components/Billing/DownloadNewFreightQuoteInvoice";
 import CompanyAddresses from "./pages/CompanyAddresses";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Users = lazy(() => import("./pages/Users"));
@@ -142,7 +143,7 @@ const Uniovwersalpage = lazy(() => import("./components/Uniovwersalpage"));
 export default function App() {
   const [text, setText] = useState("");
   const [permission, setPermission] = useState("");
-  console.log("14-07-26", "01:00");
+  console.log("21-07-26", "17:43");
   return (
     <MyContext1.Provider value={{ text, setText }}>
       <MyContext2.Provider value={{ permission, setPermission }}>
@@ -180,6 +181,7 @@ export default function App() {
                 <Route path="/Admin/addnewfreightquoteinvoice" element={<AddNewFreightQuoteInvoice />} />
                 <Route path="/Admin/editnewfreightquoteinvoice" element={<EditNewFreightQuoteInvoice />} />
                 <Route path="/Admin/viewnewfreightquoteinvoice" element={<ViewNewFreightQuoteInvoice />} />
+                <Route path="/Admin/DownloadNewFreightQuoteInvoice" element={<DownloadNewFreightQuoteInvoice />} />
                 <Route
                   index
                   path="/Admin/sageinvoice"

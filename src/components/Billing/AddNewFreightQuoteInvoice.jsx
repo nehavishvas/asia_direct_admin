@@ -751,10 +751,10 @@ export default function AddNewFreightQuoteInvoice() {
       toast.error("Please select an order first.");
       return;
     }
-    if (!selectedSupplier) {
-      toast.error("Please select a supplier first.");
-      return;
-    }
+    // if (!selectedSupplier) {
+    //   toast.error("Please select a supplier first.");
+    //   return;
+    // }
 
     try {
       const allComponents = [];

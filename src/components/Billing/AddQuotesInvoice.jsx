@@ -706,10 +706,10 @@ export default function AddQuotesInvoice() {
       toast.error("Please select a freight first.");
       return;
     }
-    if (!selectedSupplier) {
-      toast.error("Please select a supplier first.");
-      return;
-    }
+    // if (!selectedSupplier) {
+    //   toast.error("Please select a supplier first.");
+    //   return;
+    // }
 
     try {
       const allComponents = [];
@@ -1243,7 +1243,7 @@ export default function AddQuotesInvoice() {
           <div className="d-flex justify-content-between align-items-center mb-4">
             <div className="d-flex align-items-center gap-3">
               <ArrowBackIcon onClick={handleclicknav} style={{ cursor: "pointer" }} />
-              <h4 className="freight_hd mb-0">{isInvoice ? "Add Freight Invoice" : "Add Freight Quote Invoice"}</h4>
+              <h4 className="freight_hd mb-0">{isInvoice ? "Add Freight Invoice" : "Add Freight Quote Estimate"}</h4>
             </div>
             <div className="d-flex gap-3 align-items-center blueText">
               <i onClick={downloadPDF1} className="fa fa-download" style={{ cursor: "pointer" }} aria-hidden="true"></i>

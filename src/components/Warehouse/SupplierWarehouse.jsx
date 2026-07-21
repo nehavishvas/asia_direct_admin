@@ -1380,7 +1380,7 @@ export default function SupplierWarehouse() {
                       >
                         <Box sx={style1}>
                           <div className="modal-header">
-                            <h2 id="modal-modal-title">Edit Warehouse Order</h2>
+                            <h2 id="modal-modal-title">Edit Supplier Warehouse Order</h2>
                             <button
                               className="btn btn-close"
                               onClick={handleCloseModalpopup}
@@ -1771,7 +1771,7 @@ export default function SupplierWarehouse() {
                                       ></input>
                                     </div>
 
-                                    <div className="col-md-12">
+                                    <div className="col-md-6">
                                       <label>Total Dimension </label>
                                       <input
                                         type="text"
@@ -1783,6 +1783,18 @@ export default function SupplierWarehouse() {
                                         placeholder=""
                                       ></input>
                                     </div>
+                                    <div item className="col-md-6">
+                                    <label htmlFor="">Weight</label>
+                                    <input
+                                      className="form-control"
+                                      disabled
+                                      label="Weight"
+                                      variant="outlined"
+                                      name="weight"
+                                      value={selectedData.weight || ""}
+                                      onChange={handleInputChange}
+                                    />
+                                  </div>
                                     <div className="col-lg-md">
                                       <label>Comment on Packages</label>
                                       <textarea
@@ -1793,6 +1805,7 @@ export default function SupplierWarehouse() {
                                         placeholder="Other Information"
                                       ></textarea>
                                     </div>
+                                    
                                     <div className="col-md-12">
                                       <h5 className="mt-3 mb-2">
                                         Damaged Goods

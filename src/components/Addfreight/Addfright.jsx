@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import Select from "react-select";
 import { Modal, Button, Form } from "react-bootstrap";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const Addfright = () => {
   const [lcientlist, setLcientlist] = useState([]);
@@ -109,6 +110,10 @@ const Addfright = () => {
   };
   const handleclick = () => {
     handlevalidate(data);
+  };
+
+    const handleclick2 = () => {
+    navigate("/Admin/managefreight");
   };
 
   const useridsales = JSON.parse(localStorage.getItem("data123"));
@@ -514,8 +519,11 @@ const Addfright = () => {
             <div className="row manageFreight">
               <div className="col-12">
                 <div className="d-flex">
+                  <div style={{ cursor: "pointer" }}>
+                    <ArrowBackIcon onClick={handleclick2} />
+                  </div>
                   <div>
-                    <h4 className="freight_hd">Add Freight</h4>
+                    <h4 className="det_hd ms-3">Add Freight</h4>
                   </div>
                 </div>
               </div>
@@ -779,7 +787,7 @@ const Addfright = () => {
                           </p>
                         </div>
 
-                         <div className="col-xl-6 col-lg-12 col-md-12">
+                        <div className="col-xl-6 col-lg-12 col-md-12">
                           <label>Required for Delivery</label>
                           <div className="shipRefer1">
                             <input

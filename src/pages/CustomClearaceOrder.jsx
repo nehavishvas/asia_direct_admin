@@ -18,6 +18,8 @@ import {
   MenuItem,
 } from "@mui/material";
 import { AssignmentTurnedIn, Calculate, CopyAll, Download } from "@mui/icons-material";
+import Swal from "sweetalert2";
+
 const pageSize = 10;
 const CustomClearaceOrder = () => {
   const [data, setData] = useState({
@@ -118,6 +120,7 @@ const CustomClearaceOrder = () => {
       setSelectedImage(file);
     }
   };
+  
   const datagetuseirID = JSON.parse(localStorage.getItem("data123"));
   const handleclick = () => {
     if (!data.freight || data.freight.trim() === "") {
@@ -465,6 +468,7 @@ const CustomClearaceOrder = () => {
         toast.errror(error.response.data.data);
       });
   };
+
   const getclient = () => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}client-list`)
@@ -475,19 +479,43 @@ const CustomClearaceOrder = () => {
         console.log(error.response.data);
       });
   };
-  const handlelcickdelete = (id) => {
-    axios
-      .post(`${process.env.REACT_APP_BASE_URL}delete-clearing`, {
-        clearing_id: id,
-      })
-      .then((response) => {
-        toast.success(response.data.message);
-        getdata();
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
+
+  const handlelcickdelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this Clearance?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+    if (result.isConfirmed) {
+      try {
+        const response = await axios.post(`${process.env.REACT_APP_BASE_URL}delete-clearing`, { clearing_id: id }
+        );
+        if (response.data.success) {
+          Swal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: response?.data?.message || "Clearance Deleted successfully.",
+            confirmButtonColor: "#3085d6",
+          });
+          getdata();
+        } else {
+          toast.error(response.data.message || "Failed to delete Clearance.");
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error?.response?.data?.message || "Something went wrong!",
+          confirmButtonColor: "#d33",
+        });
+      }
+    }
   };
+
   const handlelcickdeletettach = (id) => {
     setClearanceid(id);
     setOpenmodal(true);
