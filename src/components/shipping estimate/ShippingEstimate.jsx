@@ -201,6 +201,8 @@ export default function ShippingEstimate() {
           chargable_rate: estimateData.chargeable ?? prev?.chargable_rate ?? "",
           company_id: estimateData.company_id || estimateData.company_address?.id || prev?.company_id || "",
           company_country: estimateData.company_address?.country || prev?.company_country || "",
+          quote_validity: estimateData.quote_validity || prev?.quote_validity || "",
+          payment_terms: estimateData.payment_terms || prev?.payment_terms || "",
         }));
 
         if (estimateData.components && estimateData.components.length > 0) {
@@ -407,12 +409,12 @@ export default function ShippingEstimate() {
       prev.map((row) =>
         row.id === id
           ? {
-              ...row,
-              [field]: String(value || "")
-                .replace(/,/g, "")
-                .replace(/%/g, "")
-                .trim(),
-            }
+            ...row,
+            [field]: String(value || "")
+              .replace(/,/g, "")
+              .replace(/%/g, "")
+              .trim(),
+          }
           : row
       )
     );
@@ -916,6 +918,8 @@ export default function ShippingEstimate() {
         sumof_vatincl: parseFloat(totalVatInclusive) || 0,
         chargeable: parseFloat(freight.chargable_rate) || 0,
         components: allComponents,
+        quote_validity: freight.quote_validity || "",
+        payment_terms: freight.payment_terms || "",
       };
 
       console.log("[Add Invoice] add-freight-quotes-estimate payload:", payload);
@@ -2026,6 +2030,38 @@ export default function ShippingEstimate() {
                                       </div>
                                     </td>
                                   </tr>
+                                  <tr>
+                                    <td style={{ padding: "5px" }}>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                        }}
+                                      >
+                                        <p
+                                          style={{
+                                            fontSize: 13,
+                                            marginBottom: "unset",
+                                          }}
+                                        >
+                                          <strong>Payment Terms</strong>
+                                        </p>
+                                        <input
+                                          type="text"
+                                          name="payment_terms"
+                                          value={freight?.payment_terms || ""}
+                                          onChange={handlechangecalc}
+                                          style={{
+                                            margin: 0,
+                                            fontSize: 13,
+                                            paddingLeft: 5,
+                                            width: "40%",
+                                            border: "1px solid #ccc",
+                                          }}
+                                        />
+                                      </div>
+                                    </td>
+                                  </tr>
                                 </tbody>
                               </table>
                             </td>
@@ -2119,9 +2155,36 @@ export default function ShippingEstimate() {
                                         paddingRight: "10px"
                                       }}
                                     >
-                                      {new Date(getdata?.date).toLocaleDateString(
-                                        "en-GB",
-                                      )}
+                                      {getdata?.quote_date
+                                        ? new Date(getdata.quote_date).toLocaleDateString("en-GB")
+                                        : "-"}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td
+                                      style={{
+                                        padding: "5px 10px 0px 10px",
+                                        width: 170,
+                                        display: "block",
+                                        paddingBottom: 0,
+                                        fontSize: 13,
+                                      }}
+                                    >
+                                      <strong>Quote Validity</strong>
+                                    </td>
+                                    <td
+                                      style={{
+                                        fontSize: 13, paddingTop: "5px", textAlign: "right",
+                                        paddingRight: "10px"
+                                      }}
+                                    >
+                                      <input
+                                        type="text"
+                                        name="quote_validity"
+                                        value={freight.quote_validity || ""}
+                                        onChange={handlechangecalc}
+                                        style={{ width: "180px", padding: "2px" }}
+                                      />
                                     </td>
                                   </tr>
                                   {/* <tr>
@@ -2603,9 +2666,8 @@ export default function ShippingEstimate() {
               </div>
             </div>
           </div>
-        </div >
-
-      </div >
+        </div>
+      </div>
       <ToastContainer />
     </>
   );

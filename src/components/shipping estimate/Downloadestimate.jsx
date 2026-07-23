@@ -705,8 +705,6 @@ const mapEstimateComponentsToFlatFields = (freight) => {
   return f;
 };
 
-
-
 export default function Downlaodestimate() {
   const [update, setUpdate] = useState([0]);
   const [loading, setLoading] = useState(true);
@@ -1048,11 +1046,8 @@ export default function Downlaodestimate() {
             style={{ marginBottom: 0, fontSize: 13, color: "black", fontWeight: 400, border: "0px", verticalAlign: "middle" }}
             type="text"
             className="supplier_form"
-            onKeyPress={handlepresss}
-            onChange={(e) => updateRowField(setter, row.id, "cost", e.target.value)}
-            onBlur={(e) => handleBlur(setter, row.id, "cost", e.target.value, 2)}
-            onFocus={(e) => handleFocus(setter, row.id, "cost", row.cost || "")}
-            value={row.cost || ""}
+            disabled
+            value={formatValue(calc.salesPrice, 2)}
             placeholder="0.00"
           />
         </td>
@@ -1078,14 +1073,6 @@ export default function Downlaodestimate() {
             onBlur={(e) => handleBlur(setter, row.id, "roe", e.target.value, 4)}
             onFocus={(e) => handleFocus(setter, row.id, "roe", row.roe || "")}
             value={row.roe || ""}
-            className="supplier_form"
-          />
-        </td>
-        <td>
-          <input
-            style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
-            disabled
-            value={formatValue(calc.finalAmt, 2)}
             className="supplier_form"
           />
         </td>
@@ -1116,23 +1103,7 @@ export default function Downlaodestimate() {
           <input
             style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
             disabled
-            value={formatValue(calc.disc)}
-            className="supplier_form"
-          />
-        </td>
-        <td>
-          <input
-            style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
-            disabled
             value={formatValue(calc.exclusive)}
-            className="supplier_form"
-          />
-        </td>
-        <td>
-          <input
-            style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
-            disabled
-            value={formatValue(calc.vat)}
             className="supplier_form"
           />
         </td>
@@ -1686,7 +1657,7 @@ export default function Downlaodestimate() {
     const rows = [];
 
     // Section header row
-    rows.push([{ content: title, colSpan: 14, styles: sectionStyle }]);
+    rows.push([{ content: title, colSpan: 11, styles: sectionStyle }]);
 
     rowsData.forEach(({ row, calc }) => {
       const uom = row.unitType === "1" ? "L/S" : row.unitType === "2" ? "W/M" : "";
@@ -1698,15 +1669,12 @@ export default function Downlaodestimate() {
         row.qty || "",
         uom,
         displayRowUnit(row.unitType) ?? "",
-        formatValue(row.cost, 2),
+        formatValue(calc.salesPrice, 2),
         row.currency && row.currency !== "Select" ? row.currency : "",
         formatValue(row.roe, 4),
-        formatValue(calc.finalAmt, 2),
         vatDisplay,
         formatValue(row.discPercent, 2, true),
-        formatValue(calc.disc),
         formatValue(calc.exclusive),
-        formatValue(calc.vat),
         formatValue(calc.inclusive),
       ]);
     });
@@ -1714,12 +1682,9 @@ export default function Downlaodestimate() {
     // Section total row
     rows.push([
       { content: `Total - ${title}`, colSpan: 7, styles: { ...totalStyle, halign: "left" } },
-      styledCell(formatValue(totals.finalAmt), totalStyle),
       styledCell("", totalStyle),
       styledCell("", totalStyle),
-      styledCell(formatValue(totals.disc), totalStyle),
       styledCell(formatValue(totals.exclusive), totalStyle),
-      styledCell(formatValue(totals.vat), totalStyle),
       styledCell(formatValue(totals.inclusive), totalStyle),
     ]);
 
@@ -1853,20 +1818,20 @@ export default function Downlaodestimate() {
       ly += addressLines.length * addressLineHeight + 1;
 
       // Section bar — ly = top of bar
-      drawSectionBar(doc, margin, ly, contentWidth / 2, barH, "Shipment Details ISO Commodity");
+      drawSectionBar(doc, margin, ly, contentWidth / 2, barH, "Cargo Details ISO Commodity");
       ly += barH; // ly now = top of first data row
 
       const leftFields = [
+        ["Commodity", getdata?.product_desc],
+        ["Hazardous", getdata?.hazardous?.toLowerCase() === "no"
+          ? "No"
+          : getdata?.hazard_type],
         ["No. of Packages", getdata?.no_of_packages],
         ["Package Type", getdata?.package_type],
-        ["Weight", getdata?.weight],
-        ["M3", getdata?.m3 || ""],
+        ["Gross Weight (kgs)", getdata?.weight],
+        ["Dimensions (M3)", getdata?.m3 || ""],
         ["Volumetric (kgs)", getdata?.volumetric_weight],
         ["Chargeable", freight?.chargable_rate],
-        ["Commodity", getdata?.commodity],
-        ["Hazardous", getdata?.hazardous],
-        ["Incoterm", getdata?.incoterm],
-        ["Freight", getdata?.freight],
       ];
       leftFields.forEach(([label, value]) => {
         drawRow(doc, margin + lPad, ly, lW, label, value);
@@ -1877,7 +1842,9 @@ export default function Downlaodestimate() {
       drawSectionBar(doc, margin, ly, contentWidth / 2, barH, "Rate of Exchange");
       ly += barH + 2;
 
-      drawRow(doc, margin + lPad, ly, lW, "Final Base Currency", freight?.final_base_currency || "");
+      drawRow(doc, margin + lPad, ly, lW, "Base Currency", freight?.final_base_currency || "");
+      ly += rowH;
+      drawRow(doc, margin + lPad, ly, lW, "Payment Terms", freight?.payment_terms || "");
       ly += rowH + pad; // tight bottom padding
 
       // ── RIGHT COLUMN ─────────────────────────────────────────────────
@@ -1886,9 +1853,10 @@ export default function Downlaodestimate() {
 
       const invoiceFields = [
         ["Invoice For", freight?.invoice_for_country],
-        ["Invoice No.", freight?.customer_invoice_no],
+        ["Client Ref", freight?.customer_invoice_no],
         ["Reference", freight?.reference_no],
         ["Quote Date", getdata?.date ? new Date(getdata.date).toLocaleDateString("en-GB") : ""],
+        ["Quote Validity", freight?.quote_validity],
       ];
       invoiceFields.forEach(([label, value]) => {
         drawRow(doc, rightColX, ry, rW, label, value);
@@ -1896,8 +1864,8 @@ export default function Downlaodestimate() {
       });
 
       // Shipment Details bar immediately after invoice rows
-      drawSectionBar(doc, colSplitX, ry + 2, contentWidth / 2, barH, "Shipment Details");
-      ry += barH + 2;
+      drawSectionBar(doc, colSplitX, ry + 0.5, contentWidth / 2, barH, "Routing Details");
+      ry += barH + 0.5;
 
       const shipmentFields = [
         ["Country of Origin", getdata?.collection_from_name],
@@ -1905,14 +1873,30 @@ export default function Downlaodestimate() {
         ["Port of Loading", getdata?.port_of_loading],
         ["Port of Discharge", getdata?.post_of_discharge],
         ["Place of Delivery", getdata?.delivery_to_name],
-        ["Freight Collect Accepted", getdata?.quote_received],
-        ["Date", getdata?.date ? new Date(getdata.date).toLocaleDateString("en-GB") : ""],
+        ["Incoterm", getdata?.incoterm],
+        ["Mode of Transport", getdata?.freight],
       ];
       shipmentFields.forEach(([label, value]) => {
         drawRow(doc, rightColX, ry, rW, label, value);
         ry += rowH;
       });
-      ry += pad; // tight bottom padding
+      ry += 1.5; // tight bottom padding
+
+      // Freight details bar on the right
+      drawSectionBar(doc, colSplitX, ry + 0.5, contentWidth / 2, barH, "Freight details");
+      ry += barH + 0.5;
+
+      const freightFields = [
+        ["Freight No", getdata?.freight_number],
+        ["Load type", getdata?.fcl_lcl],
+        ["Transit Priority", getdata?.type],
+        ["Insurance", getdata?.insurance],
+      ];
+      freightFields.forEach(([label, value]) => {
+        drawRow(doc, rightColX, ry, rW, label, value);
+        ry += rowH;
+      });
+      ry += 1.5; // tight bottom padding
 
       // ── BORDERS — drawn AFTER all content so heights are exact ───────
       const leftBoxH = ly - boxTop;
@@ -1923,9 +1907,6 @@ export default function Downlaodestimate() {
       doc.setLineWidth(0.5);
       doc.rect(margin, boxTop, contentWidth, outerBoxH);
       doc.line(colSplitX, boxTop, colSplitX, boxTop + outerBoxH);
-      if (leftBoxH < outerBoxH) {
-        doc.line(margin, boxTop + leftBoxH, colSplitX, boxTop + leftBoxH);
-      }
       if (rightBoxH < outerBoxH) {
         doc.line(colSplitX, boxTop + rightBoxH, margin + contentWidth, boxTop + rightBoxH);
       }
@@ -1960,12 +1941,9 @@ export default function Downlaodestimate() {
         }),
         [
           { content: "GRAND TOTAL", colSpan: 7, styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "left", textColor: [20, 20, 20] } },
-          { content: formatValue(grandTotalFinalAmt), styles: { fillColor: [226, 232, 240], fontStyle: "bold" } },
           { content: "", styles: { fillColor: [226, 232, 240] } },
           { content: "", styles: { fillColor: [226, 232, 240] } },
-          { content: formatValue(grandTotalDiscount), styles: { fillColor: [226, 232, 240], fontStyle: "bold" } },
           { content: formatValue(grandTotalExclusive), styles: { fillColor: [226, 232, 240], fontStyle: "bold" } },
-          { content: formatValue(grandTotalVat), styles: { fillColor: [226, 232, 240], fontStyle: "bold" } },
           { content: formatValue(totalVatInclusive), styles: { fillColor: [226, 232, 240], fontStyle: "bold" } },
         ],
       ];
@@ -1973,7 +1951,7 @@ export default function Downlaodestimate() {
       autoTable(doc, {
         startY: cursorY,
         margin: { left: margin, right: margin, top: margin, bottom: 14 },
-        head: [["Description", "QTY", "UOM", "Unit", "Price", "Curr", "Exch Rate", "Total", "Vat %", "Disc %", "Discount", "Exclusive", "VAT", "Total"]],
+        head: [["Description", "QTY", "UOM", "Unit", "Sales/ P", "Curr", "Exch Rate", "Vat %", "Disc %", "Exclusive", "Total"]],
         body: tableBody,
         theme: "grid",
         styles: {
@@ -1992,11 +1970,8 @@ export default function Downlaodestimate() {
           lineColor: [255, 255, 255],
         },
         columnStyles: {
-          7: { halign: "right" },
+          9: { halign: "right" },
           10: { halign: "right" },
-          11: { halign: "right" },
-          12: { halign: "right" },
-          13: { halign: "right" },
         },
         // Never slice a row across two pages - if it doesn't fit, the
         // WHOLE row (and only that row) moves to the next page. This is
@@ -2323,7 +2298,7 @@ export default function Downlaodestimate() {
                         borderTop: "unset",
                         width: "100%",
                         display: "flex",
-                        alignItems: "flex-start",
+                        alignItems: "stretch",
                       }}
                     >
                       <div
@@ -2365,7 +2340,7 @@ export default function Downlaodestimate() {
                           <tbody>
                             <tr>
                               <td style={{ fontSize: 13 }}>
-                                Shipment Details ISO Commodity
+                                Cargo Details ISO Commodity
                               </td>
                             </tr>
                           </tbody>
@@ -2375,6 +2350,58 @@ export default function Downlaodestimate() {
                             <tr>
                               { }
                               <td style={{ padding: "0px 6px" }}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                      marginTop: 2,
+                                    }}
+                                  >
+                                    <strong>Commodity</strong>
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                      marginTop: 2,
+                                    }}
+                                  >
+                                    {getdata?.product_desc}
+                                  </p>
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                      marginTop: 2,
+                                    }}
+                                  >
+                                    <strong>Hazardous</strong>
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                      marginTop: 2,
+                                    }}
+                                  >
+                                    {getdata.hazardous?.toLowerCase() === "no"
+                                      ? "No"
+                                      : getdata.hazard_type}
+                                  </p>
+                                </div>
                                 <div
                                   style={{
                                     display: "flex",
@@ -2420,6 +2447,7 @@ export default function Downlaodestimate() {
                                       fontSize: 13,
                                       marginBottom: "unset",
                                       marginTop: 2,
+                                      textTransform: "capitalize"
                                     }}
                                   >
                                     {getdata?.package_type}
@@ -2438,7 +2466,7 @@ export default function Downlaodestimate() {
                                       marginTop: 2,
                                     }}
                                   >
-                                    <strong>Weight</strong>
+                                    <strong>Gross Weight (kgs)</strong>
                                   </p>
                                   <p
                                     style={{
@@ -2463,7 +2491,7 @@ export default function Downlaodestimate() {
                                       marginTop: 2,
                                     }}
                                   >
-                                    <strong>M3</strong>
+                                    <strong>Dimensions (M3)</strong>
                                   </p>
                                   <p
                                     style={{
@@ -2529,106 +2557,8 @@ export default function Downlaodestimate() {
                                     ></input>
                                   </p>
                                 </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                  }}
-                                >
-                                  <p
-                                    style={{
-                                      fontSize: 13,
-                                      marginBottom: "unset",
-                                      marginTop: 2,
-                                    }}
-                                  >
-                                    <strong>Commodity</strong>
-                                  </p>
-                                  <p
-                                    style={{
-                                      fontSize: 13,
-                                      marginBottom: "unset",
-                                      marginTop: 2,
-                                    }}
-                                  >
-                                    {getdata?.commodity}
-                                  </p>
-                                </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                  }}
-                                >
-                                  <p
-                                    style={{
-                                      fontSize: 13,
-                                      marginBottom: "unset",
-                                      marginTop: 2,
-                                    }}
-                                  >
-                                    <strong>Hazardous</strong>
-                                  </p>
-                                  <p
-                                    style={{
-                                      fontSize: 13,
-                                      marginBottom: "unset",
-                                      marginTop: 2,
-                                    }}
-                                  >
-                                    {getdata?.hazardous}
-                                  </p>
-                                </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                  }}
-                                >
-                                  <p
-                                    style={{
-                                      fontSize: 13,
-                                      marginBottom: "unset",
-                                      marginTop: 2,
-                                    }}
-                                  >
-                                    <strong>Incoterm</strong>
-                                  </p>
-                                  <p
-                                    style={{
-                                      fontSize: 13,
-                                      marginBottom: "unset",
-                                      marginTop: 2,
-                                    }}
-                                  >
-                                    {getdata?.incoterm}
-                                  </p>
-                                </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                  }}
-                                >
-                                  <p
-                                    style={{
-                                      fontSize: 13,
-                                      marginBottom: "unset",
-                                      marginTop: 2,
-                                    }}
-                                  >
-                                    <strong> Freight</strong>
-                                  </p>
-                                  <p
-                                    style={{
-                                      fontSize: 13,
-                                      marginBottom: "unset",
-                                      marginTop: 2,
-                                    }}
-                                  >
-                                    {getdata?.freight}
-                                  </p>
-                                </div>
+
+
                               </td>
                             </tr>
                           </tbody>
@@ -2669,7 +2599,7 @@ export default function Downlaodestimate() {
                                       marginBottom: "unset",
                                     }}
                                   >
-                                    <strong>Final Base Currency</strong>
+                                    <strong>Base Currency</strong>
                                   </p>
                                   <select
                                     className="select_supplier border"
@@ -2691,6 +2621,36 @@ export default function Downlaodestimate() {
                                     <option value="INR">INR</option>
                                     <option value="EURO">EURO</option>
                                   </select>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    padding: 6,
+                                  }}
+                                >
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                    }}
+                                  >
+                                    <strong>Payment Terms</strong>
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                      fontWeight: 700,
+                                      paddingRight: 6,
+                                    }}
+                                  >
+                                    {freight?.payment_terms || ""}
+                                  </p>
                                 </div>
                               </td>
                             </tr>
@@ -2735,7 +2695,7 @@ export default function Downlaodestimate() {
                                 padding: "0px 6px",
                                 fontSize: 13,
                               }}><strong>
-                                  Invoice No.
+                                  Client Ref
                                 </strong></td>
                               <td
                                 style={{ fontSize: 13, textAlign: "right", paddingBottom: "3px", paddingRight: "6px" }}
@@ -2789,6 +2749,25 @@ export default function Downlaodestimate() {
                                 )}
                               </td>
                             </tr>
+                            <tr>
+                              <td
+                                style={{
+                                  padding: "0px 6px 6px 6px",
+                                  width: 170,
+                                  display: "block",
+                                  fontSize: 13,
+                                }}
+                              >
+                                <strong>Quote Validity</strong>
+                              </td>
+                              <td
+                                style={{
+                                  fontSize: 13, textAlign: "right", paddingBottom: "3px", paddingRight: "6px"
+                                }}
+                              >
+                                {freight?.quote_validity || ""}
+                              </td>
+                            </tr>
                           </tbody>
                         </table>
                         <table
@@ -2805,7 +2784,7 @@ export default function Downlaodestimate() {
                           <tbody>
                             <tr>
                               <td style={{ fontSize: 13 }}>
-                                Shipment Details
+                                Routing Details
                               </td>
                             </tr>
                           </tbody>
@@ -2953,10 +2932,7 @@ export default function Downlaodestimate() {
                                       marginTop: 2,
                                     }}
                                   >
-                                    <strong>
-                                      {" "}
-                                      Freight Collect Accepted
-                                    </strong>
+                                    <strong>Incoterm</strong>
                                   </p>
                                   <p
                                     style={{
@@ -2965,7 +2941,7 @@ export default function Downlaodestimate() {
                                       marginTop: 2,
                                     }}
                                   >
-                                    {getdata?.quote_received}
+                                    {getdata?.incoterm}
                                   </p>
                                 </div>
                                 <div
@@ -2981,7 +2957,7 @@ export default function Downlaodestimate() {
                                       marginTop: 2,
                                     }}
                                   >
-                                    <strong> Date</strong>
+                                    <strong>Mode of Transport</strong>
                                   </p>
                                   <p
                                     style={{
@@ -2990,9 +2966,138 @@ export default function Downlaodestimate() {
                                       marginTop: 2,
                                     }}
                                   >
-                                    {new Date(
-                                      getdata?.date
-                                    ).toLocaleDateString("en-GB")}
+                                    {getdata?.freight}
+                                  </p>
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                      marginTop: 2,
+                                    }}
+                                  >
+                                    <strong>Freight No</strong>
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                      marginTop: 2,
+                                    }}
+                                  >
+                                    {getdata?.freight_number}
+                                  </p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <table
+                          style={{
+                            background: "#1b2245",
+                            width: "100%",
+                            color: "white",
+                            fontSize: 13,
+                            textAlign: "center",
+                            margin: "5px 0px",
+                            padding: 2,
+                          }}
+                        >
+                          <tbody>
+                            <tr>
+                              <td style={{ fontSize: 13 }}>
+                                Freight details
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <table style={{ width: "100%" }}>
+                          <tbody>
+                            <tr>
+                              <td style={{ padding: "0px 6px" }}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                      marginTop: 2,
+                                    }}
+                                  >
+                                    <strong>Load type</strong>
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                      marginTop: 2,
+                                    }}
+                                  >
+                                    {getdata?.fcl_lcl}
+                                  </p>
+                                </div>
+
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                      marginTop: 2,
+                                    }}
+                                  >
+                                    <strong>Transit Priority</strong>
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                      marginTop: 2,
+                                      textTransform: "capitalize"
+                                    }}
+                                  >
+                                    {getdata?.type}
+                                  </p>
+                                </div>
+
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                      marginTop: 2,
+                                    }}
+                                  >
+                                    <strong>Insurance</strong>
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontSize: 13,
+                                      marginBottom: "unset",
+                                      marginTop: 2,
+                                      textTransform: "captalize"
+                                    }}
+                                  >
+                                    {getdata?.insurance}
                                   </p>
                                 </div>
                               </td>
@@ -3042,15 +3147,12 @@ export default function Downlaodestimate() {
                             <th>QTY</th>
                             <th>UOM</th>
                             <th>Unit</th>
-                            <th>Price</th>
+                            <th>Sales/ P</th>
                             <th>Curr</th>
                             <th>Exch rate</th>
-                            <th>Total</th>
                             <th>Vat %</th>
                             <th>Disc %</th>
-                            <th>Discount</th>
                             <th>Exclusive</th>
-                            <th>VAT</th>
                             <th>Total</th>
                           </tr>
                         </thead>
@@ -3060,19 +3162,16 @@ export default function Downlaodestimate() {
                           {originRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={14}>
+                                <td colSpan={11}>
                                   <strong>Origin Charges</strong>
                                 </td>
                               </tr>
                               {originRowsData.map(({ row, calc }) => renderRow(row, calc, setOriginRows))}
                               <tr style={{ fontWeight: "bold", backgroundColor: "#fafafa" }}>
                                 <td colSpan={7}>Total - Origin Charges</td>
-                                <td>{formatValue(totalChangeRoeOrigin)}</td>
                                 <td></td>
                                 <td></td>
-                                <td>{formatValue(totalOriginDiscount)}</td>
                                 <td>{formatValue(totalOriginExclusive)}</td>
-                                <td>{formatValue(totalOriginVat)}</td>
                                 <td>{formatValue(totalOriginInclusive)}</td>
                               </tr>
                             </>
@@ -3082,19 +3181,16 @@ export default function Downlaodestimate() {
                           {freightRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={14}>
+                                <td colSpan={11}>
                                   <strong>Freight Charges</strong>
                                 </td>
                               </tr>
                               {freightRowsData.map(({ row, calc }) => renderRow(row, calc, setFreightRows))}
                               <tr style={{ fontWeight: "bold", backgroundColor: "#fafafa" }}>
                                 <td colSpan={7}>Total - Freight Charges</td>
-                                <td>{formatValue(totalChangeRoeFreight)}</td>
                                 <td></td>
                                 <td></td>
-                                <td>{formatValue(totalFreightDiscount)}</td>
                                 <td>{formatValue(totalFreightExclusive)}</td>
-                                <td>{formatValue(totalFreightVat)}</td>
                                 <td>{formatValue(totalFreightInclusive)}</td>
                               </tr>
                             </>
@@ -3104,19 +3200,16 @@ export default function Downlaodestimate() {
                           {transitRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={14}>
+                                <td colSpan={11}>
                                   <strong>Transit Charges</strong>
                                 </td>
                               </tr>
                               {transitRowsData.map(({ row, calc }) => renderRow(row, calc, setTransitRows))}
                               <tr style={{ fontWeight: "bold", backgroundColor: "#fafafa" }}>
                                 <td colSpan={7}>Total - Transit Charges</td>
-                                <td>{formatValue(totalChangeRoeTransit)}</td>
                                 <td></td>
                                 <td></td>
-                                <td>{formatValue(totalTransitDiscount)}</td>
                                 <td>{formatValue(totalTransitExclusive)}</td>
-                                <td>{formatValue(totalTransitVat)}</td>
                                 <td>{formatValue(totalTransitInclusive)}</td>
                               </tr>
                             </>
@@ -3126,19 +3219,16 @@ export default function Downlaodestimate() {
                           {destinationRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={14}>
+                                <td colSpan={11}>
                                   <strong>Destination Charges</strong>
                                 </td>
                               </tr>
                               {destinationRowsData.map(({ row, calc }) => renderRow(row, calc, setDestinationRows))}
                               <tr style={{ fontWeight: "bold", backgroundColor: "#fafafa" }}>
                                 <td colSpan={7}>Total - Destination Charges</td>
-                                <td>{formatValue(totalChangeRoeDestination)}</td>
                                 <td></td>
                                 <td></td>
-                                <td>{formatValue(totalDestinationDiscount)}</td>
                                 <td>{formatValue(totalDestinationExclusive)}</td>
-                                <td>{formatValue(totalDestinationVat)}</td>
                                 <td>{formatValue(totalDestinationInclusive)}</td>
                               </tr>
                             </>
@@ -3148,19 +3238,16 @@ export default function Downlaodestimate() {
                           {adminRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={14}>
+                                <td colSpan={11}>
                                   <strong>Admin Charges</strong>
                                 </td>
                               </tr>
                               {adminRowsData.map(({ row, calc }) => renderRow(row, calc, setAdminRows))}
                               <tr style={{ fontWeight: "bold", backgroundColor: "#fafafa" }}>
                                 <td colSpan={7}>Total - Admin Charges</td>
-                                <td>{formatValue(totalChangeRoeAdmin)}</td>
                                 <td></td>
                                 <td></td>
-                                <td>{formatValue(totalAdminDiscount)}</td>
                                 <td>{formatValue(totalAdminExclusive)}</td>
-                                <td>{formatValue(totalAdminVat)}</td>
                                 <td>{formatValue(totalAdminInclusive)}</td>
                               </tr>
                             </>
@@ -3170,19 +3257,16 @@ export default function Downlaodestimate() {
                           {customsRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={14}>
+                                <td colSpan={11}>
                                   <strong>Customs Charges</strong>
                                 </td>
                               </tr>
                               {customsRowsData.map(({ row, calc }) => renderRow(row, calc, setCustomsRows))}
                               <tr style={{ fontWeight: "bold", backgroundColor: "#fafafa" }}>
                                 <td colSpan={7}>Total - Customs Charges</td>
-                                <td>{formatValue(totalChangeRoeCustoms)}</td>
                                 <td></td>
                                 <td></td>
-                                <td>{formatValue(totalCustomsDiscount)}</td>
                                 <td>{formatValue(totalCustomsExclusive)}</td>
-                                <td>{formatValue(totalCustomsVat)}</td>
                                 <td>{formatValue(totalCustomsInclusive)}</td>
                               </tr>
                             </>
@@ -3193,12 +3277,9 @@ export default function Downlaodestimate() {
                             <td colSpan={7}>
                               <strong>GRAND TOTAL</strong>
                             </td>
-                            <td>{formatValue(grandTotalFinalAmt)}</td>
                             <td></td>
                             <td></td>
-                            <td>{formatValue(grandTotalDiscount)}</td>
                             <td>{formatValue(grandTotalExclusive)}</td>
-                            <td>{formatValue(grandTotalVat)}</td>
                             <td>{formatValue(totalVatInclusive)}</td>
                           </tr>
                         </tbody>
@@ -3287,8 +3368,8 @@ export default function Downlaodestimate() {
               </section>
             </div>
           </div>
-        </div>
-      </div>
+        </div >
+      </div >
     </>
   );
 }

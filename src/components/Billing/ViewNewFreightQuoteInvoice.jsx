@@ -124,6 +124,8 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
     company_address: null,
     bank_details: null,
     created_at: "",
+    quote_validity: "",
+    payment_terms: "",
   });
 
   const [getdata, setGetdata] = useState({});
@@ -211,6 +213,8 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
             company_address: invoiceData.company_address || null,
             bank_details: invoiceData.bank_details || null,
             created_at: invoiceData.created_at || "",
+            quote_validity: invoiceData.quote_validity || "",
+            payment_terms: invoiceData.payment_terms || "",
           });
 
           if (invoiceData.freight_id && parseInt(invoiceData.freight_id) !== 0) {
@@ -1042,6 +1046,14 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                               </div>
                             </td>
                           </tr>
+                          <tr>
+                            <td style={{ padding: "10px" }} colSpan={2}>
+                              <div className="d-flex justify-content-between">
+                                <strong>Payment Terms</strong>
+                                <span>{freight.payment_terms || "-"}</span>
+                              </div>
+                            </td>
+                          </tr>
                         </tbody>
                       </table>
                     </td>
@@ -1112,6 +1124,18 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                             </td>
                             <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
                               {shipmentDate("quote_invoice_date", "date") || "-"}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{
+                              width: 170,
+                              padding: "5px 10px 0px 10px",
+                              fontSize: 13,
+                            }}>
+                              <strong>Quote Validity</strong>
+                            </td>
+                            <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
+                              {freight.quote_validity || "-"}
                             </td>
                           </tr>
                         </tbody>

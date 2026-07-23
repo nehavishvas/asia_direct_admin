@@ -140,6 +140,8 @@ export default function EditNewFreightQuoteInvoice() {
     quote_type: "ADMIN",
     freight_quote_estimate_id: null,
     order_id: null,
+    quote_validity: "",
+    payment_terms: "",
   });
 
   const [getdata, setGetdata] = useState({});
@@ -336,6 +338,8 @@ export default function EditNewFreightQuoteInvoice() {
             client_name: estimateData.client_name || prev.client_name,
             quote_type: estimateData.quote_type || prev.quote_type,
             order_id: estimateData.order_id || prev.order_id || null,
+            quote_validity: estimateData.quote_validity || prev.quote_validity,
+            payment_terms: estimateData.payment_terms || prev.payment_terms,
           }));
 
           const items = estimateData.components || [];
@@ -413,6 +417,8 @@ export default function EditNewFreightQuoteInvoice() {
             quote_type: invoiceData.quote_type || "ADMIN",
             freight_quote_estimate_id: invoiceData.freight_quote_estimate_id || null,
             order_id: invoiceData.order_id || null,
+            quote_validity: invoiceData.quote_validity || "",
+            payment_terms: invoiceData.payment_terms || "",
           });
 
           setSelectedSupplier(invoiceData.supplier_id || "");
@@ -863,6 +869,8 @@ export default function EditNewFreightQuoteInvoice() {
         chargeable: cleanParseFloat(freight.chargable_rate) || 0,
         quote_type: freight.quote_type || "ADMIN",
         components: allComponents,
+        quote_validity: freight.quote_validity || "",
+        payment_terms: freight.payment_terms || "",
       };
 
       payload.quote_invoice_id = parseInt(quoteInvoiceId);
@@ -1569,6 +1577,21 @@ export default function EditNewFreightQuoteInvoice() {
                               </div>
                             </td>
                           </tr>
+                          <tr>
+                            <td style={{ padding: "5px 10px" }}>
+                              <div className="d-flex justify-content-between align-items-center">
+                                <strong>Payment Terms</strong>
+                                <input
+                                  type="text"
+                                  name="payment_terms"
+                                  className="form-control form-control-sm w-50"
+                                  value={freight.payment_terms || ""}
+                                  onChange={handlechangecalc}
+                                  style={{ padding: "2px", border: "1px solid #ccc" }}
+                                />
+                              </div>
+                            </td>
+                          </tr>
                         </tbody>
                       </table>
                     </td>
@@ -1661,6 +1684,24 @@ export default function EditNewFreightQuoteInvoice() {
                             </td>
                             <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
                               {shipmentDate("quote_invoice_date") || "-"}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{
+                              width: 170,
+                              padding: "5px 10px 0px 10px",
+                              fontSize: 13,
+                            }}>
+                              <strong>Quote Validity</strong>
+                            </td>
+                            <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
+                              <input
+                                type="text"
+                                name="quote_validity"
+                                value={freight.quote_validity || ""}
+                                onChange={handlechangecalc}
+                                style={{ width: "50%", padding: "2px", border: "1px solid #ccc" }}
+                              />
                             </td>
                           </tr>
                         </tbody>

@@ -123,6 +123,8 @@ export default function AddNewFreightQuoteInvoice() {
     company_id: "",
     company_address: null,
     freight_quote_estimate_id: null,
+    quote_validity: "",
+    payment_terms: "",
   });
 
   const [getdata, setGetdata] = useState({});
@@ -318,6 +320,8 @@ export default function AddNewFreightQuoteInvoice() {
             client_name: invoiceData.client_name || prev.client_name,
             quote_type: invoiceData.quote_type || prev.quote_type,
             freight_quote_estimate_id: invoiceData.freight_quote_estimate_id || null,
+            quote_validity: invoiceData.quote_validity || prev.quote_validity,
+            payment_terms: invoiceData.payment_terms || prev.payment_terms,
           }));
 
           const items = invoiceData.components || [];
@@ -390,6 +394,8 @@ export default function AddNewFreightQuoteInvoice() {
             company_id: invoiceData.company_id || "",
             company_address: invoiceData.company_address || null,
             freight_quote_estimate_id: invoiceData.freight_quote_estimate_id || null,
+            quote_validity: invoiceData.quote_validity || "",
+            payment_terms: invoiceData.payment_terms || "",
           });
 
           setSelectedSupplier(invoiceData.supplier_id || "");
@@ -824,6 +830,8 @@ export default function AddNewFreightQuoteInvoice() {
         quote_type: "ADMIN",
         components: allComponents,
         freight_quote_estimate_id: freight.freight_quote_estimate_id || (location.state?.copyInvoiceData?.freight_quote_estimate_id || null),
+        quote_validity: freight.quote_validity || "",
+        payment_terms: freight.payment_terms || "",
       };
 
       const response = await axios.post(
@@ -1379,6 +1387,21 @@ export default function AddNewFreightQuoteInvoice() {
                               </div>
                             </td>
                           </tr>
+                          <tr>
+                            <td style={{ padding: "5px 10px" }}>
+                              <div className="d-flex justify-content-between align-items-center">
+                                <strong>Payment Terms</strong>
+                                <input
+                                  type="text"
+                                  name="payment_terms"
+                                  className="form-control form-control-sm w-50"
+                                  value={freight.payment_terms || ""}
+                                  onChange={handlechangecalc}
+                                  style={{ padding: "2px", border: "1px solid #ccc" }}
+                                />
+                              </div>
+                            </td>
+                          </tr>
                         </tbody>
                       </table>
                     </td>
@@ -1431,6 +1454,20 @@ export default function AddNewFreightQuoteInvoice() {
                             </td>
                             <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
                               {shipmentDate("quote_invoice_date") || "-"}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{ width: 170, padding: "5px 10px 0px 10px", fontSize: 13 }}>
+                              <strong>Quote Validity</strong>
+                            </td>
+                            <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
+                              <input
+                                type="text"
+                                name="quote_validity"
+                                value={freight.quote_validity || ""}
+                                onChange={handlechangecalc}
+                                style={{ width: "50%", padding: "2px", border: "1px solid #ccc" }}
+                              />
                             </td>
                           </tr>
                         </tbody>

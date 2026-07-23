@@ -138,12 +138,20 @@ const Quotes = () => {
                 <div className="wpWrapper">
                     <div className="container-fluid">
                         <div className="d-flex justify-content-between align-items-center mb-3 manageFreight">
-                            <button
-                                className="btn btn-secondary"
-                                onClick={naviagetpage}
-                            >
-                                Add Quote Estimation
-                            </button>
+                            <div className="d-flex gap-2">
+                                <button
+                                    className="btn btn-secondary"
+                                    onClick={naviagetpage}
+                                >
+                                    Add Quote Estimation
+                                </button>
+                                <button
+                                    className="btn btn-secondary"
+                                    onClick={() => navigate("/Admin/customer-quotes-report")}
+                                >
+                                    Customer Quotes Report
+                                </button>
+                            </div>
                             <div className="d-flex align-items-center gap-2">
                                 <input
                                     name="search"
