@@ -1940,11 +1940,17 @@ export default function Downlaodestimate() {
           finalAmt: totalChangeRoeCustoms, disc: totalCustomsDiscount, exclusive: totalCustomsExclusive, vat: totalCustomsVat, inclusive: totalCustomsInclusive,
         }),
         [
-          { content: "GRAND TOTAL", colSpan: 7, styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "left", textColor: [20, 20, 20] } },
-          { content: "", styles: { fillColor: [226, 232, 240] } },
-          { content: "", styles: { fillColor: [226, 232, 240] } },
-          { content: formatValue(grandTotalExclusive), styles: { fillColor: [226, 232, 240], fontStyle: "bold" } },
-          { content: formatValue(totalVatInclusive), styles: { fillColor: [226, 232, 240], fontStyle: "bold" } },
+          { content: "GRAND TOTAL", colSpan: 9, styles: { fillColor: [240, 242, 245], fontStyle: "bold", halign: "left", textColor: [20, 20, 20], valign: "top" } },
+          {
+            content: `Subtotal:\nDiscount:\nExclusive:\nVAT:\nGrand Total:`,
+            colSpan: 1,
+            styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "left", textColor: [20, 20, 20], cellPadding: 2, lineWidth: 0 }
+          },
+          {
+            content: `${formatValue(grandTotalFinalAmt)}\n${grandTotalDiscount > 0 ? `-${formatValue(grandTotalDiscount)}` : "0.00"}\n${formatValue(grandTotalExclusive)}\n${formatValue(grandTotalVat)}\n${formatValue(totalVatInclusive)}`,
+            colSpan: 1,
+            styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "right", textColor: [20, 20, 20], cellPadding: 2, lineWidth: 0 }
+          }
         ],
       ];
 
@@ -1974,13 +1980,24 @@ export default function Downlaodestimate() {
           10: { halign: "right" },
         },
         // Never slice a row across two pages - if it doesn't fit, the
-        // WHOLE row (and only that row) moves to the next page. This is
-        // the direct fix for the corrupted/cut-off rows seen with
-        // html2pdf's canvas-slicing approach.
         rowPageBreak: "avoid",
-        // Re-print the column header on every page that the table
-        // spills onto.
         showHead: "everyPage",
+        didDrawCell: (data) => {
+          if (data.row.raw && data.row.raw[0] && data.row.raw[0].content === "GRAND TOTAL") {
+            const { x, y, width, height } = data.cell;
+            doc.setDrawColor(28, 28, 28);
+            doc.setLineWidth(0.1);
+            if (data.column.index === 9) {
+              doc.line(x, y, x + width, y);
+              doc.line(x, y + height, x + width, y + height);
+              doc.line(x, y, x, y + height);
+            } else if (data.column.index === 10) {
+              doc.line(x, y, x + width, y);
+              doc.line(x, y + height, x + width, y + height);
+              doc.line(x + width, y, x + width, y + height);
+            }
+          }
+        },
       });
 
       // ── TERMS & CONDITIONS + BANKING DETAILS (dynamic, page-break aware) ──
@@ -3274,13 +3291,27 @@ export default function Downlaodestimate() {
 
                           {/* Grand Total Row */}
                           <tr style={{ fontWeight: "bold", backgroundColor: "#e2e8f0", borderTop: "2px solid #475569" }}>
-                            <td colSpan={7}>
-                              <strong>GRAND TOTAL</strong>
+                            <td colSpan={9} style={{ textAlign: "left", fontWeight: "bold", verticalAlign: "top", paddingTop: "12px", color: "black" }}>
+                              GRAND TOTAL
                             </td>
-                            <td></td>
-                            <td></td>
-                            <td>{formatValue(grandTotalExclusive)}</td>
-                            <td>{formatValue(totalVatInclusive)}</td>
+                            <td style={{ padding: "8px", verticalAlign: "top", color: "black", textAlign: "left", borderRight: "none" }}>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "13px" }}>
+                                <span style={{ fontWeight: "normal" }}>Subtotal:</span>
+                                <span style={{ fontWeight: "normal" }}>Discount:</span>
+                                <span style={{ fontWeight: "normal" }}>Exclusive:</span>
+                                <span style={{ fontWeight: "normal" }}>Vat:</span>
+                                <span style={{ fontWeight: "bold", borderTop: "1px solid #475569", paddingTop: "4px" }}>Grand Total:</span>
+                              </div>
+                            </td>
+                            <td style={{ padding: "8px", verticalAlign: "top", color: "black", textAlign: "right", borderLeft: "none" }}>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "13px" }}>
+                                <span>{formatValue(grandTotalFinalAmt)}</span>
+                                <span>{grandTotalDiscount > 0 ? `-${formatValue(grandTotalDiscount)}` : "0.00"}</span>
+                                <span>{formatValue(grandTotalExclusive)}</span>
+                                <span>{formatValue(grandTotalVat)}</span>
+                                <span style={{ fontWeight: "bold", borderTop: "1px solid #475569", paddingTop: "4px" }}>{formatValue(totalVatInclusive)}</span>
+                              </div>
+                            </td>
                           </tr>
                         </tbody>
                       </table>

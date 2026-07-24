@@ -1667,6 +1667,7 @@ export default function ShippingEstimate() {
                                 width: "50%",
                                 borderRight: "1px solid #1a2142",
                                 height: "100%",
+                                verticalAlign: "top",
                               }}
                             >
                               <table>
@@ -1694,13 +1695,14 @@ export default function ShippingEstimate() {
                                   color: "white",
                                   fontSize: 13,
                                   textAlign: "center",
+                                  margin: "5px 0px",
                                   padding: 2,
                                 }}
                               >
                                 <tbody>
                                   <tr>
                                     <td style={{ fontSize: 13 }}>
-                                      Shipment Details ISO Commodity
+                                      Cargo Details ISO Commodity
                                     </td>
                                   </tr>
                                 </tbody>
@@ -1708,260 +1710,77 @@ export default function ShippingEstimate() {
                               <table style={{ width: "100%" }}>
                                 <tbody>
                                   <tr>
-                                    { }
-                                    <td style={{ padding: "10px" }}>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-
-                                          }}
-                                        >
-                                          <strong> No. of Packages</strong>
+                                    <td style={{ padding: "0px 6px" }}>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>Commodity</strong>
                                         </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                          }}
-                                        >
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          {getdata?.product_desc}
+                                        </p>
+                                      </div>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>Hazardous</strong>
+                                        </p>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          {getdata.hazardous?.toLowerCase() === "no"
+                                            ? "No"
+                                            : getdata.hazard_type}
+                                        </p>
+                                      </div>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>No. of Packages</strong>
+                                        </p>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           {getdata?.no_of_packages}
                                         </p>
                                       </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           <strong>Package Type</strong>
                                         </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2, textTransform: "capitalize" }}>
                                           {getdata?.package_type}
                                         </p>
                                       </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          <strong>Weight</strong>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>Gross Weight (kgs)</strong>
                                         </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           {getdata?.weight}
                                         </p>
                                       </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          <strong>M3</strong>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>Dimensions (M3)</strong>
                                         </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        ></p>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          {getdata?.m3}
+                                        </p>
                                       </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           <strong>Volumetric (kgs)</strong>
                                         </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           {getdata?.volumetric_weight}
                                         </p>
                                       </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           <strong>Chargeable</strong>
                                         </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           <input
                                             type="text"
                                             onKeyPress={handlepresss}
                                             name="chargable_rate"
                                             value={freight.chargable_rate}
                                             onChange={handlechangecalc}
-                                          ></input>
-                                        </p>
-                                      </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          <strong>Commodity</strong>
-                                        </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          {getdata?.commodity}
-                                        </p>
-                                      </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          <strong>Hazardous</strong>
-                                        </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          {getdata?.hazardous}
-                                        </p>
-                                      </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          <strong>Incoterm</strong>
-                                        </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          {getdata?.incoterm}
-                                        </p>
-                                      </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          <strong> Freight</strong>
-                                        </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          {getdata?.freight}
+                                          />
                                         </p>
                                       </div>
                                     </td>
@@ -1975,7 +1794,7 @@ export default function ShippingEstimate() {
                                   color: "white",
                                   fontSize: 13,
                                   textAlign: "center",
-                                  margin: "0px",
+                                  margin: "5px 0px",
                                   padding: 2,
                                 }}
                               >
@@ -1990,22 +1809,10 @@ export default function ShippingEstimate() {
                               <table style={{ width: "100%" }}>
                                 <tbody>
                                   <tr>
-                                    <td style={{ padding: "5px" }}>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-
-                                          }}
-                                        >
-                                          <strong>Final Base Currency</strong>
+                                    <td>
+                                      <div style={{ display: "flex", justifyContent: "space-between", padding: 6 }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset" }}>
+                                          <strong>Base Currency</strong>
                                         </p>
                                         <select
                                           className="select_supplier border"
@@ -2015,7 +1822,7 @@ export default function ShippingEstimate() {
                                             fontWeight: 700,
                                             paddingLeft: 5,
                                             width: "40%",
-                                            border: "1px",
+                                            border: "2px",
                                           }}
                                           onChange={handlechangecalc}
                                           name="final_base_currency"
@@ -2031,19 +1838,9 @@ export default function ShippingEstimate() {
                                     </td>
                                   </tr>
                                   <tr>
-                                    <td style={{ padding: "5px" }}>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                          }}
-                                        >
+                                    <td>
+                                      <div style={{ display: "flex", justifyContent: "space-between", padding: 6 }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset" }}>
                                           <strong>Payment Terms</strong>
                                         </p>
                                         <input
@@ -2065,28 +1862,25 @@ export default function ShippingEstimate() {
                                 </tbody>
                               </table>
                             </td>
-                            <td>
+                            <td style={{ verticalAlign: "top" }}>
                               <table style={{ width: "100%" }}>
                                 <tbody>
                                   <tr>
                                     <td style={{
                                       width: 170,
                                       display: "block",
-                                      padding: "0px 10px 0px 10px",
+                                      padding: "0px 6px",
                                       fontSize: 13,
-
                                     }}><strong>
                                         Invoice For
                                       </strong></td>
-                                    <td style={{
-                                      fontSize: 13, marginBottom: 4, textAlign: "right",
-                                      paddingRight: "10px"
-                                    }}>
+                                    <td style={{ paddingBottom: 3, fontSize: 13, textAlign: "right", paddingRight: "6px" }}>
                                       <select
                                         name="invoice_for_country"
                                         value={freight.invoice_for_country || ""}
                                         onChange={handleInvoiceForChange}
-                                        style={{ width: "180px", padding: "2px" }}>
+                                        style={{ width: "180px", padding: "2px" }}
+                                      >
                                         <option value="">Select Country</option>
                                         <option value="South Africa">South Africa</option>
                                         <option value="Zambia">Zambia</option>
@@ -2098,21 +1892,19 @@ export default function ShippingEstimate() {
                                     <td style={{
                                       width: 170,
                                       display: "block",
-                                      padding: "5px 10px 5px 10px",
+                                      padding: "0px 6px",
                                       fontSize: 13,
                                     }}><strong>
-                                        Invoice No.
+                                        Client Ref
                                       </strong></td>
-                                    <td style={{
-                                      fontSize: 13, paddingTop: "5px", textAlign: "right",
-                                      paddingRight: "10px"
-                                    }}>
+                                    <td style={{ fontSize: 13, textAlign: "right", paddingBottom: "3px", paddingRight: "6px" }}>
                                       <input
                                         type="text"
                                         name="customer_invoice_no"
                                         value={freight.customer_invoice_no || ""}
                                         onChange={handlechangecalc}
-                                      ></input>
+                                        style={{ width: "180px", padding: "2px" }}
+                                      />
                                     </td>
                                   </tr>
                                   <tr>
@@ -2120,64 +1912,45 @@ export default function ShippingEstimate() {
                                       style={{
                                         width: 170,
                                         display: "block",
-                                        padding: "0px 10px 0px 10px",
+                                        padding: "0px 6px",
                                         fontSize: 13,
                                       }}
                                     >
                                       <strong>Reference</strong>
                                     </td>
-                                    <td
-                                      style={{
-                                        fontSize: 13, textAlign: "right",
-                                        padding: "5px 10px 5px 0px",
-                                        paddingRight: "10px",
-                                        paddingBottom: "5px"
-                                      }}
-                                    >
+                                    <td style={{ fontSize: 13, textAlign: "right", paddingBottom: "3px", paddingRight: "6px" }}>
                                       {freight?.reference_no}
                                     </td>
                                   </tr>
                                   <tr>
                                     <td
                                       style={{
-                                        padding: "5px 10px 0px 10px",
+                                        padding: "0px 6px 6px 6px",
                                         width: 170,
                                         display: "block",
-                                        paddingBottom: 0,
                                         fontSize: 13,
                                       }}
                                     >
                                       <strong>Quote Date</strong>
                                     </td>
-                                    <td
-                                      style={{
-                                        fontSize: 13, textAlign: "right",
-                                        paddingRight: "10px"
-                                      }}
-                                    >
-                                      {getdata?.quote_date
-                                        ? new Date(getdata.quote_date).toLocaleDateString("en-GB")
+                                    <td style={{ fontSize: 13, textAlign: "right", paddingBottom: "3px", paddingRight: "6px" }}>
+                                      {getdata?.date
+                                        ? new Date(getdata.date).toLocaleDateString("en-GB")
                                         : "-"}
                                     </td>
                                   </tr>
                                   <tr>
                                     <td
                                       style={{
-                                        padding: "5px 10px 0px 10px",
+                                        padding: "0px 6px 6px 6px",
                                         width: 170,
                                         display: "block",
-                                        paddingBottom: 0,
                                         fontSize: 13,
                                       }}
                                     >
                                       <strong>Quote Validity</strong>
                                     </td>
-                                    <td
-                                      style={{
-                                        fontSize: 13, paddingTop: "5px", textAlign: "right",
-                                        paddingRight: "10px"
-                                      }}
-                                    >
+                                    <td style={{ fontSize: 13, textAlign: "right", paddingBottom: "3px", paddingRight: "6px" }}>
                                       <input
                                         type="text"
                                         name="quote_validity"
@@ -2187,26 +1960,6 @@ export default function ShippingEstimate() {
                                       />
                                     </td>
                                   </tr>
-                                  {/* <tr>
-                                    <td
-                                      style={{
-                                        padding: "0px 10px 0px 10px",
-                                        width: 170,
-                                        display: "block",
-                                        paddingBottom: 0,
-                                        fontSize: 13,
-                                      }}
-                                    >
-                                      <strong>Quote Type</strong>
-                                    </td>
-                                    <td
-                                      style={{
-                                        fontSize: 13,
-                                      }}
-                                    >
-                                      CLIENT
-                                    </td>
-                                  </tr> */}
                                 </tbody>
                               </table>
                               <table
@@ -2223,7 +1976,7 @@ export default function ShippingEstimate() {
                                 <tbody>
                                   <tr>
                                     <td style={{ fontSize: 13 }}>
-                                      Shipment Details
+                                      Routing Details
                                     </td>
                                   </tr>
                                 </tbody>
@@ -2231,186 +1984,120 @@ export default function ShippingEstimate() {
                               <table style={{ width: "100%" }}>
                                 <tbody>
                                   <tr>
-                                    <td style={{ padding: "0px 10px" }}>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          <strong> Country of Origin</strong>
+                                    <td style={{ padding: "0px 6px" }}>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>Country of Origin</strong>
                                         </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           {getdata?.collection_from_name}
                                         </p>
                                       </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          <strong> Place of Receipt</strong>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>Place of Receipt</strong>
                                         </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           {getdata?.port_of_loading}
                                         </p>
                                       </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           <strong>Port of Loading</strong>
                                         </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           {getdata?.port_of_loading}
                                         </p>
                                       </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           <strong>Port of Discharge</strong>
                                         </p>
-                                        <p
-                                          className="text-dark"
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                        <p className="text-dark" style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           {getdata?.post_of_discharge}
                                         </p>
                                       </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          <strong> Place of Delivery</strong>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>Place of Delivery</strong>
                                         </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
                                           {getdata?.delivery_to_name}
                                         </p>
                                       </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          <strong>
-                                            {" "}
-                                            Freight Collect Accepted
-                                          </strong>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>Incoterm</strong>
                                         </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          {getdata?.quote_received}
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          {getdata?.incoterm}
                                         </p>
                                       </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          <strong> Date</strong>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>Mode of Transport</strong>
                                         </p>
-                                        <p
-                                          style={{
-                                            fontSize: 13,
-                                            marginBottom: "unset",
-                                            marginTop: 5,
-                                          }}
-                                        >
-                                          {new Date(
-                                            getdata?.date,
-                                          ).toLocaleDateString("en-GB")}
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          {getdata?.freight}
+                                        </p>
+                                      </div>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>Freight No</strong>
+                                        </p>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          {getdata?.freight_number}
+                                        </p>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <table
+                                style={{
+                                  background: "#1b2245",
+                                  width: "100%",
+                                  color: "white",
+                                  fontSize: 13,
+                                  textAlign: "center",
+                                  margin: "5px 0px",
+                                  padding: 2,
+                                }}
+                              >
+                                <tbody>
+                                  <tr>
+                                    <td style={{ fontSize: 13 }}>
+                                      Freight details
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <table style={{ width: "100%" }}>
+                                <tbody>
+                                  <tr>
+                                    <td style={{ padding: "0px 6px" }}>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>Load type</strong>
+                                        </p>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          {getdata?.fcl_lcl}
+                                        </p>
+                                      </div>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>Transit Priority</strong>
+                                        </p>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2, textTransform: "capitalize" }}>
+                                          {getdata?.type}
+                                        </p>
+                                      </div>
+                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                          <strong>Insurance</strong>
+                                        </p>
+                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2, textTransform: "capitalize" }}>
+                                          {getdata?.insurance}
                                         </p>
                                       </div>
                                     </td>

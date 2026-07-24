@@ -942,7 +942,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                         verticalAlign: "top",
                       }}
                     >
-                      <table>
+                      <table style={{ width: "100%" }}>
                         <tbody>
                           <tr>
                             <td
@@ -973,7 +973,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                         <tbody>
                           <tr>
                             <td style={{ fontSize: 13 }}>
-                              Shipment Details ISO Commodity
+                              Cargo Details ISO Commodity
                             </td>
                           </tr>
                         </tbody>
@@ -981,21 +981,29 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                       <table style={{ width: "100%" }}>
                         <tbody>
                           <tr>
-                            <td style={{ padding: "10px" }}>
+                            <td style={{ padding: "0px 10px" }}>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Commodity</strong>
+                                <span>{getdata?.product_desc || getdata?.commodity || "-"}</span>
+                              </div>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Hazardous</strong>
+                                <span>{getdata.hazardous?.toLowerCase() === "no" ? "No" : (getdata.hazard_type || getdata.hazardous || "-")}</span>
+                              </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>No. of Packages</strong>
                                 <span>{getdata?.no_of_packages || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Package Type</strong>
-                                <span>{getdata?.package_type || "-"}</span>
+                                <span style={{ textTransform: "capitalize" }}>{getdata?.package_type || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
-                                <strong>Weight</strong>
+                                <strong>Gross Weight (kgs)</strong>
                                 <span>{getdata?.weight || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
-                                <strong>M3</strong>
+                                <strong>Dimensions (M3)</strong>
                                 <span>{getdata?.m3 || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
@@ -1005,22 +1013,6 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Chargeable</strong>
                                 <span>{freight.chargable_rate || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Commodity</strong>
-                                <span>{getdata?.commodity || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Hazardous</strong>
-                                <span>{getdata?.hazardous || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Incoterm</strong>
-                                <span>{getdata?.incoterm || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Freight</strong>
-                                <span>{getdata?.freight || "-"}</span>
                               </div>
                             </td>
                           </tr>
@@ -1040,15 +1032,11 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                           </tr>
                           <tr>
                             <td style={{ padding: "10px" }} colSpan={2}>
-                              <div className="d-flex justify-content-between">
-                                <strong>Final Base Currency</strong>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Base Currency</strong>
                                 <span>{freight.final_base_currency || "-"}</span>
                               </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ padding: "10px" }} colSpan={2}>
-                              <div className="d-flex justify-content-between">
+                              <div className="d-flex justify-content-between my-1">
                                 <strong>Payment Terms</strong>
                                 <span>{freight.payment_terms || "-"}</span>
                               </div>
@@ -1078,25 +1066,13 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                               {freight.invoice_for_country || "-"}
                             </td>
                           </tr>
-                          {/* <tr>
-                            <td style={{
-                              width: 170,
-                              padding: "5px 10px 0px 10px",
-                              fontSize: 13,
-                            }}>
-                              <strong>Due Date</strong>
-                            </td>
-                            <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
-                              {shipmentDate("due_date") || "-"}
-                            </td>
-                          </tr> */}
                           <tr>
                             <td style={{
                               width: 170,
                               padding: "5px 10px 0px 10px",
                               fontSize: 13,
                             }}>
-                              <strong>Invoice No.</strong>
+                              <strong>Client Ref</strong>
                             </td>
                             <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
                               {freight.customer_invoice_no || "-"}
@@ -1154,7 +1130,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                         <tbody>
                           <tr>
                             <td style={{ fontSize: 13 }}>
-                              Shipment Details
+                              Routing Details
                             </td>
                           </tr>
                         </tbody>
@@ -1165,7 +1141,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                             <td style={{ padding: "0px 10px" }}>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Country of Origin</strong>
-                                <span>{getdata?.country_of_origin || "-"}</span>
+                                <span>{getdata?.collection_from_name || getdata?.country_of_origin || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Place of Receipt</strong>
@@ -1177,19 +1153,62 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Port of Discharge</strong>
-                                <span>{getdata?.port_of_discharge || "-"}</span>
+                                <span>{getdata?.post_of_discharge || getdata?.port_of_discharge || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Place of Delivery</strong>
-                                <span>{getdata?.place_of_delivery || "-"}</span>
+                                <span>{getdata?.delivery_to_name || getdata?.place_of_delivery || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
-                                <strong>Freight Collect Accepted</strong>
-                                <span>{getdata?.freight_collect_accepted || "-"}</span>
+                                <strong>Incoterm</strong>
+                                <span>{getdata?.incoterm || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
-                                <strong>Date</strong>
-                                <span>{shipmentDate("created_at") || "-"}</span>
+                                <strong>Mode of Transport</strong>
+                                <span>{getdata?.freight || getdata?.mode_of_transport || "-"}</span>
+                              </div>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Freight No</strong>
+                                <span>{getdata?.freight_number || "-"}</span>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table
+                        style={{
+                          background: "#1b2245",
+                          width: "100%",
+                          color: "white",
+                          fontSize: 13,
+                          textAlign: "center",
+                          margin: "5px 0px",
+                          padding: 2,
+                        }}
+                      >
+                        <tbody>
+                          <tr>
+                            <td style={{ fontSize: 13 }}>
+                              Freight details
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table style={{ width: "100%" }}>
+                        <tbody>
+                          <tr>
+                            <td style={{ padding: "0px 10px" }}>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Load type</strong>
+                                <span>{getdata?.fcl_lcl || "-"}</span>
+                              </div>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Transit Priority</strong>
+                                <span style={{ textTransform: "capitalize" }}>{getdata?.type || "-"}</span>
+                              </div>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Insurance</strong>
+                                <span style={{ textTransform: "capitalize" }}>{getdata?.insurance || "-"}</span>
                               </div>
                             </td>
                           </tr>

@@ -124,7 +124,7 @@ export default function EditNewFreightQuoteInvoice() {
   const location = useLocation();
   const navigate = useNavigate();
   const pdfRef = useRef();
-  
+
   const editItem = location.state?.item;
 
   const [freight, setFreight] = useState({
@@ -1428,424 +1428,430 @@ export default function EditNewFreightQuoteInvoice() {
                 </tbody>
               </table>
 
-              <table
-                style={{
-                  border: "1px solid #1b2245",
-                  borderTop: "unset",
-                  width: "100%",
-                }}
-              >
-                <tbody>
-                  <tr>
-                    <td
-                      style={{
-                        width: "50%",
-                        borderRight: "1px solid #1a2142",
-                        height: "100%",
-                        verticalAlign: "top",
-                      }}
-                    >
-                      <table>
+
+                      <table
+                        style={{
+                          border: "1px solid #1b2245",
+                          borderTop: "unset",
+                          width: "100%",
+                        }}
+                      >
                         <tbody>
                           <tr>
                             <td
                               style={{
-                                fontSize: 13,
-                                padding: "5px 10px"
+                                width: "50%",
+                                borderRight: "1px solid #1a2142",
+                                height: "100%",
+                                verticalAlign: "top",
                               }}
                             >
-                              <strong>
-                                {getdata?.client_name || "-"}
-                                <br />
-                                {getdata?.address_1 || "-"}
-                              </strong>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <table
-                        style={{
-                          background: "#1b2245",
-                          width: "100%",
-                          color: "white",
-                          fontSize: 13,
-                          textAlign: "center",
-                          padding: 2,
-                        }}
-                      >
-                        <tbody>
-                          <tr>
-                            <td style={{ fontSize: 13 }}>
-                              Shipment Details ISO Commodity
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <table style={{ width: "100%" }}>
-                        <tbody>
-                          <tr>
-                            <td style={{ padding: "10px" }}>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>No. of Packages</strong>
-                                <span>{getdata?.no_of_packages || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Package Type</strong>
-                                <span>{getdata?.package_type || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Weight</strong>
-                                <span>{getdata?.weight || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>M3</strong>
-                                <span>{getdata?.m3 || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Volumetric (kgs)</strong>
-                                <span>{getdata?.volumetric_weight || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between align-items-center my-1">
-                                <strong>Chargeable</strong>
-                                <input
-                                  type="text"
-                                  name="chargable_rate"
-                                  className="form-control form-control-sm w-50"
-                                  style={{ height: 28 }}
-                                  value={freight.chargable_rate}
-                                  onChange={handlechangecalc}
-                                  onKeyPress={handlepresss}
-                                />
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Commodity</strong>
-                                <span>{getdata?.commodity || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Hazardous</strong>
-                                <span>{getdata?.hazardous || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Incoterm</strong>
-                                <span>{getdata?.incoterm || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Freight</strong>
-                                <span>{getdata?.freight || "-"}</span>
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <table
-                        style={{
-                          background: "#1b2245",
-                          width: "100%",
-                          color: "white",
-                          fontSize: 13,
-                          textAlign: "center",
-                          margin: "0px",
-                          padding: 2,
-                        }}
-                      >
-                        <tbody>
-                          <tr>
-                            <td style={{ fontSize: 13 }}>
-                              Rate of Exchange
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <table style={{ width: "100%" }}>
-                        <tbody>
-                          <tr>
-                            <td style={{ padding: "5px 10px" }}>
-                              <div className="d-flex justify-content-between align-items-center">
-                                <strong>Final Base Currency</strong>
-                                <select
-                                  name="final_base_currency"
-                                  className="form-select form-select-sm w-50"
-                                  value={freight.final_base_currency || "Select"}
-                                  onChange={handlechangecalc}
-                                >
-                                  <option value="Select">Select</option>
-                                  <option value="USD">USD</option>
-                                  <option value="RAND">RAND</option>
-                                  <option value="EURO">EURO</option>
-                                  <option value="INR">INR</option>
-                                </select>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ padding: "5px 10px" }}>
-                              <div className="d-flex justify-content-between align-items-center">
-                                <strong>Payment Terms</strong>
-                                <input
-                                  type="text"
-                                  name="payment_terms"
-                                  className="form-control form-control-sm w-50"
-                                  value={freight.payment_terms || ""}
-                                  onChange={handlechangecalc}
-                                  style={{ padding: "2px", border: "1px solid #ccc" }}
-                                />
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </td>
-                    <td
-                      style={{
-                        width: "50%",
-                        height: "100%",
-                        verticalAlign: "top",
-                      }}
-                    >
-                      <table style={{ width: "100%" }}>
-                        <tbody>
-                          <tr>
-                            <td style={{
-                              width: 170,
-                              padding: "0px 10px 0px 10px",
-                              fontSize: 13,
-                            }}>
-                              <strong>Invoice For</strong>
-                            </td>
-                            <td style={{ fontSize: 13, paddingRight: 10, textAlign: "right" }}>
-                              <select
-                                name="invoice_for_country"
-                                value={freight.invoice_for_country || ""}
-                                onChange={handleInvoiceForChange}
-                                style={{ width: "50%", padding: "2px", border: "1px solid #ccc" }}
+                              <table style={{ width: "100%" }}>
+                                <tbody>
+                                  <tr>
+                                    <td
+                                      style={{
+                                        fontSize: 13,
+                                        padding: "5px 10px"
+                                      }}
+                                    >
+                                      <strong>
+                                        {getdata?.client_name || "-"}
+                                        <br />
+                                        {getdata?.address_1 || "-"}
+                                      </strong>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <table
+                                style={{
+                                  background: "#1b2245",
+                                  width: "100%",
+                                  color: "white",
+                                  fontSize: 13,
+                                  textAlign: "center",
+                                  padding: 2,
+                                }}
                               >
-                                <option value="">Select Country</option>
-                                <option value="South Africa">South Africa</option>
-                                <option value="Zambia">Zambia</option>
-                                <option value="Zimbabwe">Zimbabwe</option>
-                              </select>
+                                <tbody>
+                                  <tr>
+                                    <td style={{ fontSize: 13 }}>
+                                      Cargo Details ISO Commodity
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <table style={{ width: "100%" }}>
+                                <tbody>
+                                  <tr>
+                                    <td style={{ padding: "0px 10px" }}>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Commodity</strong>
+                                        <span>{getdata?.product_desc || getdata?.commodity || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Hazardous</strong>
+                                        <span>{getdata.hazardous?.toLowerCase() === "no" ? "No" : (getdata.hazard_type || getdata.hazardous || "-")}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>No. of Packages</strong>
+                                        <span>{getdata?.no_of_packages || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Package Type</strong>
+                                        <span style={{ textTransform: "capitalize" }}>{getdata?.package_type || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Gross Weight (kgs)</strong>
+                                        <span>{getdata?.weight || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Dimensions (M3)</strong>
+                                        <span>{getdata?.m3 || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Volumetric (kgs)</strong>
+                                        <span>{getdata?.volumetric_weight || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between align-items-center my-1">
+                                        <strong>Chargeable</strong>
+                                        <input
+                                          type="text"
+                                          name="chargable_rate"
+                                          className="form-control form-control-sm w-50"
+                                          style={{ height: 28 }}
+                                          value={freight.chargable_rate}
+                                          onChange={handlechangecalc}
+                                          onKeyPress={handlepresss}
+                                        />
+                                      </div>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td
+                                      style={{
+                                        background: "#1b2245",
+                                        color: "white",
+                                        fontSize: 13,
+                                        textAlign: "center",
+                                        padding: 2,
+                                      }}
+                                      colSpan={2}
+                                    >
+                                      Rate of Exchange
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td style={{ padding: "10px" }} colSpan={2}>
+                                      <div className="d-flex justify-content-between align-items-center my-1">
+                                        <strong>Base Currency</strong>
+                                        <select
+                                          name="final_base_currency"
+                                          className="form-select form-select-sm w-50"
+                                          value={freight.final_base_currency || "Select"}
+                                          onChange={handlechangecalc}
+                                        >
+                                          <option value="Select">Select</option>
+                                          <option value="USD">USD</option>
+                                          <option value="RAND">RAND</option>
+                                          <option value="EURO">EURO</option>
+                                          <option value="INR">INR</option>
+                                        </select>
+                                      </div>
+                                      <div className="d-flex justify-content-between align-items-center my-1">
+                                        <strong>Payment Terms</strong>
+                                        <input
+                                          type="text"
+                                          name="payment_terms"
+                                          value={freight.payment_terms || ""}
+                                          onChange={handlechangecalc}
+                                          className="form-control form-control-sm w-50"
+                                          style={{ height: 28 }}
+                                        />
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
                             </td>
-                          </tr>
-                          {/* <tr>
-                            <td style={{
-                              width: 170,
-                              padding: "5px 10px 0px 10px",
-                              fontSize: 13,
-                            }}>
-                              <strong>Due Date</strong>
-                            </td>
-                            <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
-                              <input
-                                type="date"
-                                name="due_date"
-                                value={freight.due_date || ""}
-                                onChange={handlechangecalc}
-                                style={{ width: "50%", padding: "2px", border: "1px solid #ccc" }}
-                              />
-                            </td>
-                          </tr> */}
-                          <tr>
-                            <td style={{
-                              width: 170,
-                              padding: "5px 10px 0px 10px",
-                              fontSize: 13,
-                            }}>
-                              <strong>Invoice No.</strong>
-                            </td>
-                            <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
-                              <input
-                                type="text"
-                                name="customer_invoice_no"
-                                value={freight.customer_invoice_no || ""}
-                                onChange={handlechangecalc}
-                                style={{ width: "50%", padding: "2px", border: "1px solid #ccc" }}
-                              />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{
-                              width: 170,
-                              padding: "5px 10px 0px 10px",
-                              fontSize: 13,
-                            }}>
-                              <strong>Reference</strong>
-                            </td>
-                            <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
-                              {freight.reference_no || "-"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{
-                              width: 170,
-                              padding: "5px 10px 0px 10px",
-                              fontSize: 13,
-                            }}>
-                              <strong>Quote Date</strong>
-                            </td>
-                            <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
-                              {shipmentDate("quote_invoice_date") || "-"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{
-                              width: 170,
-                              padding: "5px 10px 0px 10px",
-                              fontSize: 13,
-                            }}>
-                              <strong>Quote Validity</strong>
-                            </td>
-                            <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
-                              <input
-                                type="text"
-                                name="quote_validity"
-                                value={freight.quote_validity || ""}
-                                onChange={handlechangecalc}
-                                style={{ width: "50%", padding: "2px", border: "1px solid #ccc" }}
-                              />
+                            <td
+                              style={{
+                                width: "50%",
+                                height: "100%",
+                                verticalAlign: "top",
+                              }}
+                            >
+                              <table style={{ width: "100%" }}>
+                                <tbody>
+                                  <tr>
+                                    <td style={{
+                                      width: 170,
+                                      padding: "0px 10px 0px 10px",
+                                      fontSize: 13,
+                                    }}>
+                                      <strong>Invoice For</strong>
+                                    </td>
+                                    <td style={{ fontSize: 13, paddingRight: 10, textAlign: "right" }}>
+                                      <select
+                                        name="invoice_for_country"
+                                        value={freight.invoice_for_country || ""}
+                                        onChange={handleInvoiceForChange}
+                                        style={{ width: "180px", padding: "2px", border: "1px solid #ccc" }}
+                                      >
+                                        <option value="">Select Country</option>
+                                        <option value="South Africa">South Africa</option>
+                                        <option value="Zambia">Zambia</option>
+                                        <option value="Zimbabwe">Zimbabwe</option>
+                                      </select>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td style={{
+                                      width: 170,
+                                      padding: "5px 10px 0px 10px",
+                                      fontSize: 13,
+                                    }}>
+                                      <strong>Client Ref</strong>
+                                    </td>
+                                    <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
+                                      <input
+                                        type="text"
+                                        name="customer_invoice_no"
+                                        value={freight.customer_invoice_no || ""}
+                                        onChange={handlechangecalc}
+                                        style={{ width: "180px", padding: "2px", border: "1px solid #ccc" }}
+                                      />
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td style={{
+                                      width: 170,
+                                      padding: "5px 10px 0px 10px",
+                                      fontSize: 13,
+                                    }}>
+                                      <strong>Reference</strong>
+                                    </td>
+                                    <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
+                                      {freight.reference_no || "-"}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td style={{
+                                      width: 170,
+                                      padding: "5px 10px 0px 10px",
+                                      fontSize: 13,
+                                    }}>
+                                      <strong>Quote Date</strong>
+                                    </td>
+                                    <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
+                                      {shipmentDate("quote_invoice_date") || "-"}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td style={{
+                                      width: 170,
+                                      padding: "5px 10px 0px 10px",
+                                      fontSize: 13,
+                                    }}>
+                                      <strong>Quote Validity</strong>
+                                    </td>
+                                    <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
+                                      <input
+                                        type="text"
+                                        name="quote_validity"
+                                        value={freight.quote_validity || ""}
+                                        onChange={handlechangecalc}
+                                        style={{ width: "180px", padding: "2px", border: "1px solid #ccc" }}
+                                      />
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <table
+                                style={{
+                                  background: "#1b2245",
+                                  width: "100%",
+                                  color: "white",
+                                  fontSize: 13,
+                                  textAlign: "center",
+                                  margin: "5px 0px",
+                                  padding: 2,
+                                }}
+                              >
+                                <tbody>
+                                  <tr>
+                                    <td style={{ fontSize: 13 }}>
+                                      Routing Details
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <table style={{ width: "100%" }}>
+                                <tbody>
+                                  <tr>
+                                    <td style={{ padding: "0px 10px" }}>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Country of Origin</strong>
+                                        <span>{getdata?.collection_from_name || getdata?.country_of_origin || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Place of Receipt</strong>
+                                        <span>{getdata?.place_of_receipt || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Port of Loading</strong>
+                                        <span>{getdata?.port_of_loading || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Port of Discharge</strong>
+                                        <span>{getdata?.post_of_discharge || getdata?.port_of_discharge || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Place of Delivery</strong>
+                                        <span>{getdata?.delivery_to_name || getdata?.place_of_delivery || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Incoterm</strong>
+                                        <span>{getdata?.incoterm || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Mode of Transport</strong>
+                                        <span>{getdata?.freight || getdata?.mode_of_transport || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Freight No</strong>
+                                        <span>{getdata?.freight_number || "-"}</span>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <table
+                                style={{
+                                  background: "#1b2245",
+                                  width: "100%",
+                                  color: "white",
+                                  fontSize: 13,
+                                  textAlign: "center",
+                                  margin: "5px 0px",
+                                  padding: 2,
+                                }}
+                              >
+                                <tbody>
+                                  <tr>
+                                    <td style={{ fontSize: 13 }}>
+                                      Freight details
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <table style={{ width: "100%" }}>
+                                <tbody>
+                                  <tr>
+                                    <td style={{ padding: "0px 10px" }}>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Load type</strong>
+                                        <span>{getdata?.fcl_lcl || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Transit Priority</strong>
+                                        <span style={{ textTransform: "capitalize" }}>{getdata?.type || "-"}</span>
+                                      </div>
+                                      <div className="d-flex justify-content-between my-1">
+                                        <strong>Insurance</strong>
+                                        <span style={{ textTransform: "capitalize" }}>{getdata?.insurance || "-"}</span>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
                             </td>
                           </tr>
                         </tbody>
                       </table>
-                      <table
-                        style={{
-                          background: "#1b2245",
-                          width: "100%",
-                          color: "white",
-                          fontSize: 13,
-                          textAlign: "center",
-                          margin: "5px 0px",
-                          padding: 2,
-                        }}
-                      >
-                        <tbody>
-                          <tr>
-                            <td style={{ fontSize: 13 }}>
-                              Shipment Details
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+
                       <table style={{ width: "100%" }}>
                         <tbody>
                           <tr>
-                            <td style={{ padding: "0px 10px" }}>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Country of Origin</strong>
-                                <span>{getdata?.country_of_origin || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Place of Receipt</strong>
-                                <span>{getdata?.place_of_receipt || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Port of Loading</strong>
-                                <span>{getdata?.port_of_loading || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Port of Discharge</strong>
-                                <span>{getdata?.port_of_discharge || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Place of Delivery</strong>
-                                <span>{getdata?.place_of_delivery || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Freight Collect Accepted</strong>
-                                <span>{getdata?.freight_collect_accepted || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Date</strong>
-                                <span>{shipmentDate("created_at") || "-"}</span>
+                            <td style={{ padding: 0, borderRight: "1px solid black" }}>
+                              <div
+                                style={{
+                                  border: "1px solid black",
+                                  width: "33%",
+                                  borderBottom: "0px solid transparent",
+                                  height: 22,
+                                  borderTop: "unset",
+                                }}
+                              >
+                                <p
+                                  style={{
+                                    margin: 0,
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                    textTransform: "uppercase",
+                                    paddingLeft: 5,
+                                  }}
+                                >
+                                  SHIPMENT ESTIMATE
+                                </p>
                               </div>
                             </td>
                           </tr>
                         </tbody>
                       </table>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
 
-              <table style={{ width: "100%" }}>
-                <tbody>
-                  <tr>
-                    <td style={{ padding: 0, borderRight: "1px solid black" }}>
-                      <div
-                        style={{
-                          border: "1px solid black",
-                          width: "33%",
-                          borderBottom: "0px solid transparent",
-                          height: 22,
-                          borderTop: "unset",
-                        }}
-                      >
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: 13,
-                            fontWeight: 700,
-                            textTransform: "uppercase",
-                            paddingLeft: 5,
-                          }}
-                        >
-                          SHIPMENT ESTIMATE
-                        </p>
+                      <div className="table-responsive">
+                        <table className="cost-table" style={{ width: "100%", borderCollapse: "collapse" }}>
+                          <thead>
+                            <tr>
+                              <th>Description</th>
+                              <th>QTY</th>
+                              <th>Currency</th>
+                              <th>Cost</th>
+                              <th>Unit type</th>
+                              <th>Unit</th>
+                              <th>T/ Cost</th>
+                              <th>GP%</th>
+                              <th>Sales/ P</th>
+                              <th>ROE</th>
+                              <th>Total</th>
+                              <th>Vat %</th>
+                              <th>Disc %</th>
+                              <th>Discount</th>
+                              <th>Exclusive</th>
+                              <th>VAT</th>
+                              <th>Total</th>
+                              <th colSpan={2}>Comment</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {renderRowsForSection(originRowsData, originRows, setOriginRows, originDropdown, "Origin Charges", totalChageswithOutExchange, totalChangeRoeOrigin)}
+                            {renderRowsForSection(freightRowsData, freightRows, setFreightRows, freightDropdown, "Freight Charges", totalChageswithOutExchangeinsurance, totalChangeRoeOriginaftercalcuinsurance)}
+                            {renderRowsForSection(transitRowsData, transitRows, setTransitRows, transitDropdown, "Transit Charges", totalChageswithOuTransit, transitRoe)}
+                            {renderRowsForSection(destinationRowsData, destinationRows, setDestinationRows, destinationDropdown, "Destination Charges", totalChaDestinationTransit, totalChaDestinationTransitRoe)}
+                            {renderRowsForSection(adminRowsData, adminRows, setAdminRows, adminDropdown, "Admin Charges", totaAdminransit, totalAdminnsitRoe)}
+                            {renderRowsForSection(customsRowsData, customsRows, setCustomsRows, customsDropdown, "Customs Charges", customsTotalTCost, customsTotalFinalAmt)}
+
+                            <tr>
+                              <td colSpan={6}>
+                                <strong>Total - Charge</strong>
+                              </td>
+                              <td colSpan={4}> {formatValue(sumofall)} </td>
+                              <td> {formatValue(sumofRoe, 2)} </td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td> {formatValue(totalVatInclusive)} </td>
+                              <td></td>
+                              <td></td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
 
-              <div className="table-responsive">
-                <table className="cost-table" style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr>
-                      <th>Description</th>
-                      <th>QTY</th>
-                      <th>Currency</th>
-                      <th>Cost</th>
-                      <th>Unit type</th>
-                      <th>Unit</th>
-                      <th>T/ Cost</th>
-                      <th>GP%</th>
-                      <th>Sales/ P</th>
-                      <th>ROE</th>
-                      <th>Total</th>
-                      <th>Vat %</th>
-                      <th>Disc %</th>
-                      <th>Discount</th>
-                      <th>Exclusive</th>
-                      <th>VAT</th>
-                      <th>Total</th>
-                      <th colSpan={2}>Comment</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {renderRowsForSection(originRowsData, originRows, setOriginRows, originDropdown, "Origin Charges", totalChageswithOutExchange, totalChangeRoeOrigin)}
-                    {renderRowsForSection(freightRowsData, freightRows, setFreightRows, freightDropdown, "Freight Charges", totalChageswithOutExchangeinsurance, totalChangeRoeOriginaftercalcuinsurance)}
-                    {renderRowsForSection(transitRowsData, transitRows, setTransitRows, transitDropdown, "Transit Charges", totalChageswithOuTransit, transitRoe)}
-                    {renderRowsForSection(destinationRowsData, destinationRows, setDestinationRows, destinationDropdown, "Destination Charges", totalChaDestinationTransit, totalChaDestinationTransitRoe)}
-                    {renderRowsForSection(adminRowsData, adminRows, setAdminRows, adminDropdown, "Admin Charges", totaAdminransit, totalAdminnsitRoe)}
-                    {renderRowsForSection(customsRowsData, customsRows, setCustomsRows, customsDropdown, "Customs Charges", customsTotalTCost, customsTotalFinalAmt)}
-                    
-                    <tr>
-                      <td colSpan={6}>
-                        <strong>Total - Charge</strong>
-                      </td>
-                      <td colSpan={4}> {formatValue(sumofall)} </td>
-                      <td> {formatValue(sumofRoe, 2)} </td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td> {formatValue(totalVatInclusive)} </td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
             </div>
           </section>
 

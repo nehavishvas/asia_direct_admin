@@ -133,6 +133,8 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
     company_address: null,
     bank_details: null,
     created_at: "",
+    payment_terms: "",
+    quote_validity: "",
   });
 
   const [getdata, setGetdata] = useState({});
@@ -233,6 +235,8 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
             company_address: invoiceData.company_address || null,
             bank_details: invoiceData.bank_details || null,
             created_at: invoiceData.created_at || "",
+            payment_terms: invoiceData.payment_terms || "",
+            quote_validity: invoiceData.quote_validity || "",
           });
 
           if (invoiceData.freight_id && parseInt(invoiceData.freight_id) !== 0) {
@@ -275,6 +279,8 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
           } else {
             initializeDefaultRows();
           }
+        } else {
+          initializeDefaultRows();
         }
       } else {
         initializeDefaultRows();
@@ -462,20 +468,18 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
       doc.text(String(getdata?.address_1 || ""), margin + lPad, ly + 2.5, { maxWidth: lW });
       ly += 5;
 
-      drawSectionBar(doc, margin, ly, contentWidth / 2, barH, "Shipment Details ISO Commodity");
+      drawSectionBar(doc, margin, ly, contentWidth / 2, barH, "Cargo Details ISO Commodity");
       ly += barH;
 
       const leftFields = [
+        ["Commodity", getdata?.product_desc || getdata?.commodity || ""],
+        ["Hazardous", getdata.hazardous?.toLowerCase() === "no" ? "No" : (getdata.hazard_type || getdata.hazardous || "")],
         ["No. of Packages", getdata?.no_of_packages || ""],
         ["Package Type", getdata?.package_type || ""],
-        ["Weight", getdata?.weight || ""],
-        ["M3", getdata?.m3 || ""],
+        ["Gross Weight (kgs)", getdata?.weight || ""],
+        ["Dimensions (M3)", getdata?.m3 || ""],
         ["Volumetric (kgs)", getdata?.volumetric_weight || ""],
         ["Chargeable", freight.chargable_rate || ""],
-        ["Commodity", getdata?.commodity || ""],
-        ["Hazardous", getdata?.hazardous || ""],
-        ["Incoterm", getdata?.incoterm || ""],
-        ["Freight", getdata?.freight || ""],
       ];
       leftFields.forEach(([label, value]) => {
         drawRow(doc, margin + lPad, ly, lW, label, value);
@@ -485,38 +489,55 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
       drawSectionBar(doc, margin, ly, contentWidth / 2, barH, "Rate of Exchange");
       ly += barH;
 
-      drawRow(doc, margin + lPad, ly, lW, "Final Base Currency", freight.final_base_currency || "");
+      drawRow(doc, margin + lPad, ly, lW, "Base Currency", freight.final_base_currency || "");
+      ly += rowH;
+      drawRow(doc, margin + lPad, ly, lW, "Payment Terms", freight.payment_terms || "");
       ly += rowH;
       ly += pad;
 
-      // ── RIGHT COLUMN: invoice info / shipment details ────────────────────────
+      // ── RIGHT COLUMN: invoice info / routing / freight details ───────────────
       let ry = boxTop + pad - 0.7;
       const rightColX = colSplitX + lPad;
 
       const invoiceFields = [
         ["Invoice For", freight.invoice_for_country || ""],
-        ["Invoice No.", freight.customer_invoice_no || ""],
+        ["Client Ref", freight.customer_invoice_no || ""],
         ["Reference", freight.reference_no || ""],
         ["Quote Date", shipmentDate("quote_invoice_date", "date")],
+        ["Quote Validity", freight.quote_validity || ""],
       ];
       invoiceFields.forEach(([label, value]) => {
         drawRow(doc, rightColX, ry, rW, label, value);
         ry += rowH;
       });
 
-      drawSectionBar(doc, colSplitX, ry, contentWidth / 2, barH, "Shipment Details");
+      drawSectionBar(doc, colSplitX, ry, contentWidth / 2, barH, "Routing Details");
       ry += barH + 2;
 
-      const shipmentFields = [
-        ["Country of Origin", getdata?.country_of_origin || ""],
+      const routingFields = [
+        ["Country of Origin", getdata?.collection_from_name || getdata?.country_of_origin || ""],
         ["Place of Receipt", getdata?.place_of_receipt || ""],
         ["Port of Loading", getdata?.port_of_loading || ""],
-        ["Port of Discharge", getdata?.port_of_discharge || ""],
-        ["Place of Delivery", getdata?.place_of_delivery || ""],
-        ["Freight Collect Accepted", getdata?.freight_collect_accepted || ""],
-        ["Date", shipmentDate("created_at")],
+        ["Port of Discharge", getdata?.post_of_discharge || getdata?.port_of_discharge || ""],
+        ["Place of Delivery", getdata?.delivery_to_name || getdata?.place_of_delivery || ""],
+        ["Incoterm", getdata?.incoterm || ""],
+        ["Mode of Transport", getdata?.freight || getdata?.mode_of_transport || ""],
+        ["Freight No", getdata?.freight_number || ""],
       ];
-      shipmentFields.forEach(([label, value]) => {
+      routingFields.forEach(([label, value]) => {
+        drawRow(doc, rightColX, ry, rW, label, value);
+        ry += rowH;
+      });
+
+      drawSectionBar(doc, colSplitX, ry, contentWidth / 2, barH, "Freight details");
+      ry += barH + 2;
+
+      const freightDetailsFields = [
+        ["Load type", getdata?.fcl_lcl || ""],
+        ["Transit Priority", getdata?.type || ""],
+        ["Insurance", getdata?.insurance || ""],
+      ];
+      freightDetailsFields.forEach(([label, value]) => {
         drawRow(doc, rightColX, ry, rW, label, value);
         ry += rowH;
       });
@@ -531,10 +552,6 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
       doc.setLineWidth(0.5);
       doc.rect(margin, boxTop, contentWidth, outerBoxH);
       doc.line(colSplitX, boxTop, colSplitX, boxTop + outerBoxH);
-      if (leftBoxH < outerBoxH)
-        doc.line(margin, boxTop + leftBoxH, colSplitX, boxTop + leftBoxH);
-      if (rightBoxH < outerBoxH)
-        doc.line(colSplitX, boxTop + rightBoxH, margin + contentWidth, boxTop + rightBoxH);
 
       cursorY = boxTop + outerBoxH + 4;
 
@@ -687,157 +704,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
         showHead: "everyPage",
       });
 
-      // ── 6. TERMS & CONDITIONS + BANKING DETAILS (dynamic, page-break aware) ──
-      // Visual design follows the bordered header-bar + content-box pattern used
-      // elsewhere in this document (e.g. "SHIPMENT ESTIMATE"). The box's height is
-      // measured from its actual content, and the whole box — like Banking
-      // Details below it — moves to a fresh page as a unit whenever it doesn't
-      // fit in the remaining space, so longer/variable content (e.g. once this
-      // is fetched dynamically) never gets cut off or overlaps the footer.
-      const bottomLimit = pageHeight - 15;
-      const boxWidth = pageWidth - margin * 2;
-      const innerWidth = boxWidth - 6; // 3mm padding each side
-      const lineHeight = 3.6;
 
-      const ensureSpace = (y, neededHeight) => {
-        if (y + neededHeight > bottomLimit) {
-          doc.addPage();
-          return margin;
-        }
-        return y;
-      };
-
-      // Lays out "<boldLead> <text>" as one paragraph: the bold lead starts the
-      // first line, the rest of the text wraps normally beneath it.
-      const layoutBoldLeadParagraph = (boldLead, text, maxWidth) => {
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(7.5);
-        const leadWidth = doc.getTextWidth(`${boldLead} `);
-        doc.setFont("helvetica", "normal");
-        const words = String(text ?? "").split(" ");
-        let firstLine = "";
-        let i = 0;
-        const firstLineMaxWidth = maxWidth - leadWidth;
-        while (i < words.length) {
-          const candidate = firstLine ? `${firstLine} ${words[i]}` : words[i];
-          if (!firstLine || doc.getTextWidth(candidate) <= firstLineMaxWidth) {
-            firstLine = candidate;
-            i++;
-          } else break;
-        }
-        const restLines = i < words.length ? doc.splitTextToSize(words.slice(i).join(" "), maxWidth) : [];
-        return { leadWidth, firstLine, restLines, height: (1 + restLines.length) * lineHeight };
-      };
-
-      // ── Measure content first so the box can be drawn at its exact height ──
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7.5);
-      const introWrapped = doc.splitTextToSize(termsAndConditions.intro, innerWidth);
-      const introHeight = introWrapped.length * lineHeight;
-
-      const itemLayouts = termsAndConditions.items.map((item, index) => ({
-        boldLead: `${index + 1}. ${item.label}:`,
-        layout: layoutBoldLeadParagraph(`${index + 1}. ${item.label}:`, item.text, innerWidth),
-      }));
-      const itemsHeight = itemLayouts.reduce((sum, { layout }) => sum + layout.height + 1.5, 0);
-
-      const headerH = 7;
-      const topPad = 4;
-      const bottomPad = 3;
-      const contentHeight = topPad + introHeight + 2 + itemsHeight + bottomPad;
-      const boxHeight = headerH + contentHeight;
-
-      let termsY = doc.lastAutoTable?.finalY ? doc.lastAutoTable.finalY + 8 : cursorY + 20;
-      termsY = ensureSpace(termsY, boxHeight);
-
-      // ── Header bar (bordered, matches the on-screen "TERMS & CONDITIONS" label) ──
-      doc.setDrawColor(0, 0, 0);
-      doc.setLineWidth(0.3);
-      doc.rect(margin, termsY, boxWidth, headerH);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(9);
-      doc.setTextColor(20, 20, 20);
-      doc.text("TERMS & CONDITIONS", margin + 3, termsY + headerH / 2 + 1.3);
-
-      // ── Content box ──
-      doc.rect(margin, termsY + headerH, boxWidth, contentHeight);
-
-      let ty = termsY + headerH + topPad;
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7.5);
-      doc.setTextColor(60, 60, 60);
-      introWrapped.forEach((line) => {
-        doc.text(line, margin + 3, ty);
-        ty += lineHeight;
-      });
-      ty += 2;
-
-      itemLayouts.forEach(({ boldLead, layout }) => {
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(7.5);
-        doc.setTextColor(20, 20, 20);
-        doc.text(`${boldLead} `, margin + 3, ty);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(60, 60, 60);
-        doc.text(layout.firstLine, margin + 3 + layout.leadWidth, ty);
-        let innerTy = ty + lineHeight;
-        layout.restLines.forEach((line) => {
-          doc.text(line, margin + 3, innerTy);
-          innerTy += lineHeight;
-        });
-        ty += layout.height + 1.5;
-      });
-
-      // ── Banking Details — kept as one block; moves to a new page if it won't fit ──
-      let bankingStartY = termsY + boxHeight + 10;
-      const bankingFields = [
-        ["Account Name", freight?.bank_details?.account_name || ""],
-        ["Bank Name", freight?.bank_details?.bank_name || ""],
-        ["Branch Code", freight?.bank_details?.branch_code || ""],
-        ["Account Number", freight?.bank_details?.account_no || ""],
-        ["Swift Code", freight?.bank_details?.swift_code || ""],
-      ];
-
-      const noteText = freight?.bank_details?.note || "";
-      doc.setFont("helvetica", "italic");
-      doc.setFontSize(7);
-      const noteLines = noteText ? doc.splitTextToSize(noteText, 80) : [];
-
-      const bankingBlockH = 5 + bankingFields.length * 4.2 + 2 + (noteLines.length > 0 ? (noteLines.length * 3.5 + 2) : 0);
-
-      bankingStartY = ensureSpace(bankingStartY, bankingBlockH);
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(9);
-      doc.setTextColor(20, 20, 20);
-      doc.text("Banking Details", margin, bankingStartY);
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7.2);
-      bankingFields.forEach(([label, value], index) => {
-
-        const fieldY = bankingStartY + 5 + index * 4.2;
-        doc.setFont("helvetica", "bold");
-
-        doc.text(`${label}:`, margin + 2, fieldY);
-        doc.setFont("helvetica", "normal");
-
-        if (value) {
-          doc.text(String(value), margin + 32, fieldY);
-        }
-
-      });
-
-      if (noteLines.length > 0) {
-        doc.setFont("helvetica", "italic");
-        doc.setFontSize(7);
-        doc.setTextColor(100, 100, 100);
-        let noteY = bankingStartY + 5 + bankingFields.length * 4.2 + 2;
-        noteLines.forEach((line) => {
-          doc.text(line, margin + 2, noteY);
-          noteY += 3.5;
-        });
-      }
 
       // ── Page numbers on every page (added after pagination is finalized) ──
       const totalPages = doc.internal.getNumberOfPages();
@@ -1451,7 +1318,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                         <tbody>
                           <tr>
                             <td style={{ fontSize: 13 }}>
-                              Shipment Details ISO Commodity
+                              Cargo Details ISO Commodity
                             </td>
                           </tr>
                         </tbody>
@@ -1459,21 +1326,29 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                       <table style={{ width: "100%" }}>
                         <tbody>
                           <tr>
-                            <td style={{ padding: "10px" }}>
+                            <td style={{ padding: "0px 10px" }}>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Commodity</strong>
+                                <span>{getdata?.product_desc || getdata?.commodity || "-"}</span>
+                              </div>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Hazardous</strong>
+                                <span>{getdata.hazardous?.toLowerCase() === "no" ? "No" : (getdata.hazard_type || getdata.hazardous || "-")}</span>
+                              </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>No. of Packages</strong>
                                 <span>{getdata?.no_of_packages || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Package Type</strong>
-                                <span>{getdata?.package_type || "-"}</span>
+                                <span style={{ textTransform: "capitalize" }}>{getdata?.package_type || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
-                                <strong>Weight</strong>
+                                <strong>Gross Weight (kgs)</strong>
                                 <span>{getdata?.weight || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
-                                <strong>M3</strong>
+                                <strong>Dimensions (M3)</strong>
                                 <span>{getdata?.m3 || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
@@ -1483,22 +1358,6 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Chargeable</strong>
                                 <span>{freight.chargable_rate || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Commodity</strong>
-                                <span>{getdata?.commodity || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Hazardous</strong>
-                                <span>{getdata?.hazardous || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Incoterm</strong>
-                                <span>{getdata?.incoterm || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Freight</strong>
-                                <span>{getdata?.freight || "-"}</span>
                               </div>
                             </td>
                           </tr>
@@ -1518,9 +1377,13 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                           </tr>
                           <tr>
                             <td style={{ padding: "10px" }} colSpan={2}>
-                              <div className="d-flex justify-content-between">
-                                <strong>Final Base Currency</strong>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Base Currency</strong>
                                 <span>{freight.final_base_currency || "-"}</span>
+                              </div>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Payment Terms</strong>
+                                <span>{freight.payment_terms || "-"}</span>
                               </div>
                             </td>
                           </tr>
@@ -1548,25 +1411,13 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                               {freight.invoice_for_country || "-"}
                             </td>
                           </tr>
-                          {/* <tr>
-                            <td style={{
-                              width: 170,
-                              padding: "5px 10px 0px 10px",
-                              fontSize: 13,
-                            }}>
-                              <strong>Due Date</strong>
-                            </td>
-                            <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
-                              {shipmentDate("due_date") || "-"}
-                            </td>
-                          </tr> */}
                           <tr>
                             <td style={{
                               width: 170,
                               padding: "5px 10px 0px 10px",
                               fontSize: 13,
                             }}>
-                              <strong>Invoice No.</strong>
+                              <strong>Client Ref</strong>
                             </td>
                             <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
                               {freight.customer_invoice_no || "-"}
@@ -1596,6 +1447,18 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                               {shipmentDate("quote_invoice_date", "date") || "-"}
                             </td>
                           </tr>
+                          <tr>
+                            <td style={{
+                              width: 170,
+                              padding: "5px 10px 0px 10px",
+                              fontSize: 13,
+                            }}>
+                              <strong>Quote Validity</strong>
+                            </td>
+                            <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
+                              {freight.quote_validity || "-"}
+                            </td>
+                          </tr>
                         </tbody>
                       </table>
                       <table
@@ -1612,7 +1475,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                         <tbody>
                           <tr>
                             <td style={{ fontSize: 13 }}>
-                              Shipment Details
+                              Routing Details
                             </td>
                           </tr>
                         </tbody>
@@ -1623,7 +1486,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                             <td style={{ padding: "0px 10px" }}>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Country of Origin</strong>
-                                <span>{getdata?.country_of_origin || "-"}</span>
+                                <span>{getdata?.collection_from_name || getdata?.country_of_origin || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Place of Receipt</strong>
@@ -1635,19 +1498,62 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Port of Discharge</strong>
-                                <span>{getdata?.port_of_discharge || "-"}</span>
+                                <span>{getdata?.post_of_discharge || getdata?.port_of_discharge || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Place of Delivery</strong>
-                                <span>{getdata?.place_of_delivery || "-"}</span>
+                                <span>{getdata?.delivery_to_name || getdata?.place_of_delivery || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
-                                <strong>Freight Collect Accepted</strong>
-                                <span>{getdata?.freight_collect_accepted || "-"}</span>
+                                <strong>Incoterm</strong>
+                                <span>{getdata?.incoterm || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
-                                <strong>Date</strong>
-                                <span>{shipmentDate("created_at") || "-"}</span>
+                                <strong>Mode of Transport</strong>
+                                <span>{getdata?.freight || getdata?.mode_of_transport || "-"}</span>
+                              </div>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Freight No</strong>
+                                <span>{getdata?.freight_number || "-"}</span>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table
+                        style={{
+                          background: "#1b2245",
+                          width: "100%",
+                          color: "white",
+                          fontSize: 13,
+                          textAlign: "center",
+                          margin: "5px 0px",
+                          padding: 2,
+                        }}
+                      >
+                        <tbody>
+                          <tr>
+                            <td style={{ fontSize: 13 }}>
+                              Freight details
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table style={{ width: "100%" }}>
+                        <tbody>
+                          <tr>
+                            <td style={{ padding: "0px 10px" }}>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Load type</strong>
+                                <span>{getdata?.fcl_lcl || "-"}</span>
+                              </div>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Transit Priority</strong>
+                                <span style={{ textTransform: "capitalize" }}>{getdata?.type || "-"}</span>
+                              </div>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Insurance</strong>
+                                <span style={{ textTransform: "capitalize" }}>{getdata?.insurance || "-"}</span>
                               </div>
                             </td>
                           </tr>
@@ -1739,77 +1645,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                 </table>
               </div>
 
-              {/* ── Terms & Conditions ── */}
-              <table
-                style={{ width: "100%", marginTop: 20, breakInside: "avoid", pageBreakInside: "avoid" }}
-              >
-                <tbody>
-                  <tr>
-                    <td style={{ padding: 0 }}>
-                      <div
-                        style={{
-                          border: "1px solid black",
-                          width: "33%",
-                          borderBottom: "0px solid transparent",
-                          height: 22,
-                          borderTop: "unset",
-                        }}
-                      >
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: 13,
-                            fontWeight: 700,
-                            textTransform: "uppercase",
-                            paddingLeft: 5,
-                          }}
-                        >
-                          TERMS & CONDITIONS
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ border: "1px solid black", borderTop: "unset", padding: "10px 12px", verticalAlign: "top" }}>
-                      <div style={{ fontSize: 12, color: "#333", lineHeight: 1.6 }}>
-                        <div style={{ marginBottom: 6 }}>{termsAndConditions.intro}</div>
-                        {termsAndConditions.items.map((item, index) => (
-                          <div key={index} style={{ marginBottom: 4 }}>
-                            {index + 1}. <strong>{item.label}</strong>: {item.text}
-                          </div>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
 
-              {/* ── Banking Details — kept together; flows to the next printed page as a
-                     whole block whenever there isn't enough room left on the current one ── */}
-              <div style={{ marginTop: 16, breakInside: "avoid", pageBreakInside: "avoid" }}>
-                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 8 }}>Banking Details</div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12, maxWidth: 700 }}>
-                  {[
-                    ["Account Name", freight?.bank_details?.account_name || ""],
-                    ["Bank Name", freight?.bank_details?.bank_name || ""],
-                    ["Branch Code", freight?.bank_details?.branch_code || ""],
-                    ["Account Number", freight?.bank_details?.account_no || ""],
-                    ["Swift Code", freight?.bank_details?.swift_code || ""],
-                  ].map(([label, value]) => (
-                    <div key={label}>
-                      <div style={{ fontSize: 12, marginBottom: 4 }}>{label}</div>
-                      <div style={{ borderBottom: "1px solid #ccc", height: 18, fontSize: 12, fontWeight: 500 }}>
-                        {value || ""}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {freight?.bank_details?.note && (
-                  <div style={{ marginTop: 12, fontSize: 12, color: "#666", whiteSpace: "pre-line", fontStyle: "italic", lineHeight: 1.5 }}>
-                    {freight?.bank_details?.note}
-                  </div>
-                )}
-              </div>
             </div>
           </section>
         </div>

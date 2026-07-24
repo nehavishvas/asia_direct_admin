@@ -473,36 +473,30 @@ export default function DownloadNewFreightQuoteInvoice() {
 
     const rows = [];
 
-    rows.push([{ content: title, colSpan: 14, styles: sectionStyle }]);
+    rows.push([{ content: title, colSpan: 11, styles: sectionStyle }]);
 
     rowsData.forEach(({ row, calc }) => {
       const vatDisplay = formatValue(getVatPercent(row.vatTyp), 2, true);
       rows.push([
         row.description || "",
         row.qty || "",
-        row.unitType || "",
+        row.unitType && row.unitType !== "Select" ? row.unitType : "",
         formatValue(calc.unit, 2),
-        formatValue(row.cost, 2),
+        formatValue(calc.salesPrice, 2),
         row.currency && row.currency !== "Select" ? row.currency : "",
         formatValue(row.roe, 4),
-        formatValue(calc.finalAmt, 2),
         vatDisplay,
         formatValue(row.discPercent, 2, true),
-        formatValue(calc.disc),
         formatValue(calc.exclusive),
-        formatValue(calc.vat),
         formatValue(calc.inclusive),
       ]);
     });
 
     rows.push([
       { content: `Total - ${title}`, colSpan: 7, styles: { ...totalStyle, halign: "left" } },
-      styledCell(formatValue(totals.finalAmt), totalStyle),
       styledCell("", totalStyle),
       styledCell("", totalStyle),
-      styledCell(formatValue(totals.disc), totalStyle),
       styledCell(formatValue(totals.exclusive), totalStyle),
-      styledCell(formatValue(totals.vat), totalStyle),
       styledCell(formatValue(totals.inclusive), totalStyle),
     ]);
 
@@ -611,20 +605,18 @@ export default function DownloadNewFreightQuoteInvoice() {
       });
       ly += addressLines.length * addressLineHeight + 1;
 
-      drawSectionBar(doc, margin, ly, contentWidth / 2, barH, "Shipment Details ISO Commodity");
+      drawSectionBar(doc, margin, ly, contentWidth / 2, barH, "Cargo Details ISO Commodity");
       ly += barH;
 
       const leftFields = [
-        ["No. of Packages", getdata?.no_of_packages],
-        ["Package Type", getdata?.package_type],
-        ["Weight", getdata?.weight],
-        ["M3", getdata?.m3 || ""],
-        ["Volumetric (kgs)", getdata?.volumetric_weight],
-        ["Chargeable", freight?.chargable_rate],
-        ["Commodity", getdata?.commodity],
-        ["Hazardous", getdata?.hazardous],
-        ["Incoterm", getdata?.incoterm],
-        ["Freight", getdata?.freight],
+        ["Commodity", getdata?.product_desc || getdata?.commodity || ""],
+        ["Hazardous", getdata.hazardous?.toLowerCase() === "no" ? "No" : (getdata.hazard_type || getdata.hazardous || "")],
+        ["No. of Packages", getdata?.no_of_packages || ""],
+        ["Package Type", getdata?.package_type || ""],
+        ["Gross Weight (kgs)", getdata?.weight || ""],
+        ["Dimensions (M3)", getdata?.m3 || ""],
+        ["Volumetric (kgs)", getdata?.volumetric_weight || ""],
+        ["Chargeable", freight?.chargable_rate || ""],
       ];
       leftFields.forEach(([label, value]) => {
         drawRow(doc, margin + lPad, ly, lW, label, value);
@@ -634,36 +626,53 @@ export default function DownloadNewFreightQuoteInvoice() {
       drawSectionBar(doc, margin, ly, contentWidth / 2, barH, "Rate of Exchange");
       ly += barH + 2;
 
-      drawRow(doc, margin + lPad, ly, lW, "Final Base Currency", freight?.final_base_currency || "");
+      drawRow(doc, margin + lPad, ly, lW, "Base Currency", freight?.final_base_currency || "");
+      ly += rowH;
+      drawRow(doc, margin + lPad, ly, lW, "Payment Terms", freight?.payment_terms || "");
       ly += rowH + pad;
 
       let ry = boxTop + pad - 0.7;
       const rightColX = colSplitX + lPad;
 
       const invoiceFields = [
-        ["Invoice For", freight?.invoice_for_country],
-        ["Invoice No.", freight?.customer_invoice_no],
-        ["Reference", freight?.reference_no],
+        ["Invoice For", freight?.invoice_for_country || ""],
+        ["Client Ref", freight?.customer_invoice_no || ""],
+        ["Reference", freight?.reference_no || ""],
         ["Quote Date", shipmentDate("quote_invoice_date", "date")],
+        ["Quote Validity", freight?.quote_validity || ""],
       ];
       invoiceFields.forEach(([label, value]) => {
         drawRow(doc, rightColX, ry, rW, label, value);
         ry += rowH;
       });
 
-      drawSectionBar(doc, colSplitX, ry + 2, contentWidth / 2, barH, "Shipment Details");
-      ry += barH + 2;
+      drawSectionBar(doc, colSplitX, ry + 2, contentWidth / 2, barH, "Routing Details");
+      ry += barH + 4;
 
-      const shipmentFields = [
-        ["Country of Origin", getdata?.country_of_origin],
-        ["Place of Receipt", getdata?.place_of_receipt],
-        ["Port of Loading", getdata?.port_of_loading],
-        ["Port of Discharge", getdata?.port_of_discharge],
-        ["Place of Delivery", getdata?.place_of_delivery],
-        ["Freight Collect Accepted", getdata?.freight_collect_accepted],
-        ["Date", shipmentDate("created_at")],
+      const routingFields = [
+        ["Country of Origin", getdata?.collection_from_name || getdata?.country_of_origin || ""],
+        ["Place of Receipt", getdata?.place_of_receipt || ""],
+        ["Port of Loading", getdata?.port_of_loading || ""],
+        ["Port of Discharge", getdata?.post_of_discharge || getdata?.port_of_discharge || ""],
+        ["Place of Delivery", getdata?.delivery_to_name || getdata?.place_of_delivery || ""],
+        ["Incoterm", getdata?.incoterm || ""],
+        ["Mode of Transport", getdata?.freight || getdata?.mode_of_transport || ""],
+        ["Freight No", getdata?.freight_number || ""],
       ];
-      shipmentFields.forEach(([label, value]) => {
+      routingFields.forEach(([label, value]) => {
+        drawRow(doc, rightColX, ry, rW, label, value);
+        ry += rowH;
+      });
+
+      drawSectionBar(doc, colSplitX, ry + 2, contentWidth / 2, barH, "Freight details");
+      ry += barH + 4;
+
+      const freightDetailsFields = [
+        ["Load type", getdata?.fcl_lcl || ""],
+        ["Transit Priority", getdata?.type || ""],
+        ["Insurance", getdata?.insurance || ""],
+      ];
+      freightDetailsFields.forEach(([label, value]) => {
         drawRow(doc, rightColX, ry, rW, label, value);
         ry += rowH;
       });
@@ -677,12 +686,6 @@ export default function DownloadNewFreightQuoteInvoice() {
       doc.setLineWidth(0.5);
       doc.rect(margin, boxTop, contentWidth, outerBoxH);
       doc.line(colSplitX, boxTop, colSplitX, boxTop + outerBoxH);
-      if (leftBoxH < outerBoxH) {
-        doc.line(margin, boxTop + leftBoxH, colSplitX, boxTop + leftBoxH);
-      }
-      if (rightBoxH < outerBoxH) {
-        doc.line(colSplitX, boxTop + rightBoxH, margin + contentWidth, boxTop + rightBoxH);
-      }
 
       cursorY = boxTop + outerBoxH + 4;
 
@@ -712,21 +715,24 @@ export default function DownloadNewFreightQuoteInvoice() {
           finalAmt: totalChangeRoeCustoms, disc: totalCustomsDiscount, exclusive: totalCustomsExclusive, vat: totalCustomsVat, inclusive: totalCustomsInclusive,
         }),
         [
-          { content: "GRAND TOTAL", colSpan: 7, styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "left", textColor: [20, 20, 20] } },
-          { content: formatValue(grandTotalFinalAmt), styles: { fillColor: [226, 232, 240], fontStyle: "bold" } },
-          { content: "", styles: { fillColor: [226, 232, 240] } },
-          { content: "", styles: { fillColor: [226, 232, 240] } },
-          { content: formatValue(grandTotalDiscount), styles: { fillColor: [226, 232, 240], fontStyle: "bold" } },
-          { content: formatValue(grandTotalExclusive), styles: { fillColor: [226, 232, 240], fontStyle: "bold" } },
-          { content: formatValue(grandTotalVat), styles: { fillColor: [226, 232, 240], fontStyle: "bold" } },
-          { content: formatValue(totalVatInclusive), styles: { fillColor: [226, 232, 240], fontStyle: "bold" } },
+          { content: "GRAND TOTAL", colSpan: 9, styles: { fillColor: [240, 242, 245], fontStyle: "bold", halign: "left", textColor: [20, 20, 20], valign: "top" } },
+          {
+            content: `Subtotal:\nDiscount:\nExclusive:\nVAT:\nGrand Total:`,
+            colSpan: 1,
+            styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "left", textColor: [20, 20, 20], cellPadding: 2, lineWidth: 0 }
+          },
+          {
+            content: `${formatValue(grandTotalFinalAmt)}\n${grandTotalDiscount > 0 ? `-${formatValue(grandTotalDiscount)}` : "0.00"}\n${formatValue(grandTotalExclusive)}\n${formatValue(grandTotalVat)}\n${formatValue(totalVatInclusive)}`,
+            colSpan: 1,
+            styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "right", textColor: [20, 20, 20], cellPadding: 2, lineWidth: 0 }
+          }
         ],
       ];
 
       autoTable(doc, {
         startY: cursorY,
         margin: { left: margin, right: margin, top: margin, bottom: 14 },
-        head: [["Description", "QTY", "UOM", "Unit", "Price", "Curr", "Exch Rate", "Total", "Vat %", "Disc %", "Discount", "Exclusive", "VAT", "Total"]],
+        head: [["Description", "QTY", "UOM", "Unit", "Sales/ P", "Curr", "Exch Rate", "Vat %", "Disc %", "Exclusive", "Total"]],
         body: tableBody,
         theme: "grid",
         styles: {
@@ -745,14 +751,27 @@ export default function DownloadNewFreightQuoteInvoice() {
           lineColor: [255, 255, 255],
         },
         columnStyles: {
-          7: { halign: "right" },
+          9: { halign: "right" },
           10: { halign: "right" },
-          11: { halign: "right" },
-          12: { halign: "right" },
-          13: { halign: "right" },
         },
         rowPageBreak: "avoid",
         showHead: "everyPage",
+        didDrawCell: (data) => {
+          if (data.row.raw && data.row.raw[0] && data.row.raw[0].content === "GRAND TOTAL") {
+            const { x, y, width, height } = data.cell;
+            doc.setDrawColor(28, 28, 28);
+            doc.setLineWidth(0.1);
+            if (data.column.index === 9) {
+              doc.line(x, y, x + width, y);
+              doc.line(x, y + height, x + width, y + height);
+              doc.line(x, y, x, y + height);
+            } else if (data.column.index === 10) {
+              doc.line(x, y, x + width, y);
+              doc.line(x, y + height, x + width, y + height);
+              doc.line(x + width, y, x + width, y + height);
+            }
+          }
+        },
       });
 
       const bottomLimit = pageHeight - 15;
@@ -897,15 +916,13 @@ export default function DownloadNewFreightQuoteInvoice() {
   };
 
   const renderRowsForSection = (rowsData, sectionTitle) => {
-    const totalTCost = rowsData.reduce((sum, item) => sum + item.calc.tCost, 0);
-    const totalFinalAmt = rowsData.reduce((sum, item) => sum + item.calc.finalAmt, 0);
+    const totalSectionExclusive = rowsData.reduce((sum, item) => sum + item.calc.exclusive, 0);
+    const totalSectionInclusive = rowsData.reduce((sum, item) => sum + item.calc.inclusive, 0);
     return (
       <>
-        <tr className="estimate-section-row">
-          <td colSpan={19}>
-            <strong>
-              {sectionTitle}
-            </strong>
+        <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
+          <td colSpan={11}>
+            <strong>{sectionTitle}</strong>
           </td>
         </tr>
         {rowsData.map(({ row, calc }) => (
@@ -951,7 +968,7 @@ export default function DownloadNewFreightQuoteInvoice() {
                 type="text"
                 className="supplier_form"
                 disabled
-                value={formatValue(row.cost, 2)}
+                value={formatValue(calc.salesPrice, 2)}
                 placeholder="0.00"
               />
             </td>
@@ -979,18 +996,11 @@ export default function DownloadNewFreightQuoteInvoice() {
               />
             </td>
             <td>
-              <input
-                style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
-                disabled
-                value={formatValue(calc.finalAmt, 2)}
-                placeholder="0.00"
-                className="supplier_form"
-              />
-            </td>
-            <td>
               <select
                 disabled
                 value={row.vatTyp || ""}
+                className="select_supplier"
+                style={{ margin: 0, fontSize: 13, fontWeight: 700, paddingLeft: 5, border: 0 }}
               >
                 {VAT_OPTIONS.map((opt, i) => (
                   <option key={i} value={opt.value}>{opt.label}</option>
@@ -1011,29 +1021,7 @@ export default function DownloadNewFreightQuoteInvoice() {
                 type="text"
                 placeholder="0.00"
                 disabled
-                value={formatValue(calc.disc)}
-                className="supplier_form"
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                placeholder="0.00"
-                disabled
                 value={formatValue(calc.exclusive)}
-                className="supplier_form"
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                placeholder="0.00"
-                disabled
-                value={
-                  row.vatTyp === "Manual VAT" || row.vatTyp === "Manual VAT (Capital Goods)"
-                    ? formatValue(row.vat, 2)
-                    : formatValue(calc.vat)
-                }
                 className="supplier_form"
               />
             </td>
@@ -1046,23 +1034,14 @@ export default function DownloadNewFreightQuoteInvoice() {
                 className="supplier_form"
               />
             </td>
-            <td colSpan={2}>
-              <input
-                type="text"
-                placeholder="Comment"
-                disabled
-                value={row.comment || ""}
-                className="supplier_form"
-              />
-            </td>
           </tr>
         ))}
-        <tr>
-          <td colSpan={7}>
-            <strong>Total - {sectionTitle}</strong>
-          </td>
-          <td> {formatValue(totalFinalAmt, 2)} </td>
-          <td colSpan={8}></td>
+        <tr style={{ fontWeight: "bold", backgroundColor: "#fafafa" }}>
+          <td colSpan={7}>Total - {sectionTitle}</td>
+          <td></td>
+          <td></td>
+          <td> {formatValue(totalSectionExclusive)} </td>
+          <td> {formatValue(totalSectionInclusive)} </td>
         </tr>
       </>
     );
@@ -1213,7 +1192,7 @@ export default function DownloadNewFreightQuoteInvoice() {
                       <tbody>
                         <tr>
                           <td style={{ fontSize: 13 }}>
-                            Shipment Details ISO Commodity
+                            Cargo Details ISO Commodity
                           </td>
                         </tr>
                       </tbody>
@@ -1223,73 +1202,61 @@ export default function DownloadNewFreightQuoteInvoice() {
                         <tr>
                           <td style={{ padding: "0px 6px" }}>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>No. of Packages</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.no_of_packages}</p>
-                            </div>
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Package Type</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.package_type}</p>
-                            </div>
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Weight</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.weight}</p>
-                            </div>
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>M3</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.m3 || ""}</p>
-                            </div>
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Volumetric (kgs)</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.volumetric_weight}</p>
-                            </div>
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Chargeable</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{freight?.chargable_rate}</p>
-                            </div>
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Commodity</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.commodity}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.product_desc || getdata?.commodity || "-"}</p>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Hazardous</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.hazardous}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata.hazardous?.toLowerCase() === "no" ? "No" : (getdata.hazard_type || getdata.hazardous || "-")}</p>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Incoterm</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.incoterm}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>No. of Packages</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.no_of_packages || "-"}</p>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Freight</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.freight}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Package Type</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2, textTransform: "capitalize" }}>{getdata?.package_type || "-"}</p>
+                            </div>
+                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Gross Weight (kgs)</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.weight || "-"}</p>
+                            </div>
+                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Dimensions (M3)</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.m3 || "-"}</p>
+                            </div>
+                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Volumetric (kgs)</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.volumetric_weight || "-"}</p>
+                            </div>
+                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Chargeable</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{freight?.chargable_rate || "-"}</p>
                             </div>
                           </td>
                         </tr>
-                      </tbody>
-                    </table>
-                    <table
-                      style={{
-                        background: "#1b2245",
-                        width: "100%",
-                        color: "white",
-                        fontSize: 13,
-                        textAlign: "center",
-                        margin: "5px 0px",
-                        padding: 2,
-                      }}
-                    >
-                      <tbody>
                         <tr>
-                          <td style={{ fontSize: 13 }}>Rate of Exchange</td>
+                          <td
+                            style={{
+                              background: "#1b2245",
+                              color: "white",
+                              fontSize: 13,
+                              textAlign: "center",
+                              padding: 2,
+                            }}
+                          >
+                            Rate of Exchange
+                          </td>
                         </tr>
-                      </tbody>
-                    </table>
-                    <table style={{ width: "100%" }}>
-                      <tbody>
                         <tr>
                           <td style={{ padding: "0px 6px" }}>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Final Base Currency</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{freight?.final_base_currency}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Base Currency</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{freight?.final_base_currency || "-"}</p>
+                            </div>
+                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Payment Terms</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{freight?.payment_terms || "-"}</p>
                             </div>
                           </td>
                         </tr>
@@ -1302,19 +1269,23 @@ export default function DownloadNewFreightQuoteInvoice() {
                       <tbody>
                         <tr>
                           <td style={{ width: 170, padding: "0px 10px", fontSize: 13 }}><strong>Invoice For</strong></td>
-                          <td style={{ fontSize: 13, paddingRight: 10, textAlign: "right" }}>{freight?.invoice_for_country}</td>
+                          <td style={{ fontSize: 13, paddingRight: 10, textAlign: "right" }}>{freight?.invoice_for_country || "-"}</td>
                         </tr>
                         <tr>
-                          <td style={{ width: 170, padding: "5px 10px 0px 10px", fontSize: 13 }}><strong>Invoice No.</strong></td>
-                          <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>{freight?.customer_invoice_no}</td>
+                          <td style={{ width: 170, padding: "5px 10px 0px 10px", fontSize: 13 }}><strong>Client Ref</strong></td>
+                          <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>{freight?.customer_invoice_no || "-"}</td>
                         </tr>
                         <tr>
                           <td style={{ width: 170, padding: "5px 10px 0px 10px", fontSize: 13 }}><strong>Reference</strong></td>
-                          <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>{freight?.reference_no}</td>
+                          <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>{freight?.reference_no || "-"}</td>
                         </tr>
                         <tr>
                           <td style={{ width: 170, padding: "5px 10px 0px 10px", fontSize: 13 }}><strong>Quote Date</strong></td>
-                          <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>{shipmentDate("quote_invoice_date", "date")}</td>
+                          <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>{shipmentDate("quote_invoice_date", "date") || "-"}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ width: 170, padding: "5px 10px 0px 10px", fontSize: 13 }}><strong>Quote Validity</strong></td>
+                          <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>{freight?.quote_validity || "-"}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -1331,7 +1302,7 @@ export default function DownloadNewFreightQuoteInvoice() {
                     >
                       <tbody>
                         <tr>
-                          <td style={{ fontSize: 13 }}>Shipment Details</td>
+                          <td style={{ fontSize: 13 }}>Routing Details</td>
                         </tr>
                       </tbody>
                     </table>
@@ -1341,31 +1312,72 @@ export default function DownloadNewFreightQuoteInvoice() {
                           <td style={{ padding: "0px 6px" }}>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Country of Origin</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.country_of_origin}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.collection_from_name || getdata?.country_of_origin || "-"}</p>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Place of Receipt</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.place_of_receipt}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.place_of_receipt || "-"}</p>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Port of Loading</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.port_of_loading}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.port_of_loading || "-"}</p>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Port of Discharge</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.port_of_discharge}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.post_of_discharge || getdata?.port_of_discharge || "-"}</p>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Place of Delivery</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.place_of_delivery}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.delivery_to_name || getdata?.place_of_delivery || "-"}</p>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Freight Collect Accepted</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.freight_collect_accepted}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Incoterm</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.incoterm || "-"}</p>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Date</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{shipmentDate("created_at")}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Mode of Transport</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.freight || getdata?.mode_of_transport || "-"}</p>
+                            </div>
+                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Freight No</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.freight_number || "-"}</p>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <table
+                      style={{
+                        background: "#1b2245",
+                        width: "100%",
+                        color: "white",
+                        fontSize: 13,
+                        textAlign: "center",
+                        margin: "5px 0px",
+                        padding: 2,
+                      }}
+                    >
+                      <tbody>
+                        <tr>
+                          <td style={{ fontSize: 13 }}>Freight details</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <table style={{ width: "100%" }}>
+                      <tbody>
+                        <tr>
+                          <td style={{ padding: "0px 6px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Load type</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.fcl_lcl || "-"}</p>
+                            </div>
+                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Transit Priority</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2, textTransform: "capitalize" }}>{getdata?.type || "-"}</p>
+                            </div>
+                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Insurance</strong></p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2, textTransform: "capitalize" }}>{getdata?.insurance || "-"}</p>
                             </div>
                           </td>
                         </tr>
@@ -1395,26 +1407,21 @@ export default function DownloadNewFreightQuoteInvoice() {
                     </tr>
                   </tbody>
                 </table>
-
                 <div className="table-responsive">
                   <table className="cost-table" style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
                       <tr>
                         <th>Description</th>
                         <th>QTY</th>
-                        <th>Unit type</th>
+                        <th>UOM</th>
                         <th>Unit</th>
-                        <th>Cost</th>
-                        <th>Currency</th>
-                        <th>ROE</th>
-                        <th>Total</th>
+                        <th>Sales/ P</th>
+                        <th>Curr</th>
+                        <th>Exch rate</th>
                         <th>Vat %</th>
                         <th>Disc %</th>
-                        <th>Discount</th>
                         <th>Exclusive</th>
-                        <th>VAT</th>
                         <th>Total</th>
-                        <th colSpan={2}>Comment</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1424,18 +1431,38 @@ export default function DownloadNewFreightQuoteInvoice() {
                       {renderRowsForSection(destinationRowsData, "Destination Charges")}
                       {renderRowsForSection(adminRowsData, "Admin Charges")}
                       {renderRowsForSection(customsRowsData, "Customs Charges")}
-                      <tr>
-                        <td colSpan={7}><strong>Total - Charge</strong></td>
-                        <td>{formatValue(sumofall)}</td>
-                        <td>{formatValue(sumofRoe, 2)}</td>
-                        <td colSpan={4}></td>
-                        <td>{formatValue(totalVatInclusive)}</td>
-                        <td colSpan={2}></td>
+
+                      {/* Grand Total Row */}
+                      <tr style={{ fontWeight: "bold", backgroundColor: "#e2e8f0", borderTop: "2px solid #475569" }}>
+                        <td colSpan={9} style={{ textAlign: "left", fontWeight: "bold", verticalAlign: "top", paddingTop: "12px", color: "black" }}>
+                          GRAND TOTAL
+                        </td>
+                        <td style={{ padding: "8px", verticalAlign: "top", color: "black", textAlign: "left", borderRight: "none" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "13px" }}>
+                            <span style={{ fontWeight: "normal" }}>Subtotal:</span>
+                            <span style={{ fontWeight: "normal" }}>Discount:</span>
+                            <span style={{ fontWeight: "normal" }}>Exclusive:</span>
+                            <span style={{ fontWeight: "normal" }}>Vat:</span>
+                            <hr style={{ margin: "4px 0", borderTop: "1px solid #475569" }} />
+                            <span style={{ fontWeight: "bold" }}>Grand Total:</span>
+                          </div>
+                        </td>
+                        <td style={{ padding: "8px", verticalAlign: "top", color: "black", textAlign: "right" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "13px" }}>
+                            <span style={{ fontWeight: "normal" }}>{formatValue(grandTotalFinalAmt)}</span>
+                            <span style={{ fontWeight: "normal" }}>-{formatValue(grandTotalDiscount)}</span>
+                            <span style={{ fontWeight: "normal" }}>{formatValue(grandTotalExclusive)}</span>
+                            <span style={{ fontWeight: "normal" }}>{formatValue(grandTotalVat)}</span>
+                            <hr style={{ margin: "4px 0", borderTop: "1px solid #475569" }} />
+                            <span style={{ fontWeight: "bold" }}>{formatValue(totalVatInclusive)}</span>
+                          </div>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
 
+                {/* Terms and Conditions & Banking Details */}
                 <table style={{ width: "100%", marginTop: "20px", borderCollapse: "collapse" }}>
                   <tbody>
                     <tr>

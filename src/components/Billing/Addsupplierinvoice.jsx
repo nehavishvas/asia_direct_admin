@@ -1374,7 +1374,7 @@ export default function Addsupplierinvoice() {
                         <tbody>
                           <tr>
                             <td style={{ fontSize: 13 }}>
-                              Shipment Details ISO Commodity
+                              Cargo Details ISO Commodity
                             </td>
                           </tr>
                         </tbody>
@@ -1781,7 +1781,7 @@ export default function Addsupplierinvoice() {
                         <tbody>
                           <tr>
                             <td style={{ fontSize: 13 }}>
-                              Shipment Details
+                              Routing Details
                             </td>
                           </tr>
                         </tbody>

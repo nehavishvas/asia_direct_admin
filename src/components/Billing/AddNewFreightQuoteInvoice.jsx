@@ -1275,14 +1275,32 @@ export default function AddNewFreightQuoteInvoice() {
                 </tbody>
               </table>
 
-              <table style={{ border: "1px solid #1b2245", borderTop: "unset", width: "100%" }}>
+              <table
+                style={{
+                  border: "1px solid #1b2245",
+                  borderTop: "unset",
+                  width: "100%",
+                }}
+              >
                 <tbody>
                   <tr>
-                    <td style={{ width: "50%", borderRight: "1px solid #1a2142", height: "100%", verticalAlign: "top" }}>
+                    <td
+                      style={{
+                        width: "50%",
+                        borderRight: "1px solid #1a2142",
+                        height: "100%",
+                        verticalAlign: "top",
+                      }}
+                    >
                       <table style={{ width: "100%" }}>
                         <tbody>
                           <tr>
-                            <td style={{ fontSize: 13, padding: "5px 10px" }}>
+                            <td
+                              style={{
+                                fontSize: 13,
+                                padding: "5px 10px"
+                              }}
+                            >
                               <strong>
                                 {getdata?.client_name || "-"}
                                 <br />
@@ -1292,11 +1310,20 @@ export default function AddNewFreightQuoteInvoice() {
                           </tr>
                         </tbody>
                       </table>
-                      <table style={{ background: "#1b2245", width: "100%", color: "white", fontSize: 13, textAlign: "center", padding: 2 }}>
+                      <table
+                        style={{
+                          background: "#1b2245",
+                          width: "100%",
+                          color: "white",
+                          fontSize: 13,
+                          textAlign: "center",
+                          padding: 2,
+                        }}
+                      >
                         <tbody>
                           <tr>
                             <td style={{ fontSize: 13 }}>
-                              Shipment Details ISO Commodity
+                              Cargo Details ISO Commodity
                             </td>
                           </tr>
                         </tbody>
@@ -1304,21 +1331,29 @@ export default function AddNewFreightQuoteInvoice() {
                       <table style={{ width: "100%" }}>
                         <tbody>
                           <tr>
-                            <td style={{ padding: "10px" }}>
+                            <td style={{ padding: "0px 10px" }}>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Commodity</strong>
+                                <span>{getdata?.product_desc || getdata?.commodity || "-"}</span>
+                              </div>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Hazardous</strong>
+                                <span>{getdata.hazardous?.toLowerCase() === "no" ? "No" : (getdata.hazard_type || getdata.hazardous || "-")}</span>
+                              </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>No. of Packages</strong>
                                 <span>{getdata?.no_of_packages || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Package Type</strong>
-                                <span>{getdata?.package_type || "-"}</span>
+                                <span style={{ textTransform: "capitalize" }}>{getdata?.package_type || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
-                                <strong>Weight</strong>
+                                <strong>Gross Weight (kgs)</strong>
                                 <span>{getdata?.weight || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
-                                <strong>M3</strong>
+                                <strong>Dimensions (M3)</strong>
                                 <span>{getdata?.m3 || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
@@ -1337,41 +1372,26 @@ export default function AddNewFreightQuoteInvoice() {
                                   onKeyPress={handlepresss}
                                 />
                               </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Commodity</strong>
-                                <span>{getdata?.commodity || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Hazardous</strong>
-                                <span>{getdata?.hazardous || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Incoterm</strong>
-                                <span>{getdata?.incoterm || "-"}</span>
-                              </div>
-                              <div className="d-flex justify-content-between my-1">
-                                <strong>Freight</strong>
-                                <span>{getdata?.freight || "-"}</span>
-                              </div>
                             </td>
                           </tr>
-                        </tbody>
-                      </table>
-                      <table style={{ background: "#1b2245", width: "100%", color: "white", fontSize: 13, textAlign: "center", margin: "0px", padding: 2 }}>
-                        <tbody>
                           <tr>
-                            <td style={{ fontSize: 13 }}>
+                            <td
+                              style={{
+                                background: "#1b2245",
+                                color: "white",
+                                fontSize: 13,
+                                textAlign: "center",
+                                padding: 2,
+                              }}
+                              colSpan={2}
+                            >
                               Rate of Exchange
                             </td>
                           </tr>
-                        </tbody>
-                      </table>
-                      <table style={{ width: "100%" }}>
-                        <tbody>
                           <tr>
-                            <td style={{ padding: "5px 10px" }}>
-                              <div className="d-flex justify-content-between align-items-center">
-                                <strong>Final Base Currency</strong>
+                            <td style={{ padding: "10px" }} colSpan={2}>
+                              <div className="d-flex justify-content-between align-items-center my-1">
+                                <strong>Base Currency</strong>
                                 <select
                                   name="final_base_currency"
                                   className="form-select form-select-sm w-50"
@@ -1385,19 +1405,15 @@ export default function AddNewFreightQuoteInvoice() {
                                   <option value="INR">INR</option>
                                 </select>
                               </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ padding: "5px 10px" }}>
-                              <div className="d-flex justify-content-between align-items-center">
+                              <div className="d-flex justify-content-between align-items-center my-1">
                                 <strong>Payment Terms</strong>
                                 <input
                                   type="text"
                                   name="payment_terms"
-                                  className="form-control form-control-sm w-50"
                                   value={freight.payment_terms || ""}
                                   onChange={handlechangecalc}
-                                  style={{ padding: "2px", border: "1px solid #ccc" }}
+                                  className="form-control form-control-sm w-50"
+                                  style={{ height: 28 }}
                                 />
                               </div>
                             </td>
@@ -1405,11 +1421,21 @@ export default function AddNewFreightQuoteInvoice() {
                         </tbody>
                       </table>
                     </td>
-                    <td style={{ width: "50%", height: "100%", verticalAlign: "top" }}>
+                    <td
+                      style={{
+                        width: "50%",
+                        height: "100%",
+                        verticalAlign: "top",
+                      }}
+                    >
                       <table style={{ width: "100%" }}>
                         <tbody>
                           <tr>
-                            <td style={{ width: 170, padding: "0px 10px 0px 10px", fontSize: 13 }}>
+                            <td style={{
+                              width: 170,
+                              padding: "0px 10px 0px 10px",
+                              fontSize: 13,
+                            }}>
                               <strong>Invoice For</strong>
                             </td>
                             <td style={{ fontSize: 13, paddingRight: 10, textAlign: "right" }}>
@@ -1417,7 +1443,7 @@ export default function AddNewFreightQuoteInvoice() {
                                 name="invoice_for_country"
                                 value={freight.invoice_for_country || ""}
                                 onChange={handleInvoiceForChange}
-                                style={{ width: "50%", padding: "2px", border: "1px solid #ccc" }}
+                                style={{ width: "180px", padding: "2px", border: "1px solid #ccc" }}
                               >
                                 <option value="">Select Country</option>
                                 <option value="South Africa">South Africa</option>
@@ -1427,8 +1453,12 @@ export default function AddNewFreightQuoteInvoice() {
                             </td>
                           </tr>
                           <tr>
-                            <td style={{ width: 170, padding: "5px 10px 0px 10px", fontSize: 13 }}>
-                              <strong>Invoice No.</strong>
+                            <td style={{
+                              width: 170,
+                              padding: "5px 10px 0px 10px",
+                              fontSize: 13,
+                            }}>
+                              <strong>Client Ref</strong>
                             </td>
                             <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
                               <input
@@ -1436,20 +1466,28 @@ export default function AddNewFreightQuoteInvoice() {
                                 name="customer_invoice_no"
                                 value={freight.customer_invoice_no || ""}
                                 onChange={handlechangecalc}
-                                style={{ width: "50%", padding: "2px", border: "1px solid #ccc" }}
+                                style={{ width: "180px", padding: "2px", border: "1px solid #ccc" }}
                               />
                             </td>
                           </tr>
                           <tr>
-                            <td style={{ width: 170, padding: "5px 10px 0px 10px", fontSize: 13 }}>
+                            <td style={{
+                              width: 170,
+                              padding: "5px 10px 0px 10px",
+                              fontSize: 13,
+                            }}>
                               <strong>Reference</strong>
                             </td>
                             <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
-                              {getdata?.freight_number || "-"}
+                              {freight.reference_no || getdata?.freight_number || "-"}
                             </td>
                           </tr>
                           <tr>
-                            <td style={{ width: 170, padding: "5px 10px 0px 10px", fontSize: 13 }}>
+                            <td style={{
+                              width: 170,
+                              padding: "5px 10px 0px 10px",
+                              fontSize: 13,
+                            }}>
                               <strong>Quote Date</strong>
                             </td>
                             <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
@@ -1457,7 +1495,11 @@ export default function AddNewFreightQuoteInvoice() {
                             </td>
                           </tr>
                           <tr>
-                            <td style={{ width: 170, padding: "5px 10px 0px 10px", fontSize: 13 }}>
+                            <td style={{
+                              width: 170,
+                              padding: "5px 10px 0px 10px",
+                              fontSize: 13,
+                            }}>
                               <strong>Quote Validity</strong>
                             </td>
                             <td style={{ fontSize: 13, paddingTop: "5px", paddingRight: 10, textAlign: "right" }}>
@@ -1466,17 +1508,27 @@ export default function AddNewFreightQuoteInvoice() {
                                 name="quote_validity"
                                 value={freight.quote_validity || ""}
                                 onChange={handlechangecalc}
-                                style={{ width: "50%", padding: "2px", border: "1px solid #ccc" }}
+                                style={{ width: "180px", padding: "2px", border: "1px solid #ccc" }}
                               />
                             </td>
                           </tr>
                         </tbody>
                       </table>
-                      <table style={{ background: "#1b2245", width: "100%", color: "white", fontSize: 13, textAlign: "center", margin: "5px 0px", padding: 2 }}>
+                      <table
+                        style={{
+                          background: "#1b2245",
+                          width: "100%",
+                          color: "white",
+                          fontSize: 13,
+                          textAlign: "center",
+                          margin: "5px 0px",
+                          padding: 2,
+                        }}
+                      >
                         <tbody>
                           <tr>
                             <td style={{ fontSize: 13 }}>
-                              Shipment Details
+                              Routing Details
                             </td>
                           </tr>
                         </tbody>
@@ -1487,7 +1539,7 @@ export default function AddNewFreightQuoteInvoice() {
                             <td style={{ padding: "0px 10px" }}>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Country of Origin</strong>
-                                <span>{getdata?.country_of_origin || "-"}</span>
+                                <span>{getdata?.collection_from_name || getdata?.country_of_origin || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Place of Receipt</strong>
@@ -1499,19 +1551,62 @@ export default function AddNewFreightQuoteInvoice() {
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Port of Discharge</strong>
-                                <span>{getdata?.port_of_discharge || "-"}</span>
+                                <span>{getdata?.post_of_discharge || getdata?.port_of_discharge || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Place of Delivery</strong>
-                                <span>{getdata?.place_of_delivery || "-"}</span>
+                                <span>{getdata?.delivery_to_name || getdata?.place_of_delivery || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
-                                <strong>Freight Collect Accepted</strong>
-                                <span>{getdata?.freight_collect_accepted || "-"}</span>
+                                <strong>Incoterm</strong>
+                                <span>{getdata?.incoterm || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
-                                <strong>Date</strong>
-                                <span>{shipmentDate("created_at") || "-"}</span>
+                                <strong>Mode of Transport</strong>
+                                <span>{getdata?.freight || getdata?.mode_of_transport || "-"}</span>
+                              </div>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Freight No</strong>
+                                <span>{getdata?.freight_number || "-"}</span>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table
+                        style={{
+                          background: "#1b2245",
+                          width: "100%",
+                          color: "white",
+                          fontSize: 13,
+                          textAlign: "center",
+                          margin: "5px 0px",
+                          padding: 2,
+                        }}
+                      >
+                        <tbody>
+                          <tr>
+                            <td style={{ fontSize: 13 }}>
+                              Freight details
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table style={{ width: "100%" }}>
+                        <tbody>
+                          <tr>
+                            <td style={{ padding: "0px 10px" }}>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Load type</strong>
+                                <span>{getdata?.fcl_lcl || "-"}</span>
+                              </div>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Transit Priority</strong>
+                                <span style={{ textTransform: "capitalize" }}>{getdata?.type || "-"}</span>
+                              </div>
+                              <div className="d-flex justify-content-between my-1">
+                                <strong>Insurance</strong>
+                                <span style={{ textTransform: "capitalize" }}>{getdata?.insurance || "-"}</span>
                               </div>
                             </td>
                           </tr>
