@@ -526,6 +526,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
     customsRowsData.reduce((sum, item) => sum + item.calc.inclusive, 0);
 
   const renderRowsForSection = (rowsData, dropdownOptions, sectionTitle, totalTCost, totalFinalAmt) => {
+    if (!rowsData || rowsData.length === 0) return null;
     return (
       <>
         <tr className="estimate-section-row">
@@ -640,7 +641,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                 type="text"
                 className="supplier_form"
                 disabled
-                value={formatValue(calc.unit, 2)}
+                value={row.unitType === "W/M" ? formatValue(calc.unit, 3) : formatValue(calc.unit, 2)}
                 placeholder="0.00"
               />
             </td>
@@ -1004,7 +1005,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Dimensions (M3)</strong>
-                                <span>{getdata?.m3 || "-"}</span>
+                                <span>{getdata?.dimension || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Volumetric (kgs)</strong>
@@ -1012,7 +1013,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Chargeable</strong>
-                                <span>{freight.chargable_rate || "-"}</span>
+                                <span>{freight.chargable_rate ? formatValue(freight.chargable_rate, 3) : "-"}</span>
                               </div>
                             </td>
                           </tr>

@@ -481,7 +481,7 @@ export default function DownloadNewFreightQuoteInvoice() {
         row.description || "",
         row.qty || "",
         row.unitType && row.unitType !== "Select" ? row.unitType : "",
-        formatValue(calc.unit, 2),
+        row.unitType === "W/M" ? formatValue(calc.unit, 3) : formatValue(calc.unit, 2),
         formatValue(calc.salesPrice, 2),
         row.currency && row.currency !== "Select" ? row.currency : "",
         formatValue(row.roe, 4),
@@ -614,9 +614,9 @@ export default function DownloadNewFreightQuoteInvoice() {
         ["No. of Packages", getdata?.no_of_packages || ""],
         ["Package Type", getdata?.package_type || ""],
         ["Gross Weight (kgs)", getdata?.weight || ""],
-        ["Dimensions (M3)", getdata?.m3 || ""],
+        ["Dimensions (M3)", getdata?.dimension || ""],
         ["Volumetric (kgs)", getdata?.volumetric_weight || ""],
-        ["Chargeable", freight?.chargable_rate || ""],
+        ["Chargeable", freight?.chargable_rate ? formatValue(freight?.chargable_rate, 3) : ""],
       ];
       leftFields.forEach(([label, value]) => {
         drawRow(doc, margin + lPad, ly, lW, label, value);
@@ -916,6 +916,7 @@ export default function DownloadNewFreightQuoteInvoice() {
   };
 
   const renderRowsForSection = (rowsData, sectionTitle) => {
+    if (!rowsData || rowsData.length === 0) return null;
     const totalSectionExclusive = rowsData.reduce((sum, item) => sum + item.calc.exclusive, 0);
     const totalSectionInclusive = rowsData.reduce((sum, item) => sum + item.calc.inclusive, 0);
     return (
@@ -958,7 +959,7 @@ export default function DownloadNewFreightQuoteInvoice() {
                 type="text"
                 className="supplier_form"
                 disabled
-                value={formatValue(calc.unit, 2)}
+                value={row.unitType === "W/M" ? formatValue(calc.unit, 3) : formatValue(calc.unit, 2)}
                 placeholder="0.00"
               />
             </td>
@@ -1155,7 +1156,7 @@ export default function DownloadNewFreightQuoteInvoice() {
                     borderTop: "unset",
                     width: "100%",
                     display: "flex",
-                    alignItems: "flex-start",
+                    alignItems: "stretch",
                   }}
                 >
                   <div
@@ -1223,7 +1224,7 @@ export default function DownloadNewFreightQuoteInvoice() {
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Dimensions (M3)</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.m3 || "-"}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.dimension || "-"}</p>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Volumetric (kgs)</strong></p>
@@ -1231,7 +1232,7 @@ export default function DownloadNewFreightQuoteInvoice() {
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Chargeable</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{freight?.chargable_rate || "-"}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{freight?.chargable_rate ? formatValue(freight?.chargable_rate, 3) : "-"}</p>
                             </div>
                           </td>
                         </tr>

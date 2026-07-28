@@ -224,7 +224,7 @@ export default function AddNewFreightQuoteInvoice() {
           setSelected(0);
           setFreight((prev) => ({
             ...prev,
-            chargable_rate: orderInfo.chargable_rate || orderInfo.chargeable || "",
+            chargable_rate: orderInfo.chargable_rate ? formatValue(orderInfo.chargable_rate, 3) : (orderInfo.chargeable ? formatValue(orderInfo.chargeable, 3) : ""),
           }));
           initializeDefaultRows();
         }
@@ -281,7 +281,7 @@ export default function AddNewFreightQuoteInvoice() {
         const chargeable = freightObj.chargable_rate || freightObj.chargeable || "";
         setFreight((prev) => ({
           ...prev,
-          chargable_rate: chargeable,
+          chargable_rate: chargeable ? formatValue(chargeable, 3) : "",
         }));
 
         if (freightId) {
@@ -313,7 +313,7 @@ export default function AddNewFreightQuoteInvoice() {
             customer_invoice_no: invoiceData.customer_invoice_no || prev.customer_invoice_no,
             invoice_for_country: getCountry(invoiceData.invoice_for_country, invoiceData.company_address) || prev.invoice_for_country,
             final_base_currency: invoiceData.final_base_currency || prev.final_base_currency,
-            chargable_rate: invoiceData.chargeable !== undefined ? invoiceData.chargeable : prev.chargable_rate,
+            chargable_rate: invoiceData.chargeable !== undefined ? formatValue(invoiceData.chargeable, 3) : prev.chargable_rate,
             company_id: invoiceData.company_id || invoiceData.company_address?.id || prev.company_id,
             company_address: invoiceData.company_address || prev.company_address,
             client_id: invoiceData.client_id || prev.client_id,
@@ -390,7 +390,7 @@ export default function AddNewFreightQuoteInvoice() {
             invoice_for_country: invoiceData.invoice_for_country || "",
             due_date: toLocalDateString(invoiceData.due_date || invoiceData.date),
             final_base_currency: invoiceData.final_base_currency || "Select",
-            chargable_rate: invoiceData.chargeable || "",
+            chargable_rate: invoiceData.chargeable ? formatValue(invoiceData.chargeable, 3) : "",
             company_id: invoiceData.company_id || "",
             company_address: invoiceData.company_address || null,
             freight_quote_estimate_id: invoiceData.freight_quote_estimate_id || null,
@@ -995,7 +995,7 @@ export default function AddNewFreightQuoteInvoice() {
                 type="text"
                 className="supplier_form"
                 disabled
-                value={formatValue(calc.unit, 2)}
+                value={row.unitType === "W/M" ? formatValue(calc.unit, 3) : formatValue(calc.unit, 2)}
                 placeholder="0.00"
               />
             </td>
@@ -1354,7 +1354,7 @@ export default function AddNewFreightQuoteInvoice() {
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Dimensions (M3)</strong>
-                                <span>{getdata?.m3 || "-"}</span>
+                                <span>{getdata?.dimension || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Volumetric (kgs)</strong>
@@ -1370,6 +1370,21 @@ export default function AddNewFreightQuoteInvoice() {
                                   value={freight.chargable_rate}
                                   onChange={handlechangecalc}
                                   onKeyPress={handlepresss}
+                                  onBlur={(e) => {
+                                    setFreight((prev) => ({
+                                      ...prev,
+                                      chargable_rate: e.target.value ? formatValue(e.target.value, 3) : ""
+                                    }));
+                                  }}
+                                  onFocus={(e) => {
+                                    setFreight((prev) => ({
+                                      ...prev,
+                                      chargable_rate: String(e.target.value || "")
+                                        .replace(/,/g, "")
+                                        .replace(/%/g, "")
+                                        .trim()
+                                    }));
+                                  }}
                                 />
                               </div>
                             </td>

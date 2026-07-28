@@ -275,7 +275,7 @@ export default function EditQuotesInvoice() {
             customer_invoice_no: estimateData.customer_invoice_no || prev.customer_invoice_no,
             invoice_for_country: getCountry(estimateData.invoice_for_country, estimateData.company_address) || prev.invoice_for_country,
             final_base_currency: estimateData.final_base_currency || prev.final_base_currency,
-            chargable_rate: estimateData.chargeable !== undefined ? estimateData.chargeable : prev.chargable_rate,
+            chargable_rate: estimateData.chargeable !== undefined ? formatValue(estimateData.chargeable, 3) : prev.chargable_rate,
             company_id: estimateData.company_id || estimateData.company_address?.id || prev.company_id,
             company_address: estimateData.company_address || prev.company_address,
             client_id: estimateData.client_id || prev.client_id,
@@ -360,7 +360,7 @@ export default function EditQuotesInvoice() {
             invoice_for_country: getCountry(invoiceData.invoice_for_country, invoiceData.company_address),
             due_date: toLocalDateString(invoiceData.due_date || invoiceData.date),
             final_base_currency: invoiceData.final_base_currency || "Select",
-            chargable_rate: invoiceData.chargeable || "",
+            chargable_rate: invoiceData.chargeable ? formatValue(invoiceData.chargeable, 3) : "",
             company_id: invoiceData.company_id || "",
             company_address: invoiceData.company_address || null,
             created_at: invoiceData.created_at || "",
@@ -1032,7 +1032,7 @@ export default function EditQuotesInvoice() {
                 type="text"
                 className="supplier_form"
                 disabled
-                value={formatValue(calc.unit, 2)}
+                value={row.unitType === "W/M" ? formatValue(calc.unit, 3) : formatValue(calc.unit, 2)}
                 placeholder="0.00"
               />
             </td>
@@ -1460,7 +1460,7 @@ export default function EditQuotesInvoice() {
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Dimensions (M3)</strong>
-                                <span>{getdata?.m3 || "-"}</span>
+                                <span>{getdata?.dimension || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Volumetric (kgs)</strong>
@@ -1476,6 +1476,21 @@ export default function EditQuotesInvoice() {
                                   value={freight.chargable_rate}
                                   onChange={handlechangecalc}
                                   onKeyPress={handlepresss}
+                                  onBlur={(e) => {
+                                    setFreight((prev) => ({
+                                      ...prev,
+                                      chargable_rate: e.target.value ? formatValue(e.target.value, 3) : ""
+                                    }));
+                                  }}
+                                  onFocus={(e) => {
+                                    setFreight((prev) => ({
+                                      ...prev,
+                                      chargable_rate: String(e.target.value || "")
+                                        .replace(/,/g, "")
+                                        .replace(/%/g, "")
+                                        .trim()
+                                    }));
+                                  }}
                                 />
                               </div>
                             </td>

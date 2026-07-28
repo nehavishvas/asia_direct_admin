@@ -750,8 +750,8 @@ export default function Downlaodestimate() {
 
   const displayRowUnit = (unitType) => {
     if (!unitType || unitType === "Select") return "";
-    if (String(unitType) === "1") return "1.00";
-    return formatValue(freight?.chargable_rate);
+    if (String(unitType) === "1") return "1.000";
+    return formatValue(freight?.chargable_rate, 3);
   };
 
   // Extract ONLY the percentage number (e.g. "15.00%") → returns 15
@@ -1112,6 +1112,16 @@ export default function Downlaodestimate() {
             style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
             disabled
             value={formatValue(calc.inclusive)}
+            className="supplier_form"
+          />
+        </td>
+        <td>
+          <input
+            style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
+            type="text"
+            onChange={(e) => updateRowField(setter, row.id, "comment", e.target.value)}
+            value={row.comment || ""}
+            placeholder="Comment"
             className="supplier_form"
           />
         </td>
@@ -1657,7 +1667,7 @@ export default function Downlaodestimate() {
     const rows = [];
 
     // Section header row
-    rows.push([{ content: title, colSpan: 11, styles: sectionStyle }]);
+    rows.push([{ content: title, colSpan: 12, styles: sectionStyle }]);
 
     rowsData.forEach(({ row, calc }) => {
       const uom = row.unitType === "1" ? "L/S" : row.unitType === "2" ? "W/M" : "";
@@ -1676,6 +1686,7 @@ export default function Downlaodestimate() {
         formatValue(row.discPercent, 2, true),
         formatValue(calc.exclusive),
         formatValue(calc.inclusive),
+        row.comment || "",
       ]);
     });
 
@@ -1686,6 +1697,7 @@ export default function Downlaodestimate() {
       styledCell("", totalStyle),
       styledCell(formatValue(totals.exclusive), totalStyle),
       styledCell(formatValue(totals.inclusive), totalStyle),
+      styledCell("", totalStyle),
     ]);
 
     return rows;
@@ -1829,9 +1841,9 @@ export default function Downlaodestimate() {
         ["No. of Packages", getdata?.no_of_packages],
         ["Package Type", getdata?.package_type],
         ["Gross Weight (kgs)", getdata?.weight],
-        ["Dimensions (M3)", getdata?.m3 || ""],
+        ["Dimensions (M3)", getdata?.dimension || ""],
         ["Volumetric (kgs)", getdata?.volumetric_weight],
-        ["Chargeable", freight?.chargable_rate],
+        ["Chargeable", formatValue(freight?.chargable_rate, 3)],
       ];
       leftFields.forEach(([label, value]) => {
         drawRow(doc, margin + lPad, ly, lW, label, value);
@@ -1948,7 +1960,7 @@ export default function Downlaodestimate() {
           },
           {
             content: `${formatValue(grandTotalFinalAmt)}\n${grandTotalDiscount > 0 ? `-${formatValue(grandTotalDiscount)}` : "0.00"}\n${formatValue(grandTotalExclusive)}\n${formatValue(grandTotalVat)}\n${formatValue(totalVatInclusive)}`,
-            colSpan: 1,
+            colSpan: 2,
             styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "right", textColor: [20, 20, 20], cellPadding: 2, lineWidth: 0 }
           }
         ],
@@ -1957,7 +1969,7 @@ export default function Downlaodestimate() {
       autoTable(doc, {
         startY: cursorY,
         margin: { left: margin, right: margin, top: margin, bottom: 14 },
-        head: [["Description", "QTY", "UOM", "Unit", "Sales/ P", "Curr", "Exch Rate", "Vat %", "Disc %", "Exclusive", "Total"]],
+        head: [["Description", "QTY", "UOM", "Unit", "Sales/ P", "Curr", "Exch Rate", "Vat %", "Disc %", "Exclusive", "Total", "Comment"]],
         body: tableBody,
         theme: "grid",
         styles: {
@@ -2516,7 +2528,7 @@ export default function Downlaodestimate() {
                                       marginBottom: "unset",
                                       marginTop: 2,
                                     }}
-                                  ></p>
+                                  >{getdata?.dimension}</p>
                                 </div>
                                 <div
                                   style={{
@@ -3171,6 +3183,7 @@ export default function Downlaodestimate() {
                             <th>Disc %</th>
                             <th>Exclusive</th>
                             <th>Total</th>
+                            <th>Comment</th>
                           </tr>
                         </thead>
 
@@ -3179,7 +3192,7 @@ export default function Downlaodestimate() {
                           {originRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={11}>
+                                <td colSpan={12}>
                                   <strong>Origin Charges</strong>
                                 </td>
                               </tr>
@@ -3190,6 +3203,7 @@ export default function Downlaodestimate() {
                                 <td></td>
                                 <td>{formatValue(totalOriginExclusive)}</td>
                                 <td>{formatValue(totalOriginInclusive)}</td>
+                                <td></td>
                               </tr>
                             </>
                           )}
@@ -3198,7 +3212,7 @@ export default function Downlaodestimate() {
                           {freightRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={11}>
+                                <td colSpan={12}>
                                   <strong>Freight Charges</strong>
                                 </td>
                               </tr>
@@ -3209,6 +3223,7 @@ export default function Downlaodestimate() {
                                 <td></td>
                                 <td>{formatValue(totalFreightExclusive)}</td>
                                 <td>{formatValue(totalFreightInclusive)}</td>
+                                <td></td>
                               </tr>
                             </>
                           )}
@@ -3217,7 +3232,7 @@ export default function Downlaodestimate() {
                           {transitRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={11}>
+                                <td colSpan={12}>
                                   <strong>Transit Charges</strong>
                                 </td>
                               </tr>
@@ -3228,6 +3243,7 @@ export default function Downlaodestimate() {
                                 <td></td>
                                 <td>{formatValue(totalTransitExclusive)}</td>
                                 <td>{formatValue(totalTransitInclusive)}</td>
+                                <td></td>
                               </tr>
                             </>
                           )}
@@ -3236,7 +3252,7 @@ export default function Downlaodestimate() {
                           {destinationRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={11}>
+                                <td colSpan={12}>
                                   <strong>Destination Charges</strong>
                                 </td>
                               </tr>
@@ -3247,6 +3263,7 @@ export default function Downlaodestimate() {
                                 <td></td>
                                 <td>{formatValue(totalDestinationExclusive)}</td>
                                 <td>{formatValue(totalDestinationInclusive)}</td>
+                                <td></td>
                               </tr>
                             </>
                           )}
@@ -3255,7 +3272,7 @@ export default function Downlaodestimate() {
                           {adminRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={11}>
+                                <td colSpan={12}>
                                   <strong>Admin Charges</strong>
                                 </td>
                               </tr>
@@ -3266,6 +3283,7 @@ export default function Downlaodestimate() {
                                 <td></td>
                                 <td>{formatValue(totalAdminExclusive)}</td>
                                 <td>{formatValue(totalAdminInclusive)}</td>
+                                <td></td>
                               </tr>
                             </>
                           )}
@@ -3274,7 +3292,7 @@ export default function Downlaodestimate() {
                           {customsRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={11}>
+                                <td colSpan={12}>
                                   <strong>Customs Charges</strong>
                                 </td>
                               </tr>
@@ -3285,6 +3303,7 @@ export default function Downlaodestimate() {
                                 <td></td>
                                 <td>{formatValue(totalCustomsExclusive)}</td>
                                 <td>{formatValue(totalCustomsInclusive)}</td>
+                                <td></td>
                               </tr>
                             </>
                           )}
@@ -3303,7 +3322,7 @@ export default function Downlaodestimate() {
                                 <span style={{ fontWeight: "bold", borderTop: "1px solid #475569", paddingTop: "4px" }}>Grand Total:</span>
                               </div>
                             </td>
-                            <td style={{ padding: "8px", verticalAlign: "top", color: "black", textAlign: "right", borderLeft: "none" }}>
+                            <td colSpan={2} style={{ padding: "8px", verticalAlign: "top", color: "black", textAlign: "right", borderLeft: "none" }}>
                               <div style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "13px" }}>
                                 <span>{formatValue(grandTotalFinalAmt)}</span>
                                 <span>{grandTotalDiscount > 0 ? `-${formatValue(grandTotalDiscount)}` : "0.00"}</span>

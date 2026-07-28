@@ -699,8 +699,10 @@ export default function Viewsupplierinvoice({ hiddenPrintItem, onPrintComplete }
   const resolveRowUnitDisplay = (row) =>
     row.unitType === "1" ? "1" : freight.chargable_rate || "";
 
-  const renderRowsForSection = (rowsData, dropdownOptions, sectionTitle, totalTCost, totalFinalAmt) => (
-    <>
+  const renderRowsForSection = (rowsData, dropdownOptions, sectionTitle, totalTCost, totalFinalAmt) => {
+    if (!rowsData || rowsData.length === 0) return null;
+    return (
+      <>
       <tr className="estimate-section-row">
         <td colSpan={17}><strong>{sectionTitle}</strong></td>
       </tr>
@@ -793,7 +795,8 @@ export default function Viewsupplierinvoice({ hiddenPrintItem, onPrintComplete }
         <td colSpan={6}></td>
       </tr>
     </>
-  );
+    );
+  };
 
   // ── render ─────────────────────────────────────────────────────────────────
 

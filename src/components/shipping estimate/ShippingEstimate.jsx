@@ -350,8 +350,8 @@ export default function ShippingEstimate() {
 
   const displayRowUnit = (unitType) => {
     if (!unitType || unitType === "Select") return "";
-    if (String(unitType) === "1") return "1.00";
-    return formatNumber(freight?.chargable_rate, 2);
+    if (String(unitType) === "1") return "1.000";
+    return formatNumber(freight?.chargable_rate, 3);
   };
 
   const calculateRowData = (row) => {
@@ -1758,7 +1758,7 @@ export default function ShippingEstimate() {
                                           <strong>Dimensions (M3)</strong>
                                         </p>
                                         <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
-                                          {getdata?.m3}
+                                          {getdata?.dimension}
                                         </p>
                                       </div>
                                       <div style={{ display: "flex", justifyContent: "space-between" }}>

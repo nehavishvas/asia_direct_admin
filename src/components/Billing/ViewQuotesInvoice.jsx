@@ -477,9 +477,9 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
         ["No. of Packages", getdata?.no_of_packages || ""],
         ["Package Type", getdata?.package_type || ""],
         ["Gross Weight (kgs)", getdata?.weight || ""],
-        ["Dimensions (M3)", getdata?.m3 || ""],
+        ["Dimensions (M3)", getdata?.dimension || ""],
         ["Volumetric (kgs)", getdata?.volumetric_weight || ""],
-        ["Chargeable", freight.chargable_rate || ""],
+        ["Chargeable", freight.chargable_rate ? formatValue(freight.chargable_rate, 3) : ""],
       ];
       leftFields.forEach(([label, value]) => {
         drawRow(doc, margin + lPad, ly, lW, label, value);
@@ -601,7 +601,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
             row.currency && row.currency !== "Select" ? row.currency : "",
             formatValue(row.cost, 2),
             row.unitType && row.unitType !== "Select" ? row.unitType : "",
-            formatValue(calc.unit, 2),
+            row.unitType === "W/M" ? formatValue(calc.unit, 3) : formatValue(calc.unit, 2),
             formatValue(calc.tCost, 2),
             row.gp_percent !== "" ? String(row.gp_percent) : "",
             formatValue(calc.salesPrice, 2),
@@ -872,6 +872,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
     customsRowsData.reduce((sum, item) => sum + item.calc.inclusive, 0);
 
   const renderRowsForSection = (rowsData, dropdownOptions, sectionTitle, totalTCost, totalFinalAmt) => {
+    if (!rowsData || rowsData.length === 0) return null;
     return (
       <>
         <tr className="estimate-section-row">
@@ -986,7 +987,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                 type="text"
                 className="supplier_form"
                 disabled
-                value={formatValue(calc.unit, 2)}
+                value={row.unitType === "W/M" ? formatValue(calc.unit, 3) : formatValue(calc.unit, 2)}
                 placeholder="0.00"
               />
             </td>
@@ -1349,7 +1350,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Dimensions (M3)</strong>
-                                <span>{getdata?.m3 || "-"}</span>
+                                <span>{getdata?.dimension || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Volumetric (kgs)</strong>
@@ -1357,7 +1358,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Chargeable</strong>
-                                <span>{freight.chargable_rate || "-"}</span>
+                                <span>{freight.chargable_rate ? formatValue(freight.chargable_rate, 3) : "-"}</span>
                               </div>
                             </td>
                           </tr>
