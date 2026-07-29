@@ -113,6 +113,8 @@ import EditQuotesInvoice from "./components/Billing/EditQuotesInvoice";
 import ViewQuotesInvoice from "./components/Billing/ViewQuotesInvoice";
 import CustomerQuotesReport from "./components/Billing/CustomerQuotesReport";
 import CustomerInvoicesReport from "./components/Billing/CustomerInvoicesReport";
+import CustomerBalancesReport from "./components/Billing/CustomerBalancesReport";
+import CustomerUnallocatedReport from "./components/Billing/CustomerUnallocatedReport";
 import AddNewFreightQuoteInvoice from "./components/Billing/AddNewFreightQuoteInvoice";
 import EditNewFreightQuoteInvoice from "./components/Billing/EditNewFreightQuoteInvoice";
 import ViewNewFreightQuoteInvoice from "./components/Billing/ViewNewFreightQuoteInvoice";
@@ -145,7 +147,7 @@ const Uniovwersalpage = lazy(() => import("./components/Uniovwersalpage"));
 export default function App() {
   const [text, setText] = useState("");
   const [permission, setPermission] = useState("");
-  console.log("28-07-26", "11:47");
+  console.log("28-07-26", "18:03");
   return (
     <MyContext1.Provider value={{ text, setText }}>
       <MyContext2.Provider value={{ permission, setPermission }}>
@@ -180,6 +182,8 @@ export default function App() {
                 <Route path="/Admin/addquotesinvoice" element={<AddQuotesInvoice />} />
                 <Route path="/Admin/customer-quotes-report" element={<CustomerQuotesReport />} />
                 <Route path="/Admin/customer-invoices-report" element={<CustomerInvoicesReport />} />
+                <Route path="/Admin/customer-balance-report" element={<CustomerBalancesReport />} />
+                <Route path="/Admin/customer-unallocated-report" element={<CustomerUnallocatedReport />} />
                 <Route path="/Admin/editquotesinvoice" element={<EditQuotesInvoice />} />
                 <Route path="/Admin/viewquotesinvoice" element={<ViewQuotesInvoice />} />
                 <Route path="/Admin/addnewfreightquoteinvoice" element={<AddNewFreightQuoteInvoice />} />

@@ -1,12 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import { Modal, Box } from "@mui/material";
 import { BsThreeDotsVertical, BsTrash, BsPlus } from "react-icons/bs";
 import Swal from "sweetalert2";
 
 const pageSize = 10;
 export default function Cashbook() {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [clients, setClients] = useState([]);
   const [ordersPerRow, setOrdersPerRow] = useState({});
@@ -569,21 +571,30 @@ export default function Cashbook() {
         <div className="wpWrapper">
           <div className="container-fluid">
             <div className="card-body">
-              <div className="col-12 d-flex justify-content-end align-items-center manageFreight">
-                <input
-                  className="py-1 rounded ps-1 mx-2"
-                  type="text"
-                  name="search"
-                  onChange={handlelearch}
-                  placeholder="Search"
+              <div className="col-12 d-flex justify-content-between align-items-center manageFreight">
+                <button
+                  className="btn btn-primary blueBtn"
                   style={{ height: "38px" }}
-                />
-                <button className="btn btn-secondary" style={{ height: "38px" }} onClick={handlecjh}>
-                  Search
+                  onClick={() => navigate("/Admin/customer-unallocated-report")}
+                >
+                  Unallocated Report
                 </button>
-                <button className="btn btn-primary mx-2" style={{ height: "38px" }} onClick={handleAddNewClick}>
-                  Add Cashbook
-                </button>
+                <div className="d-flex align-items-center">
+                  <input
+                    className="py-1 rounded ps-1 mx-2"
+                    type="text"
+                    name="search"
+                    onChange={handlelearch}
+                    placeholder="Search"
+                    style={{ height: "38px" }}
+                  />
+                  <button className="btn btn-secondary" style={{ height: "38px" }} onClick={handlecjh}>
+                    Search
+                  </button>
+                  <button className="btn btn-primary mx-2" style={{ height: "38px" }} onClick={handleAddNewClick}>
+                    Add Cashbook
+                  </button>
+                </div>
               </div>
               <div className="table-responsive mt-2">
                 <table className="table table-striped tableICon">

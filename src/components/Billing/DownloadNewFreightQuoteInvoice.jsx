@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -490,6 +490,16 @@ export default function DownloadNewFreightQuoteInvoice() {
         formatValue(calc.exclusive),
         formatValue(calc.inclusive),
       ]);
+
+      if (row.comment) {
+        rows.push([
+          {
+            content: `Comment: ${row.comment}`,
+            colSpan: 11,
+            styles: { fontStyle: "italic", textColor: [100, 100, 100], cellPadding: 2 }
+          }
+        ]);
+      }
     });
 
     rows.push([
@@ -927,115 +937,124 @@ export default function DownloadNewFreightQuoteInvoice() {
           </td>
         </tr>
         {rowsData.map(({ row, calc }) => (
-          <tr key={row.id}>
-            <td>{row.description || ""}</td>
-            <td>
-              <input
-                style={{ marginBottom: 0, fontSize: 13, color: "black", fontWeight: 400, border: "0px", verticalAlign: "middle" }}
-                type="text"
-                className="supplier_form"
-                disabled
-                value={row.qty || ""}
-                placeholder="0.00"
-              />
-            </td>
-            <td>
-              <select
-                className="select_supplier"
-                style={{ margin: 0, fontSize: 13, fontWeight: 700, paddingLeft: 5, border: 0 }}
-                disabled
-                value={row.unitType || "Select"}
-              >
-                <option value="Select">Select</option>
-                <option value="L/S">L/S</option>
-                <option value="W/M">W/M</option>
-                <option value="PCS">PCS</option>
-                <option value="CBM">CBM</option>
-              </select>
-            </td>
-            <td>
-              <input
-                style={{ marginBottom: 0, fontSize: 13, color: "black", fontWeight: 400, border: "0px", verticalAlign: "middle" }}
-                type="text"
-                className="supplier_form"
-                disabled
-                value={row.unitType === "W/M" ? formatValue(calc.unit, 3) : formatValue(calc.unit, 2)}
-                placeholder="0.00"
-              />
-            </td>
-            <td>
-              <input
-                style={{ marginBottom: 0, fontSize: 13, color: "black", fontWeight: 400, border: "0px", verticalAlign: "middle" }}
-                type="text"
-                className="supplier_form"
-                disabled
-                value={formatValue(calc.salesPrice, 2)}
-                placeholder="0.00"
-              />
-            </td>
-            <td>
-              <select
-                className="select_supplier"
-                style={{ margin: 0, fontSize: 13, fontWeight: 700, paddingLeft: 5, border: 0 }}
-                disabled
-                value={row.currency || "Select"}
-              >
-                <option value="Select">Select</option>
-                <option value="RAND">RAND</option>
-                <option value="USD">USD</option>
-                <option value="INR">INR</option>
-                <option value="EURO">EURO</option>
-              </select>
-            </td>
-            <td>
-              <input
-                style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
-                disabled
-                value={formatValue(row.roe, 4)}
-                className="supplier_form"
-                placeholder="1.00"
-              />
-            </td>
-            <td>
-              <select
-                disabled
-                value={row.vatTyp || ""}
-                className="select_supplier"
-                style={{ margin: 0, fontSize: 13, fontWeight: 700, paddingLeft: 5, border: 0 }}
-              >
-                {VAT_OPTIONS.map((opt, i) => (
-                  <option key={i} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            </td>
-            <td>
-              <input
-                type="text"
-                placeholder="0.00%"
-                disabled
-                className="supplier_form"
-                value={formatValue(row.discPercent, 2, true)}
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                placeholder="0.00"
-                disabled
-                value={formatValue(calc.exclusive)}
-                className="supplier_form"
-              />
-            </td>
-            <td>
-              <input
-                type="text"
-                placeholder="0.00"
-                disabled
-                value={formatValue(calc.inclusive)}
-                className="supplier_form"
-              />
-            </td>
-          </tr>
+          <React.Fragment key={row.id}>
+            <tr>
+              <td>{row.description || ""}</td>
+              <td>
+                <input
+                  style={{ marginBottom: 0, fontSize: 13, color: "black", fontWeight: 400, border: "0px", verticalAlign: "middle" }}
+                  type="text"
+                  className="supplier_form"
+                  disabled
+                  value={row.qty || ""}
+                  placeholder="0.00"
+                />
+              </td>
+              <td>
+                <select
+                  className="select_supplier"
+                  style={{ margin: 0, fontSize: 13, fontWeight: 700, paddingLeft: 5, border: 0 }}
+                  disabled
+                  value={row.unitType || "Select"}
+                >
+                  <option value="Select">Select</option>
+                  <option value="L/S">L/S</option>
+                  <option value="W/M">W/M</option>
+                  <option value="PCS">PCS</option>
+                  <option value="CBM">CBM</option>
+                </select>
+              </td>
+              <td>
+                <input
+                  style={{ marginBottom: 0, fontSize: 13, color: "black", fontWeight: 400, border: "0px", verticalAlign: "middle" }}
+                  type="text"
+                  className="supplier_form"
+                  disabled
+                  value={row.unitType === "W/M" ? formatValue(calc.unit, 3) : formatValue(calc.unit, 2)}
+                  placeholder="0.00"
+                />
+              </td>
+              <td>
+                <input
+                  style={{ marginBottom: 0, fontSize: 13, color: "black", fontWeight: 400, border: "0px", verticalAlign: "middle" }}
+                  type="text"
+                  className="supplier_form"
+                  disabled
+                  value={formatValue(calc.salesPrice, 2)}
+                  placeholder="0.00"
+                />
+              </td>
+              <td>
+                <select
+                  className="select_supplier"
+                  style={{ margin: 0, fontSize: 13, fontWeight: 700, paddingLeft: 5, border: 0 }}
+                  disabled
+                  value={row.currency || "Select"}
+                >
+                  <option value="Select">Select</option>
+                  <option value="RAND">RAND</option>
+                  <option value="USD">USD</option>
+                  <option value="INR">INR</option>
+                  <option value="EURO">EURO</option>
+                </select>
+              </td>
+              <td>
+                <input
+                  style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
+                  disabled
+                  value={formatValue(row.roe, 4)}
+                  className="supplier_form"
+                  placeholder="1.00"
+                />
+              </td>
+              <td>
+                <select
+                  disabled
+                  value={row.vatTyp || ""}
+                  className="select_supplier"
+                  style={{ margin: 0, fontSize: 13, fontWeight: 700, paddingLeft: 5, border: 0 }}
+                >
+                  {VAT_OPTIONS.map((opt, i) => (
+                    <option key={i} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </td>
+              <td>
+                <input
+                  type="text"
+                  placeholder="0.00%"
+                  disabled
+                  className="supplier_form"
+                  value={formatValue(row.discPercent, 2, true)}
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  placeholder="0.00"
+                  disabled
+                  value={formatValue(calc.exclusive)}
+                  className="supplier_form"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  placeholder="0.00"
+                  disabled
+                  value={formatValue(calc.inclusive)}
+                  className="supplier_form"
+                />
+              </td>
+            </tr>
+            {row.comment && (
+              <tr className="comment-row">
+                <td colSpan={11} style={{ textAlign: "left", fontSize: "12px", color: "#6c757d", fontStyle: "italic", padding: "4px 8px 4px 15px", borderTop: "none" }}>
+                  Comment: {row.comment}
+                </td>
+              </tr>
+            )}
+          </React.Fragment>
         ))}
         <tr style={{ fontWeight: "bold", backgroundColor: "#fafafa" }}>
           <td colSpan={7}>Total - {sectionTitle}</td>

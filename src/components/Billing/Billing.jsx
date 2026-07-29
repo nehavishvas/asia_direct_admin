@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { Modal, Box } from "@mui/material";
 
@@ -97,6 +98,7 @@ const SearchableDropdown = ({ value, options, onChange, placeholder }) => {
 };
 
 export default function BillingTable() {
+  const navigate = useNavigate();
   const [tableData, setTableData] = useState([]);
   const [dropdownData, setDropdownData] = useState({});
   const [selectedDueDates, setSelectedDueDates] = useState({});
@@ -317,16 +319,24 @@ export default function BillingTable() {
         <div className="wpWrapper">
           <div className="container-fluid manageFreight">
             <div>
-              <div className="d-flex justify-content-end my-3">
-                <input
-                  name="search"
-                  placeholder="search..."
-                  className="px-2 rounded"
-                  onChange={handlechnage}
-                ></input>
-                <button className="mx-2 btn btn-secondary" onClick={hadleclick}>
-                  search
+              <div className="d-flex justify-content-between align-items-center my-3">
+                <button
+                  className="btn btn-primary blueBtn"
+                  onClick={() => navigate("/Admin/customer-balance-report")}
+                >
+                  Customer Balance
                 </button>
+                <div className="d-flex">
+                  <input
+                    name="search"
+                    placeholder="search..."
+                    className="px-2 rounded"
+                    onChange={handlechnage}
+                  ></input>
+                  <button className="mx-2 btn btn-secondary" onClick={hadleclick}>
+                    search
+                  </button>
+                </div>
               </div>
               <div className="card-body">
                 <table className="table  table-responsive table-striped">

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { MdDownloadForOffline } from "react-icons/md";
@@ -1007,125 +1007,124 @@ export default function Downlaodestimate() {
 
   const renderRow = (row, calc, setter) => {
     return (
-      <tr key={row.id}>
-        <td>{row.description || ""}</td>
-        <td>
-          <input
-            style={{ marginBottom: 0, fontSize: 13, color: "black", fontWeight: 400, border: "0px", verticalAlign: "middle" }}
-            type="text"
-            className="supplier_form"
-            onChange={(e) => updateRowField(setter, row.id, "qty", e.target.value)}
-            value={row.qty || ""}
-            placeholder="0.00"
-          />
-        </td>
-        <td>
-          <select
-            className="select_supplier"
-            style={{ margin: 0, fontSize: 13, fontWeight: 700, paddingLeft: 5, border: 0 }}
-            onChange={(e) => updateRowField(setter, row.id, "unitType", e.target.value)}
-            value={row.unitType || "Select"}
-          >
-            <option value="Select">Select</option>
-            <option value="1">L/S</option>
-            <option value="2">W/M</option>
-          </select>
-        </td>
-        <td>
-          <input
-            style={{ marginBottom: 0, fontSize: 13, color: "black", fontWeight: 400, border: "0px", verticalAlign: "middle" }}
-            type="text"
-            className="supplier_form"
-            disabled
-            value={displayRowUnit(row.unitType)}
-            placeholder="0.00"
-          />
-        </td>
-        <td>
-          <input
-            style={{ marginBottom: 0, fontSize: 13, color: "black", fontWeight: 400, border: "0px", verticalAlign: "middle" }}
-            type="text"
-            className="supplier_form"
-            disabled
-            value={formatValue(calc.salesPrice, 2)}
-            placeholder="0.00"
-          />
-        </td>
-        <td>
-          <select
-            className="select_supplier"
-            style={{ margin: 0, fontSize: 13, fontWeight: 700, paddingLeft: 5, border: 0 }}
-            onChange={(e) => updateRowField(setter, row.id, "currency", e.target.value)}
-            value={row.currency || "Select"}
-          >
-            <option value="Select">Select</option>
-            <option value="RAND">RAND</option>
-            <option value="USD">USD</option>
-            <option value="INR">INR</option>
-            <option value="EURO">EURO</option>
-          </select>
-        </td>
-        <td>
-          <input
-            style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
-            name="roe"
-            onChange={(e) => updateRowField(setter, row.id, "roe", e.target.value)}
-            onBlur={(e) => handleBlur(setter, row.id, "roe", e.target.value, 4)}
-            onFocus={(e) => handleFocus(setter, row.id, "roe", row.roe || "")}
-            value={row.roe || ""}
-            className="supplier_form"
-          />
-        </td>
-        <td>
-          <select
-            className="select_supplier"
-            style={{ margin: 0, fontSize: 13, fontWeight: 700, paddingLeft: 5, border: 0 }}
-            onChange={(e) => updateRowField(setter, row.id, "vatTyp", e.target.value)}
-            value={row.vatTyp || ""}
-          >
-            {VAT_OPTIONS.map((opt, i) => (
-              <option key={i} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
-        </td>
-        <td>
-          <input
-            style={{ marginBottom: 0, fontSize: 13, color: "black", width: "50px", border: "0px", verticalAlign: "middle" }}
-            type="text"
-            onChange={(e) => updateRowField(setter, row.id, "discPercent", e.target.value)}
-            onBlur={(e) => handleBlur(setter, row.id, "discPercent", e.target.value, 2, true)}
-            onFocus={(e) => handleFocus(setter, row.id, "discPercent", row.discPercent || "")}
-            value={row.discPercent || ""}
-            placeholder="0.00%"
-          />
-        </td>
-        <td>
-          <input
-            style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
-            disabled
-            value={formatValue(calc.exclusive)}
-            className="supplier_form"
-          />
-        </td>
-        <td>
-          <input
-            style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
-            disabled
-            value={formatValue(calc.inclusive)}
-            className="supplier_form"
-          />
-        </td>
-        <td>
-          <input
-            style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
-            type="text"
-            onChange={(e) => updateRowField(setter, row.id, "comment", e.target.value)}
-            value={row.comment || ""}
-            placeholder="Comment"
-            className="supplier_form"
-          />
-        </td>
-      </tr>
+      <React.Fragment key={row.id}>
+        <tr>
+          <td>{row.description || ""}</td>
+          <td>
+            <input
+              style={{ marginBottom: 0, fontSize: 13, color: "black", fontWeight: 400, border: "0px", verticalAlign: "middle" }}
+              type="text"
+              className="supplier_form"
+              onChange={(e) => updateRowField(setter, row.id, "qty", e.target.value)}
+              value={row.qty || ""}
+              placeholder="0.00"
+            />
+          </td>
+          <td>
+            <select
+              className="select_supplier"
+              style={{ margin: 0, fontSize: 13, fontWeight: 700, paddingLeft: 5, border: 0 }}
+              onChange={(e) => updateRowField(setter, row.id, "unitType", e.target.value)}
+              value={row.unitType || "Select"}
+            >
+              <option value="Select">Select</option>
+              <option value="1">L/S</option>
+              <option value="2">W/M</option>
+            </select>
+          </td>
+          <td>
+            <input
+              style={{ marginBottom: 0, fontSize: 13, color: "black", fontWeight: 400, border: "0px", verticalAlign: "middle" }}
+              type="text"
+              className="supplier_form"
+              disabled
+              value={displayRowUnit(row.unitType)}
+              placeholder="0.00"
+            />
+          </td>
+          <td>
+            <input
+              style={{ marginBottom: 0, fontSize: 13, color: "black", fontWeight: 400, border: "0px", verticalAlign: "middle" }}
+              type="text"
+              className="supplier_form"
+              disabled
+              value={formatValue(calc.salesPrice, 2)}
+              placeholder="0.00"
+            />
+          </td>
+          <td>
+            <select
+              className="select_supplier"
+              style={{ margin: 0, fontSize: 13, fontWeight: 700, paddingLeft: 5, border: 0 }}
+              onChange={(e) => updateRowField(setter, row.id, "currency", e.target.value)}
+              value={row.currency || "Select"}
+            >
+              <option value="Select">Select</option>
+              <option value="RAND">RAND</option>
+              <option value="USD">USD</option>
+              <option value="INR">INR</option>
+              <option value="EURO">EURO</option>
+            </select>
+          </td>
+          <td>
+            <input
+              style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
+              name="roe"
+              onChange={(e) => updateRowField(setter, row.id, "roe", e.target.value)}
+              onBlur={(e) => handleBlur(setter, row.id, "roe", e.target.value, 4)}
+              onFocus={(e) => handleFocus(setter, row.id, "roe", row.roe || "")}
+              value={row.roe || ""}
+              className="supplier_form"
+            />
+          </td>
+          <td>
+            <select
+              className="select_supplier"
+              style={{ margin: 0, fontSize: 13, fontWeight: 700, paddingLeft: 5, border: 0 }}
+              onChange={(e) => updateRowField(setter, row.id, "vatTyp", e.target.value)}
+              value={row.vatTyp || ""}
+            >
+              {VAT_OPTIONS.map((opt, i) => (
+                <option key={i} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </td>
+          <td>
+            <input
+              style={{ marginBottom: 0, fontSize: 13, color: "black", width: "50px", border: "0px", verticalAlign: "middle" }}
+              type="text"
+              onChange={(e) => updateRowField(setter, row.id, "discPercent", e.target.value)}
+              onBlur={(e) => handleBlur(setter, row.id, "discPercent", e.target.value, 2, true)}
+              onFocus={(e) => handleFocus(setter, row.id, "discPercent", row.discPercent || "")}
+              value={row.discPercent || ""}
+              placeholder="0.00%"
+            />
+          </td>
+          <td>
+            <input
+              style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
+              disabled
+              value={formatValue(calc.exclusive)}
+              className="supplier_form"
+            />
+          </td>
+          <td>
+            <input
+              style={{ marginBottom: 0, fontSize: 13, color: "black", border: "0px", verticalAlign: "middle" }}
+              disabled
+              value={formatValue(calc.inclusive)}
+              className="supplier_form"
+            />
+          </td>
+        </tr>
+        {row.comment && (
+          <tr className="comment-row">
+            <td colSpan={11} style={{ textAlign: "left", fontSize: "12px", color: "#6c757d", fontStyle: "italic", padding: "4px 8px 4px 15px", borderTop: "none" }}>
+              Comment: {row.comment}
+            </td>
+          </tr>
+        )}
+      </React.Fragment>
     );
   };
 
@@ -1667,7 +1666,7 @@ export default function Downlaodestimate() {
     const rows = [];
 
     // Section header row
-    rows.push([{ content: title, colSpan: 12, styles: sectionStyle }]);
+    rows.push([{ content: title, colSpan: 11, styles: sectionStyle }]);
 
     rowsData.forEach(({ row, calc }) => {
       const uom = row.unitType === "1" ? "L/S" : row.unitType === "2" ? "W/M" : "";
@@ -1686,8 +1685,17 @@ export default function Downlaodestimate() {
         formatValue(row.discPercent, 2, true),
         formatValue(calc.exclusive),
         formatValue(calc.inclusive),
-        row.comment || "",
       ]);
+
+      if (row.comment) {
+        rows.push([
+          {
+            content: `Comment: ${row.comment}`,
+            colSpan: 11,
+            styles: { fontStyle: "italic", textColor: [100, 100, 100], cellPadding: 2 }
+          }
+        ]);
+      }
     });
 
     // Section total row
@@ -1697,7 +1705,6 @@ export default function Downlaodestimate() {
       styledCell("", totalStyle),
       styledCell(formatValue(totals.exclusive), totalStyle),
       styledCell(formatValue(totals.inclusive), totalStyle),
-      styledCell("", totalStyle),
     ]);
 
     return rows;
@@ -1960,7 +1967,7 @@ export default function Downlaodestimate() {
           },
           {
             content: `${formatValue(grandTotalFinalAmt)}\n${grandTotalDiscount > 0 ? `-${formatValue(grandTotalDiscount)}` : "0.00"}\n${formatValue(grandTotalExclusive)}\n${formatValue(grandTotalVat)}\n${formatValue(totalVatInclusive)}`,
-            colSpan: 2,
+            colSpan: 1,
             styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "right", textColor: [20, 20, 20], cellPadding: 2, lineWidth: 0 }
           }
         ],
@@ -1969,7 +1976,7 @@ export default function Downlaodestimate() {
       autoTable(doc, {
         startY: cursorY,
         margin: { left: margin, right: margin, top: margin, bottom: 14 },
-        head: [["Description", "QTY", "UOM", "Unit", "Sales/ P", "Curr", "Exch Rate", "Vat %", "Disc %", "Exclusive", "Total", "Comment"]],
+        head: [["Description", "QTY", "UOM", "Unit", "Sales/ P", "Curr", "Exch Rate", "Vat %", "Disc %", "Exclusive", "Total"]],
         body: tableBody,
         theme: "grid",
         styles: {
@@ -3183,7 +3190,6 @@ export default function Downlaodestimate() {
                             <th>Disc %</th>
                             <th>Exclusive</th>
                             <th>Total</th>
-                            <th>Comment</th>
                           </tr>
                         </thead>
 
@@ -3192,7 +3198,7 @@ export default function Downlaodestimate() {
                           {originRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={12}>
+                                <td colSpan={11}>
                                   <strong>Origin Charges</strong>
                                 </td>
                               </tr>
@@ -3203,7 +3209,6 @@ export default function Downlaodestimate() {
                                 <td></td>
                                 <td>{formatValue(totalOriginExclusive)}</td>
                                 <td>{formatValue(totalOriginInclusive)}</td>
-                                <td></td>
                               </tr>
                             </>
                           )}
@@ -3212,7 +3217,7 @@ export default function Downlaodestimate() {
                           {freightRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={12}>
+                                <td colSpan={11}>
                                   <strong>Freight Charges</strong>
                                 </td>
                               </tr>
@@ -3223,7 +3228,6 @@ export default function Downlaodestimate() {
                                 <td></td>
                                 <td>{formatValue(totalFreightExclusive)}</td>
                                 <td>{formatValue(totalFreightInclusive)}</td>
-                                <td></td>
                               </tr>
                             </>
                           )}
@@ -3232,7 +3236,7 @@ export default function Downlaodestimate() {
                           {transitRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={12}>
+                                <td colSpan={11}>
                                   <strong>Transit Charges</strong>
                                 </td>
                               </tr>
@@ -3243,7 +3247,6 @@ export default function Downlaodestimate() {
                                 <td></td>
                                 <td>{formatValue(totalTransitExclusive)}</td>
                                 <td>{formatValue(totalTransitInclusive)}</td>
-                                <td></td>
                               </tr>
                             </>
                           )}
@@ -3252,7 +3255,7 @@ export default function Downlaodestimate() {
                           {destinationRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={12}>
+                                <td colSpan={11}>
                                   <strong>Destination Charges</strong>
                                 </td>
                               </tr>
@@ -3263,7 +3266,6 @@ export default function Downlaodestimate() {
                                 <td></td>
                                 <td>{formatValue(totalDestinationExclusive)}</td>
                                 <td>{formatValue(totalDestinationInclusive)}</td>
-                                <td></td>
                               </tr>
                             </>
                           )}
@@ -3272,7 +3274,7 @@ export default function Downlaodestimate() {
                           {adminRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={12}>
+                                <td colSpan={11}>
                                   <strong>Admin Charges</strong>
                                 </td>
                               </tr>
@@ -3283,7 +3285,6 @@ export default function Downlaodestimate() {
                                 <td></td>
                                 <td>{formatValue(totalAdminExclusive)}</td>
                                 <td>{formatValue(totalAdminInclusive)}</td>
-                                <td></td>
                               </tr>
                             </>
                           )}
@@ -3292,7 +3293,7 @@ export default function Downlaodestimate() {
                           {customsRows.length > 0 && (
                             <>
                               <tr className="estimate-section-row" style={{ backgroundColor: "#f0f2f5" }}>
-                                <td colSpan={12}>
+                                <td colSpan={11}>
                                   <strong>Customs Charges</strong>
                                 </td>
                               </tr>
@@ -3303,7 +3304,6 @@ export default function Downlaodestimate() {
                                 <td></td>
                                 <td>{formatValue(totalCustomsExclusive)}</td>
                                 <td>{formatValue(totalCustomsInclusive)}</td>
-                                <td></td>
                               </tr>
                             </>
                           )}
@@ -3322,7 +3322,7 @@ export default function Downlaodestimate() {
                                 <span style={{ fontWeight: "bold", borderTop: "1px solid #475569", paddingTop: "4px" }}>Grand Total:</span>
                               </div>
                             </td>
-                            <td colSpan={2} style={{ padding: "8px", verticalAlign: "top", color: "black", textAlign: "right", borderLeft: "none" }}>
+                            <td style={{ padding: "8px", verticalAlign: "top", color: "black", textAlign: "right", borderLeft: "none" }}>
                               <div style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "13px" }}>
                                 <span>{formatValue(grandTotalFinalAmt)}</span>
                                 <span>{grandTotalDiscount > 0 ? `-${formatValue(grandTotalDiscount)}` : "0.00"}</span>

@@ -33,12 +33,10 @@ const CustomerQuotesReport = () => {
     const [customerTo, setCustomerTo] = useState("");
     const [categoryFrom, setCategoryFrom] = useState("");
     const [categoryTo, setCategoryTo] = useState("");
-    const [invoiceStatus, setInvoiceStatus] = useState("");
-    const [status, setStatus] = useState("");
+    const [invoiceStatus, setInvoiceStatus] = useState("ALL");
     const [search, setSearch] = useState("");
 
-    // Customers and report data states
-    const [customers, setCustomers] = useState([]);
+    // Report data states
     const [reportData, setReportData] = useState([]);
     const [summary, setSummary] = useState({
         total_records: 0,
@@ -52,25 +50,7 @@ const CustomerQuotesReport = () => {
     const [totalPage, setTotalPage] = useState(1);
     const limit = 10000;
 
-    // Fetch client list for dropdowns
-    const fetchCustomers = async () => {
-        try {
-            const response = await axios.post(`${process.env.REACT_APP_BASE_URL}client-list`, {
-                page: 1,
-                limit: 1000
-            });
-            if (response.data && response.data.success) {
-                const sorted = (response.data.data || []).sort((a, b) => {
-                    const nameA = (a.full_name || a.client_name || "").toLowerCase();
-                    const nameB = (b.full_name || b.client_name || "").toLowerCase();
-                    return nameA.localeCompare(nameB);
-                });
-                setCustomers(sorted);
-            }
-        } catch (error) {
-            console.error("Error fetching customers:", error);
-        }
-    };
+
 
     // Fetch report data
     const fetchReportData = async (pageNo = 1) => {
@@ -79,15 +59,11 @@ const CustomerQuotesReport = () => {
             const payload = {
                 start_date: startDate || null,
                 end_date: endDate || null,
-                customer_from: customerFrom ? Number(customerFrom) : null,
-                customer_to: customerTo ? Number(customerTo) : null,
+                customer_from: customerFrom || null,
+                customer_to: customerTo || null,
                 category_from: categoryFrom || null,
                 category_to: categoryTo || null,
-                invoice_status: invoiceStatus || "ALL",
-                status: status || "BOTH",
-                // search: search || "",
-                // page: pageNo,
-                // limit: limit
+                document_status: invoiceStatus || "ALL"
             };
 
             const response = await axios.post(
@@ -124,17 +100,8 @@ const CustomerQuotesReport = () => {
     };
 
     useEffect(() => {
-        fetchCustomers();
-        // If navigation state has client_id, pre-select it
-        if (location.state && location.state.client_id) {
-            setCustomerFrom(location.state.client_id);
-            setCustomerTo(location.state.client_id);
-        }
-    }, [location.state]);
-
-    useEffect(() => {
         fetchReportData(1);
-    }, [customerFrom, customerTo, startDate, endDate, categoryFrom, categoryTo, invoiceStatus, status]);
+    }, [location.state]);
 
     const handleSearch = (e) => {
         if (e) e.preventDefault();
@@ -149,7 +116,6 @@ const CustomerQuotesReport = () => {
         setCategoryFrom("");
         setCategoryTo("");
         setInvoiceStatus("ALL");
-        setStatus("BOTH");
         // setSearch("");
         fetchReportData(1);
     };
@@ -182,14 +148,8 @@ const CustomerQuotesReport = () => {
     // Resolve current selected filter text
     const getCustomerFilterText = () => {
         if (!customerFrom && !customerTo) return "All Customers";
-        const fromCust = customers.find(c => c.id === Number(customerFrom));
-        const toCust = customers.find(c => c.id === Number(customerTo));
-        if (customerFrom === customerTo && fromCust) {
-            return fromCust.full_name || fromCust.client_name || `Customer ID ${customerFrom}`;
-        }
-        const fromName = fromCust ? (fromCust.full_name || fromCust.client_name) : `ID ${customerFrom}`;
-        const toName = toCust ? (toCust.full_name || toCust.client_name) : `ID ${customerTo}`;
-        return `${fromName || "Start"} to ${toName || "End"}`;
+        if (customerFrom === customerTo) return customerFrom;
+        return `${customerFrom || "A"} to ${customerTo || "Z"}`;
     };
 
     const getCategoryFilterText = () => {
@@ -248,9 +208,9 @@ const CustomerQuotesReport = () => {
                                             onChange={(e) => setCustomerFrom(e.target.value)}
                                         >
                                             <option value="">All Customers</option>
-                                            {customers.map((c) => (
-                                                <option key={c.id} value={c.id}>
-                                                    {c.full_name || c.client_name || `Customer #${c.id}`}
+                                            {Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)).map((letter) => (
+                                                <option key={letter} value={letter}>
+                                                    {letter}
                                                 </option>
                                             ))}
                                         </select>
@@ -263,14 +223,13 @@ const CustomerQuotesReport = () => {
                                             onChange={(e) => setCustomerTo(e.target.value)}
                                         >
                                             <option value="">All Customers</option>
-                                            {customers.map((c) => (
-                                                <option key={c.id} value={c.id}>
-                                                    {c.full_name || c.client_name || `Customer #${c.id}`}
+                                            {Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)).map((letter) => (
+                                                <option key={letter} value={letter}>
+                                                    {letter}
                                                 </option>
                                             ))}
                                         </select>
                                     </div>
-
                                     <div className="col-md-3">
                                         <label className="form-label text-secondary fw-semibold">Category From</label>
                                         <select
@@ -278,10 +237,10 @@ const CustomerQuotesReport = () => {
                                             value={categoryFrom}
                                             onChange={(e) => setCategoryFrom(e.target.value)}
                                         >
-                                            <option value="">All Categories</option>
-                                            <option value="AIR">AIR</option>
-                                            <option value="SEA">SEA</option>
-                                            <option value="ROAD">ROAD</option>
+                                            <option value="">All</option>
+                                            <option value="South Africa">South Africa</option>
+                                            <option value="Zambia">Zambia</option>
+                                            <option value="Zimbabwe">Zimbabwe</option>
                                         </select>
                                     </div>
                                     <div className="col-md-3">
@@ -291,10 +250,10 @@ const CustomerQuotesReport = () => {
                                             value={categoryTo}
                                             onChange={(e) => setCategoryTo(e.target.value)}
                                         >
-                                            <option value="">All Categories</option>
-                                            <option value="AIR">AIR</option>
-                                            <option value="SEA">SEA</option>
-                                            <option value="ROAD">ROAD</option>
+                                            <option value="">All</option>
+                                            <option value="South Africa">South Africa</option>
+                                            <option value="Zambia">Zambia</option>
+                                            <option value="Zimbabwe">Zimbabwe</option>
                                         </select>
                                     </div>
                                     <div className="col-md-3">
@@ -307,18 +266,7 @@ const CustomerQuotesReport = () => {
                                             <option value="ALL">ALL</option>
                                             <option value="Pending">Pending</option>
                                             <option value="Invoiced">Invoiced</option>
-                                        </select>
-                                    </div>
-                                    <div className="col-md-3">
-                                        <label className="form-label text-secondary fw-semibold">Status</label>
-                                        <select
-                                            className="form-select"
-                                            value={status}
-                                            onChange={(e) => setStatus(e.target.value)}
-                                        >
-                                            <option value="BOTH">BOTH</option>
-                                            <option value="ACTIVE">ACTIVE</option>
-                                            <option value="INACTIVE">INACTIVE</option>
+                                            <option value="Expired">Expired</option>
                                         </select>
                                     </div>
                                     {/* <div className="col-md-2">
@@ -385,6 +333,7 @@ const CustomerQuotesReport = () => {
                                         <th>Document No.</th>
                                         <th>Customer Ref.</th>
                                         <th>Customer</th>
+                                        <th>Country</th>
                                         <th className="text-end">Exclusive</th>
                                         <th className="text-end">VAT</th>
                                         <th className="text-end">Total</th>
@@ -416,12 +365,13 @@ const CustomerQuotesReport = () => {
                                                     <td>{item.reference_no || "-"}</td>
                                                     <td>{item.customer_reference || "-"}</td>
                                                     <td>{item.client_name || "-"}</td>
+                                                    <td>{item.invoice_for_country || "-"}</td>
                                                     <td className="text-end">{formatCurrency(item.exclusive, currency)}</td>
                                                     <td className="text-end">{formatCurrency(item.vat, currency)}</td>
                                                     <td className="text-end">{formatCurrency(item.total, currency)}</td>
                                                     <td>{item.sales_rep_name || "-"}</td>
                                                     <td>
-                                                        <span className={`badge ${item.document_status === "Invoiced" ? "bg-success" : "bg-warning text-dark"
+                                                        <span className={`badge ${item.document_status === "Invoiced" ? "bg-success" : item.document_status === "Expired" ? "bg-danger": "bg-warning text-dark"
                                                             }`}>
                                                             {item.document_status || "-"}
                                                         </span>
