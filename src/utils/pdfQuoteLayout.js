@@ -46,7 +46,7 @@ export const getSelectDisplayText = (select) => {
   return SELECT_VALUE_LABELS[value] ?? value;
 };
 
-const isEmptyPdfCellText = (text) => {
+export const isEmptyPdfCellText = (text) => {
   const normalized = (text ?? "").replace(/\s+/g, " ").trim();
   if (!normalized) return true;
   if (normalized === "Select") return true;
@@ -73,13 +73,13 @@ const formatDisplayNumber = (text) => {
   return normalized;
 };
 
-const formatCellDisplayValue = (text, headerLabel) => {
+export const formatCellDisplayValue = (text, headerLabel) => {
   if (isEmptyPdfCellText(text)) return "";
   const label = (headerLabel ?? "").replace(/\s+/g, " ").trim().toLowerCase();
   if (label === "description") {
     return String(text ?? "").replace(/\s+/g, " ").trim();
   }
-  if (["currency", "unit type", "unit", "vat type"].includes(label)) {
+  if (["curr", "uom", "unit", "vat type"].includes(label)) {
     return String(text ?? "").replace(/\s+/g, " ").trim();
   }
   return formatDisplayNumber(text);
@@ -120,8 +120,9 @@ const isSectionTotalRow = (row) =>
 
 const normalizeHeaderLabel = (label) => {
   const text = (label ?? "").replace(/\s+/g, " ").trim();
-  if (!text || text === "Select" || /^currency$/i.test(text)) return "Currency";
-  if (/^unit type$/i.test(text)) return "Unit type";
+  if (!text || text === "Select" || /^currency$/i.test(text)) return "Curr";
+  if (/^unit type$/i.test(text)) return "UOM";
+  if (/^roe$/i.test(text)) return "Exch Rate";
   if (/^vat type$/i.test(text)) return "VAT Type";
   if (/^disc %$/i.test(text)) return "Disc %";
   if (/^discount$/i.test(text)) return "Discount";
@@ -143,16 +144,16 @@ const PRIMARY_AMOUNT_LABELS = new Set([
 ]);
 
 const CATEGORY_COLUMN_LABELS = new Set([
-  "currency",
-  "unit type",
+  "curr",
+  "uom",
   "unit",
   "vat type",
 ]);
 
-const normalizeColumnLabel = (label) =>
+export const normalizeColumnLabel = (label) =>
   (label ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 
-const rowHasValues = (values, headers) =>
+export const rowHasValues = (values, headers) =>
   values.some((value, index) => {
     const label = normalizeColumnLabel(headers[index]);
     if (!PRIMARY_AMOUNT_LABELS.has(label)) return false;
@@ -196,14 +197,14 @@ const parseTotalRowByIndex = (row, columnCount) => {
   return values;
 };
 
-const getColumnAlign = (headerLabel) => {
+export const getColumnAlign = (headerLabel) => {
   const label = (headerLabel ?? "").replace(/\s+/g, " ").trim().toLowerCase();
   if (label === "description") return "left";
-  if (["currency", "unit type", "unit", "vat type"].includes(label)) return "center";
+  if (["curr", "uom", "unit", "vat type"].includes(label)) return "center";
   return "right";
 };
 
-const getVisibleColumns = (headers, sections, grandTotal) => {
+export const getVisibleColumns = (headers, sections, grandTotal) => {
   const allDataRows = sections.flatMap((section) => section.rows);
   const allTotals = [
     ...sections.map((section) => section.total).filter(Boolean),
@@ -231,7 +232,7 @@ const getVisibleColumns = (headers, sections, grandTotal) => {
     });
 };
 
-const buildColumnWidths = (visibleCount, visibleColumns, headers) => {
+export const buildColumnWidths = (visibleCount, visibleColumns, headers) => {
   if (visibleCount <= 0) return [];
   if (visibleCount === 1) return [100];
 
@@ -239,7 +240,7 @@ const buildColumnWidths = (visibleCount, visibleColumns, headers) => {
     const label = normalizeColumnLabel(headers[headerIndex]);
     if (label === "description") return 4;
     if (label === "vat type") return 2.2;
-    if (["currency", "unit type", "unit", "qty"].includes(label)) return 1;
+    if (["curr", "uom", "unit", "qty"].includes(label)) return 1;
     return 1.3;
   };
 
@@ -252,14 +253,14 @@ const buildColumnWidths = (visibleCount, visibleColumns, headers) => {
   return widths;
 };
 
-const formatSectionTotalLabel = (section) =>
+export const formatSectionTotalLabel = (section) =>
   (section.total?.[0] || `TOTAL ${section.title}`)
     .replace(/Total\s*-\s*/i, "TOTAL ")
     .replace(/\s+/g, " ")
     .trim()
     .toUpperCase();
 
-const formatGrandTotalLabel = (grandTotal) =>
+export const formatGrandTotalLabel = (grandTotal) =>
   (grandTotal?.[0] || "TOTAL CHARGE")
     .replace(/Total\s*-\s*/i, "TOTAL ")
     .replace(/\s+/g, " ")

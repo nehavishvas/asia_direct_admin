@@ -11,6 +11,10 @@ import { RiFolderUserFill } from "react-icons/ri";
 import { MdArrowOutward } from "react-icons/md";
 import { useRef } from "react";
 import { exportEstimatePdf } from "../../utils/pdfExportUtils";
+import {
+  exportEstimateAutoTablePdf,
+  buildEstimateMeta,
+} from "../../utils/pdfAutoTableExport";
 
 const getVatPercent = (vatTyp) => {
   if (!vatTyp) return 0;
@@ -1205,7 +1209,8 @@ export default function ShippingEstimate() {
     isPdfGenerating.current = true;
 
     try {
-      await exportEstimatePdf(element, "shipping-estimate.pdf");
+      const meta = buildEstimateMeta({ freight, getdata, logoSrc: logo });
+      await exportEstimateAutoTablePdf(element, meta, "shipping-estimate.pdf");
     } catch (e) {
       console.error("PDF generation failed", e);
       toast.error("Failed to generate PDF. Please try again.");

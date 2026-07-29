@@ -62,7 +62,7 @@ export const getCellPlainText = (cell) => {
 };
 
 export const replaceFormControlsWithText = (root) => {
-  if (!root) return () => {};
+  if (!root) return () => { };
 
   const replacements = [];
 
@@ -125,7 +125,7 @@ const totalRowHasNonZeroValue = (row) => {
 };
 
 export const hideZeroPdfRows = (table) => {
-  if (!table) return () => {};
+  if (!table) return () => { };
 
   const hiddenRows = [];
 
@@ -153,10 +153,10 @@ export const hideZeroPdfRows = (table) => {
 };
 
 export const hideZeroPdfColumns = (table) => {
-  if (!table) return () => {};
+  if (!table) return () => { };
 
   const headerCells = [...table.querySelectorAll("thead tr th")];
-  if (!headerCells.length) return () => {};
+  if (!headerCells.length) return () => { };
 
   const dataRows = [...table.querySelectorAll("tbody tr")].filter(
     (row) =>
@@ -165,7 +165,7 @@ export const hideZeroPdfColumns = (table) => {
       !row.classList.contains("estimate-section-row"),
   );
 
-  if (!dataRows.length) return () => {};
+  if (!dataRows.length) return () => { };
 
   const hiddenCells = [];
 
@@ -199,7 +199,7 @@ export const hideZeroPdfColumns = (table) => {
 };
 
 export const hideEmptyPdfSections = (table) => {
-  if (!table) return () => {};
+  if (!table) return () => { };
 
   const rows = [...table.querySelectorAll("tbody tr")];
   const hiddenRows = [];
@@ -364,7 +364,7 @@ export const preparePdfCloneForExport = (root, quoteData = null) => {
 
 export const mountPdfCaptureClone = (element) => {
   if (!element) {
-    return { captureTarget: element, cleanup: () => {} };
+    return { captureTarget: element, cleanup: () => { } };
   }
 
   const clone = element.cloneNode(true);
