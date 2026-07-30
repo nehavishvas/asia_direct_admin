@@ -1061,11 +1061,11 @@ div#basic-button img {
 }
 
 td {
-  font-size: 13px !important;
+  font-size: 12px !important;
 }
 
 th {
-  font-size: 13px !important;
+  font-size: 12px !important;
   padding: 15px 10px !important;
   background-color: var(--blue) !important;
   color: white !important;
@@ -5024,9 +5024,9 @@ button.btn.btn-secondary,
   background-color: #1b2245 !important;
   color: #fff;
   border: unset;
-  padding: 9px 20px !important;
+  padding: 8px 6px !important;
   border-radius: 5px;
-  font-size: 13px !important;
+  font-size: 12px !important;
   font-weight: 600 !important;
   text-transform: none !important;
   line-height: normal !important;

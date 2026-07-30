@@ -112,6 +112,12 @@ import AddQuotesInvoice from "./components/Billing/AddQuotesInvoice";
 import EditQuotesInvoice from "./components/Billing/EditQuotesInvoice";
 import ViewQuotesInvoice from "./components/Billing/ViewQuotesInvoice";
 import CustomerQuotesReport from "./components/Billing/CustomerQuotesReport";
+import QuoteItemReport from "./components/Billing/QuoteItemReport";
+import QuoteReportItem from "./components/Billing/QuoteReportItem";
+import SalesByCustomerReport from "./components/Billing/SalesByCustomerReport";
+import SalesByCustomerSummaryReport from "./components/Billing/SalesByCustomerSummaryReport";
+import SalesByItemReport from "./components/Billing/SalesByItemReport";
+import SalesBySalesRepReport from "./components/Billing/SalesBySalesRepReport";
 import CustomerInvoicesReport from "./components/Billing/CustomerInvoicesReport";
 import CustomerBalancesReport from "./components/Billing/CustomerBalancesReport";
 import CustomerUnallocatedReport from "./components/Billing/CustomerUnallocatedReport";
@@ -181,6 +187,12 @@ export default function App() {
                 <Route path="/Admin/quotes" element={<Quotes />} />
                 <Route path="/Admin/addquotesinvoice" element={<AddQuotesInvoice />} />
                 <Route path="/Admin/customer-quotes-report" element={<CustomerQuotesReport />} />
+                <Route path="/Admin/quote-item-report" element={<QuoteItemReport />} />
+                <Route path="/Admin/quote-report-item" element={<QuoteReportItem />} />
+                <Route path="/Admin/sales-by-customer-report" element={<SalesByCustomerReport />} />
+                <Route path="/Admin/sales-by-customer-summary-report" element={<SalesByCustomerSummaryReport />} />
+                <Route path="/Admin/sales-by-item-report" element={<SalesByItemReport />} />
+                <Route path="/Admin/sales-by-sales-rep-report" element={<SalesBySalesRepReport />} />
                 <Route path="/Admin/customer-invoices-report" element={<CustomerInvoicesReport />} />
                 <Route path="/Admin/customer-balance-report" element={<CustomerBalancesReport />} />
                 <Route path="/Admin/customer-unallocated-report" element={<CustomerUnallocatedReport />} />

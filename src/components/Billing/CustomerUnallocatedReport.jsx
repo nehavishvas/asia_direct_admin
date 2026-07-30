@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PrintIcon from "@mui/icons-material/Print";
 
 const CustomerUnallocatedReport = () => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Default date range: Start and End of current month
     const getStartOfCurrentMonth = () => {
@@ -25,19 +26,25 @@ const CustomerUnallocatedReport = () => {
         return `${y}-${m}-${lastDay}`;
     };
 
-    const [startDate, setStartDate] = useState(getStartOfCurrentMonth());
-    const [endDate, setEndDate] = useState(getEndOfCurrentMonth());
-    const [customerFrom, setCustomerFrom] = useState("");
-    const [customerTo, setCustomerTo] = useState("");
-    const [categoryFrom, setCategoryFrom] = useState("");
-    const [categoryTo, setCategoryTo] = useState("");
+    const [startDate, setStartDate] = useState(location.state?.startDate || getStartOfCurrentMonth());
+    const [endDate, setEndDate] = useState(location.state?.endDate || getEndOfCurrentMonth());
+    const [customerFrom, setCustomerFrom] = useState(location.state?.customerFrom || "");
+    const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
+    const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
+    const [categoryTo, setCategoryTo] = useState(location.state?.categoryTo || "");
     // const [status, setStatus] = useState("ACTIVE");
 
     const [reportData, setReportData] = useState([]);
     const [loader, setLoader] = useState(false);
-    const [searched, setSearched] = useState(false);
+    const [searched, setSearched] = useState(!!location.state);
 
     const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
+
+    useEffect(() => {
+        if (location.state) {
+            fetchReportData();
+        }
+    }, [location.state]);
 
     // Fetch report data
     const fetchReportData = async (e) => {
@@ -142,13 +149,12 @@ const CustomerUnallocatedReport = () => {
                     </div>
 
                     {/* Filter Card */}
-                    <div className="card shadow-sm border-0 mb-4 bg-light">
+                    {/* <div className="card shadow-sm border-0 mb-4 bg-light">
                         <div className="card-body">
                             <h5 className="card-title mb-4 text-dark fw-bold text-center">Customer Unallocated Receipts Report</h5>
                             <form onSubmit={fetchReportData}>
                                 <div className="row justify-content-center">
                                     <div className="col-md-8">
-                                        {/* Date Filters */}
                                         <div className="row mb-3 align-items-center">
                                             <div className="col-sm-3 text-md-end text-start">
                                                 <label className="form-label text-secondary fw-semibold mb-0">Start Date</label>
@@ -177,7 +183,6 @@ const CustomerUnallocatedReport = () => {
                                             </div>
                                         </div>
 
-                                        {/* Customer From & To */}
                                         <div className="row mb-3 align-items-center">
                                             <div className="col-sm-3 text-md-end text-start">
                                                 <label className="form-label text-secondary fw-semibold mb-0">Customer</label>
@@ -212,7 +217,6 @@ const CustomerUnallocatedReport = () => {
                                             </div>
                                         </div>
 
-                                        {/* Category From & To */}
                                         <div className="row mb-3 align-items-center">
                                             <div className="col-sm-3 text-md-end text-start">
                                                 <label className="form-label text-secondary fw-semibold mb-0">Category</label>
@@ -243,25 +247,6 @@ const CustomerUnallocatedReport = () => {
                                             </div>
                                         </div>
 
-                                        {/* Status Filter */}
-                                        {/* <div className="row mb-3 align-items-center">
-                                            <div className="col-sm-3 text-md-end text-start">
-                                                <label className="form-label text-secondary fw-semibold mb-0">Status</label>
-                                            </div>
-                                            <div className="col-sm-9">
-                                                <select
-                                                    className="form-select"
-                                                    value={status}
-                                                    onChange={(e) => setStatus(e.target.value)}
-                                                >
-                                                    <option value="ACTIVE">ACTIVE</option>
-                                                    <option value="BOTH">BOTH</option>
-                                                    <option value="INACTIVE">INACTIVE</option>
-                                                </select>
-                                            </div>
-                                        </div> */}
-
-                                        {/* Action Buttons */}
                                         <div className="d-flex justify-content-center gap-2 mt-4">
                                             <button type="button" className="btn btn-outline-secondary" onClick={handleReset}>
                                                 Reset
@@ -274,7 +259,7 @@ const CustomerUnallocatedReport = () => {
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Printable Report Area */}

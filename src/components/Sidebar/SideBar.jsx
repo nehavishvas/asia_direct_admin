@@ -142,7 +142,37 @@ const routes = [
         name: "Supplier Invoice",
         icon: <ShoppingCartOutlinedIcon />,
       },
-
+      {
+        name: "Reports",
+        icon: <InsertDriveFileIcon />,
+        subRoutes: [
+          {
+            path: "/Admin/quote-report-item",
+            name: "Quote item Summary",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+          {
+            path: "/Admin/sales-by-customer-report",
+            name: "Sales by Customer",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+          {
+            path: "/Admin/sales-by-customer-summary-report",
+            name: "Sales by Customer Summary",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+          {
+            path: "/Admin/sales-by-item-report",
+            name: "Sales by Item",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+          {
+            path: "/Admin/sales-by-sales-rep-report",
+            name: "Sales by Sales Rep",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+        ],
+      },
     ],
   },
   {
@@ -295,6 +325,7 @@ const SideBar = ({ children }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [openSubDropdown, setOpenSubDropdown] = useState({});
   const usertype = JSON.parse(localStorage.getItem("data123")).user_type;
   let filteredRoutes = routes.filter((route) => {
     if (route.path === "/Admin/TaskManagerstaff") {
@@ -443,21 +474,62 @@ const SideBar = ({ children }) => {
                         animate={{ height: "auto" }}
                         exit={{ height: 0 }}
                         className="sub_routes">
-                        {route.subRoutes.map((subRoute, subIndex) => (
-                          <NavLink
-                            to={subRoute.path}
-                            key={subIndex}
-                            className={({ isActive }) =>
-                              isActive ? "link active" : "link"
-                            }
-                            style={{ cursor: "pointer" }}
-                          >
-                            <div className="icon ms-4">{subRoute.icon}</div>
-                            {isOpen && (
-                              <div className="link_text1 ">{subRoute.name}</div>
-                            )}
-                          </NavLink>
-                        ))}
+                        {route.subRoutes.map((subRoute, subIndex) => {
+                          if (subRoute.subRoutes) {
+                            const isSubOpen = !!openSubDropdown[subRoute.name];
+                            return (
+                              <div key={subIndex} className="nested-sub-route-container">
+                                <div
+                                  className="link dropdown-header ps-2"
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => setOpenSubDropdown(prev => ({ ...prev, [subRoute.name]: !prev[subRoute.name] }))}
+                                >
+                                  <div className="icon ms-3">{subRoute.icon}</div>
+                                  {isOpen && (
+                                    <div className="link_text1 d-flex justify-content-between align-items-center w-100 pe-3 ms-2">
+                                      <span style={{ fontSize: "14px" }}>{subRoute.name}</span>
+                                      {isSubOpen ? <ExpandLessIcon style={{ fontSize: "16px" }} /> : <ExpandMoreIcon style={{ fontSize: "16px" }} />}
+                                    </div>
+                                  )}
+                                </div>
+                                {isSubOpen && isOpen && (
+                                  <div className="nested-sub-routes">
+                                    {subRoute.subRoutes.map((nestedRoute, nestedIndex) => (
+                                      <NavLink
+                                        to={nestedRoute.path}
+                                        key={nestedIndex}
+                                        className={({ isActive }) =>
+                                          isActive ? "link active" : "link"
+                                        }
+                                        style={{ cursor: "pointer" }}
+                                      >
+                                        <div className="icon ms-5">{nestedRoute.icon}</div>
+                                        {isOpen && (
+                                          <div className="link_text1 ms-2" style={{ fontSize: "13px" }}>{nestedRoute.name}</div>
+                                        )}
+                                      </NavLink>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+                          return (
+                            <NavLink
+                              to={subRoute.path}
+                              key={subIndex}
+                              className={({ isActive }) =>
+                                isActive ? "link active" : "link"
+                              }
+                              style={{ cursor: "pointer" }}
+                            >
+                              <div className="icon ms-4">{subRoute.icon}</div>
+                              {isOpen && (
+                                <div className="link_text1 ">{subRoute.name}</div>
+                              )}
+                            </NavLink>
+                          );
+                        })}
                       </motion.div>
                     )}
                   </div>

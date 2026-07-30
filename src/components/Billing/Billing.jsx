@@ -4,6 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { Modal, Box } from "@mui/material";
+import ReportFilterModal from "./ReportFilterModal";
 
 const SearchableDropdown = ({ value, options, onChange, placeholder }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -100,6 +101,7 @@ const SearchableDropdown = ({ value, options, onChange, placeholder }) => {
 export default function BillingTable() {
   const navigate = useNavigate();
   const [tableData, setTableData] = useState([]);
+  const [reportModalType, setReportModalType] = useState(null);
   const [dropdownData, setDropdownData] = useState({});
   const [selectedDueDates, setSelectedDueDates] = useState({});
   const [searchdata, setSearchdata] = useState({
@@ -320,12 +322,14 @@ export default function BillingTable() {
           <div className="container-fluid manageFreight">
             <div>
               <div className="d-flex justify-content-between align-items-center my-3">
-                <button
-                  className="btn btn-primary blueBtn"
-                  onClick={() => navigate("/Admin/customer-balance-report")}
-                >
-                  Customer Balance
-                </button>
+                <div className="d-flex gap-2">
+                  <button
+                    className="btn btn-primary blueBtn"
+                    onClick={() => setReportModalType("balances")}
+                  >
+                    Customer Balance
+                  </button>
+                </div>
                 <div className="d-flex">
                   <input
                     name="search"
@@ -740,6 +744,11 @@ export default function BillingTable() {
               ></iframe>
             </Box>
           </Modal>
+          <ReportFilterModal
+            open={!!reportModalType}
+            onClose={() => setReportModalType(null)}
+            reportType={reportModalType}
+          />
           <ToastContainer />
         </div>
       )}

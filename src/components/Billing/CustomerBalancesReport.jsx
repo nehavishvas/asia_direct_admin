@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PrintIcon from "@mui/icons-material/Print";
 
 const CustomerBalancesReport = () => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Default to today's date
     const getTodayDateString = () => {
@@ -18,18 +19,24 @@ const CustomerBalancesReport = () => {
         return `${y}-${m}-${day}`;
     };
 
-    const [runDate, setRunDate] = useState(getTodayDateString());
-    const [customerFrom, setCustomerFrom] = useState("");
-    const [customerTo, setCustomerTo] = useState("");
-    const [categoryFrom, setCategoryFrom] = useState("");
-    const [categoryTo, setCategoryTo] = useState("");
+    const [runDate, setRunDate] = useState(location.state?.runDate || getTodayDateString());
+    const [customerFrom, setCustomerFrom] = useState(location.state?.customerFrom || "");
+    const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
+    const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
+    const [categoryTo, setCategoryTo] = useState(location.state?.categoryTo || "");
 
     const [reportData, setReportData] = useState([]);
     const [summary, setSummary] = useState(null);
     const [loader, setLoader] = useState(false);
-    const [searched, setSearched] = useState(false);
+    const [searched, setSearched] = useState(!!location.state);
 
     const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
+
+    useEffect(() => {
+        if (location.state) {
+            fetchReportData();
+        }
+    }, [location.state]);
 
     // Fetch report data
     const fetchReportData = async (e) => {
@@ -121,13 +128,12 @@ const CustomerBalancesReport = () => {
                     </div>
 
                     {/* Filter Card */}
-                    <div className="card shadow-sm border-0 mb-4 bg-light">
+                    {/* <div className="card shadow-sm border-0 mb-4 bg-light">
                         <div className="card-body">
                             <h5 className="card-title mb-4 text-dark fw-bold text-center">Customer Balances - Days Outstanding Report</h5>
                             <form onSubmit={fetchReportData}>
                                 <div className="row justify-content-center">
                                     <div className="col-md-8">
-                                        {/* Run At Date */}
                                         <div className="row mb-3 align-items-center">
                                             <div className="col-sm-3 text-md-end text-start">
                                                 <label className="form-label text-secondary fw-semibold mb-0">Run At Date</label>
@@ -143,7 +149,6 @@ const CustomerBalancesReport = () => {
                                             </div>
                                         </div>
 
-                                        {/* Customer From & To */}
                                         <div className="row mb-3 align-items-center">
                                             <div className="col-sm-3 text-md-end text-start">
                                                 <label className="form-label text-secondary fw-semibold mb-0">Customer</label>
@@ -178,7 +183,6 @@ const CustomerBalancesReport = () => {
                                             </div>
                                         </div>
 
-                                        {/* Category From & To */}
                                         <div className="row mb-3 align-items-center">
                                             <div className="col-sm-3 text-md-end text-start">
                                                 <label className="form-label text-secondary fw-semibold mb-0">Category</label>
@@ -209,7 +213,6 @@ const CustomerBalancesReport = () => {
                                             </div>
                                         </div>
 
-                                        {/* Action Buttons */}
                                         <div className="d-flex justify-content-center gap-2 mt-4">
                                             <button type="button" className="btn btn-outline-secondary" onClick={handleReset}>
                                                 Reset
@@ -222,7 +225,7 @@ const CustomerBalancesReport = () => {
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Printable Report Area */}

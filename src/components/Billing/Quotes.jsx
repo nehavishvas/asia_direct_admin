@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ViewQuotesInvoice from "./ViewQuotesInvoice";
+import ReportFilterModal from "./ReportFilterModal";
 
 const Quotes = () => {
     const [data, setData] = useState([]);
@@ -14,6 +15,7 @@ const Quotes = () => {
     const [totalPage, setTotalPage] = useState(1);
     const [search, setSearch] = useState("");
     const [printItem, setPrintItem] = useState(null);
+    const [reportModalType, setReportModalType] = useState(null);
     const limit = 10;
     const navigate = useNavigate();
 
@@ -147,10 +149,11 @@ const Quotes = () => {
                                 </button>
                                 <button
                                     className="btn btn-secondary"
-                                    onClick={() => navigate("/Admin/customer-quotes-report")}
+                                    onClick={() => setReportModalType("quotes")}
                                 >
                                     Customer Quotes Report
                                 </button>
+                                
                             </div>
                             <div className="d-flex align-items-center gap-2">
                                 <input
@@ -266,6 +269,15 @@ const Quotes = () => {
                                                                         Create Invoice
                                                                     </button>
                                                                 </li>
+                                                                <li>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="dropdown-item"
+                                                                        onClick={() => navigate("/Admin/quote-item-report", { state: { id: item.freight_quote_estimate_id } })}
+                                                                    >
+                                                                        Quote Item
+                                                                    </button>
+                                                                </li>
                                                             </ul>
                                                         </div>
                                                     </td>
@@ -315,6 +327,11 @@ const Quotes = () => {
                             onPrintComplete={() => setPrintItem(null)}
                         />
                     )}
+                    <ReportFilterModal
+                        open={!!reportModalType}
+                        onClose={() => setReportModalType(null)}
+                        reportType={reportModalType}
+                    />
                     <ToastContainer />
                 </div>
             )}

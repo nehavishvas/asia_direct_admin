@@ -27,13 +27,13 @@ const CustomerInvoicesReport = () => {
     };
 
     // States for filters
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
-    const [customerFrom, setCustomerFrom] = useState("");
-    const [customerTo, setCustomerTo] = useState("");
-    const [categoryFrom, setCategoryFrom] = useState("");
-    const [categoryTo, setCategoryTo] = useState("");
-    const [invoiceStatus, setInvoiceStatus] = useState("ALL");
+    const [startDate, setStartDate] = useState(location.state?.startDate || getStartOfCurrentMonth());
+    const [endDate, setEndDate] = useState(location.state?.endDate || getEndOfCurrentMonth());
+    const [customerFrom, setCustomerFrom] = useState(location.state?.customerFrom || "");
+    const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
+    const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
+    const [categoryTo, setCategoryTo] = useState(location.state?.categoryTo || "");
+    const [invoiceStatus, setInvoiceStatus] = useState(location.state?.invoiceStatus || "ALL");
     const [search, setSearch] = useState("");
 
     // Report data states
@@ -43,6 +43,7 @@ const CustomerInvoicesReport = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
     const limit = 10000; // Load all matching records for complete printing
+    const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     // Fetch report data
     const fetchReportData = async (pageNo = 1) => {
@@ -189,120 +190,128 @@ const CustomerInvoicesReport = () => {
                     </div>
 
                     {/* Filter Card */}
-                    <div className="card shadow-sm border-0 mb-4 bg-light">
+                    {/* <div className="card shadow-sm border-0 mb-4 bg-light">
                         <div className="card-body">
-                            <h5 className="card-title mb-3 text-dark fw-bold">Report Filters</h5>
+                            <h5 className="card-title mb-4 text-dark fw-bold text-center">Customer Invoices Report</h5>
                             <form onSubmit={handleSearch}>
-                                <div className="row g-3">
-                                    <div className="col-md-3">
-                                        <label className="form-label text-secondary fw-semibold">Start Date</label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
-                                            value={startDate}
-                                            onChange={(e) => setStartDate(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="col-md-3">
-                                        <label className="form-label text-secondary fw-semibold">End Date</label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
-                                            value={endDate}
-                                            onChange={(e) => setEndDate(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="col-md-3">
-                                        <label className="form-label text-secondary fw-semibold">Customer From</label>
-                                        <select
-                                            className="form-select"
-                                            value={customerFrom}
-                                            onChange={(e) => setCustomerFrom(e.target.value)}
-                                        >
-                                            <option value="">All Customers</option>
-                                            {Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)).map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="col-md-3">
-                                        <label className="form-label text-secondary fw-semibold">Customer To</label>
-                                        <select
-                                            className="form-select"
-                                            value={customerTo}
-                                            onChange={(e) => setCustomerTo(e.target.value)}
-                                        >
-                                            <option value="">All Customers</option>
-                                            {Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)).map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
+                                <div className="row justify-content-center">
+                                    <div className="col-md-8">
+                                        <div className="row mb-3 align-items-center">
+                                            <div className="col-sm-3 text-md-end text-start">
+                                                <label className="form-label text-secondary fw-semibold mb-0">Date Range</label>
+                                            </div>
+                                            <div className="col-sm-4 col-6">
+                                                <input
+                                                    type="date"
+                                                    className="form-control"
+                                                    value={startDate}
+                                                    onChange={(e) => setStartDate(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="col-sm-4 col-6">
+                                                <input
+                                                    type="date"
+                                                    className="form-control"
+                                                    value={endDate}
+                                                    onChange={(e) => setEndDate(e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
 
-                                    <div className="col-md-3">
-                                        <label className="form-label text-secondary fw-semibold">Category From</label>
-                                        <select
-                                            className="form-select"
-                                            value={categoryFrom}
-                                            onChange={(e) => setCategoryFrom(e.target.value)}
-                                        >
-                                            <option value="">All</option>
-                                            <option value="South Africa">South Africa</option>
-                                            <option value="Zambia">Zambia</option>
-                                            <option value="Zimbabwe">Zimbabwe</option>
-                                        </select>
+                                        <div className="row mb-3 align-items-center">
+                                            <div className="col-sm-3 text-md-end text-start">
+                                                <label className="form-label text-secondary fw-semibold mb-0">Customer</label>
+                                            </div>
+                                            <div className="col-sm-4 col-6">
+                                                <select
+                                                    className="form-select"
+                                                    value={customerFrom}
+                                                    onChange={(e) => setCustomerFrom(e.target.value)}
+                                                >
+                                                    <option value="">(From)</option>
+                                                    {alphabet.map((letter) => (
+                                                        <option key={letter} value={letter}>
+                                                            {letter}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="col-sm-4 col-6">
+                                                <select
+                                                    className="form-select"
+                                                    value={customerTo}
+                                                    onChange={(e) => setCustomerTo(e.target.value)}
+                                                >
+                                                    <option value="">(To)</option>
+                                                    {alphabet.map((letter) => (
+                                                        <option key={letter} value={letter}>
+                                                            {letter}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div className="row mb-3 align-items-center">
+                                            <div className="col-sm-3 text-md-end text-start">
+                                                <label className="form-label text-secondary fw-semibold mb-0">Category</label>
+                                            </div>
+                                            <div className="col-sm-4 col-6">
+                                                <select
+                                                    className="form-select"
+                                                    value={categoryFrom}
+                                                    onChange={(e) => setCategoryFrom(e.target.value)}
+                                                >
+                                                    <option value="">(From)</option>
+                                                    <option value="South Africa">South Africa</option>
+                                                    <option value="Zambia">Zambia</option>
+                                                    <option value="Zimbabwe">Zimbabwe</option>
+                                                </select>
+                                            </div>
+                                            <div className="col-sm-4 col-6">
+                                                <select
+                                                    className="form-select"
+                                                    value={categoryTo}
+                                                    onChange={(e) => setCategoryTo(e.target.value)}
+                                                >
+                                                    <option value="">(To)</option>
+                                                    <option value="South Africa">South Africa</option>
+                                                    <option value="Zambia">Zambia</option>
+                                                    <option value="Zimbabwe">Zimbabwe</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div className="row mb-3 align-items-center">
+                                            <div className="col-sm-3 text-md-end text-start">
+                                                <label className="form-label text-secondary fw-semibold mb-0">Invoice Status</label>
+                                            </div>
+                                            <div className="col-sm-9">
+                                                <select
+                                                    className="form-select"
+                                                    value={invoiceStatus}
+                                                    onChange={(e) => setInvoiceStatus(e.target.value)}
+                                                >
+                                                    <option value="ALL">ALL</option>
+                                                    <option value="unpaid">Unpaid</option>
+                                                    <option value="paid">Paid</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div className="d-flex justify-content-center gap-2 mt-4">
+                                            <button type="button" className="btn btn-outline-secondary" onClick={handleReset}>
+                                                Reset
+                                            </button>
+                                            <button type="submit" className="btn btn-primary blueBtn">
+                                                View Report
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="col-md-3">
-                                        <label className="form-label text-secondary fw-semibold">Category To</label>
-                                        <select
-                                            className="form-select"
-                                            value={categoryTo}
-                                            onChange={(e) => setCategoryTo(e.target.value)}
-                                        >
-                                            <option value="">All</option>
-                                            <option value="South Africa">South Africa</option>
-                                            <option value="Zambia">Zambia</option>
-                                            <option value="Zimbabwe">Zimbabwe</option>
-                                        </select>
-                                    </div>
-                                    <div className="col-md-3">
-                                        <label className="form-label text-secondary fw-semibold">Invoice Status</label>
-                                        <select
-                                            className="form-select"
-                                            value={invoiceStatus}
-                                            onChange={(e) => setInvoiceStatus(e.target.value)}
-                                        >
-                                            <option value="ALL">ALL</option>
-                                            <option value="unpaid">Unpaid</option>
-                                            <option value="paid">Paid</option>
-                                        </select>
-                                    </div>
-                                    {/* <div className="col-md-2">
-                                        <label className="form-label text-secondary fw-semibold">Search</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="Ref / Invoice No..."
-                                            value={search}
-                                            onChange={(e) => setSearch(e.target.value)}
-                                        />
-                                    </div> */}
-                                </div>
-                                <div className="d-flex justify-content-end gap-2 mt-3">
-                                    <button type="button" className="btn btn-outline-secondary" onClick={handleReset}>
-                                        Reset
-                                    </button>
-                                    <button type="submit" className="btn btn-primary blueBtn">
-                                        Search
-                                    </button>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Printable Report Area */}
