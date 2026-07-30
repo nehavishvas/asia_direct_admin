@@ -171,6 +171,16 @@ const routes = [
             name: "Sales by Sales Rep",
             icon: <ShoppingCartOutlinedIcon />,
           },
+          {
+            path: "/Admin/supplier-balance-report",
+            name: "Supplier Balance",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+          {
+            path: "/Admin/supplier-invoice-report",
+            name: "Supplier Invoice",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
         ],
       },
     ],

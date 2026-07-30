@@ -364,14 +364,14 @@ const QuoteReportItem = () => {
                                             )}
                                         </tbody>
                                         {reportData.length > 0 && grandTotal && (
-                                            <tfoot className="table-dark fw-bold" style={{ borderTop: "2px solid #000" }}>
+                                            <tfoot className="fw-bold bg-white text-dark" style={{ borderTop: "2px solid #000" }}>
                                                 <tr>
-                                                    <td colSpan="5" className="text-start ps-3">Grand Total:</td>
-                                                    <td className="text-end">{parseFloat(grandTotal.qty || 0).toFixed(3)}</td>
-                                                    <td className="text-end">{formatCurrency(grandTotal.total_cost, "R")}</td>
-                                                    <td className="text-end">{formatCurrency(grandTotal.total_selling, "R")}</td>
-                                                    <td className="text-end">{formatCurrency(grandTotal.gp_amount, "R")}</td>
-                                                    <td className="text-end text-info">{parseFloat(grandTotal.gp_percent || 0).toFixed(2)}%</td>
+                                                    <td colSpan="5" className="text-start ps-3 bg-white text-dark">Grand Total:</td>
+                                                    <td className="text-end bg-white text-dark">{parseFloat(grandTotal.qty || 0).toFixed(4)}</td>
+                                                    <td className="text-end bg-white text-dark">{formatCurrency(grandTotal.total_cost, "R")}</td>
+                                                    <td className="text-end bg-white text-dark">{formatCurrency(grandTotal.total_selling, "R")}</td>
+                                                    <td className="text-end bg-white text-dark">{formatCurrency(grandTotal.gp_amount, "R")}</td>
+                                                    <td className="text-end bg-white text-dark">{parseFloat(grandTotal.gp_percent || 0).toFixed(2)}%</td>
                                                 </tr>
                                             </tfoot>
                                         )}
@@ -387,79 +387,105 @@ const QuoteReportItem = () => {
                 </div>
             </div>
             <ToastContainer />
-            <style type="text/css" media="print">{`
-                @page {
-                    size: landscape;
-                    margin: 10mm;
-                }
-                @media print {
-                    html, body, #root, #root > div, .App, .admin-layout, .layout-main, .wpWrapper, .report-wrapper {
-                        display: block !important;
-                        height: auto !important;
-                        min-height: auto !important;
-                        overflow: visible !important;
-                        overflow-y: visible !important;
-                        position: static !important;
-                        padding: 0 !important;
-                        margin: 0 !important;
-                    }
-                    body {
-                        background-color: #ffffff !important;
-                        color: #000000 !important;
-                    }
-                    .no-print, 
-                    .no-print *,
-                    header, 
-                    nav, 
-                    aside, 
-                    .sidebar, 
-                    .topbar,
-                    .navbar,
-                    footer {
-                        display: none !important;
-                        height: 0 !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                    }
-                    .report-print-area {
-                        display: block !important;
-                        box-shadow: none !important;
-                        border: none !important;
-                        padding: 0 !important;
-                        margin: 0 !important;
-                        width: 100% !important;
-                        height: auto !important;
-                        overflow: visible !important;
-                    }
-                    .report-print-area .card-body {
-                        padding: 0 !important;
-                        display: block !important;
-                        height: auto !important;
-                        overflow: visible !important;
-                    }
-                    .table-responsive {
-                        display: contents !important;
-                        overflow: visible !important;
-                    }
-                    .report-table {
-                        width: 100% !important;
-                        border-collapse: collapse !important;
-                        display: table !important;
-                        margin-top: 15px !important;
-                        break-inside: auto !important;
-                        page-break-inside: auto !important;
-                    }
-                    .report-table th, .report-table td {
-                        border: 1px solid #dee2e6 !important;
-                        padding: 6px 8px !important;
-                        font-size: 11px !important;
-                    }
-                    tr {
-                        break-inside: avoid !important;
-                        page-break-inside: avoid !important;
-                    }
-                }
-            `}</style>
+             <style type="text/css">{`
+                 .report-title {
+                     font-size: 16px !important;
+                 }
+                 .report-subtitle {
+                     font-size: 12px !important;
+                     margin-bottom: 12px !important;
+                 }
+                 .report-meta-info {
+                     font-size: 11px !important;
+                 }
+                 .report-meta-info span {
+                     font-size: 11px !important;
+                 }
+                 /* Grand Total Styling */
+                 .report-table tfoot.fw-bold {
+                     background-color: #ffffff !important;
+                     color: #000000 !important;
+                 }
+                 .report-table tfoot.fw-bold tr td {
+                     background-color: #ffffff !important;
+                     color: #000000 !important;
+                     border-top: 1.5px solid #000000 !important;
+                     border-bottom: 4px double #000000 !important;
+                     font-weight: bold !important;
+                 }
+                 
+                 @page {
+                     size: landscape;
+                     margin: 10mm;
+                 }
+                 @media print {
+                     html, body, #root, #root > div, .App, .admin-layout, .layout-main, .wpWrapper, .report-wrapper {
+                         display: block !important;
+                         height: auto !important;
+                         min-height: auto !important;
+                         overflow: visible !important;
+                         overflow-y: visible !important;
+                         position: static !important;
+                         padding: 0 !important;
+                         margin: 0 !important;
+                     }
+                     body {
+                         background-color: #ffffff !important;
+                         color: #000000 !important;
+                     }
+                     .no-print, 
+                     .no-print *,
+                     header, 
+                     nav, 
+                     aside, 
+                     .sidebar, 
+                     .topbar,
+                     .navbar,
+                     footer {
+                         display: none !important;
+                         height: 0 !important;
+                         margin: 0 !important;
+                         padding: 0 !important;
+                     }
+                     .report-print-area {
+                         display: block !important;
+                         box-shadow: none !important;
+                         border: none !important;
+                         padding: 0 !important;
+                         margin: 0 !important;
+                         width: 100% !important;
+                         height: auto !important;
+                         overflow: visible !important;
+                     }
+                     .report-print-area .card-body {
+                         padding: 0 !important;
+                         display: block !important;
+                         height: auto !important;
+                         overflow: visible !important;
+                     }
+                     .table-responsive {
+                         display: contents !important;
+                         overflow: visible !important;
+                     }
+                     .report-table {
+                         width: 100% !important;
+                         border-collapse: collapse !important;
+                         display: table !important;
+                         margin-top: 15px !important;
+                         break-inside: auto !important;
+                         page-break-inside: auto !important;
+                     }
+                     .report-table th, .report-table td {
+                         border: 1px solid #dee2e6 !important;
+                         padding: 6px 8px !important;
+                         font-size: 11px !important;
+                     }
+                     tr {
+                         break-inside: avoid !important;
+                         page-break-inside: avoid !important;
+                     }
+                 }
+             `}</style>
         </>
     );
 };

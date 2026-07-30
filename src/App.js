@@ -118,6 +118,8 @@ import SalesByCustomerReport from "./components/Billing/SalesByCustomerReport";
 import SalesByCustomerSummaryReport from "./components/Billing/SalesByCustomerSummaryReport";
 import SalesByItemReport from "./components/Billing/SalesByItemReport";
 import SalesBySalesRepReport from "./components/Billing/SalesBySalesRepReport";
+import SupplierBalancesReport from "./components/Billing/SupplierBalancesReport";
+import SupplierInvoicesReport from "./components/Billing/SupplierInvoicesReport";
 import CustomerInvoicesReport from "./components/Billing/CustomerInvoicesReport";
 import CustomerBalancesReport from "./components/Billing/CustomerBalancesReport";
 import CustomerUnallocatedReport from "./components/Billing/CustomerUnallocatedReport";
@@ -153,7 +155,7 @@ const Uniovwersalpage = lazy(() => import("./components/Uniovwersalpage"));
 export default function App() {
   const [text, setText] = useState("");
   const [permission, setPermission] = useState("");
-  console.log("28-07-26", "18:03");
+  console.log("30-07-26", "17:54");
   return (
     <MyContext1.Provider value={{ text, setText }}>
       <MyContext2.Provider value={{ permission, setPermission }}>
@@ -193,6 +195,8 @@ export default function App() {
                 <Route path="/Admin/sales-by-customer-summary-report" element={<SalesByCustomerSummaryReport />} />
                 <Route path="/Admin/sales-by-item-report" element={<SalesByItemReport />} />
                 <Route path="/Admin/sales-by-sales-rep-report" element={<SalesBySalesRepReport />} />
+                <Route path="/Admin/supplier-balance-report" element={<SupplierBalancesReport />} />
+                <Route path="/Admin/supplier-invoice-report" element={<SupplierInvoicesReport />} />
                 <Route path="/Admin/customer-invoices-report" element={<CustomerInvoicesReport />} />
                 <Route path="/Admin/customer-balance-report" element={<CustomerBalancesReport />} />
                 <Route path="/Admin/customer-unallocated-report" element={<CustomerUnallocatedReport />} />
