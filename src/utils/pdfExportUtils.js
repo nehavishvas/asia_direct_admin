@@ -8,9 +8,42 @@ import {
 
 export const PDF_PAGE_WIDTH = 1600;
 
-const getFormControlDisplayValue = (el) => {
+// Matches header cells whose text is exactly "Vat %" (case-insensitive).
+const VAT_PERCENT_HEADER_RE = /^vat\s*%$/i;
+
+// Finds the column index(es) of any "Vat %" header in the table(s) inside root.
+const getVatPercentColumnIndexes = (root) => {
+  const indexes = new Set();
+
+  root?.querySelectorAll("table thead tr").forEach((headerRow) => {
+    [...headerRow.querySelectorAll("th")].forEach((th, idx) => {
+      const text = (th.textContent ?? "").replace(/\s+/g, " ").trim();
+      if (VAT_PERCENT_HEADER_RE.test(text)) {
+        indexes.add(idx);
+      }
+    });
+  });
+
+  return indexes;
+};
+
+// Reduces a VAT label like "Standard Rate (15.00 %)" or "Customs VAT(100.00%)"
+// down to just "15.00 %". Labels with no numeric percentage (e.g. "Manual VAT",
+// "No Vat") are left untouched since there is no value to extract.
+const extractVatPercentOnly = (text) => {
+  if (text === null || text === undefined) return text;
+  const str = String(text);
+  const match = str.match(/(\d+(?:\.\d+)?)\s*%/);
+  if (match) {
+    return `${parseFloat(match[1]).toFixed(2)} %`;
+  }
+  return str;
+};
+
+const getFormControlDisplayValue = (el, isVatPercentColumn = false) => {
   if (el.tagName === "SELECT") {
-    return getSelectDisplayText(el);
+    const text = getSelectDisplayText(el);
+    return isVatPercentColumn ? extractVatPercentOnly(text) : text;
   }
 
   if (el.type === "checkbox" || el.type === "radio") {
@@ -64,10 +97,13 @@ export const getCellPlainText = (cell) => {
 export const replaceFormControlsWithText = (root) => {
   if (!root) return () => { };
 
+  const vatPercentColumnIndexes = getVatPercentColumnIndexes(root);
   const replacements = [];
 
   root.querySelectorAll("input, textarea, select").forEach((el) => {
-    const displayValue = getFormControlDisplayValue(el);
+    const cell = el.closest("td");
+    const isVatPercentColumn = !!cell && vatPercentColumnIndexes.has(cell.cellIndex);
+    const displayValue = getFormControlDisplayValue(el, isVatPercentColumn);
     const span = document.createElement("span");
     span.textContent = displayValue;
     span.setAttribute("data-pdf-text-replacement", "true");

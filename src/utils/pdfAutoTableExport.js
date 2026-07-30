@@ -59,6 +59,47 @@ const fmtDate = (value) => {
 
 const val = (v) => (v === null || v === undefined || v === "" ? "" : String(v));
 
+// Reduces a VAT label like "Standard Rate (15.00 %)" or "Customs VAT(100.00%)"
+// down to just "15.00 %". Labels with no numeric percentage (e.g. "Manual VAT",
+// "No Vat") are left untouched since there is no value to extract.
+const extractVatPercentOnly = (text) => {
+  if (text === null || text === undefined) return text;
+  const str = String(text);
+  const match = str.match(/(\d+(?:\.\d+)?)\s*%/);
+  if (match) {
+    return `${parseFloat(match[1]).toFixed(2)} %`;
+  }
+  return str;
+};
+
+// Finds the "Vat %" column in the extracted quote data and rewrites every
+// row/total/grand-total cell in that column to just the numeric percentage.
+const applyVatPercentOnlyToQuoteData = (quoteData) => {
+  if (!quoteData?.headers) return quoteData;
+
+  const vatColIdx = quoteData.headers.findIndex(
+    (h) => (h ?? "").replace(/\s+/g, " ").trim().toLowerCase() === "vat %",
+  );
+  if (vatColIdx === -1) return quoteData;
+
+  const fixRow = (row) => {
+    if (!row) return row;
+    const updated = [...row];
+    updated[vatColIdx] = extractVatPercentOnly(row[vatColIdx]);
+    return updated;
+  };
+
+  return {
+    ...quoteData,
+    sections: quoteData.sections.map((section) => ({
+      ...section,
+      rows: section.rows.map(fixRow),
+      total: section.total ? fixRow(section.total) : section.total,
+    })),
+    grandTotal: quoteData.grandTotal ? fixRow(quoteData.grandTotal) : quoteData.grandTotal,
+  };
+};
+
 // ---------------------------------------------------------------------------
 // Header drawing (logo, company block, freight estimate bar, info grid)
 // ---------------------------------------------------------------------------
@@ -270,9 +311,10 @@ const drawHeader = (doc, meta, pageWidth) => {
     { type: "kv", label: "Place of Delivery", value: meta.routing.placeOfDelivery },
     { type: "kv", label: "Incoterm", value: meta.routing.incoterm },
     { type: "kv", label: "Mode of Transport", value: meta.routing.modeOfTransport },
-    { type: "kv", label: "Freight No", value: meta.routing.freightNo },
     { type: "gap", height: 3 },
     { type: "bar", title: "Freight details" },
+    { type: "kv", label: "Freight No", value: meta.routing.freightNo },
+
     { type: "kv", label: "Load type", value: meta.freightDetails.loadType },
     { type: "kv", label: "Transit Priority", value: meta.freightDetails.transitPriority },
     { type: "kv", label: "Insurance", value: meta.freightDetails.insurance },
@@ -532,10 +574,11 @@ export const exportEstimateAutoTablePdf = async (
     throw new Error("PDF content is not ready.");
   }
 
-  const quoteData = extractQuoteDataFromRoot(element);
-  if (!quoteData) {
+  const rawQuoteData = extractQuoteDataFromRoot(element);
+  if (!rawQuoteData) {
     throw new Error("Could not find the quote table to export.");
   }
+  const quoteData = applyVatPercentOnlyToQuoteData(rawQuoteData);
 
   const logoImage = await loadImageAsDataUrl(meta?.logoSrc);
 
