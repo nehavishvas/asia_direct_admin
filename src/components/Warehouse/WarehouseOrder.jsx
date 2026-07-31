@@ -45,6 +45,7 @@ const style1 = {
 export default function WarehouseOrder() {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState("In Store");
+  const [counts, setCounts] = useState({ inStore: 0, out: 0, batchAssigned: 0, batchNotAssigned: 0 });
   const [data, setData] = useState([]);
   const [advancedFilters, setAdvancedFilters] = useState(null);
   const [batch, setBatch] = useState([]);
@@ -193,8 +194,8 @@ export default function WarehouseOrder() {
           const payload = {
             user_id: userid,
             user_type: usertype,
-            page: pageNumber,
-            warehouse_item_status: tab === "In Store" ? "In Store" : "Out",
+            page: 1,
+            limit: 10000,
             ...filters,
           };
           if (searchVal.trim().length > 0) {
@@ -204,14 +205,92 @@ export default function WarehouseOrder() {
             `${process.env.REACT_APP_BASE_URL}GetWarehouseOrders`,
             payload,
           );
-          setLoader(false);
+
+          let allItems = [];
           if (response.data && response.data.data) {
-            setData(response.data.data);
-            setPagenationData(response.data);
-          } else {
-            setData([]);
-            setPagenationData({ total: 0, limit: 10, page: pageNumber });
+            allItems = [...response.data.data];
+            const totalItems = response.data.total;
+            const limitReturned = response.data.limit || 10;
+            
+            if (allItems.length < totalItems && limitReturned < totalItems) {
+              const totalPages = Math.ceil(totalItems / limitReturned);
+              const promises = [];
+              for (let p = 2; p <= totalPages; p++) {
+                promises.push(
+                  axios.post(
+                    `${process.env.REACT_APP_BASE_URL}GetWarehouseOrders`,
+                    { ...payload, page: p, limit: limitReturned }
+                  )
+                );
+              }
+              if (promises.length > 0) {
+                const results = await Promise.all(promises);
+                results.forEach(res => {
+                  if (res.data && res.data.data) {
+                    allItems = [...allItems, ...res.data.data];
+                  }
+                });
+              }
+            }
           }
+
+          const inStoreItems = allItems.filter(item => {
+            return item.warehouse_item_status === "In Store" || item.warehouse_item_status == null;
+          });
+          const outItems = allItems.filter(item => {
+            return item.warehouse_item_status === "Out";
+          });
+          const assignedItems = allItems.filter(item => {
+            return item.assign_to_batch !== 0 && item.assign_to_batch !== "0" && item.assign_to_batch != null;
+          });
+          const unassignedItems = allItems.filter(item => {
+            return item.assign_to_batch === 0 || item.assign_to_batch === "0" || item.assign_to_batch == null;
+          });
+
+          setCounts({
+            inStore: inStoreItems.length,
+            out: outItems.length,
+            batchAssigned: assignedItems.length,
+            batchNotAssigned: unassignedItems.length,
+          });
+
+          const pageSize = 10;
+          const startIdx = (pageNumber - 1) * pageSize;
+
+          if (tab === "In Store") {
+            const paginatedData = inStoreItems.slice(startIdx, startIdx + pageSize);
+            setData(paginatedData);
+            setPagenationData({
+              total: inStoreItems.length,
+              limit: pageSize,
+              page: pageNumber,
+            });
+          } else if (tab === "Out") {
+            const paginatedData = outItems.slice(startIdx, startIdx + pageSize);
+            setData(paginatedData);
+            setPagenationData({
+              total: outItems.length,
+              limit: pageSize,
+              page: pageNumber,
+            });
+          } else if (tab === "Batch Assigned") {
+            const paginatedData = assignedItems.slice(startIdx, startIdx + pageSize);
+            setData(paginatedData);
+            setPagenationData({
+              total: assignedItems.length,
+              limit: pageSize,
+              page: pageNumber,
+            });
+          } else if (tab === "Batch not Assigned") {
+            const paginatedData = unassignedItems.slice(startIdx, startIdx + pageSize);
+            setData(paginatedData);
+            setPagenationData({
+              total: unassignedItems.length,
+              limit: pageSize,
+              page: pageNumber,
+            });
+          }
+          setLoader(false);
         } catch (error) {
           setLoader(false);
           console.error("Error fetching warehouse orders:", error);
@@ -757,7 +836,7 @@ export default function WarehouseOrder() {
                   fetchWarehouseOrders(1, 'In Store', searchQuery, advancedFilters);
                 }}
               >
-                In - store
+                In - store ({counts.inStore})
               </a>
             </li>
             <li className="nav-item" style={{ cursor: "pointer" }}>
@@ -769,7 +848,31 @@ export default function WarehouseOrder() {
                   fetchWarehouseOrders(1, 'Out', searchQuery, advancedFilters);
                 }}
               >
-                Out
+                Out ({counts.out})
+              </a>
+            </li>
+            <li className="nav-item" style={{ cursor: "pointer" }}>
+              <a
+                className={`nav-link ${activeTab === 'Batch Assigned' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                onClick={() => {
+                  setActiveTab('Batch Assigned');
+                  setCurrentPage(1);
+                  fetchWarehouseOrders(1, 'Batch Assigned', searchQuery, advancedFilters);
+                }}
+              >
+                Batch Assigned ({counts.batchAssigned})
+              </a>
+            </li>
+            <li className="nav-item" style={{ cursor: "pointer" }}>
+              <a
+                className={`nav-link ${activeTab === 'Batch not Assigned' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                onClick={() => {
+                  setActiveTab('Batch not Assigned');
+                  setCurrentPage(1);
+                  fetchWarehouseOrders(1, 'Batch not Assigned', searchQuery, advancedFilters);
+                }}
+              >
+                Batch not Assigned ({counts.batchNotAssigned})
               </a>
             </li>
           </ul>
