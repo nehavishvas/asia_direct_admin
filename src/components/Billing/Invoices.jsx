@@ -6,7 +6,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ViewNewFreightQuoteInvoice from "./ViewNewFreightQuoteInvoice";
-import ReportFilterModal from "./ReportFilterModal";
 
 const Invoices = () => {
     const [data, setData] = useState([]);
@@ -15,7 +14,6 @@ const Invoices = () => {
     const [totalPage, setTotalPage] = useState(1);
     const [search, setSearch] = useState("");
     const [printItem, setPrintItem] = useState(null);
-    const [openReportModal, setOpenReportModal] = useState(false);
     const limit = 10;
     const navigate = useNavigate();
 
@@ -123,7 +121,7 @@ const Invoices = () => {
                                 </button>
                                 <button
                                     className="btn btn-secondary"
-                                    onClick={() => setOpenReportModal(true)}
+                                    onClick={() => navigate("/Admin/customer-invoices-report")}
                                 >
                                     Customer Invoices Report
                                 </button>
@@ -290,11 +288,6 @@ const Invoices = () => {
                             onPrintComplete={() => setPrintItem(null)}
                         />
                     )}
-                    <ReportFilterModal
-                        open={openReportModal}
-                        onClose={() => setOpenReportModal(false)}
-                        reportType="invoices"
-                    />
                     <ToastContainer />
                 </div>
             )}

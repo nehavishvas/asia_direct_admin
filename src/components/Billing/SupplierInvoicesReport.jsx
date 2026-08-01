@@ -10,25 +10,29 @@ const SupplierInvoicesReport = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Default dates: Start and end of current month
-    const getStartOfCurrentMonth = () => {
+    // Default dates: Start and end of last month
+    const getStartOfLastMonth = () => {
         const d = new Date();
+        d.setDate(1);
+        d.setMonth(d.getMonth() - 1);
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, "0");
         return `${y}-${m}-01`;
     };
 
-    const getEndOfCurrentMonth = () => {
+    const getEndOfLastMonth = () => {
         const d = new Date();
+        d.setDate(1);
+        d.setMonth(d.getMonth() - 1);
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, "0");
         const lastDay = new Date(y, d.getMonth() + 1, 0).getDate();
-        return `${y}-${m}-${lastDay}`;
+        return `${y}-${m}-${String(lastDay).padStart(2, "0")}`;
     };
 
     // States for filters
-    const [startDate, setStartDate] = useState(location.state?.startDate || getStartOfCurrentMonth());
-    const [endDate, setEndDate] = useState(location.state?.endDate || getEndOfCurrentMonth());
+    const [startDate, setStartDate] = useState(location.state?.startDate || getStartOfLastMonth());
+    const [endDate, setEndDate] = useState(location.state?.endDate || getEndOfLastMonth());
     const [supplierFrom, setSupplierFrom] = useState(location.state?.supplierFrom || "");
     const [supplierTo, setSupplierTo] = useState(location.state?.supplierTo || "");
     const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
@@ -87,14 +91,13 @@ const SupplierInvoicesReport = () => {
     };
 
     useEffect(() => {
-        if (location.state) {
-            fetchReportData();
-        }
+        fetchReportData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.state]);
 
     const handleReset = () => {
-        setStartDate(getStartOfCurrentMonth());
-        setEndDate(getEndOfCurrentMonth());
+        setStartDate(getStartOfLastMonth());
+        setEndDate(getEndOfLastMonth());
         setSupplierFrom("");
         setSupplierTo("");
         setCategoryFrom("");
@@ -293,7 +296,7 @@ const SupplierInvoicesReport = () => {
 
                                 <div className="col-lg-2 col-md-2 col-sm-4 d-flex align-items-center justify-content-end gap-1">
                                     <button type="submit" className="btn btn-primary blueBtn btn-sm">
-                                        Search
+                                        View
                                     </button>
                                     <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleReset}>
                                         Reset

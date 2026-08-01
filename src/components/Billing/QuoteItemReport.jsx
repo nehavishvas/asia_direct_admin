@@ -265,8 +265,21 @@ const QuoteItemReport = () => {
                 </div>
             </div>
             <ToastContainer />
-            <style type="text/css" media="print">{`
-                @page {
+            <style type="text/css">{`
+                 .report-title {
+                     font-size: 16px !important;
+                 }
+                 .report-subtitle {
+                     font-size: 12px !important;
+                     margin-bottom: 12px !important;
+                 }
+                 .report-meta-info {
+                     font-size: 11px !important;
+                 }
+                 .report-meta-info span {
+                     font-size: 11px !important;
+                 }
+                 @page {
                     size: landscape;
                     margin: 10mm;
                 }

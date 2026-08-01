@@ -9,20 +9,29 @@ import PrintIcon from "@mui/icons-material/Print";
 const SalesByItemReport = () => {
     const navigate = useNavigate();
 
-    // Default Date Helpers
-    const getStartOfCurrentYear = () => {
-        const y = new Date().getFullYear();
-        return `${y}-01-01`;
+    // Default Date Helpers (Last Month)
+    const getStartOfLastMonth = () => {
+        const d = new Date();
+        d.setDate(1);
+        d.setMonth(d.getMonth() - 1);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        return `${y}-${m}-01`;
     };
 
-    const getEndOfCurrentYear = () => {
-        const y = new Date().getFullYear();
-        return `${y}-12-31`;
+    const getEndOfLastMonth = () => {
+        const d = new Date();
+        d.setDate(1);
+        d.setMonth(d.getMonth() - 1);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const lastDay = new Date(y, d.getMonth() + 1, 0).getDate();
+        return `${y}-${m}-${String(lastDay).padStart(2, "0")}`;
     };
 
     // Filter States
-    const [startDate, setStartDate] = useState(getStartOfCurrentYear());
-    const [endDate, setEndDate] = useState(getEndOfCurrentYear());
+    const [startDate, setStartDate] = useState(getStartOfLastMonth());
+    const [endDate, setEndDate] = useState(getEndOfLastMonth());
     const [itemFrom, setItemFrom] = useState("");
     const [itemTo, setItemTo] = useState("");
     const [categoryFrom, setCategoryFrom] = useState("");
@@ -41,8 +50,8 @@ const SalesByItemReport = () => {
     const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     const handleReset = () => {
-        setStartDate(getStartOfCurrentYear());
-        setEndDate(getEndOfCurrentYear());
+        setStartDate(getStartOfLastMonth());
+        setEndDate(getEndOfLastMonth());
         setItemFrom("");
         setItemTo("");
         setCategoryFrom("");
@@ -97,6 +106,11 @@ const SalesByItemReport = () => {
             setLoader(false);
         }
     };
+
+    useEffect(() => {
+        fetchReportData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Helpers
     const formatCurrency = (amount, currencySymbol = "R") => {
@@ -267,7 +281,7 @@ const SalesByItemReport = () => {
 
                                 <div className="col-lg-2 col-md-4 col-sm-6 d-flex align-items-center justify-content-end gap-1">
                                     <button type="submit" className="btn btn-primary blueBtn btn-sm">
-                                        Search
+                                        View
                                     </button>
                                     <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleReset}>
                                         Reset

@@ -19,7 +19,7 @@ const SupplierBalancesReport = () => {
         return `${y}-${m}-${day}`;
     };
 
-    const [runDate, setRunDate] = useState(location.state?.runDate || getTodayDateString());
+    const [runDate, setRunDate] = useState(location.state?.runDate || "");
     const [supplierFrom, setSupplierFrom] = useState(location.state?.supplierFrom || "");
     const [supplierTo, setSupplierTo] = useState(location.state?.supplierTo || "");
     const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
@@ -32,14 +32,13 @@ const SupplierBalancesReport = () => {
     const [reportData, setReportData] = useState([]);
     const [summary, setSummary] = useState(null);
     const [loader, setLoader] = useState(false);
-    const [searched, setSearched] = useState(!!location.state);
+    const [searched, setSearched] = useState(false);
 
     const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     useEffect(() => {
-        if (location.state) {
-            fetchReportData();
-        }
+        fetchReportData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.state]);
 
     // Fetch report data
@@ -49,7 +48,7 @@ const SupplierBalancesReport = () => {
         setSearched(true);
         try {
             const payload = {
-                run_at_date: runDate,
+                run_at_date: runDate || null,
                 supplier_from: supplierFrom || null,
                 supplier_to: supplierTo || null,
                 category_from: categoryFrom || null,
@@ -84,7 +83,7 @@ const SupplierBalancesReport = () => {
     };
 
     const handleReset = () => {
-        setRunDate(getTodayDateString());
+        setRunDate("");
         setSupplierFrom("");
         setSupplierTo("");
         setCategoryFrom("");
@@ -160,7 +159,6 @@ const SupplierBalancesReport = () => {
                                     <input
                                         type="date"
                                         className="form-control form-control-sm"
-                                        required
                                         value={runDate}
                                         onChange={(e) => setRunDate(e.target.value)}
                                     />
@@ -272,7 +270,7 @@ const SupplierBalancesReport = () => {
 
                                 <div className="col-lg-2 col-md-3 col-sm-6 d-flex align-items-center justify-content-end gap-1">
                                     <button type="submit" className="btn btn-primary blueBtn btn-sm">
-                                        Search
+                                        View
                                     </button>
                                     <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleReset}>
                                         Reset

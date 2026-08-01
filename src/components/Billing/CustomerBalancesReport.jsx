@@ -19,7 +19,7 @@ const CustomerBalancesReport = () => {
         return `${y}-${m}-${day}`;
     };
 
-    const [runDate, setRunDate] = useState(location.state?.runDate || getTodayDateString());
+    const [runDate, setRunDate] = useState(location.state?.runDate || "");
     const [customerFrom, setCustomerFrom] = useState(location.state?.customerFrom || "");
     const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
     const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
@@ -28,28 +28,33 @@ const CustomerBalancesReport = () => {
     const [reportData, setReportData] = useState([]);
     const [summary, setSummary] = useState(null);
     const [loader, setLoader] = useState(false);
-    const [searched, setSearched] = useState(!!location.state);
+    const [searched, setSearched] = useState(true);
 
     const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     useEffect(() => {
-        if (location.state) {
-            fetchReportData();
-        }
-    }, [location.state]);
+        fetchReportData();
+    }, []);
 
     // Fetch report data
-    const fetchReportData = async (e) => {
+    const fetchReportData = async (
+        e,
+        optRunDate = runDate,
+        optCustomerFrom = customerFrom,
+        optCustomerTo = customerTo,
+        optCategoryFrom = categoryFrom,
+        optCategoryTo = categoryTo
+    ) => {
         if (e) e.preventDefault();
         setLoader(true);
         setSearched(true);
         try {
             const payload = {
-                run_date: runDate,
-                customer_from: customerFrom || null,
-                customer_to: customerTo || null,
-                category_from: categoryFrom || null,
-                category_to: categoryTo || null
+                run_date: optRunDate || null,
+                customer_from: optCustomerFrom || null,
+                customer_to: optCustomerTo || null,
+                category_from: optCategoryFrom || null,
+                category_to: optCategoryTo || null
             };
 
             const response = await axios.post(
@@ -76,14 +81,12 @@ const CustomerBalancesReport = () => {
     };
 
     const handleReset = () => {
-        setRunDate(getTodayDateString());
+        setRunDate("");
         setCustomerFrom("");
         setCustomerTo("");
         setCategoryFrom("");
         setCategoryTo("");
-        setReportData([]);
-        setSummary(null);
-        setSearched(false);
+        fetchReportData(null, "", "", "", "", "");
     };
 
     const handlePrint = () => {
@@ -127,105 +130,86 @@ const CustomerBalancesReport = () => {
                         )}
                     </div>
 
-                    {/* Filter Card */}
-                    {/* <div className="card shadow-sm border-0 mb-4 bg-light">
+                    <div className="card shadow-sm border-0 mb-4 bg-light">
                         <div className="card-body">
-                            <h5 className="card-title mb-4 text-dark fw-bold text-center">Customer Balances - Days Outstanding Report</h5>
-                            <form onSubmit={fetchReportData}>
-                                <div className="row justify-content-center">
-                                    <div className="col-md-8">
-                                        <div className="row mb-3 align-items-center">
-                                            <div className="col-sm-3 text-md-end text-start">
-                                                <label className="form-label text-secondary fw-semibold mb-0">Run At Date</label>
-                                            </div>
-                                            <div className="col-sm-9">
-                                                <input
-                                                    type="date"
-                                                    className="form-control"
-                                                    required
-                                                    value={runDate}
-                                                    onChange={(e) => setRunDate(e.target.value)}
-                                                />
-                                            </div>
-                                        </div>
+                            <form onSubmit={fetchReportData} className="row g-2 justify-content-center align-items-end">
+                                <div className="col-lg-3 col-md-4 col-sm-6">
+                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Run At Date</label>
+                                    <input
+                                        type="date"
+                                        className="form-control form-control-sm"
+                                        value={runDate}
+                                        onChange={(e) => setRunDate(e.target.value)}
+                                    />
+                                </div>
 
-                                        <div className="row mb-3 align-items-center">
-                                            <div className="col-sm-3 text-md-end text-start">
-                                                <label className="form-label text-secondary fw-semibold mb-0">Customer</label>
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <select
-                                                    className="form-select"
-                                                    value={customerFrom}
-                                                    onChange={(e) => setCustomerFrom(e.target.value)}
-                                                >
-                                                    <option value="">(From)</option>
-                                                    {alphabet.map((letter) => (
-                                                        <option key={letter} value={letter}>
-                                                            {letter}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <select
-                                                    className="form-select"
-                                                    value={customerTo}
-                                                    onChange={(e) => setCustomerTo(e.target.value)}
-                                                >
-                                                    <option value="">(To)</option>
-                                                    {alphabet.map((letter) => (
-                                                        <option key={letter} value={letter}>
-                                                            {letter}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div className="row mb-3 align-items-center">
-                                            <div className="col-sm-3 text-md-end text-start">
-                                                <label className="form-label text-secondary fw-semibold mb-0">Category</label>
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <select
-                                                    className="form-select"
-                                                    value={categoryFrom}
-                                                    onChange={(e) => setCategoryFrom(e.target.value)}
-                                                >
-                                                    <option value="">(From)</option>
-                                                    <option value="South Africa">South Africa</option>
-                                                    <option value="Zambia">Zambia</option>
-                                                    <option value="Zimbabwe">Zimbabwe</option>
-                                                </select>
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <select
-                                                    className="form-select"
-                                                    value={categoryTo}
-                                                    onChange={(e) => setCategoryTo(e.target.value)}
-                                                >
-                                                    <option value="">(To)</option>
-                                                    <option value="South Africa">South Africa</option>
-                                                    <option value="Zambia">Zambia</option>
-                                                    <option value="Zimbabwe">Zimbabwe</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div className="d-flex justify-content-center gap-2 mt-4">
-                                            <button type="button" className="btn btn-outline-secondary" onClick={handleReset}>
-                                                Reset
-                                            </button>
-                                            <button type="submit" className="btn btn-primary blueBtn">
-                                                View Report
-                                            </button>
-                                        </div>
+                                <div className="col-lg-3 col-md-4 col-sm-6">
+                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Customer</label>
+                                    <div className="d-flex gap-1">
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={customerFrom}
+                                            onChange={(e) => setCustomerFrom(e.target.value)}
+                                        >
+                                            <option value="">(From)</option>
+                                            {alphabet.map((letter) => (
+                                                <option key={letter} value={letter}>
+                                                    {letter}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={customerTo}
+                                            onChange={(e) => setCustomerTo(e.target.value)}
+                                        >
+                                            <option value="">(To)</option>
+                                            {alphabet.map((letter) => (
+                                                <option key={letter} value={letter}>
+                                                    {letter}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
+                                </div>
+
+                                <div className="col-lg-3 col-md-4 col-sm-6">
+                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Category</label>
+                                    <div className="d-flex gap-1">
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={categoryFrom}
+                                            onChange={(e) => setCategoryFrom(e.target.value)}
+                                        >
+                                            <option value="">(From)</option>
+                                            <option value="South Africa">South Africa</option>
+                                            <option value="Zambia">Zambia</option>
+                                            <option value="Zimbabwe">Zimbabwe</option>
+                                        </select>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={categoryTo}
+                                            onChange={(e) => setCategoryTo(e.target.value)}
+                                        >
+                                            <option value="">(To)</option>
+                                            <option value="South Africa">South Africa</option>
+                                            <option value="Zambia">Zambia</option>
+                                            <option value="Zimbabwe">Zimbabwe</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-3 col-md-4 col-sm-6 d-flex gap-2">
+                                    <button type="submit" className="btn btn-primary blueBtn btn-sm w-50">
+                                        View
+                                    </button>
+                                    <button type="button" className="btn btn-outline-secondary btn-sm w-50" onClick={handleReset}>
+                                        Reset
+                                    </button>
                                 </div>
                             </form>
                         </div>
-                    </div> */}
+                    </div>
                 </div>
 
                 {/* Printable Report Area */}
@@ -248,25 +232,25 @@ const CustomerBalancesReport = () => {
 
                                         <div className="report-meta-info mt-3">
                                             <div className="row">
-                                                <div className="col-sm-6 d-flex mb-1">
-                                                    <span className="fw-bold text-dark me-2" style={{ minWidth: "100px" }}>Customer:</span>
-                                                    <span className="text-secondary">
-                                                        {!customerFrom && !customerTo ? "All Customers" : `${customerFrom || "A"} to ${customerTo || "Z"}`}
-                                                    </span>
+                                                <div className="col-md-6">
+                                                    <div className="d-flex mb-1">
+                                                        <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Customer:</span>
+                                                        <span className="text-secondary">
+                                                            {!customerFrom && !customerTo ? "All Customers" : `${customerFrom || "A"} to ${customerTo || "Z"}`}
+                                                        </span>
+                                                    </div>
+                                                    <div className="d-flex mb-1">
+                                                        <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Category:</span>
+                                                        <span className="text-secondary">
+                                                            {!categoryFrom && !categoryTo ? "All Categories" : `${categoryFrom || "(Start)"} to ${categoryTo || "(End)"}`}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col-sm-6 d-flex mb-1">
-                                                    <span className="fw-bold text-dark me-2" style={{ minWidth: "100px" }}>Category:</span>
-                                                    <span className="text-secondary">
-                                                        {!categoryFrom && !categoryTo ? "All Categories" : `${categoryFrom || "(Start)"} to ${categoryTo || "(End)"}`}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col-sm-6 d-flex mb-1">
-                                                    <span className="fw-bold text-dark me-2" style={{ minWidth: "100px" }}>Date:</span>
-                                                    <span className="text-secondary">{formatDateString(runDate)}</span>
+                                                <div className="col-md-6">
+                                                    <div className="d-flex mb-1">
+                                                        <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Date:</span>
+                                                        <span className="text-secondary">{formatDateString(runDate)}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -325,7 +309,20 @@ const CustomerBalancesReport = () => {
                 )}
             </div>
             <ToastContainer />
-            <style type="text/css" media="print">{`
+            <style type="text/css">{`
+                 .report-title {
+                     font-size: 16px !important;
+                 }
+                 .report-subtitle {
+                     font-size: 12px !important;
+                     margin-bottom: 12px !important;
+                 }
+                 .report-meta-info {
+                     font-size: 11px !important;
+                 }
+                 .report-meta-info span {
+                     font-size: 11px !important;
+                 }
                 @page {
                     size: landscape;
                     margin: 10mm;

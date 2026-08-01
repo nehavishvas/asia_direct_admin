@@ -616,13 +616,7 @@ const ManageCollectionDelivery = () => {
                                                                                 item.require_for_delivery_status || "-"
                                                                             )}
                                                                         </div>
-                                                                        <div className="d-flex align-items-center"> <i
-                                                                            class="fa fa-tasks me-2 mt-2"
-                                                                            style={{
-                                                                                color: "#1d2044",
-                                                                                cursor: "pointer",
-                                                                            }}
-                                                                        />
+                                                                        <div className="d-flex align-items-center">
                                                                             <FaEdit 
                                                                                 onClick={() => {
                                                                                     console.log("FaEdit clicked under delivery for item:", item);

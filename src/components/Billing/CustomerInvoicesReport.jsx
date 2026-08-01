@@ -10,16 +10,20 @@ const CustomerInvoicesReport = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Default dates: Start and end of current month
-    const getStartOfCurrentMonth = () => {
+    // Default dates: Start and end of last month
+    const getStartOfLastMonth = () => {
         const d = new Date();
+        d.setDate(1);
+        d.setMonth(d.getMonth() - 1);
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, "0");
         return `${y}-${m}-01`;
     };
 
-    const getEndOfCurrentMonth = () => {
+    const getEndOfLastMonth = () => {
         const d = new Date();
+        d.setDate(1);
+        d.setMonth(d.getMonth() - 1);
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, "0");
         const lastDay = new Date(y, d.getMonth() + 1, 0).getDate();
@@ -27,8 +31,8 @@ const CustomerInvoicesReport = () => {
     };
 
     // States for filters
-    const [startDate, setStartDate] = useState(location.state?.startDate || getStartOfCurrentMonth());
-    const [endDate, setEndDate] = useState(location.state?.endDate || getEndOfCurrentMonth());
+    const [startDate, setStartDate] = useState(location.state?.startDate || getStartOfLastMonth());
+    const [endDate, setEndDate] = useState(location.state?.endDate || getEndOfLastMonth());
     const [customerFrom, setCustomerFrom] = useState(location.state?.customerFrom || "");
     const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
     const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
@@ -46,17 +50,26 @@ const CustomerInvoicesReport = () => {
     const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     // Fetch report data
-    const fetchReportData = async (pageNo = 1) => {
+    const fetchReportData = async (
+        pageNo = 1,
+        optStartDate = startDate,
+        optEndDate = endDate,
+        optCustomerFrom = customerFrom,
+        optCustomerTo = customerTo,
+        optCategoryFrom = categoryFrom,
+        optCategoryTo = categoryTo,
+        optInvoiceStatus = invoiceStatus
+    ) => {
         setLoader(true);
         try {
             const payload = {
-                start_date: startDate || null,
-                end_date: endDate || null,
-                customer_from: customerFrom || null,
-                customer_to: customerTo || null,
-                category_from: categoryFrom || null,
-                category_to: categoryTo || null,
-                invoice_status: invoiceStatus || "ALL"
+                start_date: optStartDate || null,
+                end_date: optEndDate || null,
+                customer_from: optCustomerFrom || null,
+                customer_to: optCustomerTo || null,
+                category_from: optCategoryFrom || null,
+                category_to: optCategoryTo || null,
+                invoice_status: optInvoiceStatus || "ALL"
             };
 
             const response = await axios.post(
@@ -91,15 +104,17 @@ const CustomerInvoicesReport = () => {
     };
 
     const handleReset = () => {
-        setStartDate(getStartOfCurrentMonth());
-        setEndDate(getEndOfCurrentMonth());
+        const start = getStartOfLastMonth();
+        const end = getEndOfLastMonth();
+        setStartDate(start);
+        setEndDate(end);
         setCustomerFrom("");
         setCustomerTo("");
         setCategoryFrom("");
         setCategoryTo("");
         setInvoiceStatus("ALL");
         // setSearch("");
-        fetchReportData(1);
+        fetchReportData(1, start, end, "", "", "", "", "ALL");
     };
 
     const handlePrint = () => {
@@ -189,129 +204,107 @@ const CustomerInvoicesReport = () => {
                         </button>
                     </div>
 
-                    {/* Filter Card */}
-                    {/* <div className="card shadow-sm border-0 mb-4 bg-light">
+                    <div className="card shadow-sm border-0 mb-4 bg-light">
                         <div className="card-body">
-                            <h5 className="card-title mb-4 text-dark fw-bold text-center">Customer Invoices Report</h5>
-                            <form onSubmit={handleSearch}>
-                                <div className="row justify-content-center">
-                                    <div className="col-md-8">
-                                        <div className="row mb-3 align-items-center">
-                                            <div className="col-sm-3 text-md-end text-start">
-                                                <label className="form-label text-secondary fw-semibold mb-0">Date Range</label>
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <input
-                                                    type="date"
-                                                    className="form-control"
-                                                    value={startDate}
-                                                    onChange={(e) => setStartDate(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <input
-                                                    type="date"
-                                                    className="form-control"
-                                                    value={endDate}
-                                                    onChange={(e) => setEndDate(e.target.value)}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="row mb-3 align-items-center">
-                                            <div className="col-sm-3 text-md-end text-start">
-                                                <label className="form-label text-secondary fw-semibold mb-0">Customer</label>
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <select
-                                                    className="form-select"
-                                                    value={customerFrom}
-                                                    onChange={(e) => setCustomerFrom(e.target.value)}
-                                                >
-                                                    <option value="">(From)</option>
-                                                    {alphabet.map((letter) => (
-                                                        <option key={letter} value={letter}>
-                                                            {letter}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <select
-                                                    className="form-select"
-                                                    value={customerTo}
-                                                    onChange={(e) => setCustomerTo(e.target.value)}
-                                                >
-                                                    <option value="">(To)</option>
-                                                    {alphabet.map((letter) => (
-                                                        <option key={letter} value={letter}>
-                                                            {letter}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div className="row mb-3 align-items-center">
-                                            <div className="col-sm-3 text-md-end text-start">
-                                                <label className="form-label text-secondary fw-semibold mb-0">Category</label>
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <select
-                                                    className="form-select"
-                                                    value={categoryFrom}
-                                                    onChange={(e) => setCategoryFrom(e.target.value)}
-                                                >
-                                                    <option value="">(From)</option>
-                                                    <option value="South Africa">South Africa</option>
-                                                    <option value="Zambia">Zambia</option>
-                                                    <option value="Zimbabwe">Zimbabwe</option>
-                                                </select>
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <select
-                                                    className="form-select"
-                                                    value={categoryTo}
-                                                    onChange={(e) => setCategoryTo(e.target.value)}
-                                                >
-                                                    <option value="">(To)</option>
-                                                    <option value="South Africa">South Africa</option>
-                                                    <option value="Zambia">Zambia</option>
-                                                    <option value="Zimbabwe">Zimbabwe</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div className="row mb-3 align-items-center">
-                                            <div className="col-sm-3 text-md-end text-start">
-                                                <label className="form-label text-secondary fw-semibold mb-0">Invoice Status</label>
-                                            </div>
-                                            <div className="col-sm-9">
-                                                <select
-                                                    className="form-select"
-                                                    value={invoiceStatus}
-                                                    onChange={(e) => setInvoiceStatus(e.target.value)}
-                                                >
-                                                    <option value="ALL">ALL</option>
-                                                    <option value="unpaid">Unpaid</option>
-                                                    <option value="paid">Paid</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div className="d-flex justify-content-center gap-2 mt-4">
-                                            <button type="button" className="btn btn-outline-secondary" onClick={handleReset}>
-                                                Reset
-                                            </button>
-                                            <button type="submit" className="btn btn-primary blueBtn">
-                                                View Report
-                                            </button>
-                                        </div>
+                            <form onSubmit={handleSearch} className="row g-2 justify-content-center align-items-end">
+                                <div className="col-lg-4 col-md-4 col-sm-6">
+                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Date Range</label>
+                                    <div className="d-flex gap-1">
+                                        <input
+                                            type="date"
+                                            className="form-control form-control-sm"
+                                            value={startDate}
+                                            onChange={(e) => setStartDate(e.target.value)}
+                                        />
+                                        <input
+                                            type="date"
+                                            className="form-control form-control-sm"
+                                            value={endDate}
+                                            onChange={(e) => setEndDate(e.target.value)}
+                                        />
                                     </div>
+                                </div>
+
+                                <div className="col-lg-2 col-md-4 col-sm-6">
+                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Customer</label>
+                                    <div className="d-flex gap-1">
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={customerFrom}
+                                            onChange={(e) => setCustomerFrom(e.target.value)}
+                                        >
+                                            <option value="">(From)</option>
+                                            {alphabet.map((letter) => (
+                                                <option key={letter} value={letter}>
+                                                    {letter}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={customerTo}
+                                            onChange={(e) => setCustomerTo(e.target.value)}
+                                        >
+                                            <option value="">(To)</option>
+                                            {alphabet.map((letter) => (
+                                                <option key={letter} value={letter}>
+                                                    {letter}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-2 col-md-4 col-sm-6">
+                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Category</label>
+                                    <div className="d-flex gap-1">
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={categoryFrom}
+                                            onChange={(e) => setCategoryFrom(e.target.value)}
+                                        >
+                                            <option value="">(From)</option>
+                                            <option value="South Africa">South Africa</option>
+                                            <option value="Zambia">Zambia</option>
+                                            <option value="Zimbabwe">Zimbabwe</option>
+                                        </select>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={categoryTo}
+                                            onChange={(e) => setCategoryTo(e.target.value)}
+                                        >
+                                            <option value="">(To)</option>
+                                            <option value="South Africa">South Africa</option>
+                                            <option value="Zambia">Zambia</option>
+                                            <option value="Zimbabwe">Zimbabwe</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-2 col-md-4 col-sm-6">
+                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Invoice Status</label>
+                                    <select
+                                        className="form-select form-select-sm"
+                                        value={invoiceStatus}
+                                        onChange={(e) => setInvoiceStatus(e.target.value)}
+                                    >
+                                        <option value="ALL">ALL</option>
+                                        <option value="unpaid">Unpaid</option>
+                                        <option value="paid">Paid</option>
+                                    </select>
+                                </div>
+
+                                <div className="col-lg-2 col-md-4 col-sm-6 d-flex gap-2">
+                                    <button type="submit" className="btn btn-primary blueBtn btn-sm w-50">
+                                        View
+                                    </button>
+                                    <button type="button" className="btn btn-outline-secondary btn-sm w-50" onClick={handleReset}>
+                                        Reset
+                                    </button>
                                 </div>
                             </form>
                         </div>
-                    </div> */}
+                    </div>
                 </div>
 
                 {/* Printable Report Area */}
@@ -324,21 +317,21 @@ const CustomerInvoicesReport = () => {
 
                             <div className="report-meta-info text-start mt-3">
                                 <div className="row">
-                                    <div className="col-sm-4 d-flex">
-                                        <span className="fw-bold text-dark me-2 label-width">Customer:</span>
-                                        <span className="text-secondary">{getCustomerFilterText()}</span>
+                                    <div className="col-md-6">
+                                        <div className="d-flex mb-1">
+                                            <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Customer:</span>
+                                            <span className="text-secondary">{getCustomerFilterText()}</span>
+                                        </div>
+                                        <div className="d-flex mb-1">
+                                            <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Category:</span>
+                                            <span className="text-secondary">{getCategoryFilterText()}</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="row mt-1">
-                                    <div className="col-sm-4 d-flex">
-                                        <span className="fw-bold text-dark me-2 label-width">Category:</span>
-                                        <span className="text-secondary">{getCategoryFilterText()}</span>
-                                    </div>
-                                </div>
-                                <div className="row mt-1">
-                                    <div className="col-sm-4 d-flex">
-                                        <span className="fw-bold text-dark me-2 label-width">Date Range:</span>
-                                        <span className="text-secondary">{getDateRangeText()}</span>
+                                    <div className="col-md-6">
+                                        <div className="d-flex mb-1">
+                                            <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Date Range:</span>
+                                            <span className="text-secondary">{getDateRangeText()}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -456,6 +449,19 @@ const CustomerInvoicesReport = () => {
 
             {/* Custom Print and Layout styles */}
             <style>{`
+                 .report-title {
+                     font-size: 16px !important;
+                 }
+                 .report-subtitle {
+                     font-size: 12px !important;
+                     margin-bottom: 12px !important;
+                 }
+                 .report-meta-info {
+                     font-size: 11px !important;
+                 }
+                 .report-meta-info span {
+                     font-size: 11px !important;
+                 }
                 .report-wrapper {
                     padding: 20px;
                 }

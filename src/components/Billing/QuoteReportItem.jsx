@@ -10,25 +10,29 @@ const QuoteReportItem = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Default date range helper
-    const getStartOfCurrentMonth = () => {
+    // Default date range helper (Last Month)
+    const getStartOfLastMonth = () => {
         const d = new Date();
+        d.setDate(1);
+        d.setMonth(d.getMonth() - 1);
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, "0");
         return `${y}-${m}-01`;
     };
 
-    const getEndOfCurrentMonth = () => {
+    const getEndOfLastMonth = () => {
         const d = new Date();
+        d.setDate(1);
+        d.setMonth(d.getMonth() - 1);
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, "0");
         const lastDay = new Date(y, d.getMonth() + 1, 0).getDate();
-        return `${y}-${m}-${lastDay}`;
+        return `${y}-${m}-${String(lastDay).padStart(2, "0")}`;
     };
 
     // Filter States
-    const [startDate, setStartDate] = useState(location.state?.startDate || getStartOfCurrentMonth());
-    const [endDate, setEndDate] = useState(location.state?.endDate || getEndOfCurrentMonth());
+    const [startDate, setStartDate] = useState(location.state?.startDate || getStartOfLastMonth());
+    const [endDate, setEndDate] = useState(location.state?.endDate || getEndOfLastMonth());
     const [customerFrom, setCustomerFrom] = useState(location.state?.customerFrom || "");
     const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
     const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
@@ -43,8 +47,8 @@ const QuoteReportItem = () => {
     const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     const handleReset = () => {
-        setStartDate(getStartOfCurrentMonth());
-        setEndDate(getEndOfCurrentMonth());
+        setStartDate(getStartOfLastMonth());
+        setEndDate(getEndOfLastMonth());
         setCustomerFrom("");
         setCustomerTo("");
         setCategoryFrom("");
@@ -93,9 +97,8 @@ const QuoteReportItem = () => {
     };
 
     useEffect(() => {
-        if (location.state) {
-            fetchReportData();
-        }
+        fetchReportData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.state]);
 
     // Helpers
@@ -239,7 +242,10 @@ const QuoteReportItem = () => {
 
                                 <div className="col-lg-2 col-md-4 col-sm-6 d-flex gap-2">
                                     <button type="submit" className="btn btn-primary blueBtn btn-sm w-50">
-                                        Search
+                                        View
+                                    </button>
+                                    <button type="button" className="btn btn-outline-secondary btn-sm w-50" onClick={handleReset}>
+                                        Reset
                                     </button>
                                 </div>
                             </form>

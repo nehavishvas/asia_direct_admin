@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { Modal, Box } from "@mui/material";
 import { BsThreeDotsVertical, BsTrash, BsPlus } from "react-icons/bs";
 import Swal from "sweetalert2";
-import ReportFilterModal from "./ReportFilterModal";
 
 const pageSize = 10;
 export default function Cashbook() {
@@ -23,7 +22,6 @@ export default function Cashbook() {
   const [openAdModal, setOpenAdModal] = useState(false);
   const [adDocumentUrl, setAdDocumentUrl] = useState("");
   const [modalTitle, setModalTitle] = useState("POP Document");
-  const [openReportModal, setOpenReportModal] = useState(false);
 
   // Add/Edit and Split States
   const [openAddEditModal, setOpenAddEditModal] = useState(false);
@@ -577,7 +575,7 @@ export default function Cashbook() {
                 <button
                   className="btn btn-primary blueBtn"
                   style={{ height: "38px" }}
-                  onClick={() => setOpenReportModal(true)}
+                  onClick={() => navigate("/Admin/customer-unallocated-report")}
                 >
                   Unallocated Report
                 </button>
@@ -1172,11 +1170,6 @@ export default function Cashbook() {
                 </form>
               </Box>
             </Modal>
-            <ReportFilterModal
-              open={openReportModal}
-              onClose={() => setOpenReportModal(false)}
-              reportType="unallocated"
-            />
             <ToastContainer />
           </div>
         </div>

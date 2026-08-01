@@ -10,24 +10,28 @@ const CustomerUnallocatedReport = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Default date range: Start and End of current month
-    const getStartOfCurrentMonth = () => {
+    // Default dates: Start and end of last month
+    const getStartOfLastMonth = () => {
         const d = new Date();
+        d.setDate(1);
+        d.setMonth(d.getMonth() - 1);
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, "0");
         return `${y}-${m}-01`;
     };
 
-    const getEndOfCurrentMonth = () => {
+    const getEndOfLastMonth = () => {
         const d = new Date();
+        d.setDate(1);
+        d.setMonth(d.getMonth() - 1);
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, "0");
         const lastDay = new Date(y, d.getMonth() + 1, 0).getDate();
         return `${y}-${m}-${lastDay}`;
     };
 
-    const [startDate, setStartDate] = useState(location.state?.startDate || getStartOfCurrentMonth());
-    const [endDate, setEndDate] = useState(location.state?.endDate || getEndOfCurrentMonth());
+    const [startDate, setStartDate] = useState(location.state?.startDate || getStartOfLastMonth());
+    const [endDate, setEndDate] = useState(location.state?.endDate || getEndOfLastMonth());
     const [customerFrom, setCustomerFrom] = useState(location.state?.customerFrom || "");
     const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
     const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
@@ -36,29 +40,35 @@ const CustomerUnallocatedReport = () => {
 
     const [reportData, setReportData] = useState([]);
     const [loader, setLoader] = useState(false);
-    const [searched, setSearched] = useState(!!location.state);
+    const [searched, setSearched] = useState(true);
 
     const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     useEffect(() => {
-        if (location.state) {
-            fetchReportData();
-        }
-    }, [location.state]);
+        fetchReportData();
+    }, []);
 
     // Fetch report data
-    const fetchReportData = async (e) => {
+    const fetchReportData = async (
+        e,
+        optStartDate = startDate,
+        optEndDate = endDate,
+        optCustomerFrom = customerFrom,
+        optCustomerTo = customerTo,
+        optCategoryFrom = categoryFrom,
+        optCategoryTo = categoryTo
+    ) => {
         if (e) e.preventDefault();
         setLoader(true);
         setSearched(true);
         try {
             const payload = {
-                start_date: startDate || null,
-                end_date: endDate || null,
-                customer_from: customerFrom || null,
-                customer_to: customerTo || null,
-                category_from: categoryFrom || null,
-                category_to: categoryTo || null,
+                start_date: optStartDate || null,
+                end_date: optEndDate || null,
+                customer_from: optCustomerFrom || null,
+                customer_to: optCustomerTo || null,
+                category_from: optCategoryFrom || null,
+                category_to: optCategoryTo || null,
                 // status: status || "ACTIVE"
             };
 
@@ -83,15 +93,16 @@ const CustomerUnallocatedReport = () => {
     };
 
     const handleReset = () => {
-        setStartDate(getStartOfCurrentMonth());
-        setEndDate(getEndOfCurrentMonth());
+        const start = getStartOfLastMonth();
+        const end = getEndOfLastMonth();
+        setStartDate(start);
+        setEndDate(end);
         setCustomerFrom("");
         setCustomerTo("");
         setCategoryFrom("");
         setCategoryTo("");
         // setStatus("ACTIVE");
-        setReportData([]);
-        setSearched(false);
+        fetchReportData(null, start, end, "", "", "", "");
     };
 
     const handlePrint = () => {
@@ -148,118 +159,94 @@ const CustomerUnallocatedReport = () => {
                         )}
                     </div>
 
-                    {/* Filter Card */}
-                    {/* <div className="card shadow-sm border-0 mb-4 bg-light">
+                    <div className="card shadow-sm border-0 mb-4 bg-light">
                         <div className="card-body">
-                            <h5 className="card-title mb-4 text-dark fw-bold text-center">Customer Unallocated Receipts Report</h5>
-                            <form onSubmit={fetchReportData}>
-                                <div className="row justify-content-center">
-                                    <div className="col-md-8">
-                                        <div className="row mb-3 align-items-center">
-                                            <div className="col-sm-3 text-md-end text-start">
-                                                <label className="form-label text-secondary fw-semibold mb-0">Start Date</label>
-                                            </div>
-                                            <div className="col-sm-9">
-                                                <input
-                                                    type="date"
-                                                    className="form-control"
-                                                    value={startDate}
-                                                    onChange={(e) => setStartDate(e.target.value)}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="row mb-3 align-items-center">
-                                            <div className="col-sm-3 text-md-end text-start">
-                                                <label className="form-label text-secondary fw-semibold mb-0">End Date</label>
-                                            </div>
-                                            <div className="col-sm-9">
-                                                <input
-                                                    type="date"
-                                                    className="form-control"
-                                                    value={endDate}
-                                                    onChange={(e) => setEndDate(e.target.value)}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="row mb-3 align-items-center">
-                                            <div className="col-sm-3 text-md-end text-start">
-                                                <label className="form-label text-secondary fw-semibold mb-0">Customer</label>
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <select
-                                                    className="form-select"
-                                                    value={customerFrom}
-                                                    onChange={(e) => setCustomerFrom(e.target.value)}
-                                                >
-                                                    <option value="">(From)</option>
-                                                    {alphabet.map((letter) => (
-                                                        <option key={letter} value={letter}>
-                                                            {letter}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <select
-                                                    className="form-select"
-                                                    value={customerTo}
-                                                    onChange={(e) => setCustomerTo(e.target.value)}
-                                                >
-                                                    <option value="">(To)</option>
-                                                    {alphabet.map((letter) => (
-                                                        <option key={letter} value={letter}>
-                                                            {letter}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div className="row mb-3 align-items-center">
-                                            <div className="col-sm-3 text-md-end text-start">
-                                                <label className="form-label text-secondary fw-semibold mb-0">Category</label>
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <select
-                                                    className="form-select"
-                                                    value={categoryFrom}
-                                                    onChange={(e) => setCategoryFrom(e.target.value)}
-                                                >
-                                                    <option value="">(From)</option>
-                                                    <option value="South Africa">South Africa</option>
-                                                    <option value="Zambia">Zambia</option>
-                                                    <option value="Zimbabwe">Zimbabwe</option>
-                                                </select>
-                                            </div>
-                                            <div className="col-sm-4 col-6">
-                                                <select
-                                                    className="form-select"
-                                                    value={categoryTo}
-                                                    onChange={(e) => setCategoryTo(e.target.value)}
-                                                >
-                                                    <option value="">(To)</option>
-                                                    <option value="South Africa">South Africa</option>
-                                                    <option value="Zambia">Zambia</option>
-                                                    <option value="Zimbabwe">Zimbabwe</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div className="d-flex justify-content-center gap-2 mt-4">
-                                            <button type="button" className="btn btn-outline-secondary" onClick={handleReset}>
-                                                Reset
-                                            </button>
-                                            <button type="submit" className="btn btn-primary blueBtn">
-                                                View Report
-                                            </button>
-                                        </div>
+                            <form onSubmit={fetchReportData} className="row g-2 justify-content-center align-items-end">
+                                <div className="col-lg-4 col-md-4 col-sm-6">
+                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Date Range</label>
+                                    <div className="d-flex gap-1">
+                                        <input
+                                            type="date"
+                                            className="form-control form-control-sm"
+                                            value={startDate}
+                                            onChange={(e) => setStartDate(e.target.value)}
+                                        />
+                                        <input
+                                            type="date"
+                                            className="form-control form-control-sm"
+                                            value={endDate}
+                                            onChange={(e) => setEndDate(e.target.value)}
+                                        />
                                     </div>
+                                </div>
+
+                                <div className="col-lg-3 col-md-4 col-sm-6">
+                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Customer</label>
+                                    <div className="d-flex gap-1">
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={customerFrom}
+                                            onChange={(e) => setCustomerFrom(e.target.value)}
+                                        >
+                                            <option value="">(From)</option>
+                                            {alphabet.map((letter) => (
+                                                <option key={letter} value={letter}>
+                                                    {letter}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={customerTo}
+                                            onChange={(e) => setCustomerTo(e.target.value)}
+                                        >
+                                            <option value="">(To)</option>
+                                            {alphabet.map((letter) => (
+                                                <option key={letter} value={letter}>
+                                                    {letter}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-3 col-md-4 col-sm-6">
+                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Category</label>
+                                    <div className="d-flex gap-1">
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={categoryFrom}
+                                            onChange={(e) => setCategoryFrom(e.target.value)}
+                                        >
+                                            <option value="">(From)</option>
+                                            <option value="South Africa">South Africa</option>
+                                            <option value="Zambia">Zambia</option>
+                                            <option value="Zimbabwe">Zimbabwe</option>
+                                        </select>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={categoryTo}
+                                            onChange={(e) => setCategoryTo(e.target.value)}
+                                        >
+                                            <option value="">(To)</option>
+                                            <option value="South Africa">South Africa</option>
+                                            <option value="Zambia">Zambia</option>
+                                            <option value="Zimbabwe">Zimbabwe</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-2 col-md-4 col-sm-6 d-flex gap-2">
+                                    <button type="submit" className="btn btn-primary blueBtn btn-sm w-50">
+                                        View
+                                    </button>
+                                    <button type="button" className="btn btn-outline-secondary btn-sm w-50" onClick={handleReset}>
+                                        Reset
+                                    </button>
                                 </div>
                             </form>
                         </div>
-                    </div> */}
+                    </div>
                 </div>
 
                 {/* Printable Report Area */}
@@ -282,27 +269,27 @@ const CustomerUnallocatedReport = () => {
 
                                         <div className="report-meta-info mt-3">
                                             <div className="row">
-                                                <div className="col-sm-6 d-flex mb-1">
-                                                    <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Customer:</span>
-                                                    <span className="text-secondary">
-                                                        {!customerFrom && !customerTo ? "All Customers" : `${customerFrom || "A"} to ${customerTo || "Z"}`}
-                                                    </span>
+                                                <div className="col-md-6">
+                                                    <div className="d-flex mb-1">
+                                                        <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Customer:</span>
+                                                        <span className="text-secondary">
+                                                            {!customerFrom && !customerTo ? "All Customers" : `${customerFrom || "A"} to ${customerTo || "Z"}`}
+                                                        </span>
+                                                    </div>
+                                                    <div className="d-flex mb-1">
+                                                        <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Category:</span>
+                                                        <span className="text-secondary">
+                                                            {!categoryFrom && !categoryTo ? "All Categories" : `${categoryFrom || "(Start)"} to ${categoryTo || "(End)"}`}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col-sm-6 d-flex mb-1">
-                                                    <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Category:</span>
-                                                    <span className="text-secondary">
-                                                        {!categoryFrom && !categoryTo ? "All Categories" : `${categoryFrom || "(Start)"} to ${categoryTo || "(End)"}`}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col-sm-6 d-flex mb-1">
-                                                    <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Date Range:</span>
-                                                    <span className="text-secondary">
-                                                        {!startDate && !endDate ? "All Dates" : `${formatDateString(startDate)} - ${formatDateString(endDate)}`}
-                                                    </span>
+                                                <div className="col-md-6">
+                                                    <div className="d-flex mb-1">
+                                                        <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Date Range:</span>
+                                                        <span className="text-secondary">
+                                                            {!startDate && !endDate ? "All Dates" : `${formatDateString(startDate)} - ${formatDateString(endDate)}`}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -379,7 +366,20 @@ const CustomerUnallocatedReport = () => {
                 )}
             </div>
             <ToastContainer />
-            <style type="text/css" media="print">{`
+            <style type="text/css">{`
+                 .report-title {
+                     font-size: 16px !important;
+                 }
+                 .report-subtitle {
+                     font-size: 12px !important;
+                     margin-bottom: 12px !important;
+                 }
+                 .report-meta-info {
+                     font-size: 11px !important;
+                 }
+                 .report-meta-info span {
+                     font-size: 11px !important;
+                 }
                 @page {
                     size: landscape;
                     margin: 10mm;
