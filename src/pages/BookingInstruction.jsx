@@ -2423,6 +2423,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowBack, DownloadForOffline } from "@mui/icons-material";
 import { data } from "jquery";
 import axios from "axios";
+
 const BookingInstruction = () => {
   const navigate = useNavigate();
   const [data, setData] = useState({});

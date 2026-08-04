@@ -23,6 +23,9 @@ import {
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import logo from "../../Assests/logo.png";
 
 const pageSize = 10;
 const style1 = {
@@ -603,17 +606,479 @@ export default function WarehouseOrder() {
       }
     }
   };
-  const handleclickrevert123 = (item) => {
-    axios
-      .post(`${process.env.REACT_APP_BASE_URL}get-estimate-details`, {
-        estimate_id: item.estimated_id,
-      })
-      .then((response) => {
-        navigate("/Admin/download_url", { state: response.data.data });
-      })
-      .catch((error) => {
-        toast.error("Estimate not calculate");
+  const handlePdfPrint = async (item) => {
+    try {
+      setLoader(true);
+      const payload = {
+        freight_id: item.freight_id || item.freight_ID
+      };
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}qouteEstimateDetailsByFreight`, payload);
+      if (!response.data.success || !response.data.data) {
+        toast.error(response.data?.message || "Failed to fetch estimate details");
+        return;
+      }
+
+      const freight = response.data.data;
+
+      // Helper functions for PDF drawing
+      const loadImageAsDataUrl = async (url) => {
+        try {
+          const res = await fetch(url);
+          const blob = await res.blob();
+          return await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        } catch (err) {
+          console.error("Could not load logo for PDF:", err);
+          return null;
+        }
+      };
+
+      const cleanParseFloat = (val) => {
+        if (val === null || val === undefined || val === "") return 0;
+        const cleaned = String(val).replace(/,/g, '').replace(/%/g, '').trim();
+        const parsed = parseFloat(cleaned);
+        return isNaN(parsed) ? 0 : parsed;
+      };
+
+      const formatValue = (val, dec = 2, isPercent = false) => {
+        if (val === null || val === undefined || val === "") {
+          return isPercent ? "0.00 %" : "0.00";
+        }
+        const cleanVal = String(val).replace(/,/g, '').replace(/%/g, '').trim();
+        const num = parseFloat(cleanVal);
+        if (isNaN(num)) {
+          return val;
+        }
+        const formatted = num.toLocaleString("en-US", {
+          minimumFractionDigits: dec,
+          maximumFractionDigits: dec
+        });
+        return isPercent ? `${formatted} %` : formatted;
+      };
+
+      const getVatPercent = (vatTyp) => {
+        if (!vatTyp) return 0;
+        if (!isNaN(vatTyp) && !isNaN(parseFloat(vatTyp))) {
+          return parseFloat(vatTyp);
+        }
+        const match = String(vatTyp).match(/(\d+(?:\.\d+)?)\s*%/);
+        if (match) {
+          return parseFloat(match[1]);
+        }
+        return 0;
+      };
+
+      const drawLabelValueRow = (doc, x, y, width, label, value) => {
+        doc.setFontSize(8.5);
+        doc.setTextColor(20, 20, 20);
+        const valStr = String(value ?? "");
+        const labelStr = String(label ?? "");
+        doc.setFont("helvetica", "normal");
+        const valW = valStr ? doc.getTextWidth(valStr) : 0;
+        const maxLabelW = width - valW - 3;
+        doc.setFont("helvetica", "bold");
+        const truncated = doc.splitTextToSize(labelStr, maxLabelW > 0 ? maxLabelW : width)[0] ?? "";
+        doc.text(truncated, x, y);
+        doc.setFont("helvetica", "normal");
+        if (valStr) doc.text(valStr, x + width, y, { align: "right" });
+      };
+
+      const drawSectionBar = (doc, x, y, width, height, text) => {
+        doc.setFillColor(27, 34, 69);
+        doc.rect(x, y, width, height, "F");
+        doc.setTextColor(255, 255, 255);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.text(text, x + width / 2, y + height / 2 + 1.2, { align: "center" });
+        doc.setTextColor(20, 20, 20);
+      };
+
+      // Start PDF generation
+      const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+      const pageWidth = doc.internal.pageSize.getWidth();   // 297 mm
+      const pageHeight = doc.internal.pageSize.getHeight();  // 210 mm
+      const margin = 10;
+      const contentWidth = pageWidth - margin * 2;
+      const colSplitX = margin + contentWidth / 2;
+
+      let cursorY = margin;
+
+      // Load Logo
+      const logoDataUrl = await loadImageAsDataUrl(logo);
+      if (logoDataUrl) {
+        try {
+          const imgFmt = (logoDataUrl.split(";")[0].split("/")[1] || "PNG").toUpperCase();
+          doc.addImage(logoDataUrl, imgFmt, margin, cursorY, 38, 17);
+        } catch (err) {
+          console.error("Could not embed logo:", err);
+        }
+      }
+
+      // Company Info
+      const companyX = margin + 150;
+      const addr = freight.company_address;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.setTextColor(20, 20, 20);
+      doc.text("Asia Direct - Africa", companyX, cursorY + 5);
+      doc.setDrawColor(200, 40, 40);
+      doc.setLineWidth(0.6);
+      doc.line(companyX, cursorY + 6.5, companyX + 38, cursorY + 6.5);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(60, 60, 60);
+      let infoY = cursorY + 11;
+      const companyLines = [
+        addr?.company_name || "",
+        addr?.address_line || "",
+      ].filter(Boolean);
+      companyLines.forEach((line) => { doc.text(line, companyX, infoY); infoY += 3.6; });
+
+      doc.setFont("helvetica", "bold");
+      doc.text("Registration No.:- ", companyX, infoY);
+      doc.setFont("helvetica", "normal");
+      doc.text(addr?.company_registration_no || "", companyX + 28, infoY);
+      infoY += 3.6;
+      doc.setFont("helvetica", "bold");
+      doc.text("VAT No.:- ", companyX, infoY);
+      doc.setFont("helvetica", "normal");
+      doc.text(addr?.tax_vat_no || "", companyX + 14, infoY);
+      infoY += 3.6;
+      doc.setFont("helvetica", "bold");
+      doc.text("Importers code:- ", companyX, infoY);
+      doc.setFont("helvetica", "normal");
+      doc.text(addr?.postal_code || "", companyX + 24, infoY);
+
+      cursorY = margin + 28;
+
+      // Title Bar
+      doc.setDrawColor(27, 34, 69);
+      doc.setLineWidth(0.5);
+      doc.rect(margin, cursorY, contentWidth, 7);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(20, 20, 20);
+      doc.text("FREIGHT ESTIMATE", pageWidth / 2, cursorY + 4.8, { align: "center" });
+      cursorY += 7;
+
+      // Two-column Info Box
+      const rowH = 4.5;
+      const barH = 5.5;
+      const pad = 3;
+      const lPad = 3;
+      const lW = contentWidth / 2 - lPad * 2;
+      const rW = contentWidth / 2 - lPad * 2;
+      const drawRow = (doc, x, rowTop, width, label, value) => {
+        const baseline = rowTop + rowH * 0.68;
+        drawLabelValueRow(doc, x, baseline, width, label, value);
+      };
+
+      const boxTop = cursorY;
+
+      // Left Column
+      let ly = boxTop + pad;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(20, 20, 20);
+      doc.text(String(freight.client_name || ""), margin + lPad, ly + 2.5);
+      ly += 5;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.text(String(freight.address_1 || ""), margin + lPad, ly + 2.5, { maxWidth: lW });
+      ly += 5;
+
+      drawSectionBar(doc, margin, ly, contentWidth / 2, barH, "Cargo Details ISO Commodity");
+      ly += barH;
+
+      const leftFields = [
+        ["Commodity", freight.product_desc || freight.commodity || ""],
+        ["Hazardous", freight.hazardous?.toLowerCase() === "no" ? "No" : (freight.hazard_type || freight.hazardous || "")],
+        ["No. of Packages", freight.no_of_packages || ""],
+        ["Package Type", freight.package_type || ""],
+        ["Gross Weight (kgs)", freight.weight || ""],
+        ["Dimensions (M3)", freight.dimension || ""],
+        ["Volumetric (kgs)", freight.volumetric_weight || ""],
+        ["Chargeable", freight.chargeable || ""],
+      ];
+      leftFields.forEach(([label, value]) => {
+        drawRow(doc, margin + lPad, ly, lW, label, value);
+        ly += rowH;
       });
+
+      drawSectionBar(doc, margin, ly, contentWidth / 2, barH, "Rate of Exchange");
+      ly += barH;
+
+      drawRow(doc, margin + lPad, ly, lW, "Base Currency", freight.final_base_currency || "");
+      ly += rowH;
+      drawRow(doc, margin + lPad, ly, lW, "Payment Terms", freight.payment_terms || "");
+      ly += rowH;
+      ly += pad;
+
+      // Right Column
+      let ry = boxTop + pad - 0.7;
+      const rightColX = colSplitX + lPad;
+
+      const shipmentDate = (quoteDateVal) => {
+        if (!quoteDateVal) return "";
+        const d = new Date(quoteDateVal);
+        if (isNaN(d.getTime())) return quoteDateVal;
+        return d.toLocaleDateString("en-GB");
+      };
+
+      const invoiceFields = [
+        ["Invoice For", freight.invoice_for_country || ""],
+        ["Client Ref", freight.customer_invoice_no || ""],
+        ["Reference", freight.reference_no || ""],
+        ["Quote Date", shipmentDate(freight.quote_date || freight.date)],
+        ["Quote Validity", freight.quote_validity || ""],
+      ];
+      invoiceFields.forEach(([label, value]) => {
+        drawRow(doc, rightColX, ry, rW, label, value);
+        ry += rowH;
+      });
+
+      drawSectionBar(doc, colSplitX, ry, contentWidth / 2, barH, "Routing Details");
+      ry += barH + 2;
+
+      const routingFields = [
+        ["Country of Origin", freight.collection_from_name || ""],
+        ["Place of Receipt", freight.place_of_receipt || ""],
+        ["Port of Loading", freight.port_of_loading || ""],
+        ["Port of Discharge", freight.post_of_discharge || ""],
+        ["Place of Delivery", freight.delivery_to_name || ""],
+        ["Incoterm", freight.incoterm || ""],
+        ["Mode of Transport", freight.freight || ""],
+        ["Freight No", freight.freight_number || ""],
+      ];
+      routingFields.forEach(([label, value]) => {
+        drawRow(doc, rightColX, ry, rW, label, value);
+        ry += rowH;
+      });
+
+      drawSectionBar(doc, colSplitX, ry, contentWidth / 2, barH, "Freight details");
+      ry += barH + 2;
+
+      const freightDetailsFields = [
+        ["Load type", freight.fcl_lcl || ""],
+        ["Transit Priority", freight.type || ""],
+        ["Insurance", freight.insurance || ""],
+      ];
+      freightDetailsFields.forEach(([label, value]) => {
+        drawRow(doc, rightColX, ry, rW, label, value);
+        ry += rowH;
+      });
+      ry += pad;
+
+      // Borders
+      const leftBoxH = ly - boxTop;
+      const rightBoxH = ry - boxTop;
+      const outerBoxH = Math.max(leftBoxH, rightBoxH);
+
+      doc.setDrawColor(27, 34, 69);
+      doc.setLineWidth(0.5);
+      doc.rect(margin, boxTop, contentWidth, outerBoxH);
+      doc.line(colSplitX, boxTop, colSplitX, boxTop + outerBoxH);
+
+      cursorY = boxTop + outerBoxH + 4;
+
+      // Quote Information Section
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9.5);
+      doc.setTextColor(20, 20, 20);
+      doc.text("QUOTE INFORMATION", margin, cursorY);
+      cursorY += 3;
+
+      const components = freight.components || [];
+
+      const filterBySection = (name) => {
+        return components.filter(c => String(c.name || c.section_name || "").toLowerCase().includes(name.toLowerCase()));
+      };
+
+      const originRows = filterBySection("Origin Charges");
+      const freightRows = filterBySection("Freight Charges");
+      const transitRows = filterBySection("Transit Charges");
+      const destinationRows = filterBySection("Destination Charges");
+      const adminRows = filterBySection("Admin Charges");
+      const customsRows = filterBySection("Customs Charges");
+
+      const getSectionTotals = (rows) => {
+        let tCost = 0;
+        let finalAmt = 0;
+        let disc = 0;
+        let exclusive = 0;
+        let vat = 0;
+        let inclusive = 0;
+
+        rows.forEach(c => {
+          tCost += cleanParseFloat(c.total_cost);
+          finalAmt += cleanParseFloat(c.final_amount);
+          disc += cleanParseFloat(c.discount);
+          exclusive += cleanParseFloat(c.exclusive);
+          vat += cleanParseFloat(c.vat);
+          inclusive += cleanParseFloat(c.vat_incl || c.inclusive || c.total);
+        });
+
+        return { tCost, finalAmt, disc, exclusive, vat, inclusive };
+      };
+
+      const originTotals = getSectionTotals(originRows);
+      const freightTotals = getSectionTotals(freightRows);
+      const transitTotals = getSectionTotals(transitRows);
+      const destinationTotals = getSectionTotals(destinationRows);
+      const adminTotals = getSectionTotals(adminRows);
+      const customsTotals = getSectionTotals(customsRows);
+
+      const sectionStyle = { fillColor: [240, 242, 245], fontStyle: "bold", halign: "left", textColor: [20, 20, 20] };
+      const totalStyle = { fillColor: [250, 250, 250], fontStyle: "bold", textColor: [20, 20, 20] };
+      const styledCell = (content, styles) => ({ content: content ?? "", styles });
+
+      const buildSectionRows = (sectionTitle, rows, totals) => {
+        if (rows.length === 0) return [];
+        const sectionRows = [];
+
+        sectionRows.push([{ content: sectionTitle, colSpan: 17, styles: sectionStyle }]);
+
+        rows.forEach(c => {
+          const vatPctStr = formatValue(getVatPercent(c.vat_type), 2, true);
+          const vatDisplay = (c.vat_type === "Manual VAT" || c.vat_type === "Manual VAT (Capital Goods)")
+            ? formatValue(c.vat, 2)
+            : formatValue(c.vat, 2);
+
+          sectionRows.push([
+            c.description || c.component_description || "",
+            c.qty !== null && c.qty !== undefined ? String(c.qty) : "",
+            c.currency || "",
+            formatValue(c.cost, 2),
+            c.unit_type || "",
+            c.unit_type === "W/M" ? formatValue(c.unit, 3) : formatValue(c.unit, 2),
+            formatValue(c.total_cost, 2),
+            c.gp_percent !== null && c.gp_percent !== undefined ? String(c.gp_percent) : "",
+            formatValue(c.sales_price, 2),
+            formatValue(c.roe, 4),
+            formatValue(c.final_amount, 2),
+            vatPctStr,
+            formatValue(c.disc_percent, 2, true),
+            formatValue(c.discount, 2),
+            formatValue(c.exclusive, 2),
+            vatDisplay,
+            formatValue(c.vat_incl, 2),
+          ]);
+
+          if (c.comment && String(c.comment).trim() !== "") {
+            sectionRows.push([
+              {
+                content: `Comment: ${c.comment}`,
+                colSpan: 17,
+                styles: {
+                  fontStyle: "italic",
+                  textColor: [90, 90, 90],
+                  cellWidth: "auto",
+                  overflow: "linebreak",
+                  halign: "left",
+                },
+              },
+            ]);
+          }
+        });
+
+        sectionRows.push([
+          { content: `Total - ${sectionTitle}`, colSpan: 6, styles: { ...totalStyle, halign: "left" } },
+          styledCell(formatValue(totals.tCost, 2), { ...totalStyle, halign: "right" }),
+          styledCell("", totalStyle),
+          styledCell("", totalStyle),
+          styledCell(formatValue(totals.finalAmt, 2), { ...totalStyle, halign: "right" }),
+          styledCell("", totalStyle),
+          styledCell("", totalStyle),
+          styledCell("", totalStyle),
+          styledCell("", totalStyle),
+          styledCell(formatValue(totals.disc, 2), { ...totalStyle, halign: "right" }),
+          styledCell(formatValue(totals.exclusive, 2), { ...totalStyle, halign: "right" }),
+          styledCell(formatValue(totals.vat, 2), { ...totalStyle, halign: "right" }),
+          styledCell(formatValue(totals.inclusive, 2), { ...totalStyle, halign: "right" }),
+        ]);
+
+        return sectionRows;
+      };
+
+      const grandTotalFinalAmt = [...originRows, ...freightRows, ...transitRows, ...destinationRows, ...adminRows, ...customsRows].reduce((s, c) => s + cleanParseFloat(c.final_amount), 0);
+      const grandTotalDisc = [...originRows, ...freightRows, ...transitRows, ...destinationRows, ...adminRows, ...customsRows].reduce((s, c) => s + cleanParseFloat(c.discount), 0);
+      const grandTotalExclusive = [...originRows, ...freightRows, ...transitRows, ...destinationRows, ...adminRows, ...customsRows].reduce((s, c) => s + cleanParseFloat(c.exclusive), 0);
+      const grandTotalVat = [...originRows, ...freightRows, ...transitRows, ...destinationRows, ...adminRows, ...customsRows].reduce((s, c) => s + cleanParseFloat(c.vat), 0);
+      const totalVatInclusive = [...originRows, ...freightRows, ...transitRows, ...destinationRows, ...adminRows, ...customsRows].reduce((s, c) => s + cleanParseFloat(c.vat_incl || c.inclusive || c.total), 0);
+
+      const tableBody = [
+        ...buildSectionRows("Origin Charges", originRows, originTotals),
+        ...buildSectionRows("Freight Charges", freightRows, freightTotals),
+        ...buildSectionRows("Transit Charges", transitRows, transitTotals),
+        ...buildSectionRows("Destination Charges", destinationRows, destinationTotals),
+        ...buildSectionRows("Admin Charges", adminRows, adminTotals),
+        ...buildSectionRows("Customs Charges", customsRows, customsTotals),
+
+        // Grand total
+        [
+          { content: "TOTAL CHARGE", colSpan: 10, styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "left", textColor: [20, 20, 20] } },
+          { content: formatValue(grandTotalFinalAmt, 2), styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "right", textColor: [20, 20, 20] } },
+          { content: "", styles: { fillColor: [226, 232, 240] } },
+          { content: "", styles: { fillColor: [226, 232, 240] } },
+          { content: formatValue(grandTotalDisc, 2), styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "right" } },
+          { content: formatValue(grandTotalExclusive, 2), styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "right" } },
+          { content: formatValue(grandTotalVat, 2), styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "right" } },
+          { content: formatValue(totalVatInclusive, 2), styles: { fillColor: [226, 232, 240], fontStyle: "bold", halign: "right", textColor: [20, 20, 20] } },
+        ],
+      ];
+
+      autoTable(doc, {
+        startY: cursorY,
+        margin: { left: margin, right: margin, top: margin, bottom: 14 },
+        head: [[
+          "Description", "QTY", "Currency", "Cost", "Unit Type", "Unit",
+          "T/ Cost", "GP%", "Sales/ P", "ROE", "Total",
+          "Vat %", "Disc %", "Discount", "Exclusive", "VAT", "Total",
+        ]],
+        body: tableBody,
+        theme: "grid",
+        styles: {
+          fontSize: 7.5,
+          cellPadding: 1.6,
+          valign: "middle",
+          lineColor: [28, 28, 28],
+          lineWidth: 0.1,
+          textColor: [20, 20, 20],
+        },
+        headStyles: {
+          fillColor: [27, 34, 69],
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+          halign: "left",
+          lineColor: [255, 255, 255],
+        },
+        rowPageBreak: "avoid",
+        showHead: "everyPage",
+      });
+
+      // Page numbers
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(120, 120, 120);
+        doc.text(`Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 6, { align: "right" });
+      }
+
+      doc.save(`WO-FreightQuoteEstimate-${freight.reference_no?.trim() || "WO-FreightQuoteEstimate"}.pdf`);
+      toast.success(response.data.massage || "PDF estimation downloaded successfully");
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      toast.error(error.response?.data?.message || "Failed to generate PDF");
+    } finally {
+      setLoader(false);
+    }
   };
   const handlechange = (e) => {
     const { name, value } = e.target;
@@ -760,6 +1225,7 @@ export default function WarehouseOrder() {
   const handleChangeSupplier = (e) => {
     setResponseData(e.target.value);
   };
+
   const AssignSupplier = async () => {
     if (!responseData) {
       toast.error("Please select a supplier");
@@ -793,6 +1259,7 @@ export default function WarehouseOrder() {
       console.error("AssignSupplier Error:", error);
     }
   };
+  
   return (
     <>
       <div className="wpWrapper">
@@ -1049,12 +1516,13 @@ export default function WarehouseOrder() {
                                           <div className="col-md-6 text-end">
                                             <i
                                               class="fa fa-tasks me-2 mt-2"
-                                              onClick={() =>
+                                              onClick={() => {
+                                                console.log("Clicked Item Details:", item);
                                                 handleEditClickAssign(
-                                                  item.freight_ID,
+                                                  item.freight_id || item.freight_ID || item.id,
                                                   item.order_id,
-                                                )
-                                              }
+                                                );
+                                              }}
                                               style={{
                                                 color: "#1d2044",
                                                 cursor: "pointer",
@@ -1099,7 +1567,7 @@ export default function WarehouseOrder() {
                                             <PictureAsPdfIcon
                                               style={{ cursor: "pointer" }}
                                               onClick={() => {
-                                                handleclickrevert123(item);
+                                                handlePdfPrint(item);
                                               }}
                                             />
                                           </div>{" "}
