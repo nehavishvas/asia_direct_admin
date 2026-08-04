@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 export default function BookingInsForm() {
   const [data, setData] = useState({
     order_id: "",
@@ -56,6 +57,7 @@ export default function BookingInsForm() {
     bk_handling_req: "",
   });
   const location = useLocation();
+  const navigate = useNavigate();
   const getdat = location.state.data;
   useEffect(() => {
     getStackta();
@@ -72,8 +74,15 @@ export default function BookingInsForm() {
       );
 
       if (response.data.success) {
-        console.log(response.data.data[0])
-        setData(response.data.data[0]);
+        console.log(response.data.data[0]);
+        const orderData = response.data.data[0] || {};
+        const shipmentRefLower = orderData.shipment_ref?.toLowerCase();
+
+        // Initialize default/fallback values
+        orderData.bk_consg_ContPersn = orderData.bk_consg_ContPersn || (shipmentRefLower === "consignee" ? orderData.client_email : "");
+        orderData.bk_ship_tel_email = orderData.bk_ship_tel_email || (shipmentRefLower === "shipper" ? orderData.email : "sa@asiadirect.africa");
+
+        setData(orderData);
       } else {
         console.error("Error fetching order details");
       }
@@ -90,11 +99,25 @@ export default function BookingInsForm() {
         `${process.env.REACT_APP_BASE_URL}GetBookingInstructionById`,
         datapost
       );
-      setData(response.data.data);
+      if (response.data && response.data.data) {
+        const resData = Array.isArray(response.data.data) ? response.data.data[0] : response.data.data;
+        if (resData) {
+          setData(prevState => {
+            const merged = { ...prevState };
+            Object.keys(resData).forEach(key => {
+              if (resData[key] !== null && resData[key] !== undefined && resData[key] !== "") {
+                merged[key] = resData[key];
+              }
+            });
+            return merged;
+          });
+        }
+      }
     } catch (error) {
       console.error("Error fetching booking instruction:", error);
     }
   };
+
   const handlechnage = (e) => {
     const { name, value } = e.target;
     setData((prevState) => ({
@@ -102,39 +125,39 @@ export default function BookingInsForm() {
       [name]: value,
     }));
   };
+
   const handleclick = async () => {
     console.log("Value of bk_comm_Invoice:", data.bk_comm_Invoice);
+    const shipmentRefLower = data?.shipment_ref?.toLowerCase();
+    const getdatShipmentRefLower = getdat?.shipment_ref?.toLowerCase();
     const postdatapi = {
-      order_id: data?.order_id,
+      order_id: data?.order_id || getdat?.order_id,
       bk_shipper:
-        data?.shipment_ref === "shipper" ? data?.client_name : "Asia Direct",
+        shipmentRefLower === "shipper" ? data?.shipper_name : "Asia Direct",
       bk_ship_add:
-        data?.shipment_ref === "shipper"
-          ? data?.address_1
+        shipmentRefLower === "shipper"
+          ? data?.supplier_address
           : " Johannesburg, South Africa",
       bk_ship_contact:
-        getdat?.shipment_ref === "shipper"
-          ? getdat?.telephone
-          : "+27 10 448 0733",
-      bk_ship_tel_email:
-        getdat?.shipment_ref === "shipper"
-          ? getdat?.email
-          : "sa@asiadirect.africa",
-      bk_ship_poNo:
-        getdat?.shipment_ref === "shipper"
+        getdatShipmentRefLower === "shipper"
           ? getdat?.cellphone
           : "+27 10 448 0733",
+      bk_ship_tel_email:
+        getdatShipmentRefLower === "shipper"
+          ? getdat?.email
+          : "sa@asiadirect.africa",
+      bk_ship_poNo: data?.bk_ship_poNo,
       bk_ship_custCode: getdat?.code,
       bk_ship_regNum: data?.importers_ref,
       bk_ship_refNo: data.bk_ship_refNo,
       bk_consignee:
-        data?.shipment_ref === "Shipper" ? data?.shipper_name : "Asia Direct",
+        shipmentRefLower === "shipper" ? data?.shipper_name : "Asia Direct",
       bk_consg_add:
-        data?.shipment_ref === "Shipper" ? data?.address_1 : "Asia Direct",
+        shipmentRefLower === "shipper" ? data?.address_1 : "Asia Direct",
       bk_consg_notfParty: data.bk_consg_notfParty,
 
       bk_consg_tel:
-        data?.shipment_ref === "Shipper" ? data?.telephone : "Asia Direct",
+        shipmentRefLower === "shipper" ? data?.telephone : "Asia Direct",
       bk_consg_portDischg: data?.post_of_discharge,
       bk_xdoc_provider: data?.bk_xdoc_provider,
       bk_comm_Invoice: data?.bk_comm_Invoice,
@@ -178,13 +201,19 @@ export default function BookingInsForm() {
         `${process.env.REACT_APP_BASE_URL}AddOrUpdateBookingInstruction`,
         postdatapi
       );
-      if (response.data.status === 200) {
-        toast.success("Data Updated");
+      if (
+        response.status === 200 ||
+        response.data.status === 200 ||
+        response.data.success
+      ) {
+        toast.success(response.data.message || "Data Updated");
+        navigate("/Admin/bookinginstruction", { state: { data: getdat } });
       } else {
-        toast.error(response.data.message);
+        toast.error(response.data.message || "Failed to update instruction");
       }
     } catch (error) {
       console.error("Error submitting booking instruction:", error);
+      toast.error("Network or server error updating booking instruction");
     }
   };
   const backbutton = () => {
@@ -224,8 +253,8 @@ export default function BookingInsForm() {
                           type="text"
                           disabled
                           value={
-                            data.shipment_ref === "consignee"
-                              ? data.client_name
+                            data.shipment_ref?.toLowerCase() === "consignee"
+                              ? data.shipper_name
                               : data.shipper_name
                           }
                         />
@@ -239,9 +268,9 @@ export default function BookingInsForm() {
                           type="text"
                           disabled
                           value={
-                            data.shipment_ref === "consignee"
-                              ? data?.address_1 + " " + data.address_2 + " " + data.province + " " + data.delivery_to_name
-                              : data.supplier_address
+                            data.shipment_ref?.toLowerCase() === "consignee"
+                              ? data.supplier_address
+                              : (data?.address_1 || "") + " " + (data.address_2 || "") + " " + (data.province || "") + " " + (data.delivery_to_name || "")
                           }
                         />
                       </div>
@@ -251,11 +280,11 @@ export default function BookingInsForm() {
                         </label>
                         <input
                           className="mb-2 border ps-2 py-2 rounded w-100"
-                          type="number"
+                          type="text"
                           disabled
-                          value={data.shipment_ref === "consignee"
+                          value={data.shipment_ref?.toLowerCase() === "consignee"
                             ? data.cellphone
-                            : data.telephone}
+                            : data.cellphone}
                         />
                       </div>
                       <div className="col-lg-6">
@@ -264,13 +293,10 @@ export default function BookingInsForm() {
                         </label>
                         <input
                           className="mb-2 border ps-2 py-2 rounded w-100"
-                          type="number"
+                          type="text"
                           disabled
-                          placeholder="seargh"
-                          value={data.shipment_ref === "consignee"
-                            ? data.client_email
-                            : "+27 10 448 0733"
-                          }
+                          placeholder="search"
+                          value={data.bk_ship_tel_email}
                         />
                       </div>
                       <div className="col-lg-6">
@@ -829,9 +855,9 @@ export default function BookingInsForm() {
                         type="text"
                         disabled
                         value={
-                          data.shipment_ref === "consignee"
-                            ? data.shipper_name
-                            : data.client_name
+                          data.shipment_ref?.toLowerCase() === "consignee"
+                            ? data.client_name
+                            : data.shipper_name
                         }
 
                       />
@@ -845,9 +871,9 @@ export default function BookingInsForm() {
                         type="text"
                         disabled
                         value={
-                          data.shipment_ref === "consignee"
-                            ? data.supplier_address
-                            : data?.address_1 + " " + data.address_2 + " " + data.province + " " + data.delivery_to_name
+                          data.shipment_ref?.toLowerCase() === "consignee"
+                            ? (data?.address_1 || "") + " " + (data.address_2 || "") + " " + (data.province || "")
+                            : data.supplier_address
                         }
                       />
                     </div>
@@ -884,7 +910,7 @@ export default function BookingInsForm() {
                         type="text"
                         disabled
                         value={
-                          data?.shipment_ref === "shipper"
+                          data?.shipment_ref?.toLowerCase() === "shipper"
                             ? data?.cellphone
                             : data?.telephone
                         }
