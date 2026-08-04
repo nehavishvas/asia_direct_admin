@@ -52,23 +52,37 @@ const BookingInstruction = () => {
   return (
     <div className="wpWrapper">
       <div className="container-fluid">
-        <div className="d-flex justify-content-between">
-          <div className="mb-2">
+        <div className="d-flex justify-content-between mb-3">
+          <div>
             <div className="d-flex">
               <ArrowBack style={{ cursor: "pointer" }} onClick={backbutton} />
               <h4 class="freight_hd">
                 Shipping and Custom Clearance Instruction
               </h4>
-              <div className="addInsForm ms-4 ">
-                <button onClick={openInsForm}>Add Booking Instruction</button>
-              </div>
+
             </div>
           </div>
-          <div>
+          <div className="d-flex gap-3">
+            <div className="addInsForm">
+              <button onClick={openInsForm}>Add Booking Instruction</button>
+            </div>
             <DownloadForOffline onClick={() => toPDF()} />
           </div>
         </div>
+
         <div className="customInsPdf leftTh" ref={targetRef}>
+          <div style={{ padding: "5px" }}>
+            <div>
+              <img
+                style={{ width: "150px" }}
+                src={logo}
+                alt=""
+              />
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <h4 className="underLineHeading">Booking Instruction</h4>
+            </div>
+          </div>
           <table>
             <tr>
               <td>
@@ -77,7 +91,7 @@ const BookingInstruction = () => {
                   style={{ borderCollapse: " collapse !important" }}
                 >
                   <tr>
-                    <td>
+                    <td style={{ padding: "unset" }}>
                       <div>
                         <div style={{ display: "flex" }}>
                           <div
@@ -2473,7 +2487,7 @@ const BookingInstruction = () => {
                           <div
                             style={{ width: "50%", border: "1px solid #000" }}
                           >
-                            <table>
+                            <table style={{ height: "100%" }}>
                               <tr>
                                 <th
                                   style={{
@@ -2561,7 +2575,32 @@ const BookingInstruction = () => {
                             </table>
                           </div>
                         </div>
-                        <table>
+                        {/*
+                          PAGE-BREAK SPACER (react-to-pdf only slices pages by
+                          raw pixel height, it has no concept of "start this
+                          element on a new page"). This blank div pushes the
+                          "CARGO DETAILS AND CARGO HANDLING REQUIRMENTS"
+                          section down until it spills onto the next
+                          auto-generated page.
+                          TUNE THIS VALUE: download the PDF, check where the
+                          Cargo Details heading lands, then adjust the height
+                          below and re-download:
+                            - Still on the same page as the content above it?
+                              -> increase the height
+                            - New page appears but is mostly/entirely blank
+                              before Cargo Details starts?
+                              -> decrease the height
+                        */}
+                        <div
+                          id="cargo-details-page-break-spacer"
+                          style={{ marginTop: "100px" }}
+                        />
+                        <table
+                          style={{
+                            pageBreakBefore: "always",
+                            breakBefore: "page",
+                          }}
+                        >
                           <tr>
                             <td
                               style={{
@@ -2688,6 +2727,98 @@ const BookingInstruction = () => {
                             </table>
                           </div>
                         </div>
+
+                        <table>
+                          <tr>
+                            <td
+                              style={{
+                                textAlign: "center",
+                                background: "#b2b3b730",
+                              }}
+                              className="my-2"
+                            >
+                              <strong>TERMS &amp; CONDITIONS</strong>
+                            </td>
+                          </tr>
+                        </table>
+                        <div style={{ border: "1px solid #000", padding: "10px" }}>
+                          <p>
+                            All business is undertaken subject to our General
+                            Trading Conditions, a copy of which is available
+                            on request. (E&amp;OE) Errors and Omissions
+                            Excepted.
+                          </p>
+                          <p>
+                            <strong>1. Insurance</strong>: All goods are
+                            shipped at the customer's risk. If insurance is
+                            required, it must be arranged and paid for by the
+                            customer.
+                          </p>
+                          <p>
+                            <strong>2. Weight and Dimensions</strong>: Changes
+                            in the actual weight, dimensions of the goods from
+                            the initial quote may affect the final pricing at
+                            billing. The customer will be notified of any
+                            price adjustments.
+                          </p>
+                          <p>
+                            <strong>3. Misdeclaration of Goods</strong>: Any
+                            misdeclaration of goods will result in additional
+                            charges and potential legal consequences.
+                            Misdeclaration may include cargo description,
+                            costs, hazardous e.t.c.
+                          </p>
+                          <p>
+                            <strong>4. Customs Duties &amp; VAT</strong>: The
+                            customer is responsible for all customs duties
+                            and VAT applicable to their shipment.
+                          </p>
+                          <p>
+                            <strong>5. Customs Stops &amp; Inspections</strong>
+                            : Any costs incurred due to customs stops and
+                            inspections will be billed to the customer.
+                          </p>
+                          <p>
+                            <strong>6. Late Collection &amp; Storage Fees</strong>
+                            : Goods not collected within the agreed timeframe
+                            will incur storage fees. These fees are payable
+                            by the customer.
+                          </p>
+                          <p>
+                            <strong>7. Late Payment of Invoices</strong>: Late
+                            payment of invoices will attract interest charges
+                            as per the company's policy.
+                          </p>
+                          <p>
+                            <strong>8. Abandoned Cargo</strong>: Cargo not
+                            collected within 28 days will be regarded
+                            abandoned, the customer will be liable for any
+                            disposal costs and associated fees.
+                          </p>
+                        </div>
+
+                        <table style={{ marginTop: "15px" }}>
+                          <tr>
+                            <td>
+                              <strong>Banking Details</strong>
+                            </td>
+                          </tr>
+                        </table>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                          <div>
+                            <p style={{ marginBottom: "2px" }}>
+                              <strong>Account Name</strong>
+                            </p>
+                            <p>Dancliff Logistics Limited</p>
+                          </div>
+                          <div>
+                            <p style={{ marginBottom: "2px" }}>
+                              <strong>Bank Name</strong>
+                            </p>
+                            <p>First National Bank</p>
+                          </div>
+                        </div>
+
                         <table>
                           <tr>
                             <td style={{ padding: "unset !important" }}>
@@ -2773,13 +2904,7 @@ const BookingInstruction = () => {
                                   prohibited without authorisation of the QHSE
                                   Manager
                                 </p>
-                                <div>
-                                  <img
-                                    style={{ width: "150px" }}
-                                    src={logo}
-                                    alt=""
-                                  />
-                                </div>
+
                               </div>
                             </td>
                           </tr>

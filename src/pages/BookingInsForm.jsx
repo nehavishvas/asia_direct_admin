@@ -60,8 +60,11 @@ export default function BookingInsForm() {
   const navigate = useNavigate();
   const getdat = location.state.data;
   useEffect(() => {
-    getStackta();
-    GetBookingInstructionById();
+    const loadData = async () => {
+      await getStackta();
+      await GetBookingInstructionById();
+    };
+    loadData();
   }, []);
   const getStackta = async () => {
     const postdata = {
@@ -77,12 +80,15 @@ export default function BookingInsForm() {
         console.log(response.data.data[0]);
         const orderData = response.data.data[0] || {};
         const shipmentRefLower = orderData.shipment_ref?.toLowerCase();
-
+        
         // Initialize default/fallback values
         orderData.bk_consg_ContPersn = orderData.bk_consg_ContPersn || (shipmentRefLower === "consignee" ? orderData.client_email : "");
         orderData.bk_ship_tel_email = orderData.bk_ship_tel_email || (shipmentRefLower === "shipper" ? orderData.email : "sa@asiadirect.africa");
 
-        setData(orderData);
+        setData(prevState => ({
+          ...prevState,
+          ...orderData
+        }));
       } else {
         console.error("Error fetching order details");
       }

@@ -314,7 +314,6 @@ const drawHeader = (doc, meta, pageWidth) => {
     { type: "gap", height: 3 },
     { type: "bar", title: "Freight details" },
     { type: "kv", label: "Freight No", value: meta.routing.freightNo },
-
     { type: "kv", label: "Load type", value: meta.freightDetails.loadType },
     { type: "kv", label: "Transit Priority", value: meta.freightDetails.transitPriority },
     { type: "kv", label: "Insurance", value: meta.freightDetails.insurance },
