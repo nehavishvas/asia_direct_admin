@@ -208,7 +208,7 @@ const BookingInstruction = () => {
                                     borderTop: "1px solid #000",
                                   }}
                                 >
-                                    {data?.bk_ship_tel_email || ""}
+                                  {data?.bk_ship_tel_email || ""}
                                 </td>
                               </tr>
                               <tr>
@@ -345,7 +345,13 @@ const BookingInstruction = () => {
                                     borderLeft: "none",
                                   }}
                                 >
-                                  {data.bk_xdoc_provider}
+                                  <i
+                                    className={
+                                      data.bk_xdoc_provider === "Yes"
+                                        ? "fa fa-check"
+                                        : ""
+                                    }
+                                  ></i>
                                 </td>
                                 <td
                                   style={{
@@ -355,7 +361,13 @@ const BookingInstruction = () => {
                                     textAlign: "center",
                                     borderLeft: "none",
                                   }}
-                                ></td>
+                                ><i
+                                  className={
+                                    data.bk_xdoc_provider === "No"
+                                      ? "fa fa-check"
+                                      : ""
+                                  }
+                                ></i></td>
                               </tr>
                               <tr>
                                 <th
@@ -374,7 +386,6 @@ const BookingInstruction = () => {
                                     borderLeft: "none",
                                     borderTop: "none",
                                   }}
-                                //  className= {data.bk_comm_Invoice==="Yes"?"fa fa-check":""}
                                 >
                                   <i
                                     className={
@@ -724,8 +735,7 @@ const BookingInstruction = () => {
                                     textAlign: "center",
                                   }}
                                 >
-                                  {data.bk_Insur_cover}
-                                  {/* <i  className= {data.bk_Insur_cover==="Yes"?"fa fa-check":""} ></i> */}
+                                  {data.bk_Insur_cover === "Yes" ? "Yes" : ""}
                                 </td>
                                 <td
                                   style={{
@@ -736,7 +746,9 @@ const BookingInstruction = () => {
                                     borderLeft: "unset",
                                     borderBottom: "unset",
                                   }}
-                                ></td>
+                                >
+                                  {data.bk_Insur_cover === "No" ? "No" : ""}
+                                </td>
                               </tr>
                               <tr>
                                 <td
@@ -747,13 +759,11 @@ const BookingInstruction = () => {
                                     borderLeft: "unset",
                                   }}
                                 >
-                                  <i
-                                    className={
-                                      data.bk_Insur_cover === "Yes"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
+                                  {data.bk_Insur_cover === "Yes" ? (
+                                    <i className="fa fa-check"></i>
+                                  ) : (
+                                    ""
+                                  )}
                                 </td>
                                 <td
                                   style={{
@@ -765,13 +775,11 @@ const BookingInstruction = () => {
                                   }}
                                 >
                                   {" "}
-                                  <i
-                                    className={
-                                      data.bk_Insur_cover === "No"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
+                                  {data.bk_Insur_cover === "No" ? (
+                                    <i className="fa fa-check"></i>
+                                  ) : (
+                                    ""
+                                  )}
                                 </td>
                               </tr>
                             </table>
@@ -803,7 +811,6 @@ const BookingInstruction = () => {
                                   style={{
                                     width: "65px",
                                     borderRight: "1px solid #000",
-
                                     textAlign: "center",
                                   }}
                                 >
@@ -2593,7 +2600,7 @@ const BookingInstruction = () => {
                         */}
                         <div
                           id="cargo-details-page-break-spacer"
-                          style={{ marginTop: "100px" }}
+                        // style={{ marginTop: "100px" }}
                         />
                         <table
                           style={{

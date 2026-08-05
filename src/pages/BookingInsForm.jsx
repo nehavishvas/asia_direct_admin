@@ -154,7 +154,7 @@ export default function BookingInsForm() {
           : "sa@asiadirect.africa",
       bk_ship_poNo: data?.bk_ship_poNo,
       bk_ship_custCode: getdat?.code,
-      bk_ship_regNum: data?.importers_ref,
+      bk_ship_regNum: data.bk_ship_regNum,
       bk_ship_refNo: data.bk_ship_refNo,
       bk_consignee:
         shipmentRefLower === "shipper" ? data?.shipper_name : "Asia Direct",
@@ -335,8 +335,9 @@ export default function BookingInsForm() {
                         <input
                           className="mb-2 border ps-2 py-2 rounded w-100"
                           type="text"
-                          disabled
-                          value={data.importers_ref}
+                          name="bk_ship_regNum"
+                           onChange={handlechnage}
+                          value={data.bk_ship_regNum}
                         />
                       </div>
                       <div className="col-lg-6">

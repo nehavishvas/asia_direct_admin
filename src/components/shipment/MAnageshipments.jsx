@@ -262,7 +262,13 @@ export default function MAnageshipments() {
     }));
   };
   const combinedDetails = [
-    ...tindexdata.map((i) => ({ ...i, type: "freight" })),
+    ...tindexdata.map((i) => {
+      const copy = { ...i, type: "freight" };
+      if (copy.isNew) {
+        delete copy.shipment_details_id;
+      }
+      return copy;
+    }),
     ...tindexdClearance.map((i) => ({ ...i, type: "clearance" })),
   ];
   const apiupdatepost = async () => {
@@ -501,6 +507,8 @@ export default function MAnageshipments() {
       const newData = response.data.data || [];
       const newDataWithFlag = newData.map((item) => ({
         ...item,
+        shipment_details_id: item.shipment_details_id || (item.order_id ? `new_${item.order_id}` : undefined),
+        clearance_id: item.clearance_id || item.id,
         isNew: true,
       }));
       if (data1.assign_shipment === "3") {
@@ -519,7 +527,7 @@ export default function MAnageshipments() {
             (item, index, self) =>
               index ===
               self.findIndex(
-                (t) => t.shipment_details_id === item.shipment_details_id,
+                (t) => t.order_id === item.order_id,
               ),
           );
         });
@@ -597,14 +605,8 @@ export default function MAnageshipments() {
   const formatteddispatch = formatDate(inputdata.date_of_dispatch);
   return (
     <>
-      {loader ? (
-        <div class="loader-container">
-          <div class="loader"></div>
-          <p class="loader-text">Updating... This may take some time</p>
-        </div>
-      ) : (
-        <div className="wpWrapper">
-          <div className="container-fluid">
+      <div className="wpWrapper">
+        <div className="container-fluid">
             <div className="row  manageFreight">
               <div className="col-12">
                 <div className="d-flex justify-content-between align-items-center">
@@ -653,7 +655,13 @@ export default function MAnageshipments() {
                 Customs Released
               </button>
             </div>
-            <div className="mt-2">
+            {loader ? (
+              <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
+                <div className="loader"></div>
+                <p className="loader-text">Updating... This may take some time</p>
+              </div>
+            ) : (
+              <div className="mt-2">
               <table className="table table-striped tableICon">
                 <tbody>
                   {data &&
@@ -845,7 +853,7 @@ export default function MAnageshipments() {
                   className="bg_page"
                   onClick={() => handlePageChange(currentPage - 1)}
                 >
-                  <i class="fi fi-rr-angle-small-left page_icon"></i>
+                  <i className="fi fi-rr-angle-small-left page_icon"></i>
                 </button>
                 <span className="mx-2">{`Page ${currentPage} of ${totalPage}`}</span>
                 <button
@@ -853,10 +861,12 @@ export default function MAnageshipments() {
                   className="bg_page"
                   onClick={() => handlePageChange(currentPage + 1)}
                 >
-                  <i class="fi fi-rr-angle-small-right page_icon"></i>
+                  <i className="fi fi-rr-angle-small-right page_icon"></i>
                 </button>
               </div>
-              <Modal open={statusModal} onClose={handleCloseStatusModal}>
+            </div>
+          )}
+          <Modal open={statusModal} onClose={handleCloseStatusModal}>
                 <Box
                   className="warehouse_modal123"
                   sx={{
@@ -1523,7 +1533,6 @@ export default function MAnageshipments() {
                 </Box>
               </Modal>
               <ToastContainer />
-            </div>
             <section className="tableMain">
               <div className="container">
                 <div className="row table-responsive ">
@@ -1533,7 +1542,6 @@ export default function MAnageshipments() {
             </section>
           </div>
         </div>
-      )}
     </>
   );
 }
