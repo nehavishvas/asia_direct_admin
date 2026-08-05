@@ -40,21 +40,21 @@ export default function Batches() {
   const [loader, setLoader] = useState(false);
   const [pagenationData, setPagenationData] = useState(1);
   const [selectedimage, setSelectedimage] = useState(null);
+  const [activeTab, setActiveTab] = useState("shift");
   const navigate = useNavigate();
   const handlecjhaneg = (e) => {
     const { name, value } = e.target;
     setEditData({ ...editData, [name]: value });
     setErrors({ ...errors, [name]: "" });
   };
-  const totalPages = Math.ceil(pagenationData.total / pagenationData.limit);
-  const handlePageChange = (currentData) => {
-    setCurrentPage(currentData);
-    getdata(currentData);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
-  const getdata = (page = currentPage) => {
+  const getdata = () => {
     setLoader(true);
     const payload = {
-      page: page,
+      page: 1,
+      limit: 100000,
       search: querry,
     };
     axios
@@ -63,7 +63,7 @@ export default function Batches() {
         console.log(response.data.data);
         setLoader(false);
         setPagenationData(response.data);
-        setDatauser(response.data.data);
+        setDatauser(response.data.data || []);
       })
       .catch((error) => {
         setLoader(false);
@@ -444,6 +444,23 @@ export default function Batches() {
   let month = String(today.getMonth() + 1).padStart(2, "0");
   let day = String(today.getDate()).padStart(2, "0");
   let formattedDate = `${year}-${month}-${day}`;
+
+  const filteredData = datauser
+    ? datauser.filter((item) => {
+        const hasTrackStatus = !!item.track_status;
+        return activeTab === "shift" ? hasTrackStatus : !hasTrackStatus;
+      })
+    : [];
+
+  const totalPages = Math.ceil(filteredData.length / 10) || 1;
+  const paginatedData = filteredData.slice((currentPage - 1) * 10, currentPage * 10);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [filteredData.length, totalPages, currentPage]);
+
   return (
     <>
       <div className="wpWrapper">
@@ -452,11 +469,11 @@ export default function Batches() {
             <div className=" manageFreight">
               <div className="col-12">
                 <div className="d-flex justify-content-between align-items-center">
-                  <div>
+                  <div className="mb-4">
                     <h4 className="freight_hd">Batches</h4>
                   </div>
                   <div className="d-flex align-items-center justify-content-end">
-                    <div class="me-2">
+                    <div className="me-2">
                       <input
                         class="py-1 rounded ps-1"
                         type="text"
@@ -479,7 +496,31 @@ export default function Batches() {
                 </div>
               </div>
             </div>
-            <div className="table-responsive mt-4">
+            <ul className="nav nav-tabs mb-2">
+              <li className="nav-item" style={{ cursor: "pointer" }}>
+                <a
+                  className={`nav-link ${activeTab === 'shift' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                  onClick={() => {
+                    setActiveTab('shift');
+                    setCurrentPage(1);
+                  }}
+                >
+                  Shift
+                </a>
+              </li>
+              <li className="nav-item" style={{ cursor: "pointer" }}>
+                <a
+                  className={`nav-link ${activeTab === 'unshift' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                  onClick={() => {
+                    setActiveTab('unshift');
+                    setCurrentPage(1);
+                  }}
+                >
+                  Unshift
+                </a>
+              </li>
+            </ul>
+            <div className="table-responsive mt-2">
               {loader ? (
                 <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
                   <div className="loader"></div>
@@ -506,9 +547,9 @@ export default function Batches() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {datauser &&
-                        datauser.length > 0 &&
-                        datauser.map((item, index) => {
+                      {paginatedData &&
+                        paginatedData.length > 0 &&
+                        paginatedData.map((item, index) => {
                           const isDisabled = !!item.track_status; // 🔥 important
 
                           return (

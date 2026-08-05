@@ -2802,6 +2802,9 @@ const BookingInstruction = () => {
                             abandoned, the customer will be liable for any
                             disposal costs and associated fees.
                           </p>
+                           <p>
+                             <strong>9.</strong>: For detailed Terms and Conditions refer to website.
+                          </p>
                         </div>
 
                         <table style={{ marginTop: "15px" }}>
