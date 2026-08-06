@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import SideBar from "./components/Sidebar/SideBar";
 import Header from "./components/Header/Header";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import AiChatWidget from "./components/ai/AiChatWidget";
+
 export default function Admin() {
     const navigate = useNavigate()
     const path = useLocation()
@@ -23,8 +25,10 @@ export default function Admin() {
             <SideBar >
                 <Header />
                 <Outlet />
+                <AiChatWidget />
             </SideBar>
         </>
     )
 }
+
 

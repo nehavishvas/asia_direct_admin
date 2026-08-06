@@ -157,7 +157,7 @@ export default function Dashboard() {
                 <div className="iconParent">
                   <div className="cardContent">
                     <h6 className="hd_dash">Leave</h6>
-                    <p className="para_dash"><CountUp end={countdata?.no_of_invoices} /></p>
+                    <p className="para_dash"><CountUp end={countdata?.no_of_leaves} /></p>
                   </div>
                   <div className="iconGrad">
                     <i className="fa fa-calendar"></i>
