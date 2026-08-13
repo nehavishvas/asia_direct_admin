@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { FaEdit, FaEye } from "react-icons/fa";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -443,7 +443,7 @@ export default function CompanyAddresses() {
           </div>
         </div>
       )}
-      <ToastContainer />
+      
     </>
   );
 }

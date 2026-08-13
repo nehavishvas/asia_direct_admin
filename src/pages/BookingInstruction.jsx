@@ -22,6 +22,27 @@ const BookingInstruction = () => {
     },
   });
 
+  const getFormattedAddress = (parts) => {
+    if (!parts) return "";
+    if (typeof parts === "string") {
+      const trimmed = parts.trim();
+      return (trimmed === "null" || trimmed === "undefined") ? "" : trimmed;
+    }
+    if (Array.isArray(parts)) {
+      return parts
+        .filter(
+          (p) =>
+            p !== null &&
+            p !== undefined &&
+            String(p).trim() !== "" &&
+            String(p).trim() !== "null" &&
+            String(p).trim() !== "undefined"
+        )
+        .join(", ");
+    }
+    return "";
+  };
+
   const getdata = async () => {
     try {
       const orde = {
@@ -150,17 +171,9 @@ const BookingInstruction = () => {
                                   ADDRESS
                                 </th>
                                 <td>
-                                  {info.shipment_ref === "consignee"
-                                    ? info.supplier_address
-                                    : info?.address_1 +
-                                    " " +
-                                    info.address_2 +
-                                    " " +
-                                    <br /> +
-                                    info.province +
-                                    " " +
-                                    <br /> +
-                                    info.delivery_to_name}
+                                  {info?.shipment_ref === "consignee"
+                                    ? getFormattedAddress(info?.supplier_address)
+                                    : getFormattedAddress([info?.address_1, info?.address_2, info?.province, info?.delivery_to_name])}
                                 </td>
                               </tr>
                               <tr>
@@ -1183,15 +1196,10 @@ const BookingInstruction = () => {
                                   ADDRESS
                                 </th>
                                 <td style={{ borderBottom: "unset" }}>
-                                  {/* address_1 */}
-                                  {info.shipment_ref === "consignee"
-                                    ? info?.address_1 +
-                                    " " +
-                                    info.address_2 +
-                                    " " +
-                                    info.province
-                                    : info.supplier_address}
-                                </td>
+                                   {info?.shipment_ref === "consignee"
+                                     ? getFormattedAddress([info?.address_1, info?.address_2, info?.province])
+                                     : getFormattedAddress(info?.supplier_address)}
+                                 </td>
                               </tr>
 
                               <tr>
@@ -2454,20 +2462,11 @@ const BookingInstruction = () => {
                               <tr>
                                 <td
                                   style={{
-                                    borderBottom: "1px solid #000",
                                     borderTop: "1px solid #000",
                                   }}
                                 >
-                                  description one
+                                  {data?.billing_requirement_desc || "description one"}
                                 </td>
-                              </tr>
-                              <tr>
-                                <td style={{ borderBottom: "1px solid #000" }}>
-                                  description one
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>description one</td>
                               </tr>
                             </table>
                           </div>

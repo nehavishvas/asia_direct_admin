@@ -1,7 +1,7 @@
 import Donutchart from "./Donutchart";
 import NegativeValuesBarChart from "./Negativevalue";
 import { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import CountUp from "react-countup";
@@ -192,7 +192,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        <ToastContainer />
+        
       </div>
     </>
   );

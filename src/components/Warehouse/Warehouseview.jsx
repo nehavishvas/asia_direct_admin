@@ -13,7 +13,7 @@ import {
   OutlinedInput,
 } from "@mui/material";
 import Swal from "sweetalert2";
-import { ToastContainer } from "react-toastify";
+
 const pageSize = 10;
 export default function Warehouseview() {
   const location = useLocation();
@@ -321,7 +321,7 @@ try {
                                     </button>
                                   </div>
                                                               
-                                  <ToastContainer />
+                                  
                                 </div>
                 </div>
             <Modal

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -9,29 +9,28 @@ import PrintIcon from "@mui/icons-material/Print";
 const SalesByCustomerReport = () => {
     const navigate = useNavigate();
 
-    // Default Date Helpers (Last Month)
-    const getStartOfLastMonth = () => {
-        const d = new Date();
-        d.setDate(1);
-        d.setMonth(d.getMonth() - 1);
+    // Default Date Helpers (Last 30 Days to Present Date)
+    const formatDateToYYYYMMDD = (d) => {
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, "0");
-        return `${y}-${m}-01`;
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
     };
 
-    const getEndOfLastMonth = () => {
+    const getDefaultEndDate = () => {
         const d = new Date();
-        d.setDate(1);
-        d.setMonth(d.getMonth() - 1);
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, "0");
-        const lastDay = new Date(y, d.getMonth() + 1, 0).getDate();
-        return `${y}-${m}-${String(lastDay).padStart(2, "0")}`;
+        return formatDateToYYYYMMDD(d);
+    };
+
+    const getDefaultStartDate = () => {
+        const d = new Date();
+        d.setDate(d.getDate() - 30);
+        return formatDateToYYYYMMDD(d);
     };
 
     // Filter States
-    const [startDate, setStartDate] = useState(getStartOfLastMonth());
-    const [endDate, setEndDate] = useState(getEndOfLastMonth());
+    const [startDate, setStartDate] = useState(getDefaultStartDate());
+    const [endDate, setEndDate] = useState(getDefaultEndDate());
     const [customerFrom, setCustomerFrom] = useState("");
     const [customerTo, setCustomerTo] = useState("");
     const [categoryFrom, setCategoryFrom] = useState("");
@@ -47,8 +46,8 @@ const SalesByCustomerReport = () => {
     const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     const handleReset = () => {
-        setStartDate(getStartOfLastMonth());
-        setEndDate(getEndOfLastMonth());
+        setStartDate(getDefaultStartDate());
+        setEndDate(getDefaultEndDate());
         setCustomerFrom("");
         setCustomerTo("");
         setCategoryFrom("");
@@ -155,16 +154,21 @@ const SalesByCustomerReport = () => {
     const calculateCustomerTotals = (customer) => {
         let qty = 0;
         let selling = 0;
-        const total_invoices = customer.invoices ? customer.invoices.length : 0;
-        if (customer.invoices) {
+        let total_invoices = 0;
+        if (customer.invoices && Array.isArray(customer.invoices)) {
+            total_invoices = customer.invoices.length;
             customer.invoices.forEach((inv) => {
-                if (inv.items) {
+                if (inv.items && Array.isArray(inv.items)) {
                     inv.items.forEach((item) => {
                         qty += parseFloat(item.qty) || 0;
                         selling += parseFloat(item.total_selling) || 0;
                     });
                 }
             });
+        } else {
+            total_invoices = parseInt(customer.total_invoices, 10) || 0;
+            selling = parseFloat(customer.total_amount) || 0;
+            qty = parseFloat(customer.qty) || 0;
         }
         return { qty, selling, total_invoices };
     };
@@ -500,7 +504,7 @@ const SalesByCustomerReport = () => {
                                                         return (
                                                             <tr key={customerIndex} className="invoice-item-row">
                                                                 <td className="text-start py-2">{customerGroup.customer || "Unknown Customer"}</td>
-                                                                <td className="text-end py-2">{customerTotals.total_invoices || ""}</td>
+                                                                <td className="text-end py-2">{customerTotals.total_invoices}</td>
                                                                 <td className="text-end py-2">{formatCurrency(customerTotals.selling, "R")}</td>
                                                             </tr>
                                                         );
@@ -534,7 +538,7 @@ const SalesByCustomerReport = () => {
                     </div>
                 </div>
             </div>
-            <ToastContainer />
+            
             <style type="text/css">{`
                  .report-title {
                      font-size: 16px !important;

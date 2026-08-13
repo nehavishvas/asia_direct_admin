@@ -1,9 +1,7 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify'
-
-export default function Chat() {
+import { toast } from "react-toastify";export default function Chat() {
 
     const [sidestata, setSidestata] = useState({})
     const [message, setMessage] = useState({})
@@ -229,7 +227,7 @@ export default function Chat() {
                     </div>
                 </div>
             </section>
-            <ToastContainer />
+            
         </div>
     )
 }

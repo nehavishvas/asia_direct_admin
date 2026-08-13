@@ -1,5 +1,7 @@
 import React, { useState, Suspense, lazy } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Countryoforigin from "./pages/Countryoforigin";
 import UserFreight from "./pages/UserFreight";
 import MAnageFreightDetails from "./MAnageFreightDetails";
@@ -27,6 +29,7 @@ import ShippingEstimate2 from "./components/shipping estimate/ShippingEstimate2"
 import ShippingCalcclient from "./components/shipping estimate/ShippingCalcclient";
 import Batches from "./pages/Batches";
 import BatchesOrder from "./pages/BatchesOrder";
+import BatchReport from "./pages/BatchReport";
 import CustomCalculationpage from "./pages/CustomCalculationpage";
 import Claeanepdf from "./pages/Claeanepdf";
 import ClearanceOrder from "./pages/ClearanceOrder";
@@ -155,7 +158,7 @@ const Uniovwersalpage = lazy(() => import("./components/Uniovwersalpage"));
 export default function App() {
   const [text, setText] = useState("");
   const [permission, setPermission] = useState("");
-  console.log("05-07-26", "17:58");
+  console.log("12-08-26", "10:48");
   return (
     <MyContext1.Provider value={{ text, setText }}>
       <MyContext2.Provider value={{ permission, setPermission }}>
@@ -494,6 +497,7 @@ export default function App() {
                   element={<TrackBatch />}
                 />
                 <Route index path="/Admin/Batches" element={<Batches />} />
+                <Route path="/Admin/batch-report" element={<BatchReport />} />
                 <Route
                   index
                   path="/Admin/shipping-estimate"
@@ -688,6 +692,7 @@ export default function App() {
             </Routes>
           </Suspense>
         </Router>
+        <ToastContainer />
       </MyContext2.Provider>
     </MyContext1.Provider>
   );

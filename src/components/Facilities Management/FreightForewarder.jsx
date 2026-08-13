@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { AiFillDelete } from "react-icons/ai";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { Box, Button, Modal } from "@mui/material";
 import { FaEdit } from "react-icons/fa";
@@ -275,7 +275,7 @@ export default function FreightForewarder() {
                   </tbody>
                 </table>
                 {/* PAGINATION */}
-                <div className="d-flex justify-content-end align-items-end my-3">
+                <div className="d-flex justify-content-end align-items-end">
                   <button
                     disabled={currentPage === 1}
                     className="bg_page"
@@ -462,7 +462,7 @@ export default function FreightForewarder() {
             </div>
           </Box>
         </Modal>
-        <ToastContainer />
+        
       </>
     </>
   );

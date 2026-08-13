@@ -4,7 +4,7 @@
 // import AddCommentIcon from "@mui/icons-material/AddComment";
 // import VisibilityIcon from "@mui/icons-material/Visibility";
 // import CloseIcon from "@mui/icons-material/Close";
-// import { toast, ToastContainer } from "react-toastify";
+// import { toast } from "react-toastify";
 // import { useNavigate } from "react-router-dom";
 // const pageSize = 10;
 // export default function Taskmanager() {
@@ -490,7 +490,7 @@
 //           </Box>
 //         </Modal>
 //       </div>
-//       <ToastContainer />
+//       
 //     </>
 //   );
 // }
@@ -502,7 +502,7 @@ import React, { useEffect, useState } from "react";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CloseIcon from "@mui/icons-material/Close";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const pageSize = 10;
@@ -1053,7 +1053,7 @@ const handlechange = (e) => {
            </Box>
          </Modal>
       </div>
-      <ToastContainer />
+      
        </div>
     </>
   );

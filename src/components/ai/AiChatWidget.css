@@ -3,14 +3,14 @@
 /* Floating Action Button (FAB) */
 .ai-fab-container {
   position: fixed;
-  bottom: 24px;
+  bottom: 70px;
   right: 24px;
   z-index: 10000;
 }
 
 .ai-fab {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background: linear-gradient(135deg, #be191d 0%, #1b2245 100%);
   border: none;
@@ -69,7 +69,7 @@
   right: 24px;
   width: 400px;
   height: 620px;
-  max-height: 100vh;
+  max-height: 95vh;
   background: #0f132b;
   border: 1px solid #242c54;
   border-radius: 24px;

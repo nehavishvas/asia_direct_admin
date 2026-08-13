@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -10,29 +10,28 @@ const CustomerInvoicesReport = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Default dates: Start and end of last month
-    const getStartOfLastMonth = () => {
-        const d = new Date();
-        d.setDate(1);
-        d.setMonth(d.getMonth() - 1);
+    // Default Date Helpers (Last 30 Days to Present Date)
+    const formatDateToYYYYMMDD = (d) => {
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, "0");
-        return `${y}-${m}-01`;
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
     };
 
-    const getEndOfLastMonth = () => {
+    const getDefaultEndDate = () => {
         const d = new Date();
-        d.setDate(1);
-        d.setMonth(d.getMonth() - 1);
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, "0");
-        const lastDay = new Date(y, d.getMonth() + 1, 0).getDate();
-        return `${y}-${m}-${lastDay}`;
+        return formatDateToYYYYMMDD(d);
+    };
+
+    const getDefaultStartDate = () => {
+        const d = new Date();
+        d.setDate(d.getDate() - 30);
+        return formatDateToYYYYMMDD(d);
     };
 
     // States for filters
-    const [startDate, setStartDate] = useState(location.state?.startDate || getStartOfLastMonth());
-    const [endDate, setEndDate] = useState(location.state?.endDate || getEndOfLastMonth());
+    const [startDate, setStartDate] = useState(location.state?.startDate || getDefaultStartDate());
+    const [endDate, setEndDate] = useState(location.state?.endDate || getDefaultEndDate());
     const [customerFrom, setCustomerFrom] = useState(location.state?.customerFrom || "");
     const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
     const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
@@ -104,8 +103,8 @@ const CustomerInvoicesReport = () => {
     };
 
     const handleReset = () => {
-        const start = getStartOfLastMonth();
-        const end = getEndOfLastMonth();
+        const start = getDefaultStartDate();
+        const end = getDefaultEndDate();
         setStartDate(start);
         setEndDate(end);
         setCustomerFrom("");
@@ -445,7 +444,7 @@ const CustomerInvoicesReport = () => {
                 </div>
             </div>
 
-            <ToastContainer position="top-right" autoClose={3000} />
+            
 
             {/* Custom Print and Layout styles */}
             <style>{`

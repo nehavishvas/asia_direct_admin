@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 export default function UpdateDelivery() {
   const navigate = useNavigate();
@@ -541,7 +541,7 @@ export default function UpdateDelivery() {
               </div>
             </div>
           </div>
-          <ToastContainer />
+          
         </div>
       </div>
     </>

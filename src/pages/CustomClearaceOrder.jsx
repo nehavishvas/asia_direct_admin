@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AiFillDelete } from "react-icons/ai";
@@ -1167,7 +1167,7 @@ const CustomClearaceOrder = () => {
           </div>
         </Box>
       </Modal>
-      <ToastContainer />
+      
       <div>
         <div
           className={`modal fade ${showModal ? "show " : ""}`}

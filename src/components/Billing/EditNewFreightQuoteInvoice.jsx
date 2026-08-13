@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -241,7 +241,7 @@ export default function EditNewFreightQuoteInvoice() {
           order_id: orderInfo.order_id || orderInfo.id || parseInt(orderId) || null,
         }));
         if (orderInfo.freight_id && parseInt(orderInfo.freight_id) !== 0) {
-          apidataget(orderInfo.freight_id, false);
+          apidataget(orderInfo.freight_id, false, orderInfo);
         } else {
           setGetdata(orderInfo);
           setSelected(0);
@@ -249,7 +249,9 @@ export default function EditNewFreightQuoteInvoice() {
             ...prev,
             chargable_rate: orderInfo.chargable_rate ? formatValue(orderInfo.chargable_rate, 3) : (orderInfo.chargeable ? formatValue(orderInfo.chargeable, 3) : ""),
           }));
-          initializeDefaultRows();
+          if (parseInt(orderId) !== parseInt(freight.order_id)) {
+            initializeDefaultRows();
+          }
         }
       } else {
         toast.error("Failed to fetch order details");
@@ -296,10 +298,17 @@ export default function EditNewFreightQuoteInvoice() {
         `${process.env.REACT_APP_BASE_URL}freight-list-byId`,
         payload
       );
-      if (response.data && response.data.data) {
+      if (response.data && response.data.success && response.data.data) {
         const freightObj = { ...response.data.data[0] };
 
-        setGetdata(freightObj);
+        const mergedData = initialInvoiceData ? { ...initialInvoiceData } : {};
+        Object.keys(freightObj).forEach((key) => {
+          if (freightObj[key] !== null && freightObj[key] !== undefined && freightObj[key] !== "") {
+            mergedData[key] = freightObj[key];
+          }
+        });
+
+        setGetdata(mergedData);
         setSelected(freightIdVal);
         setOpenmodal(false);
 
@@ -422,10 +431,32 @@ export default function EditNewFreightQuoteInvoice() {
           });
 
           setSelectedSupplier(invoiceData.supplier_id || "");
+          if (invoiceData.order_id) {
+            setSelectedOrder(invoiceData.order_id);
+          }
+
+          // Fetch order details if present to populate getdata with cargo details
+          let orderInfo = null;
+          if (invoiceData.order_id) {
+            try {
+              const orderResp = await axios.post(
+                `${process.env.REACT_APP_BASE_URL}OrderDetailsById`,
+                { orderId: parseInt(invoiceData.order_id) }
+              );
+              if (orderResp.data && orderResp.data.success && orderResp.data.data && orderResp.data.data.length > 0) {
+                orderInfo = orderResp.data.data[0];
+              }
+            } catch (err) {
+              console.error("Error fetching order details in fetchInvoiceData:", err);
+            }
+          }
+
+          const mergedWithOrder = orderInfo ? { ...orderInfo, ...invoiceData } : invoiceData;
+
           if (invoiceData.freight_id && parseInt(invoiceData.freight_id) !== 0) {
-            apidataget(invoiceData.freight_id, true, invoiceData);
+            apidataget(invoiceData.freight_id, true, mergedWithOrder);
           } else {
-            setGetdata(invoiceData);
+            setGetdata(mergedWithOrder);
             setSelected(0);
           }
 
@@ -882,7 +913,7 @@ export default function EditNewFreightQuoteInvoice() {
         payload
       );
       if (response.data && response.data.success === true) {
-        toast.success(response.data.message || "Invoice saved successfully");
+        sessionStorage.setItem("toastMessage", response.data.message || "Invoice saved successfully");
         navigate("/Admin/invoices");
       } else {
         toast.error(response.data.message || "Failed to save Invoice");
@@ -1706,11 +1737,11 @@ export default function EditNewFreightQuoteInvoice() {
                             <td style={{ padding: "0px 10px" }}>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Country of Origin</strong>
-                                <span>{getdata?.collection_from_name || getdata?.country_of_origin || "-"}</span>
+                                <span>{getdata?.collection_from_country || getdata?.collection_from_name || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Place of Receipt</strong>
-                                <span>{getdata?.place_of_receipt || "-"}</span>
+                                <span>{getdata?.port_of_loading || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Port of Loading</strong>
@@ -1875,7 +1906,7 @@ export default function EditNewFreightQuoteInvoice() {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      
     </>
   );
 }

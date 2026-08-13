@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import logo from "../../Assests/logo.png";
@@ -217,10 +217,28 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
             payment_terms: invoiceData.payment_terms || "",
           });
 
+          // Fetch order details if present to populate getdata with cargo details
+          let orderInfo = null;
+          if (invoiceData.order_id) {
+            try {
+              const orderResp = await axios.post(
+                `${process.env.REACT_APP_BASE_URL}OrderDetailsById`,
+                { orderId: parseInt(invoiceData.order_id) }
+              );
+              if (orderResp.data && orderResp.data.success && orderResp.data.data && orderResp.data.data.length > 0) {
+                orderInfo = orderResp.data.data[0];
+              }
+            } catch (err) {
+              console.error("Error fetching order details in fetchInvoiceData:", err);
+            }
+          }
+
+          const mergedWithOrder = orderInfo ? { ...orderInfo, ...invoiceData } : invoiceData;
+
           if (invoiceData.freight_id && parseInt(invoiceData.freight_id) !== 0) {
-            apidataget(invoiceData.freight_id, invoiceData);
+            apidataget(invoiceData.freight_id, mergedWithOrder);
           } else {
-            setGetdata(invoiceData);
+            setGetdata(mergedWithOrder);
           }
 
           const items = invoiceData.components || [];
@@ -287,7 +305,13 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
       );
       if (response.data && response.data.data && response.data.data[0]) {
         const freightObj = { ...response.data.data[0] };
-        setGetdata(freightObj);
+        const mergedData = initialInvoiceData ? { ...initialInvoiceData } : {};
+        Object.keys(freightObj).forEach((key) => {
+          if (freightObj[key] !== null && freightObj[key] !== undefined && freightObj[key] !== "") {
+            mergedData[key] = freightObj[key];
+          }
+        });
+        setGetdata(mergedData);
       } else {
         setGetdata(initialInvoiceData || {});
       }
@@ -1142,11 +1166,11 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                             <td style={{ padding: "0px 10px" }}>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Country of Origin</strong>
-                                <span>{getdata?.collection_from_name || getdata?.country_of_origin || "-"}</span>
+                                <span>{getdata?.collection_from_country || getdata?.collection_from_name || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Place of Receipt</strong>
-                                <span>{getdata?.place_of_receipt || "-"}</span>
+                                <span>{getdata?.port_of_loading || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Port of Loading</strong>
@@ -1275,12 +1299,12 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                     </tr>
                   </thead>
                   <tbody>
-                    {renderRowsForSection(originRowsData, originDropdown, "Origin Charges")}
-                    {renderRowsForSection(freightRowsData, freightDropdown, "Freight Charges")}
-                    {renderRowsForSection(transitRowsData, transitDropdown, "Transit Charges")}
-                    {renderRowsForSection(destinationRowsData, destinationDropdown, "Destination Charges")}
-                    {renderRowsForSection(adminRowsData, adminDropdown, "Admin Charges")}
-                    {renderRowsForSection(customsRowsData, customsDropdown, "Customs Charges")}
+                    {renderRowsForSection(originRowsData, originDropdown, "Origin Charges", totalChageswithOutExchange, totalChangeRoeOrigin)}
+                    {renderRowsForSection(freightRowsData, freightDropdown, "Freight Charges", totalChageswithOutExchangeinsurance, totalChangeRoeOriginaftercalcuinsurance)}
+                    {renderRowsForSection(transitRowsData, transitDropdown, "Transit Charges", totalChageswithOuTransit, transitRoe)}
+                    {renderRowsForSection(destinationRowsData, destinationDropdown, "Destination Charges", totalChaDestinationTransit, totalChaDestinationTransitRoe)}
+                    {renderRowsForSection(adminRowsData, adminDropdown, "Admin Charges", totaAdminransit, totalAdminnsitRoe)}
+                    {renderRowsForSection(customsRowsData, customsDropdown, "Customs Charges", customsTotalTCost, customsTotalFinalAmt)}
 
                     <tr>
                       <td colSpan={6}>
@@ -1378,7 +1402,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
           </section>
         </div>
       </div>
-      <ToastContainer />
+      
     </>
   );
 }

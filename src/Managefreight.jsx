@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { AiFillDelete, AiFillMessage } from "react-icons/ai";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { FaEdit } from "react-icons/fa";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -2972,7 +2972,7 @@ export default function Managefreight() {
               </Box>
             </Modal>
             {/* )} */}
-            <ToastContainer />
+            
           </div >
         </div >
       </div >

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from "react-toastify";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 export default function ShippingEstimateClearance() {
     const [data, setData] = useState({});
@@ -161,7 +161,7 @@ const handleclicknav =() =>{
                                     </div>
                                 </div>
                             </div>
-                            <ToastContainer />
+                            
                         </div>
                     </div>
                 </div>

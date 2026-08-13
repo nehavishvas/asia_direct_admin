@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   Modal,
   Box,
@@ -599,7 +599,7 @@ export default function Shipmentdeailspage() {
           </div>
         </Box>
       </Modal>
-      <ToastContainer />
+      
     </div>
   );
 }

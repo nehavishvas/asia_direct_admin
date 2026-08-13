@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useContext, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { MyContext1 } from "../../Context/MyContext";
 import Img1 from "../../Assests/logotransparent.png";
 import axiosInstance from "../../axiosInstance";
@@ -136,7 +136,7 @@ export default function Login() {
             </div>
           </div>
         </div>
-        <ToastContainer />
+        
       </section>
     </>
   );

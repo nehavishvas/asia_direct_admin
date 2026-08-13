@@ -1,7 +1,6 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { toast, ToastContainer } from 'react-toastify'
-export default function CMS() {
+import { toast } from "react-toastify";export default function CMS() {
     const [data, setData] = useState({})
     const handlechange = (e) => {
         const { name, value } = e.target
@@ -77,7 +76,7 @@ export default function CMS() {
                     </div>
                 </div>
             </div>
-            <ToastContainer />
+            
         </>
     )
 }

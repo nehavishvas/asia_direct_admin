@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { RxCrossCircled } from "react-icons/rx";
 import { FaCircleCheck } from "react-icons/fa6";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -130,7 +130,7 @@ export default function CalculationPages() {
                                 </button>
                             </div>
                         </div>
-                        <ToastContainer />
+                        
                     </div>
                 </div>
             </div>

@@ -3,7 +3,7 @@ import { Box, Button, Modal } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { AiFillDelete } from "react-icons/ai";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 const pageSize = 10;
 const Query = () => {
@@ -547,7 +547,7 @@ const Query = () => {
               </div>
             </div>
           </div>
-          <ToastContainer />
+          
 
 
         </div>

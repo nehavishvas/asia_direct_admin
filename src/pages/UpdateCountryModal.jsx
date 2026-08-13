@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText, Modal } from '@mui/material';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const UpdateCountryModal = ({ open, onClose, countryData, refreshData }) => {
     const [countries, setCountries] = useState([]);
@@ -211,7 +211,7 @@ const UpdateCountryModal = ({ open, onClose, countryData, refreshData }) => {
                 </Box>
                 <Button variant="contained" onClick={postData}>Update</Button>
             </Box>
-            <ToastContainer />
+            
         </Modal>
     );
 };

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -1200,7 +1200,7 @@ const ManageCollectionDelivery = () => {
                                     }
                                 </tbody>
                             </table>
-                            <div className="d-flex justify-content-end align-items-end my-3">
+                            <div className="d-flex justify-content-end align-items-end">
                                 <button
                                     disabled={currentPage === 1}
                                     className="bg_page"
@@ -1787,7 +1787,7 @@ const ManageCollectionDelivery = () => {
                 </div>
             )}
 
-            <ToastContainer />
+            
         </>
     )
 }

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   Box,
@@ -1532,7 +1532,7 @@ export default function MAnageshipments() {
                   </div>
                 </Box>
               </Modal>
-              <ToastContainer />
+              
             <section className="tableMain">
               <div className="container">
                 <div className="row table-responsive ">

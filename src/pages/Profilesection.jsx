@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { AiFillDelete } from "react-icons/ai";
-import { toast, ToastContainer } from "react-toastify";
+import { AiFillDelete, AiFillEye } from "react-icons/ai";
+import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { Box, Button, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -38,7 +38,14 @@ export default function Profilesection() {
     leave_from: "",
     leave_to: "",
     reason: "",
+    leave_type: "Annual",
+    comments: "",
+    reference: "",
   });
+  const [attachmentFile, setAttachmentFile] = useState(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [viewLeaveData, setViewLeaveData] = useState(null);
+  const [viewLoader, setViewLoader] = useState(false);
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [inputdata, setInputdata] = useState({
     id: "",
@@ -55,7 +62,7 @@ export default function Profilesection() {
     try {
       setLoader(true);
       const payload = {
-         staff_id:localstorageData.id,
+        staff_id: localstorageData.id,
         page: page,
         limit: pageSize,
         search: search,
@@ -89,14 +96,30 @@ export default function Profilesection() {
   };
 
   const openLeaveModal = () => {
-    setInput({ leave_from: "", leave_to: "", reason: "" });
+    setInput({
+      leave_from: "",
+      leave_to: "",
+      reason: "",
+      leave_type: "Annual",
+      comments: "",
+      reference: "",
+    });
+    setAttachmentFile(null);
     setCalendarDate(new Date());
     setIsModalOpen(true);
   };
 
   const closeLeaveModal = () => {
     setIsModalOpen(false);
-    setInput({ leave_from: "", leave_to: "", reason: "" });
+    setInput({
+      leave_from: "",
+      leave_to: "",
+      reason: "",
+      leave_type: "Annual",
+      comments: "",
+      reference: "",
+    });
+    setAttachmentFile(null);
   };
 
   const handleCalendarDayClick = (date) => {
@@ -142,15 +165,25 @@ export default function Profilesection() {
       return;
     }
 
-    const data = {
-      staff_id: localstorageData.id,
-      leave_from: input.leave_from,
-      leave_to: input.leave_to,
-      reason: input.reason,
-    };
+    const formData = new FormData();
+    formData.append("staff_id", localstorageData.id);
+    formData.append("leave_type", input.leave_type);
+    formData.append("leave_from", input.leave_from);
+    formData.append("leave_to", input.leave_to);
+    formData.append("reason", input.reason);
+    formData.append("comments", input.comments || "");
+    formData.append("reference", input.reference || "");
+    formData.append("next_approver", 1);
+    if (attachmentFile) {
+      formData.append("attachment", attachmentFile);
+    }
 
     axios
-      .post(`${process.env.REACT_APP_BASE_URL}applyStaffLeave`, data)
+      .post(`${process.env.REACT_APP_BASE_URL}applyStaffLeave`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
       .then((res) => {
         toast.success(res.data.message || "Leave added successfully!");
         closeLeaveModal();
@@ -165,6 +198,27 @@ export default function Profilesection() {
           toast.error("Unexpected error: " + error.message);
         }
       });
+  };
+
+  const handleViewLeave = async (leaveId) => {
+    try {
+      setViewLoader(true);
+      setViewLeaveData(null);
+      setIsViewModalOpen(true);
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}getStaffLeaveDetails/${leaveId}`
+      );
+      if (response.data && response.data.success) {
+        setViewLeaveData(response.data.data);
+      } else {
+        toast.error(response.data.message || "Failed to load leave details.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Something went wrong.");
+    } finally {
+      setViewLoader(false);
+    }
   };
 
   // ---------------- DELETE SUPPLIER ----------------
@@ -222,14 +276,14 @@ export default function Profilesection() {
 
   // ---------------- UPDATE SUPPLIER ----------------
   const postData1234 = () => {
-const formdata={
-    id:inputdata.id,
-    email:inputdata.email,
-    name:inputdata.name,
-    phone:inputdata.phone,
-    address:inputdata.address,
-    country_id:inputdata.country_id
-}
+    const formdata = {
+      id: inputdata.id,
+      email: inputdata.email,
+      name: inputdata.name,
+      phone: inputdata.phone,
+      address: inputdata.address,
+      country_id: inputdata.country_id
+    }
     axios
       .post(
         `${process.env.REACT_APP_BASE_URL}updateCustomsClearingAgent`,
@@ -264,7 +318,7 @@ const formdata={
     const value = e.target.value;
     setSearchQuery(value);
     setCurrentPage(1);
-    getdata(1, value); 
+    getdata(1, value);
   };
   return (
     <>
@@ -313,24 +367,23 @@ const formdata={
                     {data.map((item, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{ item.leave_from.split('T')[0] }</td>
+                        <td>{item.leave_from.split('T')[0]}</td>
                         <td>{item.leave_to.split('T')[0]}</td>
                         <td>{item.reason}</td>
                         <td>{item?.admin_remark}</td>
-                        <td>{item?.status===0 ? "Pending" : item.status===1 ? "Approved" : "Rejected"}</td>
+                        <td>{item?.status === 0 ? "Pending" : item.status === 1 ? "Approved" : "Rejected"}</td>
                         <td>
-                          {/* <FaEdit
-                            onClick={() => openModal2(item.id)}
-                            style={{
-                              color: "#1b2245",
-                              marginRight: "10px",
-                              cursor: "pointer",
-                            }}
-                          /> */}
+                          <AiFillEye
+                            className="text-primary me-2"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => handleViewLeave(item.leave_id || item.id)}
+                            title="View Details"
+                          />
                           <AiFillDelete
                             className="text-danger"
                             style={{ cursor: "pointer" }}
                             onClick={() => handledelete(item.id)}
+                            title="Delete Request"
                           />
                         </td>
                       </tr>
@@ -341,13 +394,13 @@ const formdata={
                 <div className="d-flex justify-content-end align-items-end my-3">
                   <button
                     disabled={currentPage === 1}
-                      className="bg_page"
+                    className="bg_page"
                     onClick={() => {
                       setCurrentPage(currentPage - 1);
                       getdata(currentPage - 1, searchQuery);
                     }}
                   >
-                      <i class="fi fi-rr-angle-small-left page_icon"></i>
+                    <i class="fi fi-rr-angle-small-left page_icon"></i>
                   </button>
 
                   <span className="mx-2">
@@ -356,13 +409,13 @@ const formdata={
 
                   <button
                     disabled={currentPage === totalPages}
-                      className="bg_page"
+                    className="bg_page"
                     onClick={() => {
                       setCurrentPage(currentPage + 1);
                       getdata(currentPage + 1, searchQuery);
                     }}
                   >
-                   <i class="fi fi-rr-angle-small-right page_icon"></i>
+                    <i class="fi fi-rr-angle-small-right page_icon"></i>
                   </button>
                 </div>
               </div>
@@ -415,7 +468,21 @@ const formdata={
                     />
                   </div>
                 </div>
-                <label className="mt-3">Reason</label>
+                <label className="mt-2">Leave Type</label>
+                <select
+                  className="form-select"
+                  name="leave_type"
+                  value={input.leave_type}
+                  onChange={handlechange}
+                >
+                  <option value="Annual">Annual</option>
+                  <option value="Sick">Sick</option>
+                  <option value="Casual">Casual</option>
+                  <option value="Maternity">Maternity</option>
+                  <option value="Paternity">Paternity</option>
+                  <option value="Unpaid">Unpaid</option>
+                </select>
+                <label className="mt-2">Reason</label>
                 <input
                   type="text"
                   className="form-control"
@@ -423,6 +490,40 @@ const formdata={
                   value={input.reason}
                   placeholder="Reason for leave"
                   onChange={handlechange}
+                />
+                <label className="mt-2">Comments</label>
+                <textarea
+                  className="form-control"
+                  rows="2"
+                  name="comments"
+                  value={input.comments}
+                  placeholder="Additional comments (e.g. availability)"
+                  onChange={handlechange}
+                />
+                <label className="mt-2">Reference</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="reference"
+                  value={input.reference}
+                  placeholder="Reference number (optional)"
+                  onChange={handlechange}
+                />
+                <label className="mt-2">Attachment</label>
+                <input
+                  type="file"
+                  className="form-control"
+                  accept="application/pdf,image/*"
+                  onChange={(e) => setAttachmentFile(e.target.files[0])}
+                />
+                <label className="mt-2">Next Approver</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value="Admin"
+                  readOnly
+                  disabled
+                  style={{ backgroundColor: "#e9ecef" }}
                 />
               </div>
               <div className="custom-modal-footer leave-modal-footer">
@@ -516,7 +617,114 @@ const formdata={
             </Button>
           </Box>
         </Modal>
-        <ToastContainer />
+        <Modal open={isViewModalOpen} onClose={() => setIsViewModalOpen(false)}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              bgcolor: "white",
+              p: 3,
+              borderRadius: 2,
+              width: "45%",
+              maxHeight: "90vh",
+              overflowY: "auto",
+              boxShadow: 24,
+            }}
+          >
+            <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+              <h4 style={{ fontWeight: 600, color: "#1b2245", margin: 0 }}>Leave Details</h4>
+              <button
+                className="btn-close"
+                onClick={() => setIsViewModalOpen(false)}
+              >
+                <CloseIcon />
+              </button>
+            </div>
+            {viewLoader ? (
+              <div className="text-center py-5">
+                <div className="spinner-border text-primary" role="status"></div>
+                <p className="mt-2 text-muted">Loading details...</p>
+              </div>
+            ) : viewLeaveData ? (
+              <div className="leave-details-grid">
+                <div className="row g-3">
+                  <div className="col-md-6">
+                    <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Reference</label>
+                    <div style={{ fontSize: "14px", fontWeight: 600, color: "#212529" }}>{viewLeaveData.reference || "-"}</div>
+                  </div>
+                  <div className="col-md-6">
+                    <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Staff Name</label>
+                    <div style={{ fontSize: "14px", fontWeight: 600, color: "#212529" }}>{viewLeaveData.staff_name || "-"}</div>
+                  </div>
+
+                  <div className="col-md-6">
+                    <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Leave Type</label>
+                    <div style={{ fontSize: "14px", fontWeight: 500, color: "#212529" }}>{viewLeaveData.leave_type || "-"}</div>
+                  </div>
+                  <div className="col-md-6">
+                    <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Status</label>
+                    <div>
+                      <span
+                        className={`badge ${viewLeaveData.status === 1 ? 'bg-success' : viewLeaveData.status === 2 ? 'bg-danger' : 'bg-warning text-dark'}`}
+                        style={{ padding: "6px 12px", borderRadius: "12px", fontSize: "12px", fontWeight: 500 }}
+                      >
+                        {viewLeaveData.status === 1 ? "Approved" : viewLeaveData.status === 2 ? "Rejected" : "Pending"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="col-12">
+                    <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Duration</label>
+                    <div style={{ fontSize: "14px", color: "#212529", fontWeight: 500 }}>
+                      {viewLeaveData.leave_from ? viewLeaveData.leave_from.split('T')[0] : "-"} to {viewLeaveData.leave_to ? viewLeaveData.leave_to.split('T')[0] : "-"}
+                    </div>
+                  </div>
+
+                  <div className="col-12">
+                    <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Reason</label>
+                    <div style={{ fontSize: "14px", color: "#495057", background: "#f8f9fa", padding: "10px", borderRadius: "6px", border: "1px solid #e9ecef" }}>
+                      {viewLeaveData.reason || "-"}
+                    </div>
+                  </div>
+
+                  <div className="col-12">
+                    <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Comments</label>
+                    <div style={{ fontSize: "14px", color: "#495057", background: "#f8f9fa", padding: "10px", borderRadius: "6px", border: "1px solid #e9ecef" }}>
+                      {viewLeaveData.comments || "-"}
+                    </div>
+                  </div>
+
+                  <div className="col-12">
+                    <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Admin Remark</label>
+                    <div style={{ fontSize: "14px", color: "#495057", background: "#fff3cd", padding: "10px", borderRadius: "6px", border: "1px solid #ffeeba" }}>
+                      {viewLeaveData.admin_remark || "-"}
+                    </div>
+                  </div>
+
+                  {viewLeaveData.attachment && (
+                    <div className="col-12 mt-2">
+                      <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Attachment</label>
+                      <a
+                        href={`${process.env.REACT_APP_BASE_URLdocument}${viewLeaveData.attachment}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2 mt-1"
+                        style={{ padding: "6px 12px", borderRadius: "6px", textDecoration: "none" }}
+                      >
+                        View Attachment
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-5 text-muted">No details found.</div>
+            )}
+          </Box>
+        </Modal>
+
       </>
     </>
   );

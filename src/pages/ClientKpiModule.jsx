@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 const pageSize = 10;
 export default function ClientKpiModule() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -138,7 +138,7 @@ const totalPages = pagenationData?.totalPages || 1;
             )}
           </div>
         </div>
-        <ToastContainer />
+        
       </>
   );
 }

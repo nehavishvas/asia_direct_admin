@@ -2,7 +2,7 @@ import { Box, Button, Modal } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 
 export default function Viewdocument() {
@@ -236,7 +236,7 @@ export default function Viewdocument() {
             </div>
           </Box>
         </Modal>
-        <ToastContainer />
+        
       </div>
     </>
   );

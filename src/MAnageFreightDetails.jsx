@@ -478,7 +478,7 @@ export default function MAnageFreightDetails() {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      
     </div>
   );
 }

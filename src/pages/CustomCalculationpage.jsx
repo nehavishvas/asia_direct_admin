@@ -1,9 +1,7 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { toast, ToastContainer } from 'react-toastify'
-
-export default function CustomCalculationpage() {
+import { toast } from "react-toastify";export default function CustomCalculationpage() {
   const [detailsdata, setDetailsdata] = useState({})
   const location = useLocation()
   console.log(location.state.data.id)

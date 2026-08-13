@@ -12,7 +12,7 @@ import {
   Box,
 } from "@mui/material";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
@@ -22,6 +22,7 @@ import RoomIcon from "@mui/icons-material/Room";
 import CloseIcon from "@mui/icons-material/Close";
 import { CopyAll } from "@mui/icons-material";
 import Swal from "sweetalert2";
+import PrintIcon from "@mui/icons-material/Print";
 
 export default function Batches() {
   const [datauser, setDatauser] = useState([]);
@@ -47,32 +48,60 @@ export default function Batches() {
     setEditData({ ...editData, [name]: value });
     setErrors({ ...errors, [name]: "" });
   };
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  const handlePageChange = (currentData) => {
+    setCurrentPage(currentData);
   };
-  const getdata = () => {
+  const getdata = async () => {
     setLoader(true);
     const payload = {
       page: 1,
-      limit: 100000,
+      limit: 10000,
       search: querry,
     };
-    axios
-      .post(`${process.env.REACT_APP_BASE_URL}NewGetAllBatch`, payload)
-      .then((response) => {
-        console.log(response.data.data);
-        setLoader(false);
-        setPagenationData(response.data);
-        setDatauser(response.data.data || []);
-      })
-      .catch((error) => {
-        setLoader(false);
-        console.log(error.response.data);
-      });
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}NewGetAllBatch`,
+        payload
+      );
+      let allItems = [];
+      if (response.data && response.data.data) {
+        allItems = [...response.data.data];
+        const totalItems = response.data.total || response.data.data.length;
+        const limitReturned = response.data.limit || 10;
+
+        if (allItems.length < totalItems && limitReturned < totalItems) {
+          const totalPagesCount = Math.ceil(totalItems / limitReturned);
+          const promises = [];
+          for (let p = 2; p <= totalPagesCount; p++) {
+            promises.push(
+              axios.post(
+                `${process.env.REACT_APP_BASE_URL}NewGetAllBatch`,
+                { ...payload, page: p, limit: limitReturned }
+              )
+            );
+          }
+          if (promises.length > 0) {
+            const results = await Promise.all(promises);
+            results.forEach((res) => {
+              if (res.data && res.data.data) {
+                allItems = [...allItems, ...res.data.data];
+              }
+            });
+          }
+        }
+      }
+      setDatauser(allItems);
+      setPagenationData(response.data);
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+    } finally {
+      setLoader(false);
+    }
   };
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      getdata(1);
+      setCurrentPage(1);
+      getdata();
     }, 500);
 
     return () => clearTimeout(delayDebounce);
@@ -447,13 +476,17 @@ export default function Batches() {
 
   const filteredData = datauser
     ? datauser.filter((item) => {
-        const hasTrackStatus = !!item.track_status;
-        return activeTab === "shift" ? hasTrackStatus : !hasTrackStatus;
-      })
+      const hasTrackStatus = !!item.track_status;
+      return activeTab === "shift" ? hasTrackStatus : !hasTrackStatus;
+    })
     : [];
 
-  const totalPages = Math.ceil(filteredData.length / 10) || 1;
-  const paginatedData = filteredData.slice((currentPage - 1) * 10, currentPage * 10);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1;
+  const displayedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -469,11 +502,11 @@ export default function Batches() {
             <div className=" manageFreight">
               <div className="col-12">
                 <div className="d-flex justify-content-between align-items-center">
-                  <div className="mb-4">
+                  <div>
                     <h4 className="freight_hd">Batches</h4>
                   </div>
                   <div className="d-flex align-items-center justify-content-end">
-                    <div className="me-2">
+                    <div class="me-2">
                       <input
                         class="py-1 rounded ps-1"
                         type="text"
@@ -496,7 +529,7 @@ export default function Batches() {
                 </div>
               </div>
             </div>
-            <ul className="nav nav-tabs mb-2">
+            <ul className="nav nav-tabs mb-3">
               <li className="nav-item" style={{ cursor: "pointer" }}>
                 <a
                   className={`nav-link ${activeTab === 'shift' ? 'active text-primary fw-bold' : 'text-secondary'}`}
@@ -520,7 +553,7 @@ export default function Batches() {
                 </a>
               </li>
             </ul>
-            <div className="table-responsive mt-2">
+            <div className="table-responsive mt-4">
               {loader ? (
                 <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
                   <div className="loader"></div>
@@ -547,9 +580,9 @@ export default function Batches() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {paginatedData &&
-                        paginatedData.length > 0 &&
-                        paginatedData.map((item, index) => {
+                      {displayedData &&
+                        displayedData.length > 0 &&
+                        displayedData.map((item, index) => {
                           const isDisabled = !!item.track_status; // 🔥 important
 
                           return (
@@ -573,10 +606,9 @@ export default function Batches() {
                               <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.forwarding_agent}</TableCell>
 
                               {/* 🔒 Disable row click */}
-                              <TableCell style={{ color: isDisabled ? "#999" : "" }}
-                                style={{
-                                  cursor: isDisabled ? "not-allowed" : "pointer",
-                                }}
+                              <TableCell style={{
+                                cursor: isDisabled ? "not-allowed" : "pointer", color: isDisabled ? "#999" : ""
+                              }}
                                 onClick={() => {
                                   if (!isDisabled) {
                                     handleclickid(item.id);
@@ -724,6 +756,14 @@ export default function Batches() {
                                         <RoomIcon /> Track Batch
                                       </li>
 
+                                      <li
+                                        className="page_list"
+                                        style={{ cursor: "pointer", fontSize: "15px" }}
+                                        onClick={() => navigate("/Admin/batch-report", { state: { batchId: item.id } })}
+                                      >
+                                        <PrintIcon /> Batch Report
+                                      </li>
+
                                       {/* ❌ SHOW ONLY WHEN NOT DISABLED */}
                                       {!isDisabled && (
                                         <>
@@ -798,7 +838,7 @@ export default function Batches() {
               </Box>
             </Modal>
 
-            <ToastContainer />
+            
             <div className="text-center d-flex justify-content-end align-items-center mt-3">
               <button
                 disabled={currentPage === 1}

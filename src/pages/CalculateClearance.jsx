@@ -5,7 +5,7 @@ import Footer from "../homepage/Footer";
 import image1 from "../../assestss/slide3.jpg";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -726,7 +726,7 @@ export default function Customclearence() {
         </Modal>
       </>
       <Footer />
-      <ToastContainer />
+      
     </div>
   );
 }

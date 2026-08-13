@@ -8,6 +8,7 @@ export default function User() {
   const socketRef = useRef(null);
   const selectedChatRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const isSendingRef = useRef(false);
   const [users, setUsers] = useState([]);
   const [staff, setStaff] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -31,65 +32,114 @@ export default function User() {
       transports: ["websocket"],
     });
     const socket = socketRef.current;
-   socket.on("connect", () => {
-  console.log("Connected:", socket.id);
-  users.forEach((chat) => {
-    socket.emit("joinConversation", chat.conversation_id);
-  });
-});
-    socket.on("newMessage", (data) => {
-      console.log("Incoming:", data);
+    socket.on("connect", () => {
+      console.log("Connected:", socket.id);
+      
+      // Join conversation rooms
+      users.forEach((chat) => {
+        socket.emit("joinConversation", chat.conversation_id);
+      });
+
+      // Join user room (both styles to match dev/prod socket setups)
+      if (userId) {
+        console.log("📡 Joining socket user rooms:", userId);
+        socket.emit("joinUser", userId);
+        socket.emit("join", userId);
+      }
+    });
+
+    const handleIncomingMessage = (data) => {
+      console.log("Incoming message via socket:", data);
+      
+      // Normalize socket payload fields
+      const normalizedMsg = {
+        id: data.id || data.message_id || Date.now(),
+        message: data.message || data.text || "",
+        sender_id: data.sender_id,
+        sender_name: data.sender_name || 
+                     (selectedChatRef.current && String(data.sender_id) === String(selectedChatRef.current.sender_id) 
+                       ? selectedChatRef.current.sender_name 
+                       : (String(data.sender_id) === String(userId) ? (userData?.name || "Admin") : "User")),
+        conversation_id: data.conversation_id,
+        message_type: data.message_type || "text",
+        created_at: data.created_at || new Date().toISOString()
+      };
+
       // 👉 CHAT WINDOW UPDATE
-      // setMessages((prev) => {
-      //   if (
-      //     data.conversation_id ===
-      //     selectedChatRef.current?.conversation_id
-      //   ) {
-      //     return [...prev, data];
-      //   }
-      //   return prev;
-      // });
-setMessages((prev) => {
-  if (
-    data.conversation_id ===
-    selectedChatRef.current?.conversation_id
-  ) {
-    const exists = prev.some(
-      (msg) => msg.id === data.message_id
-    );
-    if (exists) return prev;
-    return [...prev, data];
-  }
-  return prev;
-});
+      setMessages((prev) => {
+        if (
+          normalizedMsg.conversation_id ===
+          selectedChatRef.current?.conversation_id
+        ) {
+          if (String(normalizedMsg.sender_id) === String(userId)) {
+            return prev;
+          }
+          const exists = prev.some((msg) => {
+            if (msg.id && normalizedMsg.id && String(msg.id) === String(normalizedMsg.id)) {
+              return true;
+            }
+            if (msg.sender_id === normalizedMsg.sender_id && msg.message === normalizedMsg.message) {
+              const t1 = new Date(msg.created_at).getTime();
+              const t2 = new Date(normalizedMsg.created_at).getTime();
+              if (!isNaN(t1) && !isNaN(t2) && Math.abs(t1 - t2) < 10000) {
+                return true;
+              }
+            }
+            return false;
+          });
+          if (exists) return prev;
+          return [...prev, normalizedMsg];
+        }
+        return prev;
+      });
+
       // 👉 USERS SIDEBAR UPDATE
       setUsers((prev) => {
         let updated = prev.map((chat) =>
-          chat.conversation_id === data.conversation_id
-            ? { ...chat, last_message: data.message }
+          chat.conversation_id === normalizedMsg.conversation_id
+            ? { 
+                ...chat, 
+                last_message: normalizedMsg.message,
+                unread_count: (normalizedMsg.conversation_id === selectedChatRef.current?.conversation_id)
+                  ? 0
+                  : (chat.unread_count || chat.unread || chat.unreadCount || 0) + 1
+              }
             : chat
         );
         const current = updated.find(
-          (c) => c.conversation_id === data.conversation_id
+          (c) => c.conversation_id === normalizedMsg.conversation_id
         );
         const rest = updated.filter(
-          (c) => c.conversation_id !== data.conversation_id
+          (c) => c.conversation_id !== normalizedMsg.conversation_id
         );
         return current ? [current, ...rest] : updated;
       });
+
       // 👉 STAFF SIDEBAR UPDATE
       setStaff((prev) => {
         return prev.map((s) =>
-          s.id === data.sender_id
-            ? { ...s, last_message: data.message }
+          s.id === normalizedMsg.sender_id
+            ? { 
+                ...s, 
+                last_message: normalizedMsg.message,
+                unread_count: (selectedChatRef.current?.sender_id === s.id)
+                  ? 0
+                  : (s.unread_count || s.unread || s.unreadCount || 0) + 1
+              }
             : s
         );
       });
-    });
+    };
+
+    socket.on("newMessage", handleIncomingMessage);
+    socket.on("receiveMessage", handleIncomingMessage);
+
     return () => {
+      socket.off("newMessage", handleIncomingMessage);
+      socket.off("receiveMessage", handleIncomingMessage);
       socket.disconnect();
     };
-  }, []);
+  }, [userId]);
   // ================= JOIN ROOM =================
   useEffect(() => {
     if (selectedChat && socketRef.current) {
@@ -138,6 +188,27 @@ useEffect(() => {
   const getMessages1 = async (chat) => {
     setSelectedChat(chat);
     setMessages([]);
+    // Clear unread count locally when chat is opened
+    setUsers((prev) =>
+      prev.map((c) =>
+        c.conversation_id === chat.conversation_id
+          ? { ...c, unread_count: 0, unread: 0, unreadCount: 0 }
+          : c
+      )
+    );
+    // Mark all messages as read on the backend
+    try {
+      await axios.post(
+        `${process.env.REACT_APP_BASE_URL}markMessagesRead`,
+        {
+          conversation_id: chat.conversation_id,
+          current_user_id: userId,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (err) {
+      console.log("Error marking messages as read:", err);
+    }
     try {
       const res = await axios.post(
         `${process.env.REACT_APP_BASE_URL}chat/getMessages`,
@@ -156,6 +227,14 @@ useEffect(() => {
   };
   // ================= START STAFF CHAT =================
   const startStaffChat = async (staffData) => {
+    // Clear unread count locally when staff chat is opened
+    setStaff((prev) =>
+      prev.map((s) =>
+        s.id === staffData.id
+          ? { ...s, unread_count: 0, unread: 0, unreadCount: 0 }
+          : s
+      )
+    );
     try {
       const res = await axios.post(
         `${process.env.REACT_APP_BASE_URL}chat/createConversation`,
@@ -186,9 +265,11 @@ const truncateMessage = (text, limit = 20) => {
     ? text.substring(0, limit) + "..."
     : text;
 };
-  // ================= SEND MESSAGE =================
   const sendMessage1 = async () => {
+    if (isSendingRef.current) return;
     if (!messageText.trim() || !selectedChat) return;
+
+    isSendingRef.current = true;
 
     try {
       const res = await axios.post(
@@ -205,18 +286,39 @@ const truncateMessage = (text, limit = 20) => {
       if (res.data.success) {
         const newMsg = {
           ...res.data.data,
+          id: res.data.id || res.data.data?.id,
           sender_id: userId,
           sender_name: userData?.name || "Admin",
           message: messageText,
           conversation_id: selectedChat.conversation_id,
+          created_at: new Date().toISOString(),
         };
-        // setMessages((prev) => [...prev, newMsg]);
-        // socketRef.current.emit("sendMessage", newMsg);
+        setMessages((prev) => [...prev, newMsg]);
+        socketRef.current.emit("sendMessage", newMsg);
         setMessageText("");
-        // initiateChat()
+        
+        // Update local users sidebar last_message immediately
+        setUsers((prev) => {
+          let updated = prev.map((chat) =>
+            chat.conversation_id === selectedChat.conversation_id
+              ? { ...chat, last_message: messageText }
+              : chat
+          );
+          const current = updated.find(
+            (c) => c.conversation_id === selectedChat.conversation_id
+          );
+          const rest = updated.filter(
+            (c) => c.conversation_id !== selectedChat.conversation_id
+          );
+          return current ? [current, ...rest] : updated;
+        });
+
+        initiateChat();
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      isSendingRef.current = false;
     }
   };
   // ================= UI =================
@@ -269,10 +371,15 @@ const truncateMessage = (text, limit = 20) => {
                     {chat.sender_name?.charAt(0)}
                   </div>
 
-                  <div className="chat-info">
+                  <div className="chat-info" style={{ flex: 1 }}>
                     <strong>{chat.sender_name}</strong>
-                  <p>{truncateMessage(chat.last_message, 20)}</p>
+                    <p>{truncateMessage(chat.last_message, 20)}</p>
                   </div>
+                  {(chat.unread_count > 0 || chat.unread > 0 || chat.unreadCount > 0) && (
+                    <div className="unread-badge">
+                      {chat.unread_count || chat.unread || chat.unreadCount}
+                    </div>
+                  )}
                 </div>
               ))}
             {/* STAFF */}
@@ -291,10 +398,15 @@ const truncateMessage = (text, limit = 20) => {
                     {item.full_name?.charAt(0)}
                   </div>
 
-                  <div className="chat-info">
+                  <div className="chat-info" style={{ flex: 1 }}>
                     <strong>{item.full_name}</strong>
                     <p>{item.last_message || item.country_name}</p>
                   </div>
+                  {(item.unread_count > 0 || item.unread > 0 || item.unreadCount > 0) && (
+                    <div className="unread-badge">
+                      {item.unread_count || item.unread || item.unreadCount}
+                    </div>
+                  )}
                 </div>
               ))}
           </div>

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   Table,
   TableBody,
@@ -905,7 +905,7 @@ return (
                 </div>
               </Box>
             </Modal>
-            <ToastContainer />
+            
           </div>
         </div>
       </div>

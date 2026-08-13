@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Modal, Box, Button } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
@@ -1527,7 +1527,7 @@ export default function ClearanceOrder() {
             </Box>
           </Modal>
         </div>
-        <ToastContainer />
+        
       </>
     </>
   );

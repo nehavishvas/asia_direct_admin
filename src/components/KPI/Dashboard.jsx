@@ -1,10 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Box, Button, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import Swal from "sweetalert2";
 const pageSize = 10;
 const toDateKey = (date) => {
   const y = date.getFullYear();
@@ -65,6 +66,10 @@ export default function Dashboard1() {
   const [loader, setLoader] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen2, setIsModalOpen2] = useState(false);
+  const [pendingStatusChange, setPendingStatusChange] = useState(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [viewLeaveData, setViewLeaveData] = useState(null);
+  const [viewLoader, setViewLoader] = useState(false);
   const [pagenationData, setPagenationData] = useState({});
   const [inputdata, setInputdata] = useState({
     leave_id: "",
@@ -134,10 +139,11 @@ export default function Dashboard1() {
     setSearchQuery(e.target.value);
     setCurrentPage(1);
   };
-  const openModal2 = (item) => {
+  const handleStatusToggle = (item, newStatus) => {
+    setPendingStatusChange({ item, status: newStatus });
     setInputdata({
       leave_id: item.leave_id,
-      status: item.status || "",
+      status: newStatus,
       admin_remark: item.admin_remark || "",
     });
     setIsModalOpen2(true);
@@ -160,11 +166,65 @@ export default function Dashboard1() {
       .then((res) => {
         toast.success(res.data.message);
         setIsModalOpen2(false);
+        setPendingStatusChange(null);
         getdata(currentPage, searchQuery);
       })
       .catch((err) => {
         toast.error(err.response?.data?.message || "Update failed!");
       });
+  };
+  const handleViewLeave = async (leaveId) => {
+    try {
+      setViewLoader(true);
+      setViewLeaveData(null);
+      setIsViewModalOpen(true);
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}getStaffLeaveDetails/${leaveId}`
+      );
+      if (response.data && response.data.success) {
+        setViewLeaveData(response.data.data);
+      } else {
+        toast.error(response.data.message || "Failed to load leave details.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Something went wrong.");
+    } finally {
+      setViewLoader(false);
+    }
+  };
+  const handleDeleteLeave = async (leaveId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this leave request?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+    if (result.isConfirmed) {
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_BASE_URL}deleteStaffLeave`,
+          { leave_id: leaveId }
+        );
+        if (response.data && response.data.success) {
+          Swal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: response.data.message || "Leave request deleted successfully.",
+            confirmButtonColor: "#3085d6",
+          });
+          getdata(currentPage, searchQuery);
+        } else {
+          toast.error(response.data.message || "Failed to delete leave request.");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error(error.response?.data?.message || "Failed to delete leave request.");
+      }
+    }
   };
   const addToGoogleCalendar = (leave) => {
     const start = new Date(leave.leave_from);
@@ -178,13 +238,12 @@ export default function Dashboard1() {
     const title = `${leave.staff_name} Leave`;
     const details = `
 Reason: ${leave.reason || ""}
-Status: ${
-      leave.status === 1
+Status: ${leave.status === 1
         ? "Approved"
         : leave.status === 2
           ? "Rejected"
           : "Pending"
-    }
+      }
 `;
     const url =
       `https://calendar.google.com/calendar/render?action=TEMPLATE` +
@@ -256,20 +315,49 @@ Status: ${
                             </td>
                             <td>{item.reason}</td>
                             <td>
-                              {item.status === 0
-                                ? "Pending"
-                                : item.status === 1
-                                  ? "Approved"
-                                  : item.status === 2
-                                    ? "Rejected"
-                                    : "Pending"}
+                              <select
+                                className="form-select form-select-sm"
+                                value={item.status}
+                                onChange={(e) => handleStatusToggle(item, parseInt(e.target.value))}
+                                style={{
+                                  width: "120px",
+                                  fontSize: "13px",
+                                  fontWeight: 600,
+                                  borderRadius: "6px",
+                                  padding: "4px 8px",
+                                  cursor: "pointer",
+                                  backgroundColor:
+                                    item.status === 1
+                                      ? "#d1e7dd"
+                                      : item.status === 2
+                                        ? "#f8d7da"
+                                        : "#f0f185ff",
+                                  color:
+                                    item.status === 1
+                                      ? "#0f5132"
+                                      : item.status === 2
+                                        ? "#842029"
+                                        : "#664d03",
+                                  borderColor:
+                                    item.status === 1
+                                      ? "#badbcc"
+                                      : item.status === 2
+                                        ? "#f5c2c7"
+                                        : "#ebec9fff",
+                                }}
+                              >
+                                <option value="0" style={{ backgroundColor: "#ffffff", color: "#212529" }}>Pending</option>
+                                <option value="1" style={{ backgroundColor: "#ffffff", color: "#212529" }}>Approved</option>
+                                <option value="2" style={{ backgroundColor: "#ffffff", color: "#212529" }}>Rejected</option>
+                              </select>
                             </td>
                             <td>{item.admin_remark}</td>
                             <td>
                               <i
-                                className="fa fa-edit"
+                                className="fa fa-eye"
                                 style={{ cursor: "pointer" }}
-                                onClick={() => openModal2(item)}
+                                onClick={() => handleViewLeave(item.leave_id)}
+                                title="View Leave Details"
                               ></i>
                               <i
                                 className="fa fa-calendar ms-1"
@@ -277,6 +365,13 @@ Status: ${
                                   cursor: "pointer",
                                 }}
                                 onClick={() => addToGoogleCalendar(item)}
+                                title="Add to Google Calendar"
+                              ></i>
+                              <i
+                                className="fa fa-trash ms-1 text-danger"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleDeleteLeave(item.leave_id)}
+                                title="Delete Leave Request"
                               ></i>
                             </td>
                           </tr>
@@ -368,11 +463,14 @@ Status: ${
             bgcolor: "white",
             p: 3,
             borderRadius: 2,
-            width: "30%",
+            width: "35%",
+            boxShadow: 24,
           }}
         >
-          <div className="d-flex justify-content-between">
-            <h4>Edit Leave</h4>
+          <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <h4 style={{ fontWeight: 600, color: "#1b2245", margin: 0 }}>
+              Update Leave Status
+            </h4>
             <button
               className="btn-close"
               onClick={() => setIsModalOpen2(false)}
@@ -380,31 +478,177 @@ Status: ${
               <CloseIcon />
             </button>
           </div>
-          <label>Status</label>
-          <select
-            name="status"
-            value={inputdata.status}
-            onChange={handleupdateapi}
-            className="form-control mb-2"
-          >
-            <option value="">Select</option>
-            <option value="1">Approved</option>
-            <option value="2">Rejected</option>
-          </select>
-          <label>Admin Remark</label>
-          <input
-            type="text"
-            className="form-control mb-2"
+          {pendingStatusChange && (
+            <div className="mb-3">
+              <p style={{ fontSize: "14px", margin: 0, color: "#495057" }}>
+                Are you sure you want to change <strong>{pendingStatusChange.item.staff_name}</strong>'s leave request status to{" "}
+                <span className={
+                  pendingStatusChange.status === 1
+                    ? "text-success fw-bold"
+                    : pendingStatusChange.status === 2
+                      ? "text-danger fw-bold"
+                      : "text-secondary fw-bold"
+                }>
+                  {pendingStatusChange.status === 1
+                    ? "Approved"
+                    : pendingStatusChange.status === 2
+                      ? "Rejected"
+                      : "Pending"}
+                </span>?
+              </p>
+            </div>
+          )}
+          <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "4px", display: "block" }}>
+            Admin Remark / Comment
+          </label>
+          <textarea
+            className="form-control mb-3"
+            rows="3"
             name="admin_remark"
+            placeholder="Provide a reason or remark (optional)..."
             value={inputdata.admin_remark}
             onChange={handleupdateapi}
+            style={{ fontSize: "14px", borderRadius: "6px" }}
           />
-          <Button variant="contained" fullWidth onClick={postData1234}>
-            Update Leave
-          </Button>
+          <div className="d-flex gap-2">
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => setIsModalOpen2(false)}
+              style={{ borderRadius: "6px" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color={
+                pendingStatusChange?.status === 1
+                  ? "success"
+                  : pendingStatusChange?.status === 2
+                    ? "error"
+                    : "inherit"
+              }
+              fullWidth
+              onClick={postData1234}
+              style={{ borderRadius: "6px", color: pendingStatusChange?.status === 0 ? "#000" : "white" }}
+            >
+              {pendingStatusChange?.status === 1
+                ? "Confirm Approve"
+                : pendingStatusChange?.status === 2
+                  ? "Confirm Reject"
+                  : "Confirm Pending"}
+            </Button>
+          </div>
         </Box>
       </Modal>
-      <ToastContainer />
+      <Modal open={isViewModalOpen} onClose={() => setIsViewModalOpen(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "white",
+            p: 3,
+            borderRadius: 2,
+            width: "45%",
+            maxHeight: "90vh",
+            overflowY: "auto",
+            boxShadow: 24,
+          }}
+        >
+          <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+            <h4 style={{ fontWeight: 600, color: "#1b2245", margin: 0 }}>Leave Details</h4>
+            <button
+              className="btn-close"
+              onClick={() => setIsViewModalOpen(false)}
+            >
+              <CloseIcon />
+            </button>
+          </div>
+          {viewLoader ? (
+            <div className="text-center py-5">
+              <div className="spinner-border text-primary" role="status"></div>
+              <p className="mt-2 text-muted">Loading details...</p>
+            </div>
+          ) : viewLeaveData ? (
+            <div className="leave-details-grid">
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Reference</label>
+                  <div style={{ fontSize: "14px", fontWeight: 600, color: "#212529" }}>{viewLeaveData.reference || "-"}</div>
+                </div>
+                <div className="col-md-6">
+                  <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Staff Name</label>
+                  <div style={{ fontSize: "14px", fontWeight: 600, color: "#212529" }}>{viewLeaveData.staff_name || "-"}</div>
+                </div>
+
+                <div className="col-md-6">
+                  <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Leave Type</label>
+                  <div style={{ fontSize: "14px", fontWeight: 500, color: "#212529" }}>{viewLeaveData.leave_type || "-"}</div>
+                </div>
+                <div className="col-md-6">
+                  <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Status</label>
+                  <div>
+                    <span
+                      className={`badge ${viewLeaveData.status === 1 ? 'bg-success' : viewLeaveData.status === 2 ? 'bg-danger' : 'bg-warning text-dark'}`}
+                      style={{ padding: "6px 12px", borderRadius: "12px", fontSize: "12px", fontWeight: 500 }}
+                    >
+                      {getStatusLabel(viewLeaveData.status)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="col-12">
+                  <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Duration</label>
+                  <div style={{ fontSize: "14px", color: "#212529", fontWeight: 500 }}>
+                    {formatDisplayDate(viewLeaveData.leave_from)} to {formatDisplayDate(viewLeaveData.leave_to)}
+                  </div>
+                </div>
+
+                <div className="col-12">
+                  <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Reason</label>
+                  <div style={{ fontSize: "14px", color: "#495057", background: "#f8f9fa", padding: "10px", borderRadius: "6px", border: "1px solid #e9ecef" }}>
+                    {viewLeaveData.reason || "-"}
+                  </div>
+                </div>
+
+                <div className="col-12">
+                  <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Comments</label>
+                  <div style={{ fontSize: "14px", color: "#495057", background: "#f8f9fa", padding: "10px", borderRadius: "6px", border: "1px solid #e9ecef" }}>
+                    {viewLeaveData.comments || "-"}
+                  </div>
+                </div>
+
+                <div className="col-12">
+                  <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Admin Remark</label>
+                  <div style={{ fontSize: "14px", color: "#495057", background: "#fff3cd", padding: "10px", borderRadius: "6px", border: "1px solid #ffeeba" }}>
+                    {viewLeaveData.admin_remark || "-"}
+                  </div>
+                </div>
+
+                {viewLeaveData.attachment && (
+                  <div className="col-12 mt-2">
+                    <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px", color: "#6c757d", fontWeight: 600, marginBottom: "2px", display: "block" }}>Attachment</label>
+                    <a
+                      href={`${process.env.REACT_APP_BASE_URLdocument}${viewLeaveData.attachment}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2 mt-1"
+                      style={{ padding: "6px 12px", borderRadius: "6px", textDecoration: "none" }}
+                    >
+                      View Attachment
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-5 text-muted">No details found.</div>
+          )}
+        </Box>
+      </Modal>
+
     </>
   );
 }

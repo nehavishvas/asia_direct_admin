@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 export default function MAnageFreightDetails() {
   const infolocation = useLocation();
   const navigate = useNavigate();
@@ -1189,7 +1189,7 @@ export default function MAnageFreightDetails() {
           </section>
         </div>
       </div>
-      <ToastContainer />
+      
     </div>
   );
 }

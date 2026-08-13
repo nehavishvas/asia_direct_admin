@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { AiFillDelete, AiOutlineUsergroupAdd } from "react-icons/ai";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import FormControl from "@mui/material/FormControl";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -2246,7 +2246,7 @@ export default function UserFreight() {
               )}
             </div>
           </div>
-          <ToastContainer />
+          
         </div>
         <Modal
           open={openModal1}

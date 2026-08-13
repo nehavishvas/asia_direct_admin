@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import Select from "react-select";
 import { Modal, Button, Form } from "react-bootstrap";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -1463,7 +1463,7 @@ const Addfright = () => {
               </div>
             </div>
           </div>
-          <ToastContainer />
+          
         </div>
       )}
     </>

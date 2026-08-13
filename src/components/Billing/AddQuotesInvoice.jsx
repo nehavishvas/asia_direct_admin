@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -803,7 +803,8 @@ export default function AddQuotesInvoice() {
         payload
       );
       if (response.data && response.data.success === true) {
-        toast.success(response.data.message || (isInvoice ? "Invoice saved successfully" : "Freight Quote Invoice saved successfully"));
+        const msg = response.data.message || (isInvoice ? "Invoice saved successfully" : "Freight Quote Invoice saved successfully");
+        sessionStorage.setItem("toastMessage", msg);
         navigate(isInvoice ? "/Admin/invoices" : "/Admin/quotes");
       } else {
         toast.error(response.data.message || (isInvoice ? "Failed to save Invoice" : "Failed to save Freight Quote Invoice"));
@@ -1627,11 +1628,11 @@ export default function AddQuotesInvoice() {
                             <td style={{ padding: "0px 10px" }}>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Country of Origin</strong>
-                                <span>{getdata?.collection_from_name || getdata?.country_of_origin || "-"}</span>
+                                <span>{getdata?.collection_from_name || getdata?.collection_from_country || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Place of Receipt</strong>
-                                <span>{getdata?.place_of_receipt || "-"}</span>
+                                <span>{getdata?.port_of_loading || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Port of Loading</strong>
@@ -1795,7 +1796,7 @@ export default function AddQuotesInvoice() {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      
     </>
   );
 }

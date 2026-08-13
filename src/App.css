@@ -414,7 +414,7 @@ th {
 }
 
 .sent {
-  background-color: #be191d0f;
+  /* background-color: #be191d0f; */
   align-self: flex-end;
   margin-left: auto;
 }
@@ -759,7 +759,7 @@ a.dropdown-option {
 }
 
 .wpWrapper {
-  padding: 30px 20px 30px 15px !important;
+  padding: 30px 15px 15px 15px !important;
   height: calc(100vh - 70px);
   overflow-y: auto;
   scrollbar-width: thin;
@@ -6176,4 +6176,18 @@ table.cost-table strong {
 
 }
 
-/*  */
+/* Unread message count badge in chatting sidebars */
+.unread-badge {
+  background-color: #be191d;
+  color: white;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 11px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+}

@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 const AddBatch = () => {
   const [lcientlist, setLcientlist] = useState([]);
   const [apidata, setApidata] = useState([]);
@@ -1112,7 +1112,7 @@ const AddBatch = () => {
             </div>
           </div>
         </div>
-        <ToastContainer />
+        
       </div>
     </>
   );

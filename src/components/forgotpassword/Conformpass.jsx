@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Img1 from "../../Assests/logotransparent.png";
 export default function Conformpass() {
@@ -130,7 +130,7 @@ export default function Conformpass() {
         </div>
         <div className="bgPosition"></div>
       </section>
-      <ToastContainer />
+      
     </div>
   );
 }

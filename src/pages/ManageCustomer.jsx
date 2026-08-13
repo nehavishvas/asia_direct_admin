@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { AiFillDelete, AiFillMessage } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -1468,7 +1468,7 @@ const ManageCustomer = () => {
                   </button>
                 </Box>
               </Modal>
-              <ToastContainer />
+              
             </div>
           </div>
         </div>

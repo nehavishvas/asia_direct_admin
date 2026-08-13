@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+
 import { usePDF } from "react-to-pdf";
 import logo from "../Assests/logo.png";
 import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
@@ -1932,7 +1932,7 @@ export default function Downloadprdf() {
             </div>
           </div>
         </div>
-        <ToastContainer />
+        
       </div>
     </div>
   );

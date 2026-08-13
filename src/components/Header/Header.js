@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { useContext } from 'react';
 import { MyContext1 } from '../../Context/MyContext';
 import logoMob from "../../Assests/logo.png";
@@ -133,7 +133,6 @@ const Header = () => {
 
         </div>
       </div>
-      <ToastContainer />
     </header>
   );
 };

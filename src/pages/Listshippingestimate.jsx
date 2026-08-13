@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 const pageSize = 5;
 export default function Listshippingestimate() {
@@ -264,7 +264,7 @@ export default function Listshippingestimate() {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import axios from "axios";
 
 import Pagination from "@mui/material/Pagination";
@@ -221,7 +221,7 @@ const handlePageChange = (event, value) => {
   </button>
 </div>
 
-          <ToastContainer />
+          
         </div>
       </div>
     </div>

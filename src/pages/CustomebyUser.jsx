@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import AddAlertIcon from "@mui/icons-material/AddAlert";
 import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
@@ -2033,7 +2033,7 @@ export default function CustomebyUserap() {
                   <i class="fi fi-rr-angle-small-right page_icon"></i>
                 </button>
               </div>
-              <ToastContainer />
+              
             </div>
           </div>
           <Modal

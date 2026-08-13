@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -308,7 +308,7 @@ const CustomerBalancesReport = () => {
                     </div>
                 )}
             </div>
-            <ToastContainer />
+            
             <style type="text/css">{`
                  .report-title {
                      font-size: 16px !important;

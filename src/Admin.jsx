@@ -13,9 +13,6 @@ export default function Admin() {
         if (current_user === undefined || current_user === null) {
             navigate('/')
         }
-        else {
-            navigate(pathName)
-        }
     }
     useEffect(() => {
         get_user()

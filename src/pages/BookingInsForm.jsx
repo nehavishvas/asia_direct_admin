@@ -55,9 +55,32 @@ export default function BookingInsForm() {
     bk_loading_facilities: "",
     bk_desc_goods: "",
     bk_handling_req: "",
+    billing_requirement_desc: "",
   });
+  
   const location = useLocation();
   const navigate = useNavigate();
+
+  const getFormattedAddress = (parts) => {
+    if (!parts) return "";
+    if (typeof parts === "string") {
+      const trimmed = parts.trim();
+      return (trimmed === "null" || trimmed === "undefined") ? "" : trimmed;
+    }
+    if (Array.isArray(parts)) {
+      return parts
+        .filter(
+          (p) =>
+            p !== null &&
+            p !== undefined &&
+            String(p).trim() !== "" &&
+            String(p).trim() !== "null" &&
+            String(p).trim() !== "undefined"
+        )
+        .join(", ");
+    }
+    return "";
+  };
   const getdat = location.state.data;
   useEffect(() => {
     const loadData = async () => {
@@ -201,6 +224,7 @@ export default function BookingInsForm() {
       bk_loading_facilities: data?.bk_loading_facilities,
       bk_desc_goods: data?.bk_desc_goods,
       bk_handling_req: data?.bk_handling_req,
+      billing_requirement_desc: data?.billing_requirement_desc,
     };
     try {
       const response = await axios.post(
@@ -275,8 +299,8 @@ export default function BookingInsForm() {
                           disabled
                           value={
                             data.shipment_ref?.toLowerCase() === "consignee"
-                              ? data.supplier_address
-                              : (data?.address_1 || "") + " " + (data.address_2 || "") + " " + (data.province || "") + " " + (data.delivery_to_name || "")
+                              ? getFormattedAddress(data?.supplier_address)
+                              : getFormattedAddress([data?.address_1, data?.address_2, data?.province, data?.delivery_to_name])
                           }
                         />
                       </div>
@@ -839,6 +863,18 @@ export default function BookingInsForm() {
                           </div>
                         </div>
                       </div>
+                      <div className="col-lg-12 mt-2">
+                        <label htmlFor="" className="ware_label">
+                          Description
+                        </label>
+                        <input
+                          className="mb-2 border ps-2 py-2 rounded w-100"
+                          type="text"
+                          name="billing_requirement_desc"
+                          value={data.billing_requirement_desc || ""}
+                          onChange={handlechnage}
+                        />
+                      </div>
                     </div>
                   </div>
                 </form>
@@ -879,8 +915,8 @@ export default function BookingInsForm() {
                         disabled
                         value={
                           data.shipment_ref?.toLowerCase() === "consignee"
-                            ? (data?.address_1 || "") + " " + (data.address_2 || "") + " " + (data.province || "")
-                            : data.supplier_address
+                            ? getFormattedAddress([data?.address_1, data?.address_2, data?.province])
+                            : getFormattedAddress(data?.supplier_address)
                         }
                       />
                     </div>

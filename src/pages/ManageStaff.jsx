@@ -7,7 +7,7 @@ import axios from "axios";
 import Checkbox from "@mui/material/Checkbox";
 import React, { useEffect, useState } from "react";
 import { AiFillDelete, AiFillMessage } from "react-icons/ai";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { Box, Button, Modal } from "@mui/material";
 import { FaEdit } from "react-icons/fa";
@@ -1300,7 +1300,7 @@ export default function ManageStaff() {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      
     </>
   );
 }

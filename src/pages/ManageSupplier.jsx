@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { AiFillDelete } from "react-icons/ai";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { FaEdit } from "react-icons/fa";
 import CloseIcon from "@mui/icons-material/Close";
@@ -549,7 +549,7 @@ export default function ManageSupplier() {
                   </tbody>
                 </table>
                 {/* PAGINATION */}
-                <div className="d-flex justify-content-end align-items-end my-3">
+                <div className="d-flex justify-content-end align-items-end">
                   <button
                     disabled={currentPage === 1}
                     onClick={() => {
@@ -630,7 +630,7 @@ export default function ManageSupplier() {
             </div>
           </div>
         )}
-        <ToastContainer />
+        
       </>
     </>
   );

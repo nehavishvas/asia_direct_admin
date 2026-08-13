@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import logo from "../../Assests/logo.png";
@@ -515,8 +515,8 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
       ry += barH + 2;
 
       const routingFields = [
-        ["Country of Origin", getdata?.collection_from_name || getdata?.country_of_origin || ""],
-        ["Place of Receipt", getdata?.place_of_receipt || ""],
+        ["Country of Origin", getdata?.collection_from_name || getdata?.collection_from_country || ""],
+        ["Place of Receipt", getdata?.port_of_loading || ""],
         ["Port of Loading", getdata?.port_of_loading || ""],
         ["Port of Discharge", getdata?.post_of_discharge || getdata?.port_of_discharge || ""],
         ["Place of Delivery", getdata?.delivery_to_name || getdata?.place_of_delivery || ""],
@@ -1487,11 +1487,11 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                             <td style={{ padding: "0px 10px" }}>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Country of Origin</strong>
-                                <span>{getdata?.collection_from_name || getdata?.country_of_origin || "-"}</span>
+                                <span>{getdata?.collection_from_name || getdata?.collection_from_country || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Place of Receipt</strong>
-                                <span>{getdata?.place_of_receipt || "-"}</span>
+                                <span>{getdata?.port_of_loading || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Port of Loading</strong>
@@ -1620,12 +1620,12 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                     </tr>
                   </thead>
                   <tbody>
-                    {renderRowsForSection(originRowsData, originDropdown, "Origin Charges")}
-                    {renderRowsForSection(freightRowsData, freightDropdown, "Freight Charges")}
-                    {renderRowsForSection(transitRowsData, transitDropdown, "Transit Charges")}
-                    {renderRowsForSection(destinationRowsData, destinationDropdown, "Destination Charges")}
-                    {renderRowsForSection(adminRowsData, adminDropdown, "Admin Charges")}
-                    {renderRowsForSection(customsRowsData, customsDropdown, "Customs Charges")}
+                    {renderRowsForSection(originRowsData, originDropdown, "Origin Charges", totalChageswithOutExchange, totalChangeRoeOrigin)}
+                    {renderRowsForSection(freightRowsData, freightDropdown, "Freight Charges", totalChageswithOutExchangeinsurance, totalChangeRoeOriginaftercalcuinsurance)}
+                    {renderRowsForSection(transitRowsData, transitDropdown, "Transit Charges", totalChageswithOuTransit, transitRoe)}
+                    {renderRowsForSection(destinationRowsData, destinationDropdown, "Destination Charges", totalChaDestinationTransit, totalChaDestinationTransitRoe)}
+                    {renderRowsForSection(adminRowsData, adminDropdown, "Admin Charges", totaAdminransit, totalAdminnsitRoe)}
+                    {renderRowsForSection(customsRowsData, customsDropdown, "Customs Charges", customsTotalTCost, customsTotalFinalAmt)}
 
                     <tr>
                       <td colSpan={6}>
@@ -1651,7 +1651,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
           </section>
         </div>
       </div>
-      <ToastContainer />
+      
     </>
   );
 }

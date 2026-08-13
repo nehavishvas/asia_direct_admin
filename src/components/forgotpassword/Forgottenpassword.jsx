@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import  Img1 from'../../Assests/logotransparent.png';
 export default function Forgottenpassword() {
     const [data, setData] = useState("")
@@ -68,7 +68,7 @@ export default function Forgottenpassword() {
                         </div>
                     </div>
                 </div>
-                <ToastContainer />
+                
             </section>
         </div>
     )

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import ViewNewFreightQuoteInvoice from "./ViewNewFreightQuoteInvoice";
 
@@ -16,6 +16,15 @@ const Invoices = () => {
     const [printItem, setPrintItem] = useState(null);
     const limit = 10;
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const msg = sessionStorage.getItem("toastMessage");
+        if (msg) {
+            toast.success(msg);
+            sessionStorage.removeItem("toastMessage");
+        }
+    }, []);
 
     useEffect(() => {
         getInvoices(currentPage);
@@ -288,7 +297,6 @@ const Invoices = () => {
                             onPrintComplete={() => setPrintItem(null)}
                         />
                     )}
-                    <ToastContainer />
                 </div>
             )}
         </>

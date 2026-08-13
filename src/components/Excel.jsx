@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 export default function Excel() {
   const [freightFile, setFreightFile] = useState(null);
@@ -218,7 +218,7 @@ export default function Excel() {
                 </div>
               </div>
             </div>
-            <ToastContainer />
+            
           </div>
         </div>
       </div >

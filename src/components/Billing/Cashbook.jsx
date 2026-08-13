@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Modal, Box } from "@mui/material";
 import { BsThreeDotsVertical, BsTrash, BsPlus } from "react-icons/bs";
@@ -1170,7 +1170,7 @@ export default function Cashbook() {
                 </form>
               </Box>
             </Modal>
-            <ToastContainer />
+            
           </div>
         </div>
       )}

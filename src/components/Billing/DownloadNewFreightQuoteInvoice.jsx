@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MdDownloadForOffline } from "react-icons/md";
 import logo from "../../Assests/logo.png";
@@ -660,8 +660,8 @@ export default function DownloadNewFreightQuoteInvoice() {
       ry += barH + 4;
 
       const routingFields = [
-        ["Country of Origin", getdata?.collection_from_name || getdata?.country_of_origin || ""],
-        ["Place of Receipt", getdata?.place_of_receipt || ""],
+        ["Country of Origin", getdata?.collection_from_country || getdata?.collection_from_name || ""],
+        ["Place of Receipt", getdata?.port_of_loading || ""],
         ["Port of Loading", getdata?.port_of_loading || ""],
         ["Port of Discharge", getdata?.post_of_discharge || getdata?.port_of_discharge || ""],
         ["Place of Delivery", getdata?.delivery_to_name || getdata?.place_of_delivery || ""],
@@ -1332,11 +1332,11 @@ export default function DownloadNewFreightQuoteInvoice() {
                           <td style={{ padding: "0px 6px" }}>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Country of Origin</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.collection_from_name || getdata?.country_of_origin || "-"}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.collection_from_country || getdata?.collection_from_name || "-"}</p>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Place of Receipt</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.place_of_receipt || "-"}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{getdata?.port_of_loading || "-"}</p>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Port of Loading</strong></p>
@@ -1546,7 +1546,7 @@ export default function DownloadNewFreightQuoteInvoice() {
           </section>
         </div>
       </div>
-      <ToastContainer />
+      
     </>
   );
 }

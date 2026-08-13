@@ -37,7 +37,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { AiFillDelete } from "react-icons/ai";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { Box, Button, Modal } from "@mui/material";
 import { FaEdit } from "react-icons/fa";
@@ -459,7 +459,7 @@ const formdata={
             </Button>
           </Box>
         </Modal>
-        <ToastContainer />
+        
       </>
     </>
   );

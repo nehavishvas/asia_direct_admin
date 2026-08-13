@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import { AiFillDelete } from "react-icons/ai";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import CloseIcon from "@mui/icons-material/Close";
@@ -535,7 +535,7 @@ const Notification = () => {
           </div>
         </div>
 
-        <ToastContainer />
+        
       </div>
     </>
   );

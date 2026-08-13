@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { FaEdit } from "react-icons/fa";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useNavigate } from "react-router-dom";
@@ -1022,7 +1022,7 @@ export default function WarehouseOrder() {
                           <i class="fi fi-rr-angle-small-right page_icon"></i>
                         </button>
                       </div>
-                      <ToastContainer />
+                      
                       <Modal
                         open={handleassignsupplier}
                         onClose={handleclose}

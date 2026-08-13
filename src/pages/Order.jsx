@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   Box,
   Button,
@@ -274,7 +274,7 @@ export default function Order() {
     }));
   };
   ///////////////////////////////////////////////////show details in detail's page///////////////////////////////////
-  const getorder = async (page) => {
+  const getorder = async (page = 1, searchVal = searchQuery, showPageLoader = true) => {
     try {
       const pagedata = {
         page: page,
@@ -282,7 +282,12 @@ export default function Order() {
         user_id: userid,
         user_type: usertype,
       };
-      setLoader(true);
+      if (searchVal) {
+        pagedata.search = searchVal;
+      }
+      if (showPageLoader) {
+        setLoader(true);
+      }
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}order/details`,
         pagedata
@@ -475,7 +480,7 @@ export default function Order() {
   const currentdata = filteredData.slice(startIndex, endIndex);
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    getorder(page);
+    getorder(page, searchQuery, false);
   };
   const handleclicknaviwaybill = (freight_id) => {
     const alldata = data?.filter((item) => {
@@ -664,23 +669,8 @@ export default function Order() {
   };
 
   const handlesearchapi = () => {
-    const searchData = {
-      search: searchQuery,
-    };
-    axios
-      .post(`${process.env.REACT_APP_BASE_URL}order/details`, searchData)
-      .then((response) => {
-        console.log(response.data);
-        if (response.data.success === true) {
-          console.log(response.data.data);
-          setData(response.data.data);
-          setPagenation(response.data);
-          setSearchQuery("");
-        }
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-      });
+    setCurrentPage(1);
+    getorder(1, searchQuery, false);
   };
 
   // edit order code////////////////////////////////////////////////////////////
@@ -2514,7 +2504,7 @@ export default function Order() {
           </div>
         </Box>
       </Modal>
-      <ToastContainer />
+      
     </>
   );
 }

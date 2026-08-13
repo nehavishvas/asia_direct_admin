@@ -1,6 +1,6 @@
 // import axios from "axios";
 // import { useState } from "react";
-// import { ToastContainer, toast } from "react-toastify";
+// import { toast } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css"; // Ensure you import the CSS for toastify
 // export default function Changepassword() {
 //     const currentuser = JSON?.parse(localStorage?.getItem("data123"));
@@ -145,14 +145,14 @@
 //                         </div>
 //                     </div>
 //                 </div>
-//                 <ToastContainer />
+//                 
 //             </div>
 //         </>
 //     );
 // }
 import axios from "axios";
 import { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Ensure you import the CSS for toastify
 export default function Changepassword() {
   const currentuser = JSON?.parse(localStorage?.getItem("data123"));
@@ -290,7 +290,7 @@ export default function Changepassword() {
             </div>
           </div>
         </div>
-        <ToastContainer />
+        
       </div>
     </>
   );

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const TermConditions = () => {
   const [description12, setDescription12] = useState([]);
@@ -69,7 +69,7 @@ const TermConditions = () => {
         </div>
       </div>
 
-      <ToastContainer />
+      
 
     </>
   );

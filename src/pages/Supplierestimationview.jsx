@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import logo from "../Assests/logo.png";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
@@ -3181,7 +3181,7 @@ export default function Supplierestimationview() {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      
     </>
   );
 }

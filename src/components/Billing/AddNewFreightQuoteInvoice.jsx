@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -218,7 +218,7 @@ export default function AddNewFreightQuoteInvoice() {
       if (response.data && response.data.success && response.data.data && response.data.data.length > 0) {
         const orderInfo = response.data.data[0];
         if (orderInfo.freight_id && parseInt(orderInfo.freight_id) !== 0) {
-          apidataget(orderInfo.freight_id);
+          apidataget(orderInfo.freight_id, orderInfo);
         } else {
           setGetdata(orderInfo);
           setSelected(0);
@@ -264,7 +264,7 @@ export default function AddNewFreightQuoteInvoice() {
     }
   };
 
-  const apidataget = async (freightId) => {
+  const apidataget = async (freightId, orderInfo = null) => {
     const payload = { freight_id: freightId };
     try {
       const response = await axios.post(
@@ -274,7 +274,14 @@ export default function AddNewFreightQuoteInvoice() {
       if (response.data && response.data.data) {
         const freightObj = { ...response.data.data[0] };
 
-        setGetdata(freightObj);
+        const mergedData = orderInfo ? { ...orderInfo } : {};
+        Object.keys(freightObj).forEach((key) => {
+          if (freightObj[key] !== null && freightObj[key] !== undefined && freightObj[key] !== "") {
+            mergedData[key] = freightObj[key];
+          }
+        });
+
+        setGetdata(mergedData);
         setSelected(freightId);
         setOpenmodal(false);
 
@@ -400,7 +407,7 @@ export default function AddNewFreightQuoteInvoice() {
 
           setSelectedSupplier(invoiceData.supplier_id || "");
           if (invoiceData.freight_id) {
-            apidataget(invoiceData.freight_id);
+            apidataget(invoiceData.freight_id, invoiceData);
           }
 
           const items = invoiceData.components || [];
@@ -839,7 +846,7 @@ export default function AddNewFreightQuoteInvoice() {
         payload
       );
       if (response.data && response.data.success === true) {
-        toast.success(response.data.message || "Invoice saved successfully");
+        sessionStorage.setItem("toastMessage", response.data.message || "Invoice saved successfully");
         navigate("/Admin/invoices");
       } else {
         toast.error(response.data.message || "Failed to save Invoice");
@@ -1334,7 +1341,7 @@ export default function AddNewFreightQuoteInvoice() {
                             <td style={{ padding: "0px 10px" }}>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Commodity</strong>
-                                <span>{getdata?.product_desc || getdata?.commodity || "-"}</span>
+                                <span>{getdata?.commodity || getdata?.commodity || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Hazardous</strong>
@@ -1554,11 +1561,11 @@ export default function AddNewFreightQuoteInvoice() {
                             <td style={{ padding: "0px 10px" }}>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Country of Origin</strong>
-                                <span>{getdata?.collection_from_name || getdata?.country_of_origin || "-"}</span>
+                                <span>{getdata?.collection_from_country || getdata?.collection_from_name || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Place of Receipt</strong>
-                                <span>{getdata?.place_of_receipt || "-"}</span>
+                                <span>{getdata?.port_of_loading || "-"}</span>
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Port of Loading</strong>
@@ -1706,7 +1713,7 @@ export default function AddNewFreightQuoteInvoice() {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      
     </>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -10,29 +10,28 @@ const QuoteReportItem = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Default date range helper (Last Month)
-    const getStartOfLastMonth = () => {
-        const d = new Date();
-        d.setDate(1);
-        d.setMonth(d.getMonth() - 1);
+    // Default Date Helpers (Last 30 Days to Present Date)
+    const formatDateToYYYYMMDD = (d) => {
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, "0");
-        return `${y}-${m}-01`;
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
     };
 
-    const getEndOfLastMonth = () => {
+    const getDefaultEndDate = () => {
         const d = new Date();
-        d.setDate(1);
-        d.setMonth(d.getMonth() - 1);
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, "0");
-        const lastDay = new Date(y, d.getMonth() + 1, 0).getDate();
-        return `${y}-${m}-${String(lastDay).padStart(2, "0")}`;
+        return formatDateToYYYYMMDD(d);
+    };
+
+    const getDefaultStartDate = () => {
+        const d = new Date();
+        d.setDate(d.getDate() - 30);
+        return formatDateToYYYYMMDD(d);
     };
 
     // Filter States
-    const [startDate, setStartDate] = useState(location.state?.startDate || getStartOfLastMonth());
-    const [endDate, setEndDate] = useState(location.state?.endDate || getEndOfLastMonth());
+    const [startDate, setStartDate] = useState(location.state?.startDate || getDefaultStartDate());
+    const [endDate, setEndDate] = useState(location.state?.endDate || getDefaultEndDate());
     const [customerFrom, setCustomerFrom] = useState(location.state?.customerFrom || "");
     const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
     const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
@@ -47,8 +46,8 @@ const QuoteReportItem = () => {
     const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     const handleReset = () => {
-        setStartDate(getStartOfLastMonth());
-        setEndDate(getEndOfLastMonth());
+        setStartDate(getDefaultStartDate());
+        setEndDate(getDefaultEndDate());
         setCustomerFrom("");
         setCustomerTo("");
         setCategoryFrom("");
@@ -392,7 +391,7 @@ const QuoteReportItem = () => {
                     </div>
                 </div>
             </div>
-            <ToastContainer />
+            
              <style type="text/css">{`
                  .report-title {
                      font-size: 16px !important;

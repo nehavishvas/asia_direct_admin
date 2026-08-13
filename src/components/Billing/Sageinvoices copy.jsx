@@ -1,6 +1,6 @@
 // import axios from "axios";
 // import React, { useEffect, useState } from "react";
-// import { toast, ToastContainer } from "react-toastify";
+// import { toast } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
 // import { Box, Button, Modal } from "@mui/material";
 // import { useNavigate } from "react-router-dom";
@@ -244,7 +244,7 @@
 //                       <i class="fi fi-rr-angle-small-right page_icon"></i>
 //                     </button>
 //                   </div>
-//                   <ToastContainer />
+//                   
 //                 </div>
 //                 <Modal
 //                   open={openmodal}
@@ -301,7 +301,7 @@
 // }
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Box, Button, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -727,7 +727,7 @@ export default function Sageinvoices() {
                     <i className="fi fi-rr-angle-small-right page_icon"></i>
                   </button>
                 </div>
-                <ToastContainer />
+                
               </div>
               <Modal
                 open={openmodal}

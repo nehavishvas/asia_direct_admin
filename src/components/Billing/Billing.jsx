@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { Modal, Box } from "@mui/material";
@@ -742,7 +742,7 @@ export default function BillingTable() {
               ></iframe>
             </Box>
           </Modal>
-          <ToastContainer />
+          
         </div>
       )}
     </>

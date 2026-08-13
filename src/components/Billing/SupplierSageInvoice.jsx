@@ -5,7 +5,7 @@ import { FaEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Swal from "sweetalert2";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import Viewsupplierinvoice from "./Viewsupplierinvoice";
 
 const formatValue = (val, dec = 2, isPercent = false) => {
@@ -329,7 +329,7 @@ export default function SupplierSageInvoice() {
         </div>
       </div>
       {printItem && <Viewsupplierinvoice hiddenPrintItem={printItem} onPrintComplete={() => setPrintItem(null)} />}
-      <ToastContainer />
+      
     </div>
   );
 }

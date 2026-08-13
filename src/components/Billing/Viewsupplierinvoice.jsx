@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import logo from "../../Assests/logo.png";
 import jsPDF from "jspdf";
@@ -1003,7 +1003,7 @@ export default function Viewsupplierinvoice({ hiddenPrintItem, onPrintComplete }
           </section>
         </div>
       </div>
-      <ToastContainer />
+      
     </>
   );
 }

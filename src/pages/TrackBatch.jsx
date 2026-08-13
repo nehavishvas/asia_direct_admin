@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 export default function TrackBatch() {
@@ -164,7 +164,7 @@ export default function TrackBatch() {
                   </div>
                 </div>
               </div>
-              <ToastContainer />
+              
             </div>
           </div>
         </div>
