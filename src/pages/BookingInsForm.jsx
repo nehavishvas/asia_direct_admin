@@ -493,7 +493,7 @@ export default function BookingInsForm() {
                               type="radio"
                               id="originalTransport"
                               name="bk_custm_doc"
-                              defaultValue="Yes"
+                              value="Yes"
                               checked={data.bk_custm_doc === "Yes"}
                               onChange={handlechnage}
                             />
@@ -506,7 +506,7 @@ export default function BookingInsForm() {
                               name="bk_custm_doc"
                               onChange={handlechnage}
                               checked={data.bk_custm_doc === "No"}
-                              defaultValue="No"
+                              value="No"
                             />
                             <label htmlFor="originalTransportNo"> No</label>
                           </div>
@@ -524,7 +524,7 @@ export default function BookingInsForm() {
                               name="bk_trasprt_doc"
                               checked={data.bk_trasprt_doc === "Yes"}
                               onChange={handlechnage}
-                              defaultValue="Yes"
+                              value="Yes"
                             />
                             <label htmlFor="originalTransportYes"> Yes</label>
                           </div>
@@ -535,7 +535,7 @@ export default function BookingInsForm() {
                               name="bk_trasprt_doc"
                               onChange={handlechnage}
                               checked={data.bk_trasprt_doc === "No"}
-                              defaultValue="No"
+                              value="No"
                             />
                             <label htmlFor="originalTransportNo"> No</label>
                           </div>
@@ -554,7 +554,7 @@ export default function BookingInsForm() {
                               onChange={handlechnage}
                               name="bk_MSDS"
                               checked={data.bk_MSDS === "Yes"}
-                              defaultValue="Yes"
+                              value="Yes"
                             />
                             <label htmlFor="msdsYes"> Yes</label>
                           </div>
@@ -565,7 +565,7 @@ export default function BookingInsForm() {
                               id="msds"
                               name="bk_MSDS"
                               checked={data.bk_MSDS === "No"}
-                              defaultValue="No"
+                              value="No"
                             />
                             <label htmlFor="msdsNo"> No</label>
                           </div>
@@ -581,7 +581,7 @@ export default function BookingInsForm() {
                               type="radio"
                               id="tradeAgreement"
                               name="bk_CuntyTrd_SADC"
-                              defaultValue="Yes"
+                              value="Yes"
                               onChange={handlechnage}
                               checked={data.bk_CuntyTrd_SADC === "Yes"}
                             />
@@ -594,7 +594,7 @@ export default function BookingInsForm() {
                               onChange={handlechnage}
                               name="bk_CuntyTrd_SADC"
                               checked={data.bk_CuntyTrd_SADC === "No"}
-                              defaultValue="No"
+                              value="No"
                             />
                             <label htmlFor="tradeAgreementNo"> No</label>
                           </div>
@@ -613,7 +613,7 @@ export default function BookingInsForm() {
                               name="bk_letter_credit"
                               onChange={handlechnage}
                               checked={data.bk_letter_credit === "Yes"}
-                              defaultValue="Yes"
+                              value="Yes"
                             />
                             <label htmlFor="letterAuthYes"> Yes</label>
                           </div>
@@ -622,7 +622,7 @@ export default function BookingInsForm() {
                               type="radio"
                               id="letterAuth"
                               name="bk_letter_credit"
-                              defaultValue="No"
+                              value="No"
                               checked={data.bk_letter_credit === "No"}
                               onChange={handlechnage}
                             />
@@ -651,7 +651,7 @@ export default function BookingInsForm() {
                               name="bk_Insur_cover"
                               onChange={handlechnage}
                               checked={data.bk_Insur_cover === "Yes"}
-                              defaultValue="Yes"
+                              value="Yes"
                             />
                             <label htmlFor="insuranceCoverYes"> Yes</label>
                           </div>
@@ -662,7 +662,7 @@ export default function BookingInsForm() {
                               id="insuranceCover"
                               checked={data.bk_Insur_cover === "No"}
                               name="bk_Insur_cover"
-                              defaultValue="No"
+                              value="No"
                             />
                             <label htmlFor="insuranceCoverNo"> No</label>
                           </div>
@@ -681,7 +681,7 @@ export default function BookingInsForm() {
                               name="bk_estim_supp"
                               onChange={handlechnage}
                               checked={data.bk_estim_supp === "Yes"}
-                              defaultValue="Yes"
+                              value="Yes"
                             />
                             <label htmlFor="chargesEstimateYes"> Yes</label>
                           </div>
@@ -691,7 +691,7 @@ export default function BookingInsForm() {
                               id="chargesEstimate"
                               name="bk_estim_supp"
                               checked={data.bk_estim_supp === "No"}
-                              defaultValue="No"
+                              value="No"
                               onChange={handlechnage}
                             />
                             <label htmlFor="chargesEstimateNo"> No</label>
@@ -727,7 +727,7 @@ export default function BookingInsForm() {
                               name="bk_org_exptCharge"
                               onChange={handlechnage}
                               checked={data.bk_org_exptCharge === "Shipper"}
-                              defaultValue="Shipper"
+                              value="Shipper"
                             />
                             <label htmlFor="originExportShipper">
                               Shipper
@@ -740,7 +740,7 @@ export default function BookingInsForm() {
                               name="bk_org_exptCharge"
                               onChange={handlechnage}
                               checked={data.bk_org_exptCharge === "Consignee"}
-                              defaultValue="Consignee"
+                              value="Consignee"
                             />
                             <label htmlFor="originExportConsignee">
                               {" "}
@@ -763,7 +763,7 @@ export default function BookingInsForm() {
                               checked={
                                 data.bk_intenFreig_charge === "Shipper"
                               }
-                              defaultValue="Shipper"
+                              value="Shipper"
                             />
                             <label htmlFor="freightChargesShipper">
                               {" "}
@@ -776,7 +776,7 @@ export default function BookingInsForm() {
                               id="freightCharges"
                               name="bk_intenFreig_charge"
                               onChange={handlechnage}
-                              defaultValue="Consignee"
+                              value="Consignee"
                               checked={
                                 data.bk_intenFreig_charge === "Consignee"
                               }
@@ -799,7 +799,7 @@ export default function BookingInsForm() {
                               id="destinationCharges"
                               onChange={handlechnage}
                               name="bk_charges_destination"
-                              defaultValue="Shipper"
+                              value="Shipper"
                               checked={
                                 data.bk_charges_destination === "Shipper"
                               }
@@ -818,7 +818,7 @@ export default function BookingInsForm() {
                               checked={
                                 data.bk_charges_destination === "Consignee"
                               }
-                              defaultValue="Consignee"
+                              value="Consignee"
                             />
                             <label htmlFor="destinationChargesConsignee">
                               {" "}
@@ -838,7 +838,7 @@ export default function BookingInsForm() {
                               type="radio"
                               id="dutiesTaxes"
                               name="bk_duties_taxes"
-                              defaultValue="Shipper"
+                              value="Shipper"
                               checked={data.bk_duties_taxes === "Shipper"}
                               onChange={handlechnage}
                             />
@@ -852,7 +852,7 @@ export default function BookingInsForm() {
                               type="radio"
                               id="dutiesTaxes"
                               name="bk_duties_taxes"
-                              defaultValue="Consignee"
+                              value="Consignee"
                               checked={data.bk_duties_taxes === "Consignee"}
                               onChange={handlechnage}
                             />
@@ -1021,7 +1021,7 @@ export default function BookingInsForm() {
                           checked={
                             data.bk_exprt_modTransport === "RoadConsole"
                           }
-                          defaultValue="RoadConsole"
+                          value="RoadConsole"
                         />
                         <label htmlFor="roadConsol"> Road Consol</label>
                       </div>
@@ -1034,7 +1034,7 @@ export default function BookingInsForm() {
                           checked={
                             data.bk_exprt_modTransport === "RoadDedicated"
                           }
-                          defaultValue="RoadDedicated"
+                          value="RoadDedicated"
                         />
                         <label htmlFor="roadDedicated"> Road Dedicated</label>
                       </div>
@@ -1045,7 +1045,7 @@ export default function BookingInsForm() {
                           checked={data.bk_exprt_modTransport === "SeaFCL"}
                           name="bk_exprt_modTransport"
                           onChange={handlechnage}
-                          defaultValue="SeaFCL"
+                          value="SeaFCL"
                         />
                         <label htmlFor="seaFcl"> Sea FCL</label>
                       </div>
@@ -1055,7 +1055,7 @@ export default function BookingInsForm() {
                           id="seaFcl"
                           checked={data.bk_exprt_modTransport === "SeaLCL"}
                           name="bk_exprt_modTransport"
-                          defaultValue="SeaLCL"
+                          value="SeaLCL"
                           onChange={handlechnage}
                         />
                         <label htmlFor="seaLcl"> Sea LCL</label>
@@ -1065,7 +1065,7 @@ export default function BookingInsForm() {
                           type="radio"
                           id="seaFcl"
                           name="bk_exprt_modTransport"
-                          defaultValue="SeaB/Bulk"
+                          value="SeaB/Bulk"
                           checked={data.bk_exprt_modTransport === "SeaB/Bulk"}
                           onChange={handlechnage}
                         />
@@ -1078,7 +1078,7 @@ export default function BookingInsForm() {
                           name="bk_exprt_modTransport"
                           onChange={handlechnage}
                           checked={data.bk_exprt_modTransport === "AirConsol"}
-                          defaultValue="AirConsol"
+                          value="AirConsol"
                         />
                         <label htmlFor="airConsol"> Air Consol</label>
                       </div>
@@ -1087,7 +1087,7 @@ export default function BookingInsForm() {
                           type="radio"
                           id="seaFcl"
                           name="bk_exprt_modTransport"
-                          defaultValue="AirExpress"
+                          value="AirExpress"
                           onChange={handlechnage}
                           checked={
                             data.bk_exprt_modTransport === "AirExpress"
@@ -1181,7 +1181,7 @@ export default function BookingInsForm() {
                             name="bk_hazard_cargo"
                             onChange={handlechnage}
                             checked={data.bk_hazard_cargo === "Yes"}
-                            defaultValue="Yes"
+                            value="Yes"
                           />
                           <label htmlFor="hazardousCargoYes"> Yes</label>
                         </div>
@@ -1190,7 +1190,7 @@ export default function BookingInsForm() {
                             type="radio"
                             id="hazardousCargo"
                             name="bk_hazard_cargo"
-                            defaultValue="No"
+                            value="No"
                             onChange={handlechnage}
                             checked={data.bk_hazard_cargo === "No"}
                           />
@@ -1211,7 +1211,7 @@ export default function BookingInsForm() {
                             name="bk_cargo_packed"
                             onChange={handlechnage}
                             checked={data.bk_cargo_packed === "Yes"}
-                            defaultValue="Yes"
+                            value="Yes"
                           />
                           <label htmlFor="packedToHazardousYes"> Yes</label>
                         </div>
@@ -1220,7 +1220,7 @@ export default function BookingInsForm() {
                             type="radio"
                             id="packedToHazardous"
                             name="bk_cargo_packed"
-                            defaultValue="No"
+                            value="No"
                             checked={data.bk_cargo_packed === "No"}
                             onChange={handlechnage}
                           />
@@ -1238,7 +1238,7 @@ export default function BookingInsForm() {
                             type="radio"
                             id="batteriesMsds"
                             name="bk_battery_MSDS"
-                            defaultValue="Yes"
+                            value="Yes"
                             onChange={handlechnage}
                             checked={data.bk_battery_MSDS === "Yes"}
                           />
@@ -1249,7 +1249,7 @@ export default function BookingInsForm() {
                             type="radio"
                             id="batteriesMsds"
                             name="bk_battery_MSDS"
-                            defaultValue="No"
+                            value="No"
                             checked={data.bk_battery_MSDS === "No"}
                             onChange={handlechnage}
                           />
@@ -1267,7 +1267,7 @@ export default function BookingInsForm() {
                             type="radio"
                             id="goodsConsolidated"
                             name="bk_cnsolid_mulShipp"
-                            defaultValue="Yes"
+                            value="Yes"
                             checked={data.bk_cnsolid_mulShipp === "Yes"}
                             onChange={handlechnage}
                           />
@@ -1278,7 +1278,7 @@ export default function BookingInsForm() {
                             type="radio"
                             id="goodsConsolidated"
                             name="bk_cnsolid_mulShipp"
-                            defaultValue="No"
+                            value="No"
                             checked={data.bk_cnsolid_mulShipp === "No"}
                             onChange={handlechnage}
                           />
@@ -1297,7 +1297,7 @@ export default function BookingInsForm() {
                             type="radio"
                             id="preShipmentInspection"
                             name="bk_preship_insp"
-                            defaultValue="Yes"
+                            value="Yes"
                             checked={data.bk_preship_insp === "Yes"}
                             onChange={handlechnage}
                           />
@@ -1312,7 +1312,7 @@ export default function BookingInsForm() {
                             id="preShipmentInspection"
                             name="bk_preship_insp"
                             checked={data.bk_preship_insp === "No"}
-                            defaultValue="No"
+                            value="No"
                             onChange={handlechnage}
                           />
                           <label htmlFor="preShipmentInspectionNo"> No</label>
@@ -1329,7 +1329,7 @@ export default function BookingInsForm() {
                             type="radio"
                             id="customsEntry"
                             name="bk_export_Import"
-                            defaultValue="Yes"
+                            value="Yes"
                             checked={data.bk_export_Import === "Yes"}
                             onChange={handlechnage}
                           />
@@ -1340,7 +1340,7 @@ export default function BookingInsForm() {
                             type="radio"
                             id="customsEntry"
                             name="bk_export_Import"
-                            defaultValue="No"
+                            value="No"
                             checked={data.bk_export_Import === "No"}
                             onChange={handlechnage}
                           />

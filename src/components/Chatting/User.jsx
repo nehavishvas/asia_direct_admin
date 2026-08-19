@@ -68,8 +68,8 @@ export default function User() {
       // 👉 CHAT WINDOW UPDATE
       setMessages((prev) => {
         if (
-          normalizedMsg.conversation_id ===
-          selectedChatRef.current?.conversation_id
+          selectedChatRef.current &&
+          String(normalizedMsg.conversation_id) === String(selectedChatRef.current.conversation_id)
         ) {
           if (String(normalizedMsg.sender_id) === String(userId)) {
             return prev;
@@ -96,21 +96,23 @@ export default function User() {
       // 👉 USERS SIDEBAR UPDATE
       setUsers((prev) => {
         let updated = prev.map((chat) =>
-          chat.conversation_id === normalizedMsg.conversation_id
+          String(chat.conversation_id) === String(normalizedMsg.conversation_id)
             ? { 
                 ...chat, 
                 last_message: normalizedMsg.message,
-                unread_count: (normalizedMsg.conversation_id === selectedChatRef.current?.conversation_id)
-                  ? 0
-                  : (chat.unread_count || chat.unread || chat.unreadCount || 0) + 1
+                unread_count: (String(normalizedMsg.sender_id) === String(userId))
+                  ? (chat.unread_count || chat.unread || chat.unreadCount || 0)
+                  : (selectedChatRef.current && String(normalizedMsg.conversation_id) === String(selectedChatRef.current.conversation_id))
+                    ? 0
+                    : (chat.unread_count || chat.unread || chat.unreadCount || 0) + 1
               }
             : chat
         );
         const current = updated.find(
-          (c) => c.conversation_id === normalizedMsg.conversation_id
+          (c) => String(c.conversation_id) === String(normalizedMsg.conversation_id)
         );
         const rest = updated.filter(
-          (c) => c.conversation_id !== normalizedMsg.conversation_id
+          (c) => String(c.conversation_id) !== String(normalizedMsg.conversation_id)
         );
         return current ? [current, ...rest] : updated;
       });
@@ -118,13 +120,15 @@ export default function User() {
       // 👉 STAFF SIDEBAR UPDATE
       setStaff((prev) => {
         return prev.map((s) =>
-          s.id === normalizedMsg.sender_id
+          String(s.id) === String(normalizedMsg.sender_id)
             ? { 
                 ...s, 
                 last_message: normalizedMsg.message,
-                unread_count: (selectedChatRef.current?.sender_id === s.id)
-                  ? 0
-                  : (s.unread_count || s.unread || s.unreadCount || 0) + 1
+                unread_count: (String(normalizedMsg.sender_id) === String(userId))
+                  ? (s.unread_count || s.unread || s.unreadCount || 0)
+                  : (selectedChatRef.current && String(selectedChatRef.current.sender_id) === String(s.id))
+                    ? 0
+                    : (s.unread_count || s.unread || s.unreadCount || 0) + 1
               }
             : s
         );
@@ -267,9 +271,11 @@ const truncateMessage = (text, limit = 20) => {
 };
   const sendMessage1 = async () => {
     if (isSendingRef.current) return;
-    if (!messageText.trim() || !selectedChat) return;
+    const textToSend = messageText.trim();
+    if (!textToSend || !selectedChat) return;
 
     isSendingRef.current = true;
+    setMessageText("");
 
     try {
       const res = await axios.post(
@@ -278,7 +284,7 @@ const truncateMessage = (text, limit = 20) => {
           conversation_id: selectedChat.conversation_id,
           sender_id: userId,
           receiver_id: selectedChat.sender_id,
-          message: messageText,
+          message: textToSend,
           message_type: "text",
         },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -289,19 +295,18 @@ const truncateMessage = (text, limit = 20) => {
           id: res.data.id || res.data.data?.id,
           sender_id: userId,
           sender_name: userData?.name || "Admin",
-          message: messageText,
+          message: textToSend,
           conversation_id: selectedChat.conversation_id,
           created_at: new Date().toISOString(),
         };
         setMessages((prev) => [...prev, newMsg]);
         socketRef.current.emit("sendMessage", newMsg);
-        setMessageText("");
         
         // Update local users sidebar last_message immediately
         setUsers((prev) => {
           let updated = prev.map((chat) =>
             chat.conversation_id === selectedChat.conversation_id
-              ? { ...chat, last_message: messageText }
+              ? { ...chat, last_message: textToSend }
               : chat
           );
           const current = updated.find(
@@ -317,148 +322,373 @@ const truncateMessage = (text, limit = 20) => {
       }
     } catch (err) {
       console.log(err);
+      setMessageText(textToSend);
     } finally {
       isSendingRef.current = false;
     }
   };
+
   // ================= UI =================
   return (
-    <div className="container-fluid chat-app">
-      <div className="row g-0">
+    <div className="container-fluid chat-app" style={{ height: "80vh", backgroundColor: "#ffffff", borderRadius: 16, boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.05)", border: "1px solid #e2e8f0", overflow: "hidden", fontFamily: "Inter, system-ui, sans-serif" }}>
+      <div className="row g-0 h-100">
         {/* SIDEBAR */}
-        <div className="col-md-3 chat-sidebar">
-          <div className="chat-header">
-            <h5>Chats</h5>
+        <div className="col-md-3 d-flex flex-column h-100" style={{ borderRight: "1px solid #e2e8f0", backgroundColor: "#ffffff" }}>
+          <div style={{ padding: "16px 20px", borderBottom: "1px solid #f1f5f9" }}>
+            <h5 style={{ margin: 0, fontWeight: "600", color: "#1e293b", fontSize: "16px" }}>Chats</h5>
           </div>
           {/* TABS */}
-          <ul className="nav nav-tabs">
-            <li className="nav-item">
-              <button
-                className={`nav-link ${
-                  activeTab === "users" ? "active" : ""
-                }`}
-                onClick={() => setActiveTab("users")}
-              >
-                Users
-              </button>
-            </li>
-            <li className="nav-item">
-              <button
-                className={`nav-link ${
-                  activeTab === "staff" ? "active" : ""
-                }`}
-                onClick={() => setActiveTab("staff")}
-              >
-                Staff
-              </button>
-            </li>
-          </ul>
-          <div className="chat-list">
-            {/* USERS */}
-            {activeTab === "users" &&
-              users.map((chat) => (
-                <div
-                  key={chat.conversation_id}
-                  className={`chat-user ${
-                    selectedChat?.conversation_id ===
-                    chat.conversation_id
-                      ? "active"
-                      : ""
-                  }`}
-                  onClick={() => getMessages1(chat)}
-                >
-                  <div className="avatar">
-                    {chat.sender_name?.charAt(0)}
-                  </div>
-
-                  <div className="chat-info" style={{ flex: 1 }}>
-                    <strong>{chat.sender_name}</strong>
-                    <p>{truncateMessage(chat.last_message, 20)}</p>
-                  </div>
-                  {(chat.unread_count > 0 || chat.unread > 0 || chat.unreadCount > 0) && (
-                    <div className="unread-badge">
-                      {chat.unread_count || chat.unread || chat.unreadCount}
-                    </div>
-                  )}
-                </div>
-              ))}
-            {/* STAFF */}
-            {activeTab === "staff" &&
-              staff.map((item) => (
-                <div
-                  key={item.id}
-                  className={`chat-user ${
-                    selectedChat?.sender_id === item.id
-                      ? "active"
-                      : ""
-                  }`}
-                  onClick={() => startStaffChat(item)}
-                >
-                  <div className="avatar">
-                    {item.full_name?.charAt(0)}
-                  </div>
-
-                  <div className="chat-info" style={{ flex: 1 }}>
-                    <strong>{item.full_name}</strong>
-                    <p>{item.last_message || item.country_name}</p>
-                  </div>
-                  {(item.unread_count > 0 || item.unread > 0 || item.unreadCount > 0) && (
-                    <div className="unread-badge">
-                      {item.unread_count || item.unread || item.unreadCount}
-                    </div>
-                  )}
-                </div>
-              ))}
-          </div>
-        </div>
-        {/* CHAT AREA */}
-        <div className="col-md-9 chat-main">
-          <div className="chat-top">
-            {selectedChat
-              ? selectedChat.sender_name
-              : "Select Chat"}
-          </div>
-          <div className="chat-messages">
-            {messages.map((msg, i) => {
-              const isMe = msg.sender_id === userId;
-              return (
-                <div
-                  key={i}
-                  className={`message-row ${
-                    isMe ? "sent" : "received"
-                  }`}
-                >
-                  <div className="message-bubble">
-                    <div className="message-name">
-                      {msg.sender_name}
-                    </div>
-                    <div>{msg.message}</div>
-                  </div>
-                </div>
-              );
-            })}
-            <div ref={messagesEndRef} />
-          </div>
-          <div className="chat-input d-flex gap-2 p-2">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Type message..."
-              value={messageText}
-              onChange={(e) =>
-                setMessageText(e.target.value)
-              }
-              onKeyDown={(e) =>
-                e.key === "Enter" && sendMessage1()
-              }
-            />
+          <div style={{ display: "flex", padding: "4px", gap: 4, backgroundColor: "#f1f5f9", borderRadius: 8, margin: "12px 16px" }}>
             <button
-              className="btn btn-primary"
-              onClick={sendMessage1}
+              onClick={() => setActiveTab("users")}
+              style={{
+                flex: 1,
+                border: "none",
+                padding: "6px 12px",
+                borderRadius: 6,
+                fontSize: "13px",
+                fontWeight: "600",
+                backgroundColor: activeTab === "users" ? "#ffffff" : "transparent",
+                color: activeTab === "users" ? "#0b63e6" : "#64748b",
+                boxShadow: activeTab === "users" ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+                transition: "all 0.2s"
+              }}
             >
-              Send
+              Users
+            </button>
+            <button
+              onClick={() => setActiveTab("staff")}
+              style={{
+                flex: 1,
+                border: "none",
+                padding: "6px 12px",
+                borderRadius: 6,
+                fontSize: "13px",
+                fontWeight: "600",
+                backgroundColor: activeTab === "staff" ? "#ffffff" : "transparent",
+                color: activeTab === "staff" ? "#0b63e6" : "#64748b",
+                boxShadow: activeTab === "staff" ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+                transition: "all 0.2s"
+              }}
+            >
+              Staff
             </button>
           </div>
+          <div style={{ flex: 1, overflowY: "auto" }}>
+            {/* USERS */}
+            {activeTab === "users" &&
+              [...users]
+                .sort((a, b) => {
+                  const aUnread = a.unread_count || a.unread || a.unreadCount || 0;
+                  const bUnread = b.unread_count || b.unread || b.unreadCount || 0;
+                  if (aUnread > 0 && bUnread === 0) return -1;
+                  if (aUnread === 0 && bUnread > 0) return 1;
+                  return 0;
+                })
+                .map((chat) => {
+                const isActive = selectedChat?.conversation_id === chat.conversation_id;
+                return (
+                  <div
+                    key={chat.conversation_id}
+                    onClick={() => getMessages1(chat)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      padding: "12px 16px",
+                      cursor: "pointer",
+                      borderBottom: "1px solid #f1f5f9",
+                      backgroundColor: isActive ? "#f0f6ff" : "transparent",
+                      transition: "background-color 0.2s"
+                    }}
+                  >
+                    <div 
+                      style={{
+                        width: 38,
+                        height: 38,
+                        borderRadius: "50%",
+                        backgroundColor: isActive ? "#0b63e6" : "#cbd5e1",
+                        color: "#ffffff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontWeight: "600",
+                        fontSize: 14
+                      }}
+                    >
+                      {chat.sender_name ? chat.sender_name.trim().charAt(0).toUpperCase() : "?"}
+                    </div>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <strong style={{ display: "block", fontSize: "14px", color: "#1e293b", fontWeight: "600", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                        {chat.sender_name}
+                      </strong>
+                      <p style={{ margin: 0, fontSize: "12.5px", color: "#64748b", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", marginTop: "2px" }}>
+                        {truncateMessage(chat.last_message, 24)}
+                      </p>
+                    </div>
+                    {(chat.unread_count > 0 || chat.unread > 0 || chat.unreadCount > 0) && (
+                      <div 
+                        style={{
+                          backgroundColor: "#ef4444",
+                          color: "#ffffff",
+                          borderRadius: "50%",
+                          minWidth: 18,
+                          height: 18,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "10px",
+                          fontWeight: "700",
+                          padding: "0 4px"
+                        }}
+                      >
+                        {chat.unread_count || chat.unread || chat.unreadCount}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            {/* STAFF */}
+            {activeTab === "staff" &&
+              [...staff]
+                .sort((a, b) => {
+                  const aUnread = a.unread_count || a.unread || a.unreadCount || 0;
+                  const bUnread = b.unread_count || b.unread || b.unreadCount || 0;
+                  if (aUnread > 0 && bUnread === 0) return -1;
+                  if (aUnread === 0 && bUnread > 0) return 1;
+                  return 0;
+                })
+                .map((item) => {
+                const isActive = selectedChat?.sender_id === item.id;
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => startStaffChat(item)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      padding: "12px 16px",
+                      cursor: "pointer",
+                      borderBottom: "1px solid #f1f5f9",
+                      backgroundColor: isActive ? "#f0f6ff" : "transparent",
+                      transition: "background-color 0.2s"
+                    }}
+                  >
+                    <div 
+                      style={{
+                        width: 38,
+                        height: 38,
+                        borderRadius: "50%",
+                        backgroundColor: isActive ? "#0b63e6" : "#cbd5e1",
+                        color: "#ffffff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontWeight: "600",
+                        fontSize: 14
+                      }}
+                    >
+                      {item.full_name ? item.full_name.trim().charAt(0).toUpperCase() : "?"}
+                    </div>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <strong style={{ display: "block", fontSize: "14px", color: "#1e293b", fontWeight: "600", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                        {item.full_name}
+                      </strong>
+                      <p style={{ margin: 0, fontSize: "12.5px", color: "#64748b", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", marginTop: "2px" }}>
+                        {item.last_message || item.country_name}
+                      </p>
+                    </div>
+                    {(item.unread_count > 0 || item.unread > 0 || item.unreadCount > 0) && (
+                      <div 
+                        style={{
+                          backgroundColor: "#ef4444",
+                          color: "#ffffff",
+                          borderRadius: "50%",
+                          minWidth: 18,
+                          height: 18,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "10px",
+                          fontWeight: "700",
+                          padding: "0 4px"
+                        }}
+                      >
+                        {item.unread_count || item.unread || item.unreadCount}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+
+        {/* CHAT AREA */}
+        <div className="col-md-9 d-flex flex-column h-100" style={{ backgroundColor: "#f8fafc" }}>
+          {selectedChat ? (
+            <>
+              {/* Header */}
+              <div 
+                style={{ 
+                  padding: "14px 20px", 
+                  backgroundColor: "#ffffff", 
+                  borderBottom: "1px solid #e2e8f0", 
+                  display: "flex", 
+                  alignItems: "center", 
+                  gap: 12
+                }}
+              >
+                <div 
+                  style={{ 
+                    width: 38, 
+                    height: 38, 
+                    borderRadius: "50%", 
+                    backgroundColor: "#0b63e6", 
+                    color: "#ffffff", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center",
+                    fontWeight: "600",
+                    fontSize: 15
+                  }}
+                >
+                  {selectedChat.sender_name ? selectedChat.sender_name.trim().charAt(0).toUpperCase() : "?"}
+                </div>
+                <div>
+                  <h6 style={{ margin: 0, fontWeight: "600", color: "#1e293b", fontSize: "14px", lineHeight: 1.2 }}>
+                    {selectedChat.sender_name}
+                  </h6>
+                  <span style={{ fontSize: "11px", color: "#10b981", display: "flex", alignItems: "center", gap: 4, marginTop: "2px" }}>
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#10b981", display: "inline-block" }} />
+                    Active Chat
+                  </span>
+                </div>
+              </div>
+
+              {/* Messages area */}
+              <div 
+                style={{ 
+                  flex: 1, 
+                  overflowY: "auto", 
+                  padding: "20px", 
+                  display: "flex", 
+                  flexDirection: "column", 
+                  gap: "16px",
+                  backgroundColor: "#f1f5f9"
+                }}
+              >
+                {messages.length === 0 ? (
+                  <div className="h-100 d-flex align-items-center justify-content-center flex-column" style={{ minHeight: "200px" }}>
+                    <span style={{ color: "#64748b", fontSize: "14px", fontWeight: "500", backgroundColor: "#ffffff", padding: "8px 16px", borderRadius: 20, boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
+                      No messages here yet. Start the conversation!
+                    </span>
+                  </div>
+                ) : (
+                  messages.map((msg, i) => {
+                    const isMe = msg.sender_id === userId;
+                    return (
+                      <div
+                        key={i}
+                        style={{
+                          textAlign: isMe ? "right" : "left",
+                        }}
+                      >
+                        <div
+                          style={{
+                            background: isMe ? "#0b63e6" : "#ffffff",
+                            color: isMe ? "#ffffff" : "#1e293b",
+                            padding: "10px 14px",
+                            borderRadius: isMe ? "14px 14px 2px 14px" : "14px 14px 14px 2px",
+                            display: "inline-block",
+                            textAlign: "left",
+                            maxWidth: "70%",
+                            wordBreak: "break-word",
+                            boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                            border: isMe ? "none" : "1px solid #e2e8f0",
+                          }}
+                        >
+                          <strong
+                            style={{
+                              display: "block",
+                              fontSize: "11px",
+                              fontWeight: "600",
+                              marginBottom: "4px",
+                              color: isMe ? "rgba(255, 255, 255, 0.85)" : "#64748b",
+                            }}
+                          >
+                            {msg.sender_name || (isMe ? "Me" : selectedChat?.sender_name || "User")}
+                          </strong>
+                          <div style={{ fontSize: "13.5px", lineHeight: "1.4" }}>{msg.message}</div>
+                          {msg.created_at && (
+                            <div 
+                              style={{ 
+                                fontSize: "9px", 
+                                color: isMe ? "rgba(255, 255, 255, 0.7)" : "#94a3b8",
+                                textAlign: "right",
+                                marginTop: "4px"
+                              }}
+                            >
+                              {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Chat Input */}
+              <div 
+                style={{ 
+                  padding: "14px 20px", 
+                  backgroundColor: "#ffffff", 
+                  borderTop: "1px solid #e2e8f0", 
+                  display: "flex", 
+                  gap: 12,
+                  alignItems: "center"
+                }}
+              >
+                <input
+                  className="form-control"
+                  placeholder="Type message..."
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage1()}
+                  style={{
+                    borderRadius: "24px",
+                    padding: "9px 16px",
+                    border: "1px solid #cbd5e1",
+                    fontSize: "13.5px",
+                    outline: "none",
+                    boxShadow: "none"
+                  }}
+                />
+                <button
+                  className="btn btn-primary"
+                  onClick={sendMessage1}
+                  style={{
+                    borderRadius: "24px",
+                    padding: "9px 22px",
+                    backgroundColor: "#0b63e6",
+                    borderColor: "#0b63e6",
+                    fontWeight: "600",
+                    fontSize: "13.5px"
+                  }}
+                >
+                  Send
+                </button>
+              </div>
+            </>
+          ) : (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#64748b", fontSize: "16px", fontWeight: "500" }}>
+              Select a chat to start conversation
+            </div>
+          )}
         </div>
       </div>
     </div>

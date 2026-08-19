@@ -325,392 +325,410 @@ const BookingInstruction = () => {
                                 </td>
                               </tr>
                             </table>
-                            <table>
-                              <tr>
-                                <td
-                                  style={{
-                                    textAlign: "center",
-                                    background: "#b2b3b730",
-                                  }}
-                                >
-                                  <strong>
-                                    COMMERICIAL DOCUMENT INFORMATION{" "}
-                                  </strong>
-                                </td>
-                              </tr>
-                            </table>
-                            <table>
-                              <tr>
-                                <th
-                                  style={{
-                                    width: "45%",
-                                    borderTop: "1px solid #000",
-                                    borderRight: "1px solid #000",
-                                  }}
-                                >
-                                  MARK WITH AN X THE DOCUMENTS YOU ARE PROVIDING
-                                </th>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    border: "1px solid #000",
-                                    textAlign: "center",
-                                    borderLeft: "none",
-                                  }}
-                                >
-                                  <i
-                                    className={
-                                      data.bk_xdoc_provider === "Yes"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
-                                </td>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    border: "1px solid #000",
-                                    borderRight: "none",
-                                    textAlign: "center",
-                                    borderLeft: "none",
-                                  }}
-                                ><i
-                                  className={
-                                    data.bk_xdoc_provider === "No"
-                                      ? "fa fa-check"
-                                      : ""
-                                  }
-                                ></i></td>
-                              </tr>
-                              <tr>
-                                <th
-                                  style={{
-                                    borderBottom: "1px solid #000",
-                                    borderRight: "1px solid #000",
-                                  }}
-                                >
-                                  COMMERCIAL INVOICE
-                                </th>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    border: "1px solid #000",
-                                    textAlign: "center",
-                                    borderLeft: "none",
-                                    borderTop: "none",
-                                  }}
-                                >
-                                  <i
-                                    className={
-                                      data.bk_comm_Invoice === "Yes"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
-                                </td>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    border: "1px solid #000",
-                                    borderRight: "none",
-                                    textAlign: "center",
-                                    borderLeft: "none",
-                                    borderTop: "none",
-                                  }}
-                                // className= {data.bk_comm_Invoice==="No"?"fa fa-check":""}                                >
-                                >
-                                  {" "}
-                                  <i
-                                    className={
-                                      data.bk_comm_Invoice === "No"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
-                                </td>
-                              </tr>
-                            </table>
-                            <table>
-                              <tr>
-                                <th
-                                  style={{
-                                    width: "45%",
-                                    borderRight: "1px solid #000",
-                                  }}
-                                >
-                                  TOTAL COUNT OF COMMERCIAL INVOICES ON THIS
-                                  SHIPMENT
-                                </th>
-                                <td
-                                  style={{
-                                    width: "130px",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  {data.bk_count_CommInv}
-                                </td>
-                              </tr>
-                            </table>
-                            <table>
-                              <tr>
-                                <th
-                                  style={{
-                                    width: "45%",
-                                    borderTop: "1px solid #000",
-
-                                    borderRight: "1px solid #000",
-                                  }}
-                                >
-                                  PACKING LIST
-                                </th>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    border: "1px solid #000",
-                                    borderLeft: "none",
-                                    borderBottom: "none",
-                                    textAlign: "center",
-                                  }}
-                                // className= {data.bk_packing_list==="Yes"?"fa fa-check":""}
-                                >
-                                  <i
-                                    className={
-                                      data.bk_packing_list === "Yes"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
-                                </td>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    borderTop: "1px solid #000",
-                                    textAlign: "center",
-                                  }}
-                                // className= {data.bk_packing_list==="No"?"fa fa-check":""}
-                                >
-                                  <i
-                                    className={
-                                      data.bk_packing_list === "No"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th
-                                  style={{
-                                    borderTop: "1px solid #000",
-
-                                    borderRight: "1px solid #000",
-                                  }}
-                                >
-                                  ORIGINAL TRANSPORT DOCUMENTS
-                                </th>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    border: "1px solid #000",
-                                    textAlign: "center",
-                                    borderLeft: "none",
-                                    borderBottom: "none",
-                                  }}
-                                // className= {data.bk_trasprt_doc==="Yes"?"fa fa-check":""}
-                                >
-                                  {" "}
-                                  <i
-                                    className={
-                                      data.bk_trasprt_doc === "Yes"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
-                                </td>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    borderTop: "1px solid #000",
-                                    textAlign: "center",
-                                  }}
-                                // className= {data.bk_trasprt_doc==="No"?"fa fa-check":""}
-                                >
-                                  <i
-                                    className={
-                                      data.bk_trasprt_doc === "No"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th
-                                  style={{
-                                    borderTop: "1px solid #000",
-
-                                    borderRight: "1px solid #000",
-                                    whiteSpace: "break-spaces",
-                                  }}
-                                >
-                                  MSDS ( MATERIAL SAFTY DATA SHEET FOR DG CARGO)
-                                  / PRODUCT LITERATURE
-                                </th>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    border: "1px solid #000",
-                                    textAlign: "center",
-                                    borderBottom: "none",
-                                    borderLeft: "none",
-                                  }}
-                                >
-                                  {/* {data.bk_MSDS} */}
-                                  <i
-                                    className={
-                                      data.bk_MSDS === "Yes"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
-                                </td>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    borderTop: "1px solid #000",
-                                    borderRight: "none",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  <i
-                                    className={
-                                      data.bk_MSDS === "No" ? "fa fa-check" : ""
-                                    }
-                                  ></i>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th
-                                  style={{
-                                    borderTop: "1px solid #000",
-
-                                    borderRight: "1px solid #000",
-                                  }}
-                                >
-                                  CUSTOMS DOCUMENTS / RULINGS
-                                </th>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    border: "1px solid #000",
-                                    textAlign: "center",
-                                    borderLeft: "unset",
-                                    borderBottom: "unset",
-                                  }}
-                                ></td>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    border: "1px solid #000",
-                                    borderRight: "none",
-                                    textAlign: "center",
-                                    borderLeft: "unset",
-                                    borderBottom: "unset",
-                                  }}
-                                ></td>
-                              </tr>
-                              <tr>
-                                <th
-                                  style={{
-                                    borderTop: "1px solid #000",
-                                    borderBottom: "unset",
-                                    borderRight: "1px solid #000",
-                                  }}
-                                >
-                                  COUNTRY TRADE AGREEMENT / CERIFICATE / EUR1
-                                  /SADC
-                                </th>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    border: "1px solid #000",
-                                    textAlign: "center",
-                                    borderLeft: "unset",
-                                    borderBottom: "unset",
-                                  }}
-                                >
-                                  {/* {data.bk_CuntyTrd_SADC} */}
-                                  <i
-                                    className={
-                                      data.bk_CuntyTrd_SADC === "Yes"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
-                                </td>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    border: "1px solid #000",
-                                    borderRight: "none",
-                                    textAlign: "center",
-                                    borderLeft: "unset",
-                                    borderBottom: "unset",
-                                  }}
-                                >
-                                  <i
-                                    className={
-                                      data.bk_CuntyTrd_SADC === "No"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th
-                                  style={{
-                                    borderTop: "1px solid #000",
-                                    borderBottom: "1px solid #000",
-                                    borderRight: "1px solid #000",
-                                  }}
-                                >
-                                  LETTER OF CREDIT
-                                </th>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    border: "1px solid #000",
-                                    textAlign: "center",
-                                    borderLeft: "unset",
-                                  }}
-                                >
-                                  <i
-                                    className={
-                                      data.bk_letter_credit === "Yes"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
-                                </td>
-                                <td
-                                  style={{
-                                    width: "65px",
-                                    border: "1px solid #000",
-                                    borderRight: "none",
-                                    textAlign: "center",
-                                    borderLeft: "unset",
-                                  }}
-                                >
-                                  <i
-                                    className={
-                                      data.bk_letter_credit === "No"
-                                        ? "fa fa-check"
-                                        : ""
-                                    }
-                                  ></i>
-                                </td>
-                              </tr>
+                            <table style={{ borderCollapse: "collapse", width: "100%" }}>
+                              <tbody>
+                                <tr>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      background: "#b2b3b730",
+                                      // border: "1px solid #000",
+                                    }}
+                                  >
+                                    <strong>
+                                      COMMERCIAL DOCUMENT INFORMATION{" "}
+                                    </strong>
+                                  </td>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      textAlign: "center",
+                                      background: "#b2b3b730",
+                                      border: "1px solid #000",
+                                      borderTop: "none"
+                                    }}
+                                  >
+                                    <strong>Yes</strong>
+                                  </td>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      textAlign: "center",
+                                      background: "#b2b3b730",
+                                      border: "1px solid #000",
+                                      borderTop: "none",
+                                      borderRight: "none"
+                                    }}
+                                  >
+                                    <strong>No</strong>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th
+                                    style={{
+                                      border: "1px solid #000",
+                                      textAlign: "left",
+                                      fontWeight: "normal",
+                                      borderLeft: "none"
+                                    }}
+                                  >
+                                    MARK WITH AN X THE DOCUMENTS YOU ARE PROVIDING
+                                  </th>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_xdoc_provider === "Yes"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                      borderRight: "none"
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_xdoc_provider === "No"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th
+                                    style={{
+                                      border: "1px solid #000",
+                                      textAlign: "left",
+                                      fontWeight: "normal",
+                                      borderLeft: "none"
+                                    }}
+                                  >
+                                    COMMERCIAL INVOICE
+                                  </th>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_comm_Invoice === "Yes"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                      borderRight: "none"
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_comm_Invoice === "No"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th
+                                    style={{
+                                      border: "1px solid #000",
+                                      textAlign: "left",
+                                      fontWeight: "normal",
+                                      borderLeft: "none"
+                                    }}
+                                  >
+                                    TOTAL COUNT OF COMMERCIAL INVOICES ON THIS
+                                    SHIPMENT
+                                  </th>
+                                  <td
+                                    colSpan={2}
+                                    style={{
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                      borderRight: "none"
+                                    }}
+                                  >
+                                    {data.bk_count_CommInv}
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th
+                                    style={{
+                                      border: "1px solid #000",
+                                      textAlign: "left",
+                                      fontWeight: "normal",
+                                      borderLeft: "none"
+                                    }}
+                                  >
+                                    PACKING LIST
+                                  </th>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_packing_list === "Yes"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                      borderRight: "none"
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_packing_list === "No"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th
+                                    style={{
+                                      border: "1px solid #000",
+                                      textAlign: "left",
+                                      fontWeight: "normal",
+                                      borderLeft: "none"
+                                    }}
+                                  >
+                                    ORIGINAL TRANSPORT DOCUMENTS
+                                  </th>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_trasprt_doc === "Yes"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                      borderRight: "none"
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_trasprt_doc === "No"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th
+                                    style={{
+                                      border: "1px solid #000",
+                                      textAlign: "left",
+                                      fontWeight: "normal",
+                                      borderLeft: "none"
+                                    }}
+                                  >
+                                    MSDS ( MATERIAL SAFETY DATA SHEET FOR DG CARGO ) / PRODUCT LITERATURE
+                                  </th>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_MSDS === "Yes"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                      borderRight: "none"
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_MSDS === "No" ? "fa fa-check" : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th
+                                    style={{
+                                      border: "1px solid #000",
+                                      textAlign: "left",
+                                      fontWeight: "normal",
+                                      borderLeft: "none"
+                                    }}
+                                  >
+                                    CUSTOMS DOCUMENTS / RULINGS
+                                  </th>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_custm_doc === "Yes"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                      borderRight: "none"
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_custm_doc === "No"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th
+                                    style={{
+                                      border: "1px solid #000",
+                                      textAlign: "left",
+                                      fontWeight: "normal",
+                                      borderLeft: "none"
+                                    }}
+                                  >
+                                    COUNTRY TRADE AGREEMENT / CERTIFICATE / EUR1 / SADC
+                                  </th>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_CuntyTrd_SADC === "Yes"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                      borderRight: "none"
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_CuntyTrd_SADC === "No"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th
+                                    style={{
+                                      border: "1px solid #000",
+                                      textAlign: "left",
+                                      fontWeight: "normal",
+                                      borderLeft: "none"
+                                    }}
+                                  >
+                                    LETTER OF CREDIT
+                                  </th>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_letter_credit === "Yes"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                  <td
+                                    style={{
+                                      width: "65px",
+                                      border: "1px solid #000",
+                                      textAlign: "center",
+                                      borderRight: "none"
+                                    }}
+                                  >
+                                    <i
+                                      className={
+                                        data.bk_letter_credit === "No"
+                                          ? "fa fa-check"
+                                          : ""
+                                      }
+                                    ></i>
+                                  </td>
+                                </tr>
+                              </tbody>
                             </table>
                             <table>
                               <tr>
@@ -748,7 +766,7 @@ const BookingInstruction = () => {
                                     textAlign: "center",
                                   }}
                                 >
-                                  {data.bk_Insur_cover === "Yes" ? "Yes" : ""}
+                                  Yes
                                 </td>
                                 <td
                                   style={{
@@ -760,7 +778,7 @@ const BookingInstruction = () => {
                                     borderBottom: "unset",
                                   }}
                                 >
-                                  {data.bk_Insur_cover === "No" ? "No" : ""}
+                                  No
                                 </td>
                               </tr>
                               <tr>
@@ -818,17 +836,19 @@ const BookingInstruction = () => {
                                     borderBottom: "unset",
                                   }}
                                 >
-                                  {data.bk_estim_supp === "Yes" ? "Yes" : ""}
+                                  Yes
                                 </td>
                                 <td
                                   style={{
                                     width: "65px",
-                                    borderRight: "1px solid #000",
+                                    border: "1px solid #000",
                                     textAlign: "center",
+                                    borderTop: "none",
+                                    borderLeft: "unset",
+                                    borderBottom: "unset",
                                   }}
                                 >
-                                  {" "}
-                                  {data.bk_estim_supp === "No" ? "NO" : ""}
+                                  No
                                 </td>
                                 <td
                                   style={{
@@ -1143,6 +1163,33 @@ const BookingInstruction = () => {
                                 ></td>
                               </tr>
                             </table>
+                            <table>
+                              <tr>
+                                <td
+                                  style={{
+                                    textAlign: "center",
+                                    background: "#b2b3b730",
+                                  }}
+                                >
+                                  <strong>
+                                    {" "}
+                                    Asia Direct - Africa Logistics BILLING
+                                    REQUIREMENTS{" "}
+                                  </strong>
+                                </td>
+                              </tr>
+                            </table>
+                            <table>
+                              <tr>
+                                <td
+                                  style={{
+                                    borderTop: "1px solid #000",
+                                  }}
+                                >
+                                  {data?.billing_requirement_desc || "description one"}
+                                </td>
+                              </tr>
+                            </table>
                           </div>
                           {/* right part end */}
                           <div
@@ -1196,10 +1243,10 @@ const BookingInstruction = () => {
                                   ADDRESS
                                 </th>
                                 <td style={{ borderBottom: "unset" }}>
-                                   {info?.shipment_ref === "consignee"
-                                     ? getFormattedAddress([info?.address_1, info?.address_2, info?.province])
-                                     : getFormattedAddress(info?.supplier_address)}
-                                 </td>
+                                  {info?.shipment_ref === "consignee"
+                                    ? getFormattedAddress([info?.address_1, info?.address_2, info?.province])
+                                    : getFormattedAddress(info?.supplier_address)}
+                                </td>
                               </tr>
 
                               <tr>
@@ -1905,7 +1952,7 @@ const BookingInstruction = () => {
                                     borderLeft: "none",
                                   }}
                                 >
-                                  {data.bk_hazard_cargo === "Yes" ? "Yes" : ""}
+                                  Yes
                                 </td>
                                 <td
                                   style={{
@@ -1917,7 +1964,7 @@ const BookingInstruction = () => {
                                     borderLeft: "none",
                                   }}
                                 >
-                                  {data.bk_hazard_cargo === "No" ? "No" : ""}
+                                  No
                                 </td>
                                 <td
                                   style={{
@@ -1995,8 +2042,7 @@ const BookingInstruction = () => {
                                     borderLeft: "none",
                                   }}
                                 >
-                                  {/* {data.bk_cargo_packed} */}
-                                  {data.bk_cargo_packed === "Yes" ? "Yes" : ""}
+                                  Yes
                                 </td>
                                 <td
                                   style={{
@@ -2008,7 +2054,7 @@ const BookingInstruction = () => {
                                     borderLeft: "none",
                                   }}
                                 >
-                                  {data.bk_cargo_packed === "No" ? "No" : ""}
+                                  No
                                 </td>
                                 <td
                                   style={{
@@ -2085,8 +2131,7 @@ const BookingInstruction = () => {
                                     borderLeft: "none",
                                   }}
                                 >
-                                  {/* {data.bk_battery_MSDS} */}
-                                  {data.bk_battery_MSDS === "Yes" ? "Yes" : ""}
+                                  Yes
                                 </td>
                                 <td
                                   style={{
@@ -2098,7 +2143,7 @@ const BookingInstruction = () => {
                                     borderLeft: "none",
                                   }}
                                 >
-                                  {data.bk_battery_MSDS === "No" ? "No" : ""}
+                                  No
                                 </td>
                                 <td
                                   style={{
@@ -2165,8 +2210,7 @@ const BookingInstruction = () => {
                                     borderRight: "1px solid #000",
                                   }}
                                 >
-                                  IF SHIPPER HAS PACKED THE SEAFREIGHT CONTAINER
-                                  CAN YOU PROVIDE YOUR SOLAS VERFICATION NUMBER
+                                  Are goods to be consolidated from multiple shippers.
                                 </th>
                                 <td
                                   style={{
@@ -2176,7 +2220,9 @@ const BookingInstruction = () => {
                                     borderTop: "none",
                                     borderLeft: "none",
                                   }}
-                                ></td>
+                                >
+                                  Yes
+                                </td>
                                 <td
                                   style={{
                                     width: "65px",
@@ -2186,7 +2232,9 @@ const BookingInstruction = () => {
                                     borderTop: "none",
                                     borderLeft: "none",
                                   }}
-                                ></td>
+                                >
+                                  No
+                                </td>
                                 <td
                                   style={{
                                     border: "1px solid #000",
@@ -2195,7 +2243,7 @@ const BookingInstruction = () => {
                                     borderTop: "none",
                                   }}
                                 >
-                                  IF YES (STATE VERFICATION NUMBER)
+                                  IF YES (VERIFICATION NUMBER)
                                 </td>
                               </tr>
                               <tr>
@@ -2207,7 +2255,15 @@ const BookingInstruction = () => {
                                     borderTop: "none",
                                     borderLeft: "none",
                                   }}
-                                ></td>
+                                >
+                                  <i
+                                    className={
+                                      data.bk_cnsolid_mulShipp === "Yes"
+                                        ? "fa fa-check"
+                                        : ""
+                                    }
+                                  ></i>
+                                </td>
                                 <td
                                   style={{
                                     width: "65px",
@@ -2217,7 +2273,15 @@ const BookingInstruction = () => {
                                     borderTop: "none",
                                     borderLeft: "none",
                                   }}
-                                ></td>
+                                >
+                                  <i
+                                    className={
+                                      data.bk_cnsolid_mulShipp === "No"
+                                        ? "fa fa-check"
+                                        : ""
+                                    }
+                                  ></i>
+                                </td>
                                 <td
                                   style={{
                                     border: "1px solid #000",
@@ -2250,7 +2314,7 @@ const BookingInstruction = () => {
                                     borderLeft: "none",
                                   }}
                                 >
-                                  {data.bk_preship_insp === "Yes" ? "Yes" : ""}
+                                  Yes
                                 </td>
                                 <td
                                   style={{
@@ -2262,7 +2326,7 @@ const BookingInstruction = () => {
                                     borderLeft: "none",
                                   }}
                                 >
-                                  {data.bk_preship_insp === "No" ? "No" : ""}
+                                  No
                                 </td>
                                 <td
                                   style={{
@@ -2324,7 +2388,6 @@ const BookingInstruction = () => {
                                   rowSpan={2}
                                   style={{
                                     width: "40%",
-                                    borderBottom: "1px solid #000",
                                     borderRight: "1px solid #000",
                                   }}
                                 >
@@ -2332,7 +2395,7 @@ const BookingInstruction = () => {
                                 </th>
                                 <td
                                   style={{
-                                    width: "85px",
+                                    // width: "85px",
                                     border: "1px solid #000",
                                     textAlign: "center",
                                     borderTop: "none",
@@ -2340,20 +2403,20 @@ const BookingInstruction = () => {
                                     borderRight: "unset",
                                   }}
                                 >
-                                  PERMANENT
+                                  Yes
                                 </td>
                                 <td
                                   style={{
-                                    width: "85px",
+                                    // width: "85px",
                                     border: "1px solid #000",
                                     borderRight: "none",
                                     textAlign: "center",
                                     borderTop: "none",
                                   }}
                                 >
-                                  TEMPORARY
+                                  No
                                 </td>
-                                <td
+                                {/* <td
                                   style={{
                                     border: "1px solid #000",
                                     borderRight: "none",
@@ -2382,17 +2445,18 @@ const BookingInstruction = () => {
                                   }}
                                 >
                                   OTHER
-                                </td>
+                                </td> */}
                               </tr>
                               <tr>
                                 <td
                                   style={{
-                                    width: "65px",
+                                    // width: "65px",
                                     border: "1px solid #000",
                                     textAlign: "center",
                                     borderTop: "none",
                                     borderLeft: "unset",
                                     borderRight: "unset",
+                                    borderBottom:"none",
                                   }}
                                 >
                                   {data.bk_export_Import === "Yes" ? (
@@ -2403,11 +2467,12 @@ const BookingInstruction = () => {
                                 </td>
                                 <td
                                   style={{
-                                    width: "65px",
+                                    // width: "65px",
                                     border: "1px solid #000",
                                     borderRight: "none",
                                     textAlign: "center",
                                     borderTop: "none",
+                                    borderBottom:"none",
                                   }}
                                 >
                                   {data.bk_export_Import === "No" ? (
@@ -2416,12 +2481,13 @@ const BookingInstruction = () => {
                                     ""
                                   )}
                                 </td>
-                                <td
+                                {/* <td
                                   style={{
                                     border: "1px solid #000",
                                     borderRight: "none",
                                     textAlign: "center",
                                     borderTop: "none",
+                                    borderBottom:"none",
                                   }}
                                 ></td>
                                 <td
@@ -2430,6 +2496,7 @@ const BookingInstruction = () => {
                                     borderRight: "none",
                                     textAlign: "center",
                                     borderTop: "none",
+                                    borderBottom:"none",
                                   }}
                                 ></td>
                                 <td
@@ -2438,35 +2505,9 @@ const BookingInstruction = () => {
                                     borderRight: "none",
                                     textAlign: "center",
                                     borderTop: "none",
+                                    borderBottom:"none",
                                   }}
-                                ></td>
-                              </tr>
-                            </table>
-                            <table>
-                              <tr>
-                                <td
-                                  style={{
-                                    textAlign: "center",
-                                    background: "#b2b3b730",
-                                  }}
-                                >
-                                  <strong>
-                                    {" "}
-                                    Asia Direct - Africa Logistics BILLING
-                                    REQUIREMENTS{" "}
-                                  </strong>
-                                </td>
-                              </tr>
-                            </table>
-                            <table>
-                              <tr>
-                                <td
-                                  style={{
-                                    borderTop: "1px solid #000",
-                                  }}
-                                >
-                                  {data?.billing_requirement_desc || "description one"}
-                                </td>
+                                ></td> */}
                               </tr>
                             </table>
                           </div>
@@ -2801,8 +2842,8 @@ const BookingInstruction = () => {
                             abandoned, the customer will be liable for any
                             disposal costs and associated fees.
                           </p>
-                           <p>
-                             <strong>9.</strong>: For detailed Terms and Conditions refer to website.
+                          <p>
+                            <strong>9.</strong>: For detailed Terms and Conditions refer to website.
                           </p>
                         </div>
 

@@ -909,6 +909,10 @@ export default function Managefreight() {
     console.log("item", item);
     navigate("/Admin/QuotationInFreightCostumer", { state: { data: item } });
   };
+  const querryinQChat = (item) => {
+    console.log("supplier item", item);
+    navigate("/Admin/QuotationInFreightSupplier", { state: { data: item } });
+  };
 
   return (
     <>
@@ -1357,26 +1361,26 @@ export default function Managefreight() {
                                                     Chat Client
                                                   </div>
                                                 </a>
-                                                {/* {
-                                                  item.supplier_name ? <a
-                                                  className="dropdown-item li_icon"
-                                                  onClick={() => {
-                                                    querryinQChat(item);
-                                                  }}
-                                                >
-                                                  <div className="">
-                                                    <AiFillMessage
-                                                      className="text-success"
-                                                      style={{
-                                                        color: "rgb(27 34 69)",
-                                                        marginRight: "10px",
-                                                        width: "20px",
-                                                      }}
-                                                    />
-                                                    Chat Supplier
-                                                  </div>
-                                                </a>:""
-                                                } */}
+                                                {((item.supplier_name && item.supplier_name !== "null") || (item.confirmed_supplier_name && item.confirmed_supplier_name !== "null")) ? (
+                                                  <a
+                                                    className="dropdown-item li_icon"
+                                                    onClick={() => {
+                                                      querryinQChat(item);
+                                                    }}
+                                                  >
+                                                    <div className="">
+                                                      <AiFillMessage
+                                                        className="text-success"
+                                                        style={{
+                                                          color: "rgb(27 34 69)",
+                                                          marginRight: "10px",
+                                                          width: "20px",
+                                                        }}
+                                                      />
+                                                      Chat Supplier
+                                                    </div>
+                                                  </a>
+                                                ) : null}
                                                 <a
                                                   className="dropdown-item li_icon"
                                                   onClick={() => {
@@ -2972,7 +2976,7 @@ export default function Managefreight() {
               </Box>
             </Modal>
             {/* )} */}
-            
+
           </div >
         </div >
       </div >

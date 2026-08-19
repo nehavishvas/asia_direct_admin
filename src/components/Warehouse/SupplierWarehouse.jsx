@@ -48,6 +48,9 @@ const style1 = {
 
 export default function SupplierWarehouse() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [tab, setTab] = useState("all");
+  const [sortOrder, setSortOrder] = useState("newest");
+  const [limit, setLimit] = useState(10);
   const [data, setData] = useState([]);
   const [batch, setBatch] = useState([]);
   const [countries, setCountries] = useState([]);
@@ -78,7 +81,7 @@ export default function SupplierWarehouse() {
   const [isModalOpen2, setIsModalOpen2] = useState(false);
   const [isModalOpen3, setIsModalOpen3] = useState(false);
   const [updatedata, setUpdatedata] = useState(false);
-  const [pagenationData, setPagenationData] = useState(1);
+  const [pagenationData, setPagenationData] = useState({ total: 0, limit: 10, page: 1 });
   const [data1, setData1] = useState({
     origin: "",
     destination: "",
@@ -135,19 +138,31 @@ export default function SupplierWarehouse() {
   const handleCloseModal2 = () => setIsModalOpen2(false);
   const handleCloseModal3 = () => setIsModalOpen3(false);
   useEffect(() => {
-    getData(1);
+    getData(1, tab, sortOrder, searchQuery, limit);
   }, []);
   const userid = JSON.parse(localStorage.getItem("data123"))?.id;
   const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
-  const getData = async (page = 1) => {
+  
+  const getData = async (
+    page = 1,
+    currentTab = tab,
+    currentSort = sortOrder,
+    currentSearch = searchQuery,
+    currentLimit = limit
+  ) => {
     try {
       setLoader(true);
       const payload = {
         user_id: userid,
         page: page,
-        limit: pageSize,
+        limit: currentLimit,
+        tab: currentTab,
+        sort_order: currentSort,
       };
-      console.log("Sending page:", page); 
+      if (currentSearch.trim()) {
+        payload.search = currentSearch.trim();
+      }
+      console.log("Sending payload:", payload);
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}GetSupplierCreatedWarehouseOrders`,
         payload,
@@ -164,6 +179,23 @@ export default function SupplierWarehouse() {
       setLoader(false);
       toast.error("Error fetching data");
     }
+  };
+
+  const handleTabChange = (newTab) => {
+    setTab(newTab);
+    setCurrentPage(1);
+    getData(1, newTab, sortOrder, searchQuery, limit);
+  };
+
+  const handleSortChange = (newSort) => {
+    setSortOrder(newSort);
+    setCurrentPage(1);
+    getData(1, tab, newSort, searchQuery, limit);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    getData(page, tab, sortOrder, searchQuery, limit);
   };
   const getAllBatch = (item) => {
     console.log(item);
@@ -184,20 +216,7 @@ export default function SupplierWarehouse() {
         toast.error("Error fetching batch data");
       });
   };
-  // const handlePageChange = (page) => {
-  //   console.log(page);
-  //   setCurrentPage(page);
-  //   getData(page);
-  // };
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
 
-    if (searchQuery.trim() !== "") {
-      getdata11(searchQuery, page);
-    } else {
-      getData(page);
-    }
-  };
   const handleEditClick = (order_id) => {
     const selectedData = data.find((item) => item.id === order_id);
     console.log(selectedData);
@@ -650,64 +669,18 @@ export default function SupplierWarehouse() {
       }, delay);
     };
   };
+
   const debouncedSearch = useRef(
-    debounce((value) => {
-      getdata11(value);
+    debounce((value, currentTab, currentSort, currentLimit) => {
+      getData(1, currentTab, currentSort, value, currentLimit);
     }, 500),
   ).current;
+
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
     setCurrentPage(1);
-    if (value.trim() === "") {
-      getData(1); // 🔥 reset to original data
-    } else {
-      debouncedSearch(value);
-    }
-  };
-  const throttle = (func, delay) => {
-    let lastCall = 0;
-    return (...args) => {
-      const now = Date.now();
-      if (now - lastCall >= delay) {
-        lastCall = now;
-        func(...args);
-      }
-    };
-  };
-  const throttledSearch = useRef(
-    throttle((value) => {
-      getdata11(value);
-    }, 1000),
-  ).current;
-  const getdata11 = async (value, page = 1) => {
-    setLoader(true);
-    try {
-      const payload = {
-        user_id: userid,
-        page: page,
-        limit: pageSize,
-        search: value, // 👈 send search value
-      };
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}GetSupplierCreatedWarehouseOrders`,
-        payload,
-      );
-      setLoader(false);
-      if (response.data && response.data.data) {
-        setData(response.data.data);
-        setPagenationData(response.data);
-      } else {
-        toast.error("No warehouse orders found.");
-      }
-    } catch (error) {
-      setLoader(false);
-      console.error("Error fetching warehouse orders:", error);
-      toast.error(
-        error?.response?.data?.message ||
-          "Something went wrong while fetching orders.",
-      );
-    }
+    debouncedSearch(value, tab, sortOrder, limit);
   };
   // const getdata11 = async (value) => {
   //   setLoader(true);
@@ -854,6 +827,15 @@ export default function SupplierWarehouse() {
                     value={searchQuery}
                     onChange={handleSearch}
                   />
+                  <select
+                    className="form-select form-select-sm"
+                    value={sortOrder}
+                    onChange={(e) => handleSortChange(e.target.value)}
+                    style={{ width: "120px", height: "38px", fontSize: "14px", borderRadius: "8px", border: "1px solid #ced4da", cursor: "pointer" }}
+                  >
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
+                  </select>
                   <button
                     variant="contained"
                     onClick={() => {
@@ -867,6 +849,48 @@ export default function SupplierWarehouse() {
               </div>
             </div>
           </div>
+          <ul className="nav nav-tabs mb-3 mt-3">
+            <li className="nav-item" style={{ cursor: "pointer" }}>
+              <a
+                className={`nav-link ${tab === 'all' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                onClick={() => handleTabChange('all')}
+              >
+                All
+              </a>
+            </li>
+            <li className="nav-item" style={{ cursor: "pointer" }}>
+              <a
+                className={`nav-link ${tab === 'pending' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                onClick={() => handleTabChange('pending')}
+              >
+                Pending
+              </a>
+            </li>
+            <li className="nav-item" style={{ cursor: "pointer" }}>
+              <a
+                className={`nav-link ${tab === 'assigned' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                onClick={() => handleTabChange('assigned')}
+              >
+                Assigned
+              </a>
+            </li>
+            <li className="nav-item" style={{ cursor: "pointer" }}>
+              <a
+                className={`nav-link ${tab === 'instore' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                onClick={() => handleTabChange('instore')}
+              >
+                In - store
+              </a>
+            </li>
+            <li className="nav-item" style={{ cursor: "pointer" }}>
+              <a
+                className={`nav-link ${tab === 'out' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                onClick={() => handleTabChange('out')}
+              >
+                Out
+              </a>
+            </li>
+          </ul>
           {loader ? (
             <div class="loader-container">
               <div class="loader"></div>
@@ -1115,21 +1139,92 @@ export default function SupplierWarehouse() {
                             })}
                         </tbody>
                       </table>
-                      <div className="text-center d-flex justify-content-end align-items-center">
+                      <div className="text-center d-flex justify-content-end align-items-center gap-2 mt-3 mb-4">
+                        {/* Rows per page dropdown */}
+                        <div className="d-flex align-items-center me-3" style={{ gap: "8px" }}>
+                          <span style={{ fontSize: "13px", fontWeight: "600", color: "#5c6378" }}>Rows per page:</span>
+                          <select
+                            value={limit}
+                            onChange={(e) => {
+                              const newLimit = parseInt(e.target.value, 10);
+                              setLimit(newLimit);
+                              setCurrentPage(1);
+                              getData(1, tab, sortOrder, searchQuery, newLimit);
+                            }}
+                            className="form-select form-select-sm"
+                            style={{ width: "80px", fontSize: "13px", height: "30px", padding: "2px 8px" }}
+                          >
+                            <option value={10}>10</option>
+                            <option value={25}>25</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                          </select>
+                        </div>
+                        {/* First Page button */}
+                        <button
+                          disabled={currentPage === 1}
+                          className="bg_page"
+                          onClick={() => handlePageChange(1)}
+                          title="First Page"
+                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                        >
+                          <i className="fa fa-angle-double-left" style={{ fontSize: "14px" }}></i>
+                        </button>
+
+                        {/* Prev Page button */}
                         <button
                           disabled={currentPage === 1}
                           className="bg_page"
                           onClick={() => handlePageChange(currentPage - 1)}
+                          title="Previous Page"
+                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
-                          <i class="fi fi-rr-angle-small-left page_icon"></i>
+                          <i className="fa fa-angle-left" style={{ fontSize: "14px" }}></i>
                         </button>
-                        <span className="mx-2">{`Page ${currentPage} of ${totalPage}`}</span>
+
+                        {/* Dynamic page selection dropdown */}
+                        <div className="d-flex align-items-center gap-1" style={{ fontSize: "13px", fontWeight: "600", color: "#1b2245" }}>
+                          <span>Page</span>
+                          <select
+                            value={currentPage}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              if (!isNaN(val)) {
+                                handlePageChange(val);
+                              }
+                            }}
+                            className="form-select form-select-sm text-center px-1"
+                            style={{ width: "80px", height: "30px", fontSize: "13px", borderRadius: "4px", padding: "2px 20px 2px 8px" }}
+                          >
+                            {Array.from({ length: totalPage || 1 }, (_, i) => i + 1).map((page) => (
+                              <option key={page} value={page}>
+                                {page}
+                              </option>
+                            ))}
+                          </select>
+                          <span>of {totalPage || 1}</span>
+                        </div>
+
+                        {/* Next Page button */}
                         <button
-                          disabled={currentPage === totalPage}
+                          disabled={currentPage === totalPage || totalPage === 0}
                           className="bg_page"
                           onClick={() => handlePageChange(currentPage + 1)}
+                          title="Next Page"
+                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
-                          <i class="fi fi-rr-angle-small-right page_icon"></i>
+                          <i className="fa fa-angle-right" style={{ fontSize: "14px" }}></i>
+                        </button>
+
+                        {/* Last Page button */}
+                        <button
+                          disabled={currentPage === totalPage || totalPage === 0}
+                          className="bg_page"
+                          onClick={() => handlePageChange(totalPage)}
+                          title="Last Page"
+                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                        >
+                          <i className="fa fa-angle-double-right" style={{ fontSize: "14px" }}></i>
                         </button>
                       </div>
                       

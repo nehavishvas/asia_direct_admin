@@ -1,10 +1,8 @@
 import axios from "axios";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { toast } from "react-toastify";
 import { Box, Button, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
 import Swal from "sweetalert2";
 const pageSize = 10;
 const toDateKey = (date) => {
@@ -18,6 +16,57 @@ const parseLeaveDate = (value) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return null;
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+};
+const getStartOfWeek = (d) => {
+  const date = new Date(d);
+  const day = date.getDay();
+  const diff = date.getDate() - day;
+  return new Date(date.setDate(diff));
+};
+const getEndOfWeek = (d) => {
+  const start = getStartOfWeek(d);
+  return new Date(start.setDate(start.getDate() + 6));
+};
+const getWeekDays = (d) => {
+  const start = getStartOfWeek(d);
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(start);
+    day.setDate(start.getDate() + i);
+    days.push(day);
+  }
+  return days;
+};
+const getMonthGridDays = (d) => {
+  const year = d.getFullYear();
+  const month = d.getMonth();
+  const firstDayOfMonth = new Date(year, month, 1);
+  const startDayOfWeek = firstDayOfMonth.getDay();
+  const gridStart = new Date(firstDayOfMonth);
+  gridStart.setDate(firstDayOfMonth.getDate() - startDayOfWeek);
+  const days = [];
+  for (let i = 0; i < 42; i++) {
+    const day = new Date(gridStart);
+    day.setDate(gridStart.getDate() + i);
+    days.push(day);
+  }
+  const sixthWeekStart = days[35];
+  if (sixthWeekStart.getMonth() !== month) {
+    return days.slice(0, 35);
+  }
+  return days;
+};
+const isWeekend = (date) => {
+  const day = date.getDay();
+  return day === 0 || day === 6;
+};
+const isToday = (date) => {
+  const today = new Date();
+  return (
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
+  );
 };
 const getStatusLabel = (status) => {
   if (status === 1) return "Approved";
@@ -78,31 +127,425 @@ export default function Dashboard1() {
   });
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [hoverTooltip, setHoverTooltip] = useState(null);
+  const [viewMode, setViewMode] = useState("month");
   const leaveDatesMap = useMemo(() => buildLeaveDatesMap(data), [data]);
-  const tileClassName = ({ date, view }) => {
-    if (view !== "month") return null;
-    return leaveDatesMap.has(toDateKey(date)) ? "highlight" : null;
-  };
+
+  const timeoutRef = useRef(null);
+
   const showLeaveTooltip = (e, date, leaves) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     const rect = e.currentTarget.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const placeBelow = rect.top < viewportHeight / 2;
+    
+    // Strict max height: either 80% viewport height or the distance to viewport bounds
+    const maxHeight = placeBelow
+      ? Math.min(viewportHeight * 0.8, viewportHeight - rect.top - 40)
+      : Math.min(viewportHeight * 0.8, rect.top - 20);
+
     setHoverTooltip({
       date,
       leaves,
       x: rect.left + rect.width / 2,
       y: rect.top,
+      placeBelow,
+      maxHeight,
     });
   };
-  const tileContent = ({ date, view }) => {
-    if (view !== "month") return null;
-    const leaves = leaveDatesMap.get(toDateKey(date));
-    if (!leaves?.length) return null;
+
+  const hideLeaveTooltip = () => {
+    timeoutRef.current = setTimeout(() => {
+      setHoverTooltip(null);
+    }, 150);
+  };
+
+  const handleTooltipMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  };
+
+  const handleTooltipMouseLeave = () => {
+    setHoverTooltip(null);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  const handlePrev = () => {
+    setCalendarDate((prev) => {
+      const nextDate = new Date(prev);
+      if (viewMode === "month") {
+        nextDate.setMonth(prev.getMonth() - 1);
+      } else if (viewMode === "week") {
+        nextDate.setDate(prev.getDate() - 7);
+      } else if (viewMode === "year") {
+        nextDate.setFullYear(prev.getFullYear() - 1);
+      }
+      return nextDate;
+    });
+  };
+
+  const handleNext = () => {
+    setCalendarDate((prev) => {
+      const nextDate = new Date(prev);
+      if (viewMode === "month") {
+        nextDate.setMonth(prev.getMonth() + 1);
+      } else if (viewMode === "week") {
+        nextDate.setDate(prev.getDate() + 7);
+      } else if (viewMode === "year") {
+        nextDate.setFullYear(prev.getFullYear() + 1);
+      }
+      return nextDate;
+    });
+  };
+
+  const getNavigationTitle = () => {
+    if (viewMode === "month") {
+      return calendarDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    } else if (viewMode === "week") {
+      const start = getStartOfWeek(calendarDate);
+      const end = getEndOfWeek(calendarDate);
+      if (start.getFullYear() !== end.getFullYear()) {
+        return `${start.toLocaleDateString("en-US", { month: "short", day: "numeric" })}, ${start.getFullYear()} – ${end.toLocaleDateString("en-US", { month: "short", day: "numeric" })}, ${end.getFullYear()}`;
+      }
+      if (start.getMonth() !== end.getMonth()) {
+        return `${start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${end.toLocaleDateString("en-US", { month: "short", day: "numeric" })}, ${start.getFullYear()}`;
+      }
+      return `${start.toLocaleDateString("en-US", { month: "long", day: "numeric" })} – ${end.getDate()}, ${start.getFullYear()}`;
+    } else {
+      return `${calendarDate.getFullYear()}`;
+    }
+  };
+
+  const renderMonthView = () => {
+    const gridDays = getMonthGridDays(calendarDate);
+    const weeks = [];
+    for (let i = 0; i < gridDays.length; i += 7) {
+      weeks.push(gridDays.slice(i, i + 7));
+    }
+    const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
     return (
-      <div
-        className="leave-day-hover-zone"
-        onMouseEnter={(e) => showLeaveTooltip(e, date, leaves)}
-        onMouseLeave={() => setHoverTooltip(null)}
-      >
-        <span className="leave-day-count">{leaves.length}</span>
+      <div className="calendar-month-grid">
+        <div className="calendar-weekdays-header">
+          {weekdays.map((w) => (
+            <div className="calendar-weekday-col" key={w}>
+              {w}
+            </div>
+          ))}
+        </div>
+        {weeks.map((weekDays, weekIdx) => {
+          const leavesInWeekMap = new Map();
+          weekDays.forEach((day) => {
+            const key = toDateKey(day);
+            const dayLeaves = leaveDatesMap.get(key) || [];
+            dayLeaves.forEach((leave) => {
+              leavesInWeekMap.set(leave.leave_id, leave);
+            });
+          });
+          const uniqueLeavesInWeek = Array.from(leavesInWeekMap.values());
+
+          uniqueLeavesInWeek.sort((a, b) => {
+            const startA = new Date(a.leave_from).getTime();
+            const startB = new Date(b.leave_from).getTime();
+            if (startA !== startB) return startA - startB;
+            const endA = new Date(a.leave_to).getTime();
+            const endB = new Date(b.leave_to).getTime();
+            return endB - endA;
+          });
+
+          const assignments = [];
+          uniqueLeavesInWeek.forEach((leave) => {
+            const activeDays = weekDays
+              .map((day, idx) => {
+                const key = toDateKey(day);
+                const dayLeaves = leaveDatesMap.get(key) || [];
+                const isActive = dayLeaves.some((l) => l.leave_id === leave.leave_id);
+                return isActive ? idx : -1;
+              })
+              .filter((idx) => idx !== -1);
+
+            let slotIdx = 0;
+            while (true) {
+              if (!assignments[slotIdx]) {
+                assignments[slotIdx] = Array(7).fill(null);
+              }
+              const isFree = activeDays.every((dayIdx) => assignments[slotIdx][dayIdx] === null);
+              if (isFree) {
+                activeDays.forEach((dayIdx) => {
+                  assignments[slotIdx][dayIdx] = leave;
+                });
+                break;
+              }
+              slotIdx++;
+            }
+          });
+
+          return (
+            <div className="calendar-week-row" key={weekIdx}>
+              {weekDays.map((day, dayIdx) => {
+                const isCurrentMonth = day.getMonth() === calendarDate.getMonth();
+                const dayKey = toDateKey(day);
+                const dayLeaves = leaveDatesMap.get(dayKey) || [];
+
+                return (
+                  <div
+                    className={`calendar-day-cell ${isWeekend(day) ? "weekend-tint" : ""} ${
+                      !isCurrentMonth ? "other-month-day" : ""
+                    }`}
+                    key={dayIdx}
+                  >
+                    <div className="calendar-day-header">
+                      <span className={`calendar-day-number ${isToday(day) ? "today-highlight" : ""}`}>
+                        {day.getDate()}
+                      </span>
+                    </div>
+                    <div className="calendar-day-events">
+                      {assignments.map((slot, slotIdx) => {
+                        const leave = slot[dayIdx];
+                        if (!leave) {
+                          return <div className="calendar-event-placeholder" key={slotIdx} />;
+                        }
+
+                        const startOfLeave = parseLeaveDate(leave.leave_from);
+                        const isStart = toDateKey(day) === toDateKey(startOfLeave) || dayIdx === 0;
+                        const endOfLeave = parseLeaveDate(leave.leave_to);
+                        const isEnd = toDateKey(day) === toDateKey(endOfLeave) || dayIdx === 6;
+
+                        const isActualStart = toDateKey(day) === toDateKey(startOfLeave);
+                        const isActualEnd = toDateKey(day) === toDateKey(endOfLeave);
+
+                        return (
+                          <div
+                            className={`calendar-event-chip status-${leave.status} ${
+                              isActualStart ? "event-start" : ""
+                            } ${isActualEnd ? "event-end" : ""}`}
+                            key={slotIdx}
+                            onMouseEnter={(e) => showLeaveTooltip(e, day, dayLeaves)}
+                            onMouseLeave={hideLeaveTooltip}
+                            onClick={() => handleViewLeave(leave.leave_id)}
+                          >
+                            {isStart && (
+                              <span className="calendar-event-title" title={leave.staff_name}>
+                                {leave.staff_name}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const renderWeekView = () => {
+    const weekDays = getWeekDays(calendarDate);
+    const leavesInWeekMap = new Map();
+    weekDays.forEach((day) => {
+      const key = toDateKey(day);
+      const dayLeaves = leaveDatesMap.get(key) || [];
+      dayLeaves.forEach((leave) => {
+        leavesInWeekMap.set(leave.leave_id, leave);
+      });
+    });
+    const uniqueLeavesInWeek = Array.from(leavesInWeekMap.values());
+
+    uniqueLeavesInWeek.sort((a, b) => {
+      const startA = new Date(a.leave_from).getTime();
+      const startB = new Date(b.leave_from).getTime();
+      if (startA !== startB) return startA - startB;
+      const endA = new Date(a.leave_to).getTime();
+      const endB = new Date(b.leave_to).getTime();
+      return endB - endA;
+    });
+
+    const assignments = [];
+    uniqueLeavesInWeek.forEach((leave) => {
+      const activeDays = weekDays
+        .map((day, idx) => {
+          const key = toDateKey(day);
+          const dayLeaves = leaveDatesMap.get(key) || [];
+          const isActive = dayLeaves.some((l) => l.leave_id === leave.leave_id);
+          return isActive ? idx : -1;
+        })
+        .filter((idx) => idx !== -1);
+
+      let slotIdx = 0;
+      while (true) {
+        if (!assignments[slotIdx]) {
+          assignments[slotIdx] = Array(7).fill(null);
+        }
+        const isFree = activeDays.every((dayIdx) => assignments[slotIdx][dayIdx] === null);
+        if (isFree) {
+          activeDays.forEach((dayIdx) => {
+            assignments[slotIdx][dayIdx] = leave;
+          });
+          break;
+        }
+        slotIdx++;
+      }
+    });
+
+    return (
+      <div className="calendar-month-grid">
+        <div className="calendar-week-row week-view-height">
+          {weekDays.map((day, dayIdx) => {
+            const dayKey = toDateKey(day);
+            const dayLeaves = leaveDatesMap.get(dayKey) || [];
+
+            return (
+              <div
+                className={`calendar-day-cell ${isWeekend(day) ? "weekend-tint" : ""}`}
+                key={dayIdx}
+              >
+                <div className="calendar-day-header">
+                  <span className="calendar-day-name">
+                    {day.toLocaleDateString("en-US", { weekday: "short" })}
+                  </span>
+                  <span className={`calendar-day-number ${isToday(day) ? "today-highlight" : ""}`}>
+                    {day.getDate()}
+                  </span>
+                </div>
+                <div className="calendar-day-events">
+                  {assignments.map((slot, slotIdx) => {
+                    const leave = slot[dayIdx];
+                    if (!leave) {
+                      return <div className="calendar-event-placeholder" key={slotIdx} />;
+                    }
+
+                    const startOfLeave = parseLeaveDate(leave.leave_from);
+                    const isStart = toDateKey(day) === toDateKey(startOfLeave) || dayIdx === 0;
+                    const endOfLeave = parseLeaveDate(leave.leave_to);
+                    const isEnd = toDateKey(day) === toDateKey(endOfLeave) || dayIdx === 6;
+
+                    const isActualStart = toDateKey(day) === toDateKey(startOfLeave);
+                    const isActualEnd = toDateKey(day) === toDateKey(endOfLeave);
+
+                    return (
+                      <div
+                        className={`calendar-event-chip status-${leave.status} ${
+                          isActualStart ? "event-start" : ""
+                        } ${isActualEnd ? "event-end" : ""}`}
+                        key={slotIdx}
+                        onMouseEnter={(e) => showLeaveTooltip(e, day, dayLeaves)}
+                        onMouseLeave={hideLeaveTooltip}
+                        onClick={() => handleViewLeave(leave.leave_id)}
+                      >
+                        {isStart && (
+                          <span className="calendar-event-title" title={leave.staff_name}>
+                            {leave.staff_name}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const renderYearView = () => {
+    const year = calendarDate.getFullYear();
+    const months = [];
+    for (let m = 0; m < 12; m++) {
+      months.push(new Date(year, m, 1));
+    }
+    const weekdaysMini = ["S", "M", "T", "W", "T", "F", "S"];
+    const getMiniMonthDays = (firstDayOfMonth) => {
+      const y = firstDayOfMonth.getFullYear();
+      const m = firstDayOfMonth.getMonth();
+      const startDayOfWeek = firstDayOfMonth.getDay();
+      const daysInMonth = new Date(y, m + 1, 0).getDate();
+      const days = [];
+      for (let i = 0; i < startDayOfWeek; i++) {
+        days.push(null);
+      }
+      for (let d = 1; d <= daysInMonth; d++) {
+        days.push(new Date(y, m, d));
+      }
+      return days;
+    };
+
+    return (
+      <div className="calendar-year-grid">
+        {months.map((monthDate, idx) => {
+          const monthDays = getMiniMonthDays(monthDate);
+          const monthName = monthDate.toLocaleDateString("en-US", { month: "long" });
+
+          return (
+            <div
+              className="calendar-year-month-card"
+              key={idx}
+              onClick={() => {
+                setCalendarDate(monthDate);
+                setViewMode("month");
+              }}
+            >
+              <div className="calendar-year-month-title">{monthName}</div>
+              <div className="calendar-year-month-grid">
+                {weekdaysMini.map((w, wIdx) => (
+                  <div className="calendar-year-weekday" key={wIdx}>
+                    {w}
+                  </div>
+                ))}
+                {monthDays.map((day, dayIdx) => {
+                  if (!day) {
+                    return <div className="calendar-year-day empty-day" key={`empty-${dayIdx}`} />;
+                  }
+
+                  const dayKey = toDateKey(day);
+                  const dayLeaves = leaveDatesMap.get(dayKey) || [];
+                  const hasLeave = dayLeaves.length > 0;
+
+                  let statusClass = "";
+                  if (hasLeave) {
+                    if (dayLeaves.some((l) => l.status === 2)) {
+                      statusClass = "status-2";
+                    } else if (dayLeaves.some((l) => l.status === 0)) {
+                      statusClass = "status-0";
+                    } else {
+                      statusClass = "status-1";
+                    }
+                  }
+
+                  return (
+                    <div
+                      className={`calendar-year-day ${hasLeave ? "year-day-has-leave " + statusClass : ""} ${
+                        isToday(day) ? "calendar-year-today" : ""
+                      }`}
+                      key={dayIdx}
+                      onMouseEnter={(e) => {
+                        if (hasLeave) {
+                          showLeaveTooltip(e, day, dayLeaves);
+                        }
+                      }}
+                      onMouseLeave={hideLeaveTooltip}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCalendarDate(day);
+                        setViewMode("month");
+                      }}
+                    >
+                      {day.getDate()}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -167,6 +610,13 @@ export default function Dashboard1() {
         toast.success(res.data.message);
         setIsModalOpen2(false);
         setPendingStatusChange(null);
+        if (viewLeaveData && viewLeaveData.leave_id === inputdata.leave_id) {
+          setViewLeaveData((prev) => ({
+            ...prev,
+            status: parseInt(inputdata.status),
+            admin_remark: inputdata.admin_remark,
+          }));
+        }
         getdata(currentPage, searchQuery);
       })
       .catch((err) => {
@@ -271,15 +721,48 @@ Status: ${leave.status === 1
           ) : (
             <div className="leave-management-wrap">
               <div className="leave-calendar-section w-100 mb-4">
-                <div className="card p-3 shadow-sm">
-                  <h6 className="mb-2">Leave Calendar</h6>
-                  <Calendar
-                    className="leave-calendar-full w-100"
-                    value={calendarDate}
-                    onChange={setCalendarDate}
-                    tileClassName={tileClassName}
-                    tileContent={tileContent}
-                  />
+                <div className="card p-4 shadow-sm">
+                  <div className="calendar-custom-header">
+                    <div className="calendar-nav-pill">
+                      <button type="button" className="calendar-nav-btn" onClick={handlePrev} title="Previous">
+                        <i className="fa fa-angle-left"></i>
+                      </button>
+                      <span className="calendar-nav-title">{getNavigationTitle()}</span>
+                      <button type="button" className="calendar-nav-btn" onClick={handleNext} title="Next">
+                        <i className="fa fa-angle-right"></i>
+                      </button>
+                    </div>
+
+                    <div className="calendar-view-toggle">
+                      <button
+                        type="button"
+                        className={`calendar-toggle-btn ${viewMode === "week" ? "active" : ""}`}
+                        onClick={() => setViewMode("week")}
+                      >
+                        Week
+                      </button>
+                      <button
+                        type="button"
+                        className={`calendar-toggle-btn ${viewMode === "month" ? "active" : ""}`}
+                        onClick={() => setViewMode("month")}
+                      >
+                        Month
+                      </button>
+                      <button
+                        type="button"
+                        className={`calendar-toggle-btn ${viewMode === "year" ? "active" : ""}`}
+                        onClick={() => setViewMode("year")}
+                      >
+                        Year
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="custom-calendar-container">
+                    {viewMode === "month" && renderMonthView()}
+                    {viewMode === "week" && renderWeekView()}
+                    {viewMode === "year" && renderYearView()}
+                  </div>
                 </div>
               </div>
               <div className="leave-table-section mt-4 pt-4">
@@ -315,23 +798,20 @@ Status: ${leave.status === 1
                             </td>
                             <td>{item.reason}</td>
                             <td>
-                              <select
-                                className="form-select form-select-sm"
-                                value={item.status}
-                                onChange={(e) => handleStatusToggle(item, parseInt(e.target.value))}
+                              <span
                                 style={{
-                                  width: "120px",
-                                  fontSize: "13px",
+                                  display: "inline-block",
+                                  fontSize: "11px",
                                   fontWeight: 600,
-                                  borderRadius: "6px",
+                                  borderRadius: "4px",
                                   padding: "4px 8px",
-                                  cursor: "pointer",
+                                  border: "1px solid",
                                   backgroundColor:
                                     item.status === 1
                                       ? "#d1e7dd"
                                       : item.status === 2
                                         ? "#f8d7da"
-                                        : "#f0f185ff",
+                                        : "#fff3cd",
                                   color:
                                     item.status === 1
                                       ? "#0f5132"
@@ -343,24 +823,22 @@ Status: ${leave.status === 1
                                       ? "#badbcc"
                                       : item.status === 2
                                         ? "#f5c2c7"
-                                        : "#ebec9fff",
+                                        : "#ffeeba",
                                 }}
                               >
-                                <option value="0" style={{ backgroundColor: "#ffffff", color: "#212529" }}>Pending</option>
-                                <option value="1" style={{ backgroundColor: "#ffffff", color: "#212529" }}>Approved</option>
-                                <option value="2" style={{ backgroundColor: "#ffffff", color: "#212529" }}>Rejected</option>
-                              </select>
+                                {getStatusLabel(item.status)}
+                              </span>
                             </td>
                             <td>{item.admin_remark}</td>
-                            <td>
+                            <td style={{ whiteSpace: "nowrap" }}>
                               <i
-                                className="fa fa-eye"
+                                className="fa fa-eye mx-1"
                                 style={{ cursor: "pointer" }}
                                 onClick={() => handleViewLeave(item.leave_id)}
                                 title="View Leave Details"
                               ></i>
                               <i
-                                className="fa fa-calendar ms-1"
+                                className="fa fa-calendar mx-1"
                                 style={{
                                   cursor: "pointer",
                                 }}
@@ -368,7 +846,7 @@ Status: ${leave.status === 1
                                 title="Add to Google Calendar"
                               ></i>
                               <i
-                                className="fa fa-trash ms-1 text-danger"
+                                className="fa fa-trash mx-1 text-danger"
                                 style={{ cursor: "pointer" }}
                                 onClick={() => handleDeleteLeave(item.leave_id)}
                                 title="Delete Leave Request"
@@ -410,11 +888,14 @@ Status: ${leave.status === 1
           )}
           {hoverTooltip && (
             <div
-              className="leave-calendar-tooltip"
+              className={`leave-calendar-tooltip ${hoverTooltip.placeBelow ? "place-below" : "place-above"}`}
               style={{
                 left: hoverTooltip.x,
                 top: hoverTooltip.y,
+                maxHeight: hoverTooltip.maxHeight,
               }}
+              onMouseEnter={handleTooltipMouseEnter}
+              onMouseLeave={handleTooltipMouseLeave}
             >
               <div className="leave-calendar-tooltip-arrow" />
               <div className="leave-calendar-tooltip-title">
@@ -639,6 +1120,27 @@ Status: ${leave.status === 1
                     >
                       View Attachment
                     </a>
+                  </div>
+                )}
+
+                {parseInt(viewLeaveData.status) !== 1 && parseInt(viewLeaveData.status) !== 2 && (
+                  <div className="col-12 mt-4 pt-3 border-top d-flex gap-2 justify-content-end">
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={() => handleStatusToggle(viewLeaveData, 1)}
+                      style={{ borderRadius: "6px", textTransform: "none", fontWeight: 600, color: "white" }}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleStatusToggle(viewLeaveData, 2)}
+                      style={{ borderRadius: "6px", textTransform: "none", fontWeight: 600, color: "white" }}
+                    >
+                      Reject
+                    </Button>
                   </div>
                 )}
               </div>

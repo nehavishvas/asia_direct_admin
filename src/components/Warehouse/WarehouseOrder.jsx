@@ -27,7 +27,28 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import logo from "../../Assests/logo.png";
 
-const pageSize = 10;
+const parseDate = (dStr) => {
+  if (!dStr) return new Date(0);
+  const d = new Date(dStr);
+  return isNaN(d.getTime()) ? new Date(0) : d;
+};
+
+const sortAscByEntryDate = (items) => {
+  return [...items].sort((a, b) => {
+    const dateA = parseDate(a.date_received || a.date);
+    const dateB = parseDate(b.date_received || b.date);
+    return dateA - dateB;
+  });
+};
+
+const sortDescByExitDate = (items) => {
+  return [...items].sort((a, b) => {
+    const dateA = parseDate(a.dispatched_date || a.date_dspatched || a.date);
+    const dateB = parseDate(b.dispatched_date || b.date_dspatched || b.date);
+    return dateB - dateA;
+  });
+};
+
 const style1 = {
   position: "absolute",
   top: "50%",
@@ -47,6 +68,8 @@ const style1 = {
 
 export default function WarehouseOrder() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [sortOrder, setSortOrder] = useState("oldest");
   const [activeTab, setActiveTab] = useState("In Store");
   const [counts, setCounts] = useState({ inStore: 0, out: 0, batchAssigned: 0, batchNotAssigned: 0 });
   const [data, setData] = useState([]);
@@ -78,7 +101,7 @@ export default function WarehouseOrder() {
   const [nameData, setNameData] = useState("");
   const [isModalOpen3, setIsModalOpen3] = useState(false);
   const [updatedata, setUpdatedata] = useState(false);
-  const [pagenationData, setPagenationData] = useState(1);
+  const [pagenationData, setPagenationData] = useState({ total: 0, limit: 10, page: 1 });
   const [data1, setData1] = useState({
     origin: "",
     destination: "",
@@ -175,11 +198,50 @@ export default function WarehouseOrder() {
   const handleCloseModal3 = () => setIsModalOpen3(false);
   const userid = JSON.parse(localStorage.getItem("data123"))?.id;
   const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
+  const mapTabToParam = (tab) => {
+    if (tab === "In Store") return "instore";
+    if (tab === "Batch Assigned") return "assigned";
+    if (tab === "Batch not Assigned") return "not_assigned";
+    if (tab === "Out") return "out";
+    return tab;
+  };
+
+  const fetchCounts = async (searchVal = searchQuery, filters = advancedFilters) => {
+    try {
+      const tabsList = ["instore", "assigned", "not_assigned", "out"];
+      const promises = tabsList.map((tab) => {
+        const payload = {
+          user_id: userid,
+          user_type: usertype,
+          page: 1,
+          limit: 1,
+          tab: tab,
+          ...filters,
+        };
+        if (searchVal.trim().length > 0) {
+          payload.search = searchVal.trim();
+        }
+        return axios.post(`${process.env.REACT_APP_BASE_URL}GetWarehouseOrders`, payload);
+      });
+      const results = await Promise.all(promises);
+      setCounts({
+        inStore: results[0].data.total || 0,
+        batchAssigned: results[1].data.total || 0,
+        batchNotAssigned: results[2].data.total || 0,
+        out: results[3].data.total || 0,
+      });
+    } catch (error) {
+      console.error("Error fetching tab counts:", error);
+    }
+  };
+
   const fetchWarehouseOrders = async (
     pageNumber = 1,
     tab = activeTab,
     searchVal = searchQuery,
-    filters = advancedFilters
+    filters = advancedFilters,
+    limit = itemsPerPage,
+    sort = sortOrder
   ) => {
     try {
       const datapost = {
@@ -197,8 +259,10 @@ export default function WarehouseOrder() {
           const payload = {
             user_id: userid,
             user_type: usertype,
-            page: 1,
-            limit: 10000,
+            page: pageNumber,
+            limit: limit,
+            tab: mapTabToParam(tab),
+            sort_order: sort,
             ...filters,
           };
           if (searchVal.trim().length > 0) {
@@ -209,90 +273,14 @@ export default function WarehouseOrder() {
             payload,
           );
 
-          let allItems = [];
           if (response.data && response.data.data) {
-            allItems = [...response.data.data];
-            const totalItems = response.data.total;
-            const limitReturned = response.data.limit || 10;
-            
-            if (allItems.length < totalItems && limitReturned < totalItems) {
-              const totalPages = Math.ceil(totalItems / limitReturned);
-              const promises = [];
-              for (let p = 2; p <= totalPages; p++) {
-                promises.push(
-                  axios.post(
-                    `${process.env.REACT_APP_BASE_URL}GetWarehouseOrders`,
-                    { ...payload, page: p, limit: limitReturned }
-                  )
-                );
-              }
-              if (promises.length > 0) {
-                const results = await Promise.all(promises);
-                results.forEach(res => {
-                  if (res.data && res.data.data) {
-                    allItems = [...allItems, ...res.data.data];
-                  }
-                });
-              }
-            }
+            setData(response.data.data);
+            setPagenationData(response.data);
+          } else {
+            setData([]);
+            setPagenationData({ total: 0, limit: limit, page: pageNumber });
           }
 
-          const inStoreItems = allItems.filter(item => {
-            return item.warehouse_item_status === "In Store" || item.warehouse_item_status == null;
-          });
-          const outItems = allItems.filter(item => {
-            return item.warehouse_item_status === "Out";
-          });
-          const assignedItems = allItems.filter(item => {
-            return item.assign_to_batch !== 0 && item.assign_to_batch !== "0" && item.assign_to_batch != null;
-          });
-          const unassignedItems = allItems.filter(item => {
-            return item.assign_to_batch === 0 || item.assign_to_batch === "0" || item.assign_to_batch == null;
-          });
-
-          setCounts({
-            inStore: inStoreItems.length,
-            out: outItems.length,
-            batchAssigned: assignedItems.length,
-            batchNotAssigned: unassignedItems.length,
-          });
-
-          const pageSize = 10;
-          const startIdx = (pageNumber - 1) * pageSize;
-
-          if (tab === "In Store") {
-            const paginatedData = inStoreItems.slice(startIdx, startIdx + pageSize);
-            setData(paginatedData);
-            setPagenationData({
-              total: inStoreItems.length,
-              limit: pageSize,
-              page: pageNumber,
-            });
-          } else if (tab === "Out") {
-            const paginatedData = outItems.slice(startIdx, startIdx + pageSize);
-            setData(paginatedData);
-            setPagenationData({
-              total: outItems.length,
-              limit: pageSize,
-              page: pageNumber,
-            });
-          } else if (tab === "Batch Assigned") {
-            const paginatedData = assignedItems.slice(startIdx, startIdx + pageSize);
-            setData(paginatedData);
-            setPagenationData({
-              total: assignedItems.length,
-              limit: pageSize,
-              page: pageNumber,
-            });
-          } else if (tab === "Batch not Assigned") {
-            const paginatedData = unassignedItems.slice(startIdx, startIdx + pageSize);
-            setData(paginatedData);
-            setPagenationData({
-              total: unassignedItems.length,
-              limit: pageSize,
-              page: pageNumber,
-            });
-          }
           setLoader(false);
         } catch (error) {
           setLoader(false);
@@ -309,11 +297,13 @@ export default function WarehouseOrder() {
   };
 
   useEffect(() => {
-    fetchWarehouseOrders(1, activeTab, searchQuery, advancedFilters);
+    fetchWarehouseOrders(1, activeTab, searchQuery, advancedFilters, itemsPerPage, sortOrder);
+    fetchCounts(searchQuery, advancedFilters);
   }, []);
 
   const getData = (page) => {
-    fetchWarehouseOrders(page, activeTab, searchQuery, advancedFilters);
+    fetchWarehouseOrders(page, activeTab, searchQuery, advancedFilters, itemsPerPage, sortOrder);
+    fetchCounts(searchQuery, advancedFilters);
   };
   const getAllBatch = (item) => {
     console.log(item);
@@ -336,7 +326,7 @@ export default function WarehouseOrder() {
   };
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    fetchWarehouseOrders(page, activeTab, searchQuery, advancedFilters);
+    fetchWarehouseOrders(page, activeTab, searchQuery, advancedFilters, itemsPerPage, sortOrder);
   };
   const handleEditClick = (freight_ID, warehouse_assign_order_id, order_id) => {
     console.log(freight_ID, warehouse_assign_order_id, order_id);
@@ -1179,13 +1169,14 @@ export default function WarehouseOrder() {
     setAdvancedFilters(data3);
     handleCloseModal2();
     setCurrentPage(1);
-    fetchWarehouseOrders(1, activeTab, searchQuery, data3);
+    fetchWarehouseOrders(1, activeTab, searchQuery, data3, itemsPerPage, sortOrder);
+    fetchCounts(searchQuery, data3);
   };
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
     setCurrentPage(1);
-    debouncedSearch(value, activeTab, advancedFilters);
+    debouncedSearch(value, activeTab, advancedFilters, itemsPerPage, sortOrder);
   };
   const debounce = (func, delay) => {
     let timer;
@@ -1197,8 +1188,9 @@ export default function WarehouseOrder() {
     };
   };
   const debouncedSearch = useRef(
-    debounce((value, currentTab, currentFilters) => {
-      fetchWarehouseOrders(1, currentTab, value, currentFilters);
+    debounce((value, currentTab, currentFilters, currentLimit, currentSort) => {
+      fetchWarehouseOrders(1, currentTab, value, currentFilters, currentLimit, currentSort);
+      fetchCounts(value, currentFilters);
     }, 500),
   ).current;
   useEffect(() => {
@@ -1270,21 +1262,39 @@ export default function WarehouseOrder() {
                 <div>
                   <h4 className="freight_hd">Warehouse Order List</h4>
                 </div>
-                <div className="d-flex justify-content-end align-items-center">
-                  <div className="">
+                <div className="d-flex justify-content-end align-items-center gap-2">
+                  <div>
                     <input
                       className="px-2 py-1 rounded "
                       placeholder="Search"
                       value={searchQuery}
                       onChange={handleSearch}
-                    ></input>
+                      style={{ height: "38px", border: "1px solid #ced4da" }}
+                    />
                   </div>
-                  <div className="ms-1">
+                  <div>
+                    <select
+                      className="form-select form-select-sm"
+                      value={sortOrder}
+                      onChange={(e) => {
+                        const newSort = e.target.value;
+                        setSortOrder(newSort);
+                        setCurrentPage(1);
+                        fetchWarehouseOrders(1, activeTab, searchQuery, advancedFilters, itemsPerPage, newSort);
+                      }}
+                      style={{ width: "120px", height: "38px", fontSize: "14px", borderRadius: "8px", border: "1px solid #ced4da", cursor: "pointer" }}
+                    >
+                      <option value="newest">Newest</option>
+                      <option value="oldest">Oldest</option>
+                    </select>
+                  </div>
+                  <div>
                     <Button
                       variant="contained"
                       onClick={() => {
                         handleOpenModal2();
                       }}
+                      style={{ height: "38px" }}
                     >
                       Filter
                     </Button>
@@ -1300,22 +1310,10 @@ export default function WarehouseOrder() {
                 onClick={() => {
                   setActiveTab('In Store');
                   setCurrentPage(1);
-                  fetchWarehouseOrders(1, 'In Store', searchQuery, advancedFilters);
+                  fetchWarehouseOrders(1, 'In Store', searchQuery, advancedFilters, itemsPerPage, sortOrder);
                 }}
               >
                 In - store ({counts.inStore})
-              </a>
-            </li>
-            <li className="nav-item" style={{ cursor: "pointer" }}>
-              <a
-                className={`nav-link ${activeTab === 'Out' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                onClick={() => {
-                  setActiveTab('Out');
-                  setCurrentPage(1);
-                  fetchWarehouseOrders(1, 'Out', searchQuery, advancedFilters);
-                }}
-              >
-                Out ({counts.out})
               </a>
             </li>
             <li className="nav-item" style={{ cursor: "pointer" }}>
@@ -1324,7 +1322,7 @@ export default function WarehouseOrder() {
                 onClick={() => {
                   setActiveTab('Batch Assigned');
                   setCurrentPage(1);
-                  fetchWarehouseOrders(1, 'Batch Assigned', searchQuery, advancedFilters);
+                  fetchWarehouseOrders(1, 'Batch Assigned', searchQuery, advancedFilters, itemsPerPage, sortOrder);
                 }}
               >
                 Batch Assigned ({counts.batchAssigned})
@@ -1336,10 +1334,22 @@ export default function WarehouseOrder() {
                 onClick={() => {
                   setActiveTab('Batch not Assigned');
                   setCurrentPage(1);
-                  fetchWarehouseOrders(1, 'Batch not Assigned', searchQuery, advancedFilters);
+                  fetchWarehouseOrders(1, 'Batch not Assigned', searchQuery, advancedFilters, itemsPerPage, sortOrder);
                 }}
               >
                 Batch not Assigned ({counts.batchNotAssigned})
+              </a>
+            </li>
+            <li className="nav-item" style={{ cursor: "pointer" }}>
+              <a
+                className={`nav-link ${activeTab === 'Out' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                onClick={() => {
+                  setActiveTab('Out');
+                  setCurrentPage(1);
+                  fetchWarehouseOrders(1, 'Out', searchQuery, advancedFilters, itemsPerPage, sortOrder);
+                }}
+              >
+                Out ({counts.out})
               </a>
             </li>
           </ul>
@@ -1356,10 +1366,12 @@ export default function WarehouseOrder() {
                     <div className="table-responsive">
                       <table className="table table-striped tableICon">
                         <tbody>
-                          {data &&
-                            data.length > 0 &&
-                            data.map((item) => {
-                              return (
+                          {(() => {
+                            const isReadOnly = activeTab !== "Out";
+                            return data &&
+                              data.length > 0 &&
+                              data.map((item) => {
+                                return (
                                 <>
                                   <tr key={item.id}>
                                     <td className="list_bd">
@@ -1444,16 +1456,20 @@ export default function WarehouseOrder() {
                                             <div className="text-end">
                                               <div className="dropdown">
                                                 <select
-                                                  onClick={() => {
+                                                  onClick={isReadOnly ? null : () => {
                                                     getAllBatch(item);
                                                   }}
-                                                  onChange={(e) =>
+                                                  onChange={isReadOnly ? null : (e) =>
                                                     handleBatchChange(e, item)
                                                   }
+                                                  disabled={isReadOnly}
                                                   name="dropval"
                                                   value={item?.dropval}
                                                   className="py-1 ps-1 sel_batches"
-                                                  style={{ cursor: "pointer" }}
+                                                  style={{
+                                                    cursor: isReadOnly ? "not-allowed" : "pointer",
+                                                    opacity: isReadOnly ? 0.6 : 1,
+                                                  }}
                                                 >
                                                   <option
                                                     className="op_tion"
@@ -1515,8 +1531,8 @@ export default function WarehouseOrder() {
                                           </div>
                                           <div className="col-md-6 text-end">
                                             <i
-                                              class="fa fa-tasks me-2 mt-2"
-                                              onClick={() => {
+                                              className="fa fa-tasks me-2 mt-2"
+                                              onClick={isReadOnly ? null : () => {
                                                 console.log("Clicked Item Details:", item);
                                                 handleEditClickAssign(
                                                   item.freight_id || item.freight_ID || item.id,
@@ -1525,11 +1541,13 @@ export default function WarehouseOrder() {
                                               }}
                                               style={{
                                                 color: "#1d2044",
-                                                cursor: "pointer",
+                                                cursor: isReadOnly ? "not-allowed" : "pointer",
+                                                opacity: isReadOnly ? 0.4 : 1,
+                                                pointerEvents: isReadOnly ? "none" : "auto",
                                               }}
                                             />
                                             <FaEdit
-                                              onClick={() =>
+                                              onClick={isReadOnly ? null : () =>
                                                 handleEditClick(
                                                   item.freight_id,
                                                   item.warehouse_assign_order_id,
@@ -1538,11 +1556,13 @@ export default function WarehouseOrder() {
                                               }
                                               style={{
                                                 color: "#1d2044",
-                                                cursor: "pointer",
+                                                cursor: isReadOnly ? "not-allowed" : "pointer",
+                                                opacity: isReadOnly ? 0.4 : 1,
+                                                pointerEvents: isReadOnly ? "none" : "auto",
                                               }}
                                             />
                                             <DeleteIcon
-                                              onClick={() =>
+                                              onClick={isReadOnly ? null : () =>
                                                 handleEditClick12(
                                                   item.warehouse_assign_order_id,
                                                   item.order_id,
@@ -1551,7 +1571,9 @@ export default function WarehouseOrder() {
                                               }
                                               style={{
                                                 color: "#1d2044",
-                                                cursor: "pointer",
+                                                cursor: isReadOnly ? "not-allowed" : "pointer",
+                                                opacity: isReadOnly ? 0.4 : 1,
+                                                pointerEvents: isReadOnly ? "none" : "auto",
                                               }}
                                             />
                                             <VisibilityIcon
@@ -1577,24 +1599,97 @@ export default function WarehouseOrder() {
                                   </tr>
                                 </>
                               );
-                            })}
+                            });
+                          })()}
                         </tbody>
                       </table>
-                      <div className="text-center d-flex justify-content-end align-items-center">
+                      <div className="text-center d-flex justify-content-end align-items-center gap-2 mt-3 mb-4">
+                        {/* Rows per page dropdown */}
+                        <div className="d-flex align-items-center me-3" style={{ gap: "8px" }}>
+                          <span style={{ fontSize: "13px", fontWeight: "600", color: "#5c6378" }}>Rows per page:</span>
+                          <select
+                            value={itemsPerPage}
+                            onChange={(e) => {
+                              const newLimit = parseInt(e.target.value, 10);
+                              setItemsPerPage(newLimit);
+                              setCurrentPage(1);
+                              fetchWarehouseOrders(1, activeTab, searchQuery, advancedFilters, newLimit, sortOrder);
+                            }}
+                            className="form-select form-select-sm"
+                            style={{ width: "80px", fontSize: "13px", height: "30px", padding: "2px 8px" }}
+                          >
+                            <option value={10}>10</option>
+                            <option value={25}>25</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                          </select>
+                        </div>
+
+                        {/* First Page button */}
+                        <button
+                          disabled={currentPage === 1}
+                          className="bg_page"
+                          onClick={() => handlePageChange(1)}
+                          title="First Page"
+                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                        >
+                          <i className="fa fa-angle-double-left" style={{ fontSize: "14px" }}></i>
+                        </button>
+
+                        {/* Prev Page button */}
                         <button
                           disabled={currentPage === 1}
                           className="bg_page"
                           onClick={() => handlePageChange(currentPage - 1)}
+                          title="Previous Page"
+                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
-                          <i class="fi fi-rr-angle-small-left page_icon"></i>
+                          <i className="fa fa-angle-left" style={{ fontSize: "14px" }}></i>
                         </button>
-                        <span className="mx-2">{`Page ${currentPage} of ${totalPage}`}</span>
+
+                        {/* Dynamic page selection dropdown */}
+                        <div className="d-flex align-items-center gap-1" style={{ fontSize: "13px", fontWeight: "600", color: "#1b2245" }}>
+                          <span>Page</span>
+                          <select
+                            value={currentPage}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              if (!isNaN(val)) {
+                                handlePageChange(val);
+                              }
+                            }}
+                            className="form-select form-select-sm text-center px-1"
+                            style={{ width: "80px", height: "30px", fontSize: "13px", borderRadius: "4px", padding: "2px 20px 2px 8px" }}
+                          >
+                            {Array.from({ length: totalPage || 1 }, (_, i) => i + 1).map((page) => (
+                              <option key={page} value={page}>
+                                {page}
+                              </option>
+                            ))}
+                          </select>
+                          <span>of {totalPage || 1}</span>
+                        </div>
+
+                        {/* Next Page button */}
                         <button
-                          disabled={currentPage === totalPage}
+                          disabled={currentPage === totalPage || totalPage === 0}
                           className="bg_page"
                           onClick={() => handlePageChange(currentPage + 1)}
+                          title="Next Page"
+                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
-                          <i class="fi fi-rr-angle-small-right page_icon"></i>
+                          <i className="fa fa-angle-right" style={{ fontSize: "14px" }}></i>
+                        </button>
+
+                        {/* Last Page button */}
+                        <button
+                          disabled={currentPage === totalPage || totalPage === 0}
+                          className="bg_page"
+                          onClick={() => handlePageChange(totalPage)}
+                          title="Last Page"
+                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                        >
+                          <i className="fa fa-angle-double-right" style={{ fontSize: "14px" }}></i>
                         </button>
                       </div>
                       
