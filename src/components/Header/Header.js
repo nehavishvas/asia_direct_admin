@@ -98,14 +98,17 @@ const Header = () => {
             </div>
             <div style={{ width: '35px', height: '35px' }} className='me-0 me-md-5'>
               <img
-                src={text ? `${process.env.REACT_APP_BASE_URL_image}${text}` : `${process.env.REACT_APP_BASE_URL_image}${image}`}
+                src={text && text !== "null" ? `${process.env.REACT_APP_BASE_URL_image}${text}` : (image && image !== "null" && image !== "undefined" ? `${process.env.REACT_APP_BASE_URL_image}${image}` : "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>")}
+                onError={(e) => {
+                  e.target.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+                }}
                 alt="User Profile"
                 id="basic-button"
                 aria-controls={anchorEl ? 'basic-menu' : undefined}
                 aria-haspopup="true"
                 aria-expanded={anchorEl ? 'true' : undefined}
                 onClick={(e) => setAnchorEl(e.currentTarget)}
-                style={{ cursor: 'pointer', width: '100%', height: '100%', borderRadius: '50%' }}
+                style={{ cursor: 'pointer', width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#f1f5f9', objectFit: 'cover' }}
               />
             </div>
             <Menu

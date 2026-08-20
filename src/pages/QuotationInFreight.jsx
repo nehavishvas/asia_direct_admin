@@ -202,6 +202,26 @@ export default function QuotationInFreight() {
 
   return (
     <div className="wpWrapper" style={{ padding: "20px 0" }}>
+      <style>{`
+        .chat-app-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #cbd5e1 transparent;
+        }
+        .chat-app-scrollbar::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+        .chat-app-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .chat-app-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 4px;
+        }
+        .chat-app-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+      `}</style>
       <div className="container-fluid">
         <div className="row">
           <div className="col-md-12">
@@ -313,6 +333,7 @@ export default function QuotationInFreight() {
 
               {/* Chat Message List Area */}
               <div 
+                className="chat-app-scrollbar"
                 style={{ 
                   flex: 1, 
                   overflowY: "auto", 
@@ -411,16 +432,20 @@ export default function QuotationInFreight() {
                 <button
                   className="btn btn-primary"
                   onClick={sendMessage}
+                  disabled={!message.trim()}
                   style={{
                     borderRadius: "24px",
                     padding: "9px 22px",
-                    backgroundColor: "#0b63e6",
-                    borderColor: "#0b63e6",
+                    backgroundColor: !message.trim() ? "#cbd5e1" : "#0b63e6",
+                    borderColor: !message.trim() ? "#cbd5e1" : "#0b63e6",
+                    color: !message.trim() ? "#94a3b8" : "#ffffff",
                     fontWeight: "600",
                     fontSize: "13.5px",
                     display: "flex",
                     alignItems: "center",
-                    gap: 6
+                    gap: 6,
+                    cursor: !message.trim() ? "not-allowed" : "pointer",
+                    transition: "all 0.2s"
                   }}
                 >
                   Send

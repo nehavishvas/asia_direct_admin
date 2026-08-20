@@ -57,11 +57,13 @@
 //   );
 // }
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ArrowBack } from "@mui/icons-material";
 
 export default function TaskDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
@@ -83,7 +85,10 @@ export default function TaskDetails() {
 
   return (
     <div className="container mt-4">
-      <h3>Task Comments</h3>
+      <div className="d-flex align-items-center mb-3">
+        <ArrowBack style={{ cursor: "pointer", marginRight: "10px" }} onClick={() => navigate(-1)} />
+        <h3 className="mb-0">Task Comments</h3>
+      </div>
 
       <div className="table-responsive">
         <table className="table table-striped">

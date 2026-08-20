@@ -74,12 +74,11 @@ export default function SupplierEstimation() {
               </tr>
             </thead>
             <tbody style={{ border: "none" }}>
-              {currentData &&
-                currentData.length > 0 &&
+              {currentData && currentData.length > 0 ? (
                 currentData.map((item, index) => {
                   return (
                     <tr className="border-bottom" key={index}>
-                      <th>{startIndex + index + 1}</th>
+                      <td>{startIndex + index + 1}</td>
                       <td>{item?.name}</td>
                       <td>{item?.email}</td>
                       <td>{item?.phone_no}</td>
@@ -102,7 +101,14 @@ export default function SupplierEstimation() {
                       </td>
                     </tr>
                   );
-                })}
+                })
+              ) : (
+                <tr>
+                  <td colSpan="6" className="text-center py-3">
+                    No supplier available for this freight.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

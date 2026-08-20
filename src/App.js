@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -158,7 +158,24 @@ const Uniovwersalpage = lazy(() => import("./components/Uniovwersalpage"));
 export default function App() {
   const [text, setText] = useState("");
   const [permission, setPermission] = useState("");
-  console.log("14-08-26", "16:44");
+  console.log("19-08-26", "15:52");
+
+  useEffect(() => {
+    const handleDropdownClick = (event) => {
+      const toggleEl = event.target.closest('[data-bs-toggle="dropdown"]');
+      if (toggleEl && window.bootstrap) {
+        event.preventDefault();
+        const dropdown = window.bootstrap.Dropdown.getOrCreateInstance(toggleEl);
+        dropdown.toggle();
+      }
+    };
+
+    document.addEventListener("click", handleDropdownClick);
+    return () => {
+      document.removeEventListener("click", handleDropdownClick);
+    };
+  }, []);
+
   return (
     <MyContext1.Provider value={{ text, setText }}>
       <MyContext2.Provider value={{ permission, setPermission }}>

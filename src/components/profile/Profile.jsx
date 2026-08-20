@@ -68,8 +68,11 @@ export default function Profile() {
               <div className="card border-0 shadow-md rounded-4 h-100 text-center py-5">
                 <div className="position-relative d-inline-block mx-auto mb-3">
                   <img
-                    src={`${process.env.REACT_APP_BASE_URL_image}${text}`}
-                    style={{ width: '150px', height: '150px', objectFit: 'cover', border: '4px solid #fff', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}
+                    src={text && text !== "null" ? `${process.env.REACT_APP_BASE_URL_image}${text}` : (data?.profile && data.profile !== "null" && data.profile !== "undefined" ? `${process.env.REACT_APP_BASE_URL_image}${data.profile}` : "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>")}
+                    onError={(e) => {
+                      e.target.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+                    }}
+                    style={{ width: '150px', height: '150px', objectFit: 'cover', border: '4px solid #fff', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', backgroundColor: '#f1f5f9' }}
                     className="rounded-circle"
                     alt="Profile"
                   />
@@ -141,11 +144,14 @@ export default function Profile() {
                 <div className="modal-body p-4" style={{ background: '#f8f9fa' }}>
                   <div className="text-center mb-4">
                     <div className="position-relative d-inline-block">
-                       <img
-                         src={`${process.env.REACT_APP_BASE_URL_image}${data?.profile}`}
-                         style={{ width: "120px", height: "120px", objectFit: "cover", borderRadius: "50%", border: "3px solid white", boxShadow: "0 4px 10px rgba(0,0,0,0.1)" }}
-                         alt="Profile"
-                       />
+                        <img
+                          src={data?.profile && data.profile !== "null" && data.profile !== "undefined" ? `${process.env.REACT_APP_BASE_URL_image}${data.profile}` : "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>"}
+                          onError={(e) => {
+                            e.target.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+                          }}
+                          style={{ width: "120px", height: "120px", objectFit: "cover", borderRadius: "50%", border: "3px solid white", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", backgroundColor: '#f1f5f9' }}
+                          alt="Profile"
+                        />
                        <div className="mt-3">
                          <input
                            type="file"

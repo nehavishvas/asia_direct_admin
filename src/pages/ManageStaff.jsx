@@ -942,7 +942,7 @@ export default function ManageStaff() {
                         data.map((item, index) => {
                           return (
                             <tr className="border-bottom" key={index}>
-                              <th>{startIndex + index + 1}</th>
+                              <td>{startIndex + index + 1}</td>
                               <td>{item.full_name}</td>
                               <td>{item.email}</td>
                               <td>{item?.country_name}</td>

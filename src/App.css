@@ -129,6 +129,7 @@ th {
   background: var(--blue);
   height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebar::-webkit-scrollbar {

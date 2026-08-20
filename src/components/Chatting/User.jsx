@@ -331,6 +331,26 @@ const truncateMessage = (text, limit = 20) => {
   // ================= UI =================
   return (
     <div className="container-fluid chat-app" style={{ height: "80vh", backgroundColor: "#ffffff", borderRadius: 16, boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.05)", border: "1px solid #e2e8f0", overflow: "hidden", fontFamily: "Inter, system-ui, sans-serif" }}>
+      <style>{`
+        .chat-app-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #cbd5e1 transparent;
+        }
+        .chat-app-scrollbar::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+        .chat-app-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .chat-app-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 4px;
+        }
+        .chat-app-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+      `}</style>
       <div className="row g-0 h-100">
         {/* SIDEBAR */}
         <div className="col-md-3 d-flex flex-column h-100" style={{ borderRight: "1px solid #e2e8f0", backgroundColor: "#ffffff" }}>
@@ -374,7 +394,7 @@ const truncateMessage = (text, limit = 20) => {
               Staff
             </button>
           </div>
-          <div style={{ flex: 1, overflowY: "auto" }}>
+          <div className="chat-app-scrollbar" style={{ flex: 1, overflowY: "auto" }}>
             {/* USERS */}
             {activeTab === "users" &&
               [...users]
@@ -392,22 +412,36 @@ const truncateMessage = (text, limit = 20) => {
                     key={chat.conversation_id}
                     onClick={() => getMessages1(chat)}
                     style={{
+                      position: "relative",
                       display: "flex",
                       alignItems: "center",
                       gap: 12,
-                      padding: "12px 16px",
+                      padding: "12px 16px 12px 20px",
                       cursor: "pointer",
                       borderBottom: "1px solid #f1f5f9",
                       backgroundColor: isActive ? "#f0f6ff" : "transparent",
                       transition: "background-color 0.2s"
                     }}
                   >
+                    {isActive && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: 4,
+                          backgroundColor: "#0b57d0",
+                          borderRadius: "0 4px 4px 0"
+                        }}
+                      />
+                    )}
                     <div 
                       style={{
                         width: 38,
                         height: 38,
                         borderRadius: "50%",
-                        backgroundColor: isActive ? "#0b63e6" : "#cbd5e1",
+                        backgroundColor: isActive ? "#0b63e6" : "#0b63e6",
                         color: "#ffffff",
                         display: "flex",
                         alignItems: "center",
@@ -466,22 +500,36 @@ const truncateMessage = (text, limit = 20) => {
                     key={item.id}
                     onClick={() => startStaffChat(item)}
                     style={{
+                      position: "relative",
                       display: "flex",
                       alignItems: "center",
                       gap: 12,
-                      padding: "12px 16px",
+                      padding: "12px 16px 12px 20px",
                       cursor: "pointer",
                       borderBottom: "1px solid #f1f5f9",
                       backgroundColor: isActive ? "#f0f6ff" : "transparent",
                       transition: "background-color 0.2s"
                     }}
                   >
+                    {isActive && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: 4,
+                          backgroundColor: "#0b57d0",
+                          borderRadius: "0 4px 4px 0"
+                        }}
+                      />
+                    )}
                     <div 
                       style={{
                         width: 38,
                         height: 38,
                         borderRadius: "50%",
-                        backgroundColor: isActive ? "#0b63e6" : "#cbd5e1",
+                        backgroundColor: isActive ? "#0b63e6" : "#0b63e6",
                         color: "#ffffff",
                         display: "flex",
                         alignItems: "center",
@@ -570,6 +618,7 @@ const truncateMessage = (text, limit = 20) => {
 
               {/* Messages area */}
               <div 
+                className="chat-app-scrollbar"
                 style={{ 
                   flex: 1, 
                   overflowY: "auto", 
@@ -671,13 +720,17 @@ const truncateMessage = (text, limit = 20) => {
                 <button
                   className="btn btn-primary"
                   onClick={sendMessage1}
+                  disabled={!messageText.trim()}
                   style={{
                     borderRadius: "24px",
                     padding: "9px 22px",
-                    backgroundColor: "#0b63e6",
-                    borderColor: "#0b63e6",
+                    backgroundColor: !messageText.trim() ? "#cbd5e1" : "#0b63e6",
+                    borderColor: !messageText.trim() ? "#cbd5e1" : "#0b63e6",
+                    color: !messageText.trim() ? "#94a3b8" : "#ffffff",
                     fontWeight: "600",
-                    fontSize: "13.5px"
+                    fontSize: "13.5px",
+                    cursor: !messageText.trim() ? "not-allowed" : "pointer",
+                    transition: "all 0.2s"
                   }}
                 >
                   Send

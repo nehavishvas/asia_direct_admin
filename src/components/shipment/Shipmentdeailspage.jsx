@@ -13,6 +13,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+
 export default function Shipmentdeailspage() {
   const navigate = useNavigate();
   const [datat1, setDatat1] = useState("");
@@ -499,7 +500,7 @@ export default function Shipmentdeailspage() {
                   <thead>
                     <tr>
                       <th>Sr.No.</th>
-                      <th>Freight / Order No.</th>
+                      <th>Clearance No.</th>
                       <th>Client Name</th>
                       <th>Total Weight</th>
                       <th>Port of Loading</th>
@@ -599,7 +600,7 @@ export default function Shipmentdeailspage() {
           </div>
         </Box>
       </Modal>
-      
+
     </div>
   );
 }
