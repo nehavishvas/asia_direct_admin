@@ -1263,7 +1263,7 @@ export default function WarehouseOrder() {
                   <h4 className="freight_hd">Warehouse Order List</h4>
                 </div>
                 <div className="d-flex justify-content-end align-items-center gap-2">
-                  <div>
+                  <div className="searchManageFre">
                     <input
                       className="px-2 py-1 rounded "
                       placeholder="Search"

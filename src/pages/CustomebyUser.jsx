@@ -1292,7 +1292,7 @@ export default function CustomebyUserap() {
               <div className="d-flex justify-content-between flex-wrap gap-2">
                 <h4 className="freight_hd">Custom Clearance User</h4>
                 <div className="d-flex align-items-center">
-                  <div className="me-2">
+                  <div className="me-2 searchManageFre">
                     <input
                       className="px-2 py-1 rounded "
                       placeholder="Search"

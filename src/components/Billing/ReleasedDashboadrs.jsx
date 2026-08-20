@@ -97,7 +97,7 @@ const handlePageChange = (event, value) => {
                 </div>
 
                 <div className="d-flex align-items-center justify-content-end">
-                  <div className="me-2">
+                  <div className="me-2 searchManageFre">
                     <input
                       className="py-1 rounded ps-1"
                       type="text"

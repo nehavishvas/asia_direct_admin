@@ -66,7 +66,7 @@ export default function Listshippingestimate() {
       <div className="container-fluid" style={{ height: "89vh" }}>
         <div className="row">
           <div className="col-12">
-            <div className="d-flex justify-content-between">
+            <div className="d-flex justify-content-between searchManageFre">
               <h4 className="freight_hd">Shipping estimate list</h4>
               <input placeholder="Search" type="text" class="px-2 py-1 rounded" value={searchQuery} onChange={handleSearch} />
             </div>

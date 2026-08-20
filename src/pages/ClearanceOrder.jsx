@@ -991,7 +991,7 @@ export default function ClearanceOrder() {
               <div className="d-flex justify-content-between">
                 <h4 className="freight_hd">Order Clearance</h4>
                 <div className="d-flex align-items-center">
-                  <div className="">
+                  <div className="searchManageFre">
                     <input
                       value={searchQuery}
                       onChange={handleSearch}

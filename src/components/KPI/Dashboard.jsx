@@ -706,7 +706,7 @@ Status: ${leave.status === 1
     <>
       <div className="wpWrapper">
         <div className="container-fluid">
-          <div className="d-flex justify-content-between my-3">
+          <div className="d-flex justify-content-between my-3 searchManageFre">
             <h4>Leave Management</h4>
             <input
               type="text"

@@ -67,7 +67,7 @@ const totalPages = pagenationData?.totalPages || 1;
           <div className="container-fluid">
             <div className="d-flex justify-content-between my-3">
               <h4>Client Kpi</h4>
-              <div className="d-flex">
+              <div className="d-flex searchManageFre">
                 <input
                   type="text"
                   placeholder="Search"

@@ -328,7 +328,7 @@ export default function BillingTable() {
                     Customer Balance
                   </button>
                 </div>
-                <div className="d-flex">
+                <div className="d-flex searchManageFre">
                   <input
                     name="search"
                     placeholder="search..."

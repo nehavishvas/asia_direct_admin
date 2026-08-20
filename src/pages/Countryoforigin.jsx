@@ -272,7 +272,7 @@ const currentdata = currentData;
                     <h4 className="freight_hd">Country of Origin</h4>
                   </div>
     <div className="d-flex">
-    <div>
+    <div className="searchManageFre">
 
                   <input
   type="text"

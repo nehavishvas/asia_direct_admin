@@ -239,7 +239,7 @@ const formdata={
           <div className="container-fluid">
             <div className="d-flex justify-content-between my-3">
               <h4>All Leave</h4>
-              <div className="d-flex">
+              <div className="d-flex searchManageFre">
                 <input
                   type="text"
                   placeholder="Search"

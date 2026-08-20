@@ -696,7 +696,7 @@ const handleclickprintdate = async () => {
                       <option value="Assign Clearance">Assign Clearance</option>
                     </select>
                   </div>
-                  <div className="col-12 freightAuto">
+                  <div className="col-12 freightAuto searchManageFre">
                     <label className="ware_label">
                       {data1.shipment_waybill === "freight"
                         ? "Freight"
@@ -728,7 +728,7 @@ const handleclickprintdate = async () => {
                       />
                     </Box>
                   </div>
-                  <div className="col-12 freightAuto">
+                  <div className="col-12 freightAuto searchManageFre">
                
                       {data1.shipment_waybill === "Assign Clearance"?(
                         <>

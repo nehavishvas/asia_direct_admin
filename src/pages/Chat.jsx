@@ -138,7 +138,7 @@ import { toast } from "react-toastify";export default function Chat() {
                                         </div>
                                     </div>
                                 </div>
-                                <div id="search">
+                                <div className="searchManageFre" id="search">
                                     <label htmlFor="">
                                         <i className="fa fa-search" aria-hidden="true" />
                                     </label>

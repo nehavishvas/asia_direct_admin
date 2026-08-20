@@ -908,7 +908,7 @@ export default function UserFreight() {
               <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <h4 className="freight_hd">Freight By User</h4>
                 <div className="d-flex flex-wrap gap-2">
-                  <div>
+                  <div className="searchManageFre">
                     <input
                       type="text"
                       value={searchQuery}

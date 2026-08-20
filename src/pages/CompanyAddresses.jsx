@@ -289,7 +289,7 @@ export default function CompanyAddresses() {
           <div className="d-flex justify-content-between my-3">
             <h4>Company Addresses</h4>
 
-            <div className="d-flex gap-2">
+            <div className="d-flex gap-2 searchManageFre">
               <input
                 type="text"
                 placeholder="Search"

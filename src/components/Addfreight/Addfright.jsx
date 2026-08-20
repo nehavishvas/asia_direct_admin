@@ -112,7 +112,7 @@ const Addfright = () => {
     handlevalidate(data);
   };
 
-    const handleclick2 = () => {
+  const handleclick2 = () => {
     navigate("/Admin/managefreight");
   };
 
@@ -518,12 +518,13 @@ const Addfright = () => {
           <div className="container-fluid">
             <div className="row manageFreight">
               <div className="col-12">
-                <div className="d-flex">
+                <div className="d-flex gap-3">
                   <div style={{ cursor: "pointer" }}>
                     <ArrowBackIcon onClick={handleclick2} />
                   </div>
                   <div>
-                    <h4 className="det_hd ms-3">Add Freight</h4>
+                    <h4 className="det_hd">Add Freight</h4>
+                    <div className="line"></div>
                   </div>
                 </div>
               </div>
@@ -532,7 +533,7 @@ const Addfright = () => {
               <div className=" add_fre_cd">
                 <div className="row">
                   <div className="col-12">
-                    <span class="line"></span>
+
                   </div>
                 </div>
                 <div className="row">
@@ -1398,11 +1399,20 @@ const Addfright = () => {
                       <Modal
                         show={show}
                         onHide={handleClose}
-                        size="lg"
                         centered
                       >
-                        <Modal.Header closeButton>
+                        <Modal.Header>
                           <Modal.Title>Upload Documents</Modal.Title>
+
+                          <button
+                            type="button"
+                            className="btn-close crossReact"
+                            onClick={handleClose}
+                            aria-label="Close"
+                          >
+                            <i class="fa fa-times" aria-hidden="true"></i>
+
+                          </button>
                         </Modal.Header>
                         <Modal.Body>
                           <Form.Select onChange={handleSelect} defaultValue="">
@@ -1463,7 +1473,7 @@ const Addfright = () => {
               </div>
             </div>
           </div>
-          
+
         </div>
       )}
     </>

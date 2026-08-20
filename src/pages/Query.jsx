@@ -199,7 +199,7 @@ const Query = () => {
                 <div className="">
                   <h4 className="freight_hd">Customer Query</h4>
                 </div>
-                <div className="d-flex gap-2 flex-wrap align-items-center">
+                <div className="d-flex gap-2 flex-wrap align-items-center searchManageFre">
 
                   <input
                     className="py-1 rounded ps-1"
@@ -348,7 +348,7 @@ const Query = () => {
                         />
                       </div>
 
-                      <div className="col-md-12 position-relative">
+                      <div className="col-md-12 position-relative searchManageFre">
                         <label className="div_label">
                           Client <span className="redStar">*</span>
                         </label>

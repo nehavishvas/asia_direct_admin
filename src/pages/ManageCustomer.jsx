@@ -408,7 +408,7 @@ const ManageCustomer = () => {
                 </div>
               </div>
               <div className=" mt-2 d-flex">
-                <div>
+                <div className="searchManageFre">
                   <input
                     type="text"
                     placeholder="search"

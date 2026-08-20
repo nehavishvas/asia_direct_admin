@@ -60,7 +60,7 @@ export default function Contactus() {
           <div className="container-fluid">
             <div className="row manageFreight">
               <div className="col-12">
-                <div className="d-flex justify-content-between align-items-center">
+                <div className="d-flex justify-content-between align-items-center searchManageFre">
                   <h4 className="freight_hd">Contact Us Enquiries</h4>
                   <input
                     type="text"

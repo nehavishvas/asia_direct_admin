@@ -611,7 +611,7 @@ export default function MAnageshipments() {
               <div className="col-12">
                 <div className="d-flex justify-content-between align-items-center">
                   <h4 className="freight_hd">Shipments List</h4>
-                  <div className="d-flex">
+                  <div className="d-flex searchManageFre">
                     <input
                       type="text"
                       placeholder="Search shipment..."

@@ -1478,7 +1478,7 @@ export default function ShippingEstimate() {
                 </button>
               </div>
               <div className="custom-modal-body">
-                <div style={{ margin: "18px" }}>
+                <div>
                   {/* Selected Box */}
                   <div
                     onClick={() => setOpen(!open)}
@@ -1538,7 +1538,7 @@ export default function ShippingEstimate() {
                 </div>
               </div>
               <div className="custom-modal-footer">
-                <button className="btn btn-primary" onClick={handleAddSupplier}>
+                <button className="blueBtn" onClick={handleAddSupplier}>
                   Add Supplier
                 </button>
               </div>
@@ -1553,7 +1553,7 @@ export default function ShippingEstimate() {
                 <div className="row">
                   <div className="col-12">
                     <div className="d-flex justify-content-between align-items-center mb-4">
-                      <div className="d-flex">
+                      <div className="d-flex gap-3">
                         <ArrowBackIcon
                           onClick={handleclicknav}
                           style={{ cursor: "pointer" }}
@@ -2360,7 +2360,7 @@ export default function ShippingEstimate() {
           </div>
         </div>
       </div>
-      
+
     </>
   );
 }

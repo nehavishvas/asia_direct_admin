@@ -506,7 +506,7 @@ export default function Batches() {
                     <h4 className="freight_hd">Batches</h4>
                   </div>
                   <div className="d-flex align-items-center justify-content-end">
-                    <div class="me-2">
+                    <div className="me-2 searchManageFre">
                       <input
                         class="py-1 rounded ps-1"
                         type="text"

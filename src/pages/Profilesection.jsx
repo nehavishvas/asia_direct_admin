@@ -464,7 +464,7 @@ export default function Profilesection() {
           <div className="container-fluid">
             <div className="d-flex justify-content-between my-3">
               <h4>All Leave</h4>
-              <div className="d-flex">
+              <div className="d-flex searchManageFre">
                 <input
                   type="text"
                   placeholder="Search"
@@ -723,7 +723,7 @@ export default function Profilesection() {
 
                     {isLeaveTypeDropdownOpen && (
                       <div className="custom-dropdown-overlay border rounded shadow bg-white position-absolute w-100 mt-1" style={{ zIndex: 1050 }}>
-                        <div className="p-2 border-bottom sticky-top bg-white">
+                        <div className="p-2 border-bottom sticky-top bg-white searchManageFre">
                           <input
                             type="text"
                             className="form-control form-control-sm"

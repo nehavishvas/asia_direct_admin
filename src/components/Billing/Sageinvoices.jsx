@@ -571,7 +571,7 @@ export default function Sageinvoices() {
               <div className="d-flex justify-content-between align-items-center mb-3 manageFreight">
                 <h4 className="freight_hd">Sage Invoice</h4>
 
-                <div className="d-flex align-items-center gap-2">
+                <div className="d-flex align-items-center gap-2 searchManageFre">
                   <input
                     name="search"
                     value={namess.search}

@@ -1019,7 +1019,7 @@ export default function Order() {
                     <h4 className="freight_hd">Order's Details</h4>
                   </div>
                   <div className="d-flex justify-content-end align-items-center">
-                    <div className="mx-2">
+                    <div className="mx-2 searchManageFre">
                       <input
                         className="my-1 py-1 rounded ps-1"
                         value={searchQuery}

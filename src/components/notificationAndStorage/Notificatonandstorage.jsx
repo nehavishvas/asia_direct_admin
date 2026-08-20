@@ -36,7 +36,7 @@ export default function Notificatonandstorage() {
     <div className="wpWrapper">
       <div className="container-fluid">
         <div className="">
-          <div className="card-body d-flex justify-content-end">
+          <div className="card-body d-flex justify-content-end searchManageFre">
             <input
               type="text"
               value={searchQuery}

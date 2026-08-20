@@ -162,7 +162,7 @@ const Quotes = () => {
                                 </button>
                                 
                             </div>
-                            <div className="d-flex align-items-center gap-2">
+                            <div className="d-flex align-items-center gap-2 searchManageFre">
                                 <input
                                     name="search"
                                     value={search}

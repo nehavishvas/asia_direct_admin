@@ -1099,9 +1099,9 @@ p.text-primary {
 }
 
 .modal-title {
-  font-weight: 500;
+  font-weight: 600;
   margin: 0px;
-  font-size: 20px;
+  font-size: 17px !important;
 }
 
 button.btn-close {
@@ -1150,11 +1150,11 @@ button.btn-close {
 .modal-footer button {
   background: #1b2245;
   border: unset;
-  font-size: 15px;
-  font-weight: 500;
-  color: white !important;
-  padding: 10px 20px;
-  line-height: normal;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff !important;
+  padding: 8px 20px;
+
 }
 
 .modal-footer {
@@ -2522,6 +2522,7 @@ ul {
   margin-bottom: 5px;
   color: #1b2245;
   font-weight: 600;
+  font-size: 17px;
 }
 
 .action_btn svg {
@@ -2907,7 +2908,7 @@ ul {
 }
 
 .freight_hd {
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 600;
   color: #1b2245;
   margin-bottom: 0px !important;
@@ -2950,16 +2951,7 @@ table .esti_tbody tr th {
   overflow-y: auto !important;
 }
 
-.updateLoading button {
-  background-color: #1b2245;
-  color: #fff;
-  border: unset;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: normal !important;
-}
+
 
 .detail_hd {
   font-size: 25px;
@@ -3894,15 +3886,13 @@ div:where(.swal2-container) button:where(.swal2-styled).swal2-cancel {
   background-color: #1b2244;
 }
 
-.login_btn:hover {
-  color: lightgrey !important;
-}
+
 
 .forget_pass:hover {
   color: darkgrey !important;
 }
 
-.css-1hw9j7s {
+rgb(131, 131, 131) .css-1hw9j7s {
   background-color: #1b2245 !important;
 }
 
@@ -4410,8 +4400,9 @@ th.MuiTableCell-root {
 }
 
 .searchManageFre input {
-  border: 2px solid #1b2245;
-  padding: 6px 10px !important;
+  border: 1px solid #1b2245;
+  padding: 7px 10px !important;
+  height: 100%;
 }
 
 .manageFreight input {
@@ -4579,7 +4570,7 @@ button.btn-close svg {
 
 .newModal button.btn.btn-close:active {
   fill: #000 !important;
-  background: #0d1122 !important;
+  background: #ffff;
 }
 
 .desti_card tr td:nth-child(1) p {
@@ -5021,28 +5012,29 @@ button.bg_page {
 .manageFreight button,
 .blueBtn,
 button.btn.btn-secondary,
-.privacy_btn {
+.privacy_btn,
+.updateLoading button {
   background-color: #1b2245 !important;
   color: #fff;
   border: unset;
-  padding: 8px 6px !important;
+  padding: 8px 20px !important;
   border-radius: 5px;
-  font-size: 12px !important;
+  font-size: 13px !important;
   font-weight: 600 !important;
   text-transform: none !important;
-  line-height: normal !important;
+
 }
 
 .redBtn {
   background-color: var(--maroon) !important;
   color: #fff;
   border: unset;
-  padding: 9px 20px !important;
+  padding: 8px 20px !important;
   border-radius: 5px;
   font-size: 13px !important;
   font-weight: 600 !important;
   text-transform: none !important;
-  line-height: normal !important;
+
 }
 
 .cost-table thead {
@@ -5808,14 +5800,17 @@ td {
 .leave-calendar-tooltip-list::-webkit-scrollbar {
   width: 6px;
 }
+
 .leave-calendar-tooltip-list::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 3px;
 }
+
 .leave-calendar-tooltip-list::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.25);
   border-radius: 3px;
 }
+
 .leave-calendar-tooltip-list::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.4);
 }
@@ -6040,8 +6035,9 @@ td {
 }
 
 .borderShip h4 {
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 17px;
+  font-weight: 600;
+
 }
 
 
@@ -6557,15 +6553,31 @@ table.cost-table strong {
   color: #198754 !important;
 }
 
-/* Disabled past dates */
-.picker-day-cell.past-day {
-  opacity: 0.4 !important;
-  cursor: not-allowed !important;
-  pointer-events: none !important;
+
+
+label,
+.form-label,
+.MuiFormLabel-root,
+.MuiInputLabel-root,
+.MuiFormControlLabel-label,
+[class*="label" i] {
+  font-size: 13px !important;
+  font-weight: 600 !important;
 }
 
-/* Highlight Today's date */
-.picker-day-cell.picker-today {
-  border: 1.5px solid #198754 !important;
-  font-weight: bold !important;
+.crossReact {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h4 {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.uploadBtn {
+  background-color: #fff !important;
+  color: var(--blue);
+  border: 1px dotted var(--gray);
 }

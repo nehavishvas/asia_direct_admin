@@ -260,7 +260,7 @@ export default function Customclearence() {
           <div></div>
         ) : (
           <div className=" container d-flex justify-content-between mt-5">
-            <div>
+            <div className="searchManageFre">
               <input
                 className="px-2 my-3 py-2 rounded customSearch"
                 value={searchQuery}

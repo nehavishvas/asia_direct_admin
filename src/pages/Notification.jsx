@@ -228,7 +228,7 @@ const Notification = () => {
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h4>Notification</h4>
             <div className="d-flex gap-2 manageFreight">
-              <div>
+              <div className="searchManageFre">
                 <input
                   type="text"
                   className="form-control"

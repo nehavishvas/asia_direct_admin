@@ -579,7 +579,7 @@ export default function Cashbook() {
                 >
                   Unallocated Report
                 </button>
-                <div className="d-flex align-items-center">
+                <div className="d-flex align-items-center searchManageFre">
                   <input
                     className="py-1 rounded ps-1 mx-2"
                     type="text"

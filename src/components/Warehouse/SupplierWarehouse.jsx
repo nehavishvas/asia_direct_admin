@@ -820,7 +820,7 @@ export default function SupplierWarehouse() {
                 <div>
                   <h4 className="freight_hd">Supplier Warehouse </h4>
                 </div>
-                <div className="d-flex justify-content-end align-items-center gap-2">
+                <div className="d-flex justify-content-end align-items-center gap-2 searchManageFre">
                   <input
                     className="searchTop"
                     placeholder="Search"

@@ -1873,7 +1873,7 @@ export default function ShippingEstimate2() {
               <div className="row">
                 <div className="col-12">
                   <div className="d-flex justify-content-between align-items-center mb-4">
-                    <div className="d-flex">
+                    <div className="d-flex gap-3">
                       <ArrowBackIcon
                         onClick={handleclicknav}
                         style={{ cursor: "pointer" }}

@@ -640,7 +640,7 @@ export default function ManageStaff() {
                       <h4 className="freight_hd">Add Staff</h4>
                     </div>
                     <div className="d-flex justify-content-end align-items-center">
-                      <div className="">
+                      <div className="searchManageFre">
                         <input
                           className="px-2 py-1 rounded "
                           type="text"
