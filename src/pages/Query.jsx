@@ -226,7 +226,8 @@ const Query = () => {
                 <table className="table mt-4 table-striped tableICon">
                   <thead>
                     <tr>
-                      <th scope="col">Freight Number</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">Freight / Order No.</th>
                       <th scope="col">Dispute ID</th>
                       <th scope="col">Name</th>
                       <th className="col-2" scope="col-2">
@@ -245,6 +246,7 @@ const Query = () => {
                         return (
                           <>
                             <tr className="border-bottom" key={index}>
+                             <td>{item.created.split("T")[0].split("-").reverse().join("/")}</td>
                               <td>{item.freight_no}</td>
                               <td>{item.Dispute_ID}</td>
                               <td>{item?.name}</td>
@@ -547,7 +549,7 @@ const Query = () => {
               </div>
             </div>
           </div>
-          
+
 
 
         </div>
