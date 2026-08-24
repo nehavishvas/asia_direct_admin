@@ -62,14 +62,14 @@ const PrivacyPolicy = () => {
                   setDescription12(newData);
                 }}
               />
-              <div className="text-center">
-                <button onClick={handleGetData} className='privacy_btn'>Update</button>
+              <div className="text-center mt-3">
+                <button onClick={handleGetData} className='blueBtn'>Update</button>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
+
     </>
   );
 };

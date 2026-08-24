@@ -346,22 +346,24 @@ export default function CompanyAddresses() {
                           .join(", ") || "-"}
                       </td>
                       <td>
-                        <FaEye
-                          onClick={() => openEditModal(item.id, true)}
-                          style={{
-                            color: "#1b2245",
-                            marginRight: "10px",
-                            cursor: "pointer",
-                          }}
-                        />
-                        <FaEdit
-                          onClick={() => openEditModal(item.id, false)}
-                          style={{
-                            color: "#1b2245",
-                            marginRight: "10px",
-                            cursor: "pointer",
-                          }}
-                        />
+                        <div className="d-flex gap-1">
+                          <FaEye
+                            onClick={() => openEditModal(item.id, true)}
+                            style={{
+                              color: "#1b2245",
+                              marginRight: "10px",
+                              cursor: "pointer",
+                            }}
+                          />
+                          <FaEdit
+                            onClick={() => openEditModal(item.id, false)}
+                            style={{
+                              color: "#1b2245",
+                              marginRight: "10px",
+                              cursor: "pointer",
+                            }}
+                          />
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -425,7 +427,7 @@ export default function CompanyAddresses() {
               {isReadOnly ? (
                 <button
                   type="button"
-                  className="btn btn-secondary supplier-modal-submit"
+                  className="blueBtn mt-3"
                   onClick={() => setIsModalOpen(false)}
                 >
                   Close
@@ -433,7 +435,7 @@ export default function CompanyAddresses() {
               ) : (
                 <button
                   type="button"
-                  className="btn btn-secondary supplier-modal-submit"
+                  className="blueBtn mt-3"
                   onClick={handleUpdate}
                 >
                   Update Address
@@ -443,7 +445,7 @@ export default function CompanyAddresses() {
           </div>
         </div>
       )}
-      
+
     </>
   );
 }

@@ -1300,7 +1300,7 @@ export default function ManageStaff() {
           </div>
         </div>
       </div>
-      
+
     </>
   );
 }
