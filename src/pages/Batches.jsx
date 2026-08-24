@@ -476,6 +476,11 @@ export default function Batches() {
 
   const filteredData = datauser
     ? datauser.filter((item) => {
+      const isGoodsInTransit =
+        item.track_status?.toLowerCase() === "goods are in transit";
+      if (isGoodsInTransit) {
+        return activeTab === "unshift";
+      }
       const hasTrackStatus = !!item.track_status;
       return activeTab === "shift" ? hasTrackStatus : !hasTrackStatus;
     })
@@ -583,7 +588,9 @@ export default function Batches() {
                       {displayedData &&
                         displayedData.length > 0 &&
                         displayedData.map((item, index) => {
-                          const isDisabled = !!item.track_status; // 🔥 important
+                          const isDisabled =
+                            !!item.track_status &&
+                            item.track_status?.toLowerCase() !== "goods are in transit"; // 🔥 important
 
                           return (
                             <TableRow
