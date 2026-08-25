@@ -34,6 +34,9 @@ const pageSize = 10;
 
 export default function Order() {
   const navigate = useNavigate();
+  const userid = JSON.parse(localStorage.getItem("data123") || "{}")?.id;
+  const usertype = JSON.parse(localStorage.getItem("data123") || "{}")?.user_type;
+
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState([]);
   const [countries, setCountries] = useState([]);
@@ -43,6 +46,7 @@ export default function Order() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [apidata, setApidata] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
   const [formData2, setFormData2] = useState(null);
   const [file, setFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -310,8 +314,39 @@ export default function Order() {
       setLoader(false);
     }
   };
+  const checkPermission = async () => {
+    try {
+      setLoader(true);
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const postdata = {
+        staff_id: userid,
+        route_url: "/order/details",
+        user_type: usertype,
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        postdata
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+        getorder();
+      } else {
+        setHasPermission(false);
+        toast.error("You don't have permission to access this page");
+      }
+    } catch (error) {
+      setHasPermission(false);
+      toast.error(error.response?.data?.message || "You don't have permission to access this page");
+    } finally {
+      setLoader(false);
+    }
+  };
+
   useEffect(() => {
-    getorder();
+    checkPermission();
   }, []);
   ///////////////////////////////update address/////////////////////////////////////////////////////
   const handleSearch = (e) => {
@@ -370,11 +405,7 @@ export default function Order() {
       }
     } catch (error) {
       console.error("Error checking permission:", error);
-      if (error.response && error.response.status === 400) {
-        toast.error("Permission Denied: You don’t have access to this page");
-      } else {
-        toast.error("Something went wrong while checking permission.");
-      }
+      toast.error(error.response?.data?.message || "Permission Denied: You don’t have access to this page");
     }
   };
 
@@ -400,15 +431,14 @@ export default function Order() {
             toast.success(response.data.message);
           })
           .catch((error) => {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Something went wrong while assigning clearing.");
           });
       } else {
         toast.error("Permission Denied: You don’t have access to this page");
       }
     } catch (error) {
-      if (error.response.status === 400) {
-        toast.error("Permission Denied: You don’t have access to this page");
-      }
+      console.error("Error checking permission:", error);
+      toast.error(error.response?.data?.message || "Permission Denied: You don’t have access to this page");
     }
   };
   const track12345 = (id) => {
@@ -417,8 +447,6 @@ export default function Order() {
     });
     navigate("/Admin/OrderDetail", { state: { data: alldaatat } });
   };
-  const userid = JSON.parse(localStorage.getItem("data123"))?.id;
-  const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
   const handlenavival = async (id) => {
     try {
       const datapost = {
@@ -439,11 +467,7 @@ export default function Order() {
       }
     } catch (error) {
       console.error("Error checking permission:", error);
-      if (error.response && error.response.status === 400) {
-        toast.error("Permission Denied: You don’t have access to this page");
-      } else {
-        toast.error("Something went wrong while checking permission.");
-      }
+      toast.error(error.response?.data?.message || "Permission Denied: You don’t have access to this page");
     }
   };
   const filteredData = data.filter((item) => {
@@ -618,35 +642,41 @@ export default function Order() {
   };
 
   const postData1 = async (page) => {
-    const permission = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-      {
-        staff_id: userid,
-        route_url: "order/details",
-        user_type: usertype,
+    try {
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/order/details",
+          user_type: usertype,
+        }
+      );
+      if (permission.data.success) {
+        const postdat = {
+          origin: inputvalue.origin,
+          destination: inputvalue.destination,
+          startDate: inputvalue.startDate,
+          endDate: inputvalue.endDate,
+          freightType: inputvalue.freight,
+          freightSpeed: inputvalue.type,
+        };
+        axios
+          .post(`${process.env.REACT_APP_BASE_URL}/order/details`, postdat)
+          .then((response) => {
+            if (response.data.success === true) {
+              closeModal1();
+            }
+          })
+          .catch((error) => {
+            console.log(error.response?.data);
+            toast.error(error.response?.data?.message || "Something went wrong while posting details.");
+          });
+      } else {
+        toast.error("Permission Denied: You don’t have access to this page");
       }
-    );
-    if (permission.data.success) {
-      const postdat = {
-        origin: inputvalue.origin,
-        destination: inputvalue.destination,
-        startDate: inputvalue.startDate,
-        endDate: inputvalue.endDate,
-        freightType: inputvalue.freight,
-        freightSpeed: inputvalue.type,
-      };
-      axios
-        .post(`${process.env.REACT_APP_BASE_URL}/order/details`, postdat)
-        .then((response) => {
-          if (response.data.success === true) {
-            closeModal1();
-          }
-        })
-        .catch((error) => {
-          console.log(error.response.data);
-        });
-    } else {
-      toast.error("Permission Denied: You don’t have access to this page");
+    } catch (error) {
+      console.error("Error checking permission:", error);
+      toast.error(error.response?.data?.message || "Permission Denied: You don’t have access to this page");
     }
   };
 
@@ -815,20 +845,32 @@ export default function Order() {
 
   const track123 = async (item) => {
     try {
-      const body = {
-        freight_id: item?.freight_id,
-        order_id: item?.order_id,
-      };
-      const res = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}add_freight_to_warehouse`,
-        body
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/add_freight_to_warehouse",
+          user_type: usertype,
+        }
       );
-      toast.success(res.data.message);
-      getorder();
-      closeModal();
-      setOpenModalorder(false);
+      if (permission.data.success) {
+        const body = {
+          freight_id: item?.freight_id,
+          order_id: item?.order_id,
+        };
+        const res = await axios.post(
+          `${process.env.REACT_APP_BASE_URL}add_freight_to_warehouse`,
+          body
+        );
+        toast.success(res.data.message);
+        getorder();
+        closeModal();
+        setOpenModalorder(false);
+      } else {
+        toast.error("Permission Denied: You don’t have access to this page");
+      }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong");
+      toast.error(error.response?.data?.message || "Something went wrong while checking permission.");
     }
   };
   const [supplierOptions, setSupplierOptions] = useState([])
@@ -907,7 +949,28 @@ export default function Order() {
 
   return (
     <>
-      <Modal
+      {loader || hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Freight Order List</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <Modal
         open={openModalorder}
         onClose={closewarehouse}
         className="newModal"
@@ -2504,7 +2567,8 @@ export default function Order() {
           </div>
         </Box>
       </Modal>
-      
+        </>
+      )}
     </>
   );
 }

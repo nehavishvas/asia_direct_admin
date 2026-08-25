@@ -40,6 +40,10 @@ const Field = ({ label, children, col = "col-12 col-md-6" }) => (
 );
 
 export default function ManageSupplier() {
+  const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
+  const userid = userdata?.id;
+  const usertype = userdata?.user_type;
+  const [hasPermission, setHasPermission] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
   const [countruies, setCountruies] = useState([]);
@@ -54,6 +58,38 @@ export default function ManageSupplier() {
     supplier_id: "",
     profile: null,
   });
+  const checkPermission = async () => {
+    try {
+      setLoader(true);
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const checkPost = {
+        staff_id: userid,
+        user_type: usertype,
+        route_url: "/Admin/manage-suppliers",
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        checkPost
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+        getdata(currentPage, searchQuery);
+      } else {
+        setHasPermission(false);
+        toast.error("Permission Denied: You don't have access to this page");
+      }
+    } catch (error) {
+      console.error("Error checking permission:", error);
+      setHasPermission(false);
+      toast.error(error.response?.data?.message || "Permission Denied: You don't have access to this page");
+    } finally {
+      setLoader(false);
+    }
+  };
+
   // ---------------- FETCH DATA ----------------
   const getdata = async (page = 1, search = "") => {
     try {
@@ -80,7 +116,7 @@ export default function ManageSupplier() {
   };
 
   useEffect(() => {
-    getdata(currentPage, searchQuery);
+    checkPermission();
   }, []);
 
   // ---------------- SEARCH + PAGINATION ----------------
@@ -472,8 +508,28 @@ export default function ManageSupplier() {
 
   return (
     <>
-      <>
+      {loader || hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
         <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Manage Supplier</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="wpWrapper">
           <div className="container-fluid">
             <div className="d-flex justify-content-between my-3">
               <h4>Manage Supplier</h4>
@@ -631,7 +687,8 @@ export default function ManageSupplier() {
           </div>
         )}
         
-      </>
+        </>
+      )}
     </>
   );
 }

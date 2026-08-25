@@ -73,6 +73,7 @@ export default function WarehouseOrder() {
   const [activeTab, setActiveTab] = useState("In Store");
   const [counts, setCounts] = useState({ inStore: 0, out: 0, batchAssigned: 0, batchNotAssigned: 0 });
   const [data, setData] = useState([]);
+  const [hasPermission, setHasPermission] = useState(null);
   const [advancedFilters, setAdvancedFilters] = useState(null);
   const [batch, setBatch] = useState([]);
   const [countries, setCountries] = useState([]);
@@ -235,6 +236,42 @@ export default function WarehouseOrder() {
     }
   };
 
+  const checkPermission = async () => {
+    try {
+      setLoader(true);
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const postdata = {
+        staff_id: userid,
+        route_url: "/GetWarehouseOrders",
+        user_type: usertype,
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        postdata
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+        fetchWarehouseOrders(1, activeTab, searchQuery, advancedFilters, itemsPerPage, sortOrder);
+        fetchCounts(searchQuery, advancedFilters);
+      } else {
+        setHasPermission(false);
+        toast.error("You don't have permission to access this page");
+      }
+    } catch (error) {
+      setHasPermission(false);
+      toast.error(error.response?.data?.message || "You don't have permission to access this page");
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    checkPermission();
+  }, []);
+
   const fetchWarehouseOrders = async (
     pageNumber = 1,
     tab = activeTab,
@@ -243,67 +280,46 @@ export default function WarehouseOrder() {
     limit = itemsPerPage,
     sort = sortOrder
   ) => {
+    setLoader(true);
     try {
-      const datapost = {
-        staff_id: userid,
+      const payload = {
+        user_id: userid,
         user_type: usertype,
-        route_url: "/GetWarehouseOrders",
+        page: pageNumber,
+        limit: limit,
+        tab: mapTabToParam(tab),
+        sort_order: sort,
+        ...filters,
       };
-      const permission = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-        datapost,
-      );
-      if (permission.data.success === true) {
-        setLoader(true);
-        try {
-          const payload = {
-            user_id: userid,
-            user_type: usertype,
-            page: pageNumber,
-            limit: limit,
-            tab: mapTabToParam(tab),
-            sort_order: sort,
-            ...filters,
-          };
-          if (searchVal.trim().length > 0) {
-            payload.search = searchVal.trim();
-          }
-          const response = await axios.post(
-            `${process.env.REACT_APP_BASE_URL}GetWarehouseOrders`,
-            payload,
-          );
-
-          if (response.data && response.data.data) {
-            setData(response.data.data);
-            setPagenationData(response.data);
-          } else {
-            setData([]);
-            setPagenationData({ total: 0, limit: limit, page: pageNumber });
-          }
-
-          setLoader(false);
-        } catch (error) {
-          setLoader(false);
-          console.error("Error fetching warehouse orders:", error);
-          toast.error("Something went wrong while fetching orders.");
-        }
-      } else {
-        toast.error("Permission Denied: You don’t have access to this action");
+      if (searchVal.trim().length > 0) {
+        payload.search = searchVal.trim();
       }
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}GetWarehouseOrders`,
+        payload,
+      );
+
+      if (response.data && response.data.data) {
+        setData(response.data.data);
+        setPagenationData(response.data);
+      } else {
+        setData([]);
+        setPagenationData({ total: 0, limit: limit, page: pageNumber });
+      }
+
+      setLoader(false);
     } catch (error) {
-      console.error("Error checking permission:", error);
-      toast.error("Something went wrong while checking permission.");
+      setLoader(false);
+      console.error("Error fetching warehouse orders:", error);
+      toast.error(error?.response?.data?.message || "Something went wrong while fetching orders.");
     }
   };
 
-  useEffect(() => {
-    fetchWarehouseOrders(1, activeTab, searchQuery, advancedFilters, itemsPerPage, sortOrder);
-    fetchCounts(searchQuery, advancedFilters);
-  }, []);
-
   const getData = (page) => {
-    fetchWarehouseOrders(page, activeTab, searchQuery, advancedFilters, itemsPerPage, sortOrder);
-    fetchCounts(searchQuery, advancedFilters);
+    if (hasPermission === true) {
+      fetchWarehouseOrders(page, activeTab, searchQuery, advancedFilters, itemsPerPage, sortOrder);
+      fetchCounts(searchQuery, advancedFilters);
+    }
   };
   const getAllBatch = (item) => {
     console.log(item);
@@ -463,83 +479,101 @@ export default function WarehouseOrder() {
     const { name, value } = e.target;
     setSelectedData({ ...selectedData, [name]: value });
   };
-  const handleSubmit = () => {
-    const formdata1 = new FormData();
-    formdata1.append(
-      "warehouse_assign_id",
-      selectedData.warehouse_assign_order_id,
-    );
-    formdata1.append("order_id", selectedData.order_id);
-    formdata1.append("freight_id", selectedData.freight_id);
-    formdata1.append("ware_receipt_no", selectedData.ware_receipt_no);
-    formdata1.append("tracking_number", selectedData.tracking_number);
-    formdata1.append("warehouse_status", selectedData.warehouse_status);
-    formdata1.append("warehouse_collect", selectedData.warehouse_collect);
-    formdata1.append("destination_country", selectedData.delivery_to);
-    formdata1.append("collection_from", selectedData.collection_from);
-    formdata1.append("date_received", selectedData.date_received);
-    formdata1.append("package_type", selectedData.package_type);
-    formdata1.append("no_of_packages", selectedData.no_of_packages);
-    // formdata1.append("customer_name", selectedData.customer_name);
-    formdata1.append("customer_name", selectedData.customer_name);
-    formdata1.append(
-      "client_id",
-      nameData?.client_id ?? selectedData?.client_id ?? "",
-    );
-    formdata1.append("total_dimension", selectedData.total_dimension);
-    formdata1.append("goods_description", selectedData.goods_description);
-    formdata1.append("weight", selectedData.total_weight);
-    formdata1.append("freight", selectedData.freight);
-    formdata1.append("total_cbm", selectedData.total_cbm);
-    formdata1.append("costs_to_collect", selectedData.costs_to_collect);
-    formdata1.append("warehouse_cost", selectedData.warehouse_cost);
-    formdata1.append("warehouse_dispatch", selectedData.warehouse_dispatch);
-    formdata1.append("cost_to_dispatch", selectedData.cost_to_dispatch);
-    formdata1.append("dispatched_date", selectedData.dispatched_date);
-    formdata1.append("documentName", selectedData.documentName);
-    formdata1.append("courier_waybill_ref", selectedData.courier_waybill_ref);
-    // formdata1.append("dispatched_date", selectedData.dispatched_date);
-    formdata1.append("warehouse_comment", selectedData.warehouse_comment);
-    formdata1.append("customer_ref", selectedData.customer_ref);
-    formdata1.append("box_marking", selectedData.box_marking);
-    formdata1.append("hazardous", selectedData.hazardous);
-    formdata1.append("hazard_description", selectedData.hazard_description);
-    formdata1.append("package_comment", selectedData.package_comment);
-    formdata1.append("damage_goods", selectedData.damage_goods);
-    formdata1.append("damaged_pkg_qty", selectedData.damaged_pkg_qty);
-    formdata1.append("damage_comment", selectedData.damage_comment);
-    formdata1.append("supplier_company", selectedData.supplier_company);
-    formdata1.append("supplier_person", selectedData.supplier_person);
-    formdata1.append("supplier_address", selectedData.supplier_address);
-    formdata1.append("supplier_contact_no", selectedData.supplier_contact_no);
-    formdata1.append("warehouse_order_id", selectedData.warehouse_order_id);
-    formdata1.append("warehouse_storage", selectedData.warehouse_storage);
-    formdata1.append("handling_required", selectedData.handling_required);
-    formdata1.append("handling_cost", selectedData.handling_cost);
-    formdata1.append("supplier_contact", selectedData.supplier_contact);
-    formdata1.append("packages", JSON.stringify(selectedData.packages));
-    selectedDocs.forEach((doc) => {
-      console.log("Doc Type:", doc.name);
-      doc.files.forEach((file) => {
-        formdata1.append(doc.name, file); // 👈 each file append
-        console.log("File:", file.name, "| Size:", file.size, "bytes");
+  const handleSubmit = async () => {
+    try {
+      const checkPost = {
+        staff_id: userid,
+        user_type: usertype,
+        route_url: "/editWarehouseDetails",
+      };
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        checkPost,
+      );
+      if (permission.data.success !== true) {
+        toast.error("Permission Denied: You don’t have access to edit warehouse details");
+        return;
+      }
+      const formdata1 = new FormData();
+      formdata1.append(
+        "warehouse_assign_id",
+        selectedData.warehouse_assign_order_id,
+      );
+      formdata1.append("order_id", selectedData.order_id);
+      formdata1.append("freight_id", selectedData.freight_id);
+      formdata1.append("ware_receipt_no", selectedData.ware_receipt_no);
+      formdata1.append("tracking_number", selectedData.tracking_number);
+      formdata1.append("warehouse_status", selectedData.warehouse_status);
+      formdata1.append("warehouse_collect", selectedData.warehouse_collect);
+      formdata1.append("destination_country", selectedData.delivery_to);
+      formdata1.append("collection_from", selectedData.collection_from);
+      formdata1.append("date_received", selectedData.date_received);
+      formdata1.append("package_type", selectedData.package_type);
+      formdata1.append("no_of_packages", selectedData.no_of_packages);
+      // formdata1.append("customer_name", selectedData.customer_name);
+      formdata1.append("customer_name", selectedData.customer_name);
+      formdata1.append(
+        "client_id",
+        nameData?.client_id ?? selectedData?.client_id ?? "",
+      );
+      formdata1.append("total_dimension", selectedData.total_dimension);
+      formdata1.append("goods_description", selectedData.goods_description);
+      formdata1.append("weight", selectedData.total_weight);
+      formdata1.append("freight", selectedData.freight);
+      formdata1.append("total_cbm", selectedData.total_cbm);
+      formdata1.append("costs_to_collect", selectedData.costs_to_collect);
+      formdata1.append("warehouse_cost", selectedData.warehouse_cost);
+      formdata1.append("warehouse_dispatch", selectedData.warehouse_dispatch);
+      formdata1.append("cost_to_dispatch", selectedData.cost_to_dispatch);
+      formdata1.append("dispatched_date", selectedData.dispatched_date);
+      formdata1.append("documentName", selectedData.documentName);
+      formdata1.append("courier_waybill_ref", selectedData.courier_waybill_ref);
+      // formdata1.append("dispatched_date", selectedData.dispatched_date);
+      formdata1.append("warehouse_comment", selectedData.warehouse_comment);
+      formdata1.append("customer_ref", selectedData.customer_ref);
+      formdata1.append("box_marking", selectedData.box_marking);
+      formdata1.append("hazardous", selectedData.hazardous);
+      formdata1.append("hazard_description", selectedData.hazard_description);
+      formdata1.append("package_comment", selectedData.package_comment);
+      formdata1.append("damage_goods", selectedData.damage_goods);
+      formdata1.append("damaged_pkg_qty", selectedData.damaged_pkg_qty);
+      formdata1.append("damage_comment", selectedData.damage_comment);
+      formdata1.append("supplier_company", selectedData.supplier_company);
+      formdata1.append("supplier_person", selectedData.supplier_person);
+      formdata1.append("supplier_address", selectedData.supplier_address);
+      formdata1.append("supplier_contact_no", selectedData.supplier_contact_no);
+      formdata1.append("warehouse_order_id", selectedData.warehouse_order_id);
+      formdata1.append("warehouse_storage", selectedData.warehouse_storage);
+      formdata1.append("handling_required", selectedData.handling_required);
+      formdata1.append("handling_cost", selectedData.handling_cost);
+      formdata1.append("supplier_contact", selectedData.supplier_contact);
+      formdata1.append("packages", JSON.stringify(selectedData.packages));
+      selectedDocs.forEach((doc) => {
+        console.log("Doc Type:", doc.name);
+        doc.files.forEach((file) => {
+          formdata1.append(doc.name, file); // 👈 each file append
+          console.log("File:", file.name, "| Size:", file.size, "bytes");
+        });
       });
-    });
-    for (let [key, value] of formdata1.entries()) {
-      console.log(`${key}:`, value);
+      for (let [key, value] of formdata1.entries()) {
+        console.log(`${key}:`, value);
+      }
+      axios
+        .post(`${process.env.REACT_APP_BASE_URL}editWarehouseDetails`, formdata1)
+        .then((response) => {
+          setSelectedDocs([]);
+          toast.success("Warehouse order updated successfully");
+          getData(currentPage);
+          handleCloseModal();
+        })
+        .catch((error) => {
+          console.error(error.response?.data || error.message);
+          toast.error(error.response?.data?.message || "Error updating warehouse order");
+        });
+    } catch (error) {
+      console.error("Error checking permission:", error);
+      toast.error(error.response?.data?.message || "Permission Denied: You don’t have access to edit warehouse details");
     }
-    axios
-      .post(`${process.env.REACT_APP_BASE_URL}editWarehouseDetails`, formdata1)
-      .then((response) => {
-        setSelectedDocs([]);
-        toast.success("Warehouse order updated successfully");
-        getData(currentPage);
-        handleCloseModal();
-      })
-      .catch((error) => {
-        console.error(error.response?.data || error.message);
-        toast.error(error.response?.data || "Error updating warehouse order");
-      });
   };
   const closeModal1 = () => {
     setIsModalOpen1(false);
@@ -589,11 +623,7 @@ export default function WarehouseOrder() {
       }
     } catch (error) {
       console.error("Error checking permission:", error);
-      if (error.response && error.response.status === 400) {
-        toast.error("Permission Denied: You don’t have access to this page");
-      } else {
-        toast.error("Something went wrong while checking permission.");
-      }
+      toast.error(error.response?.data?.message || "Permission Denied: You don’t have access to this page");
     }
   };
   const handlePdfPrint = async (item) => {
@@ -1254,7 +1284,27 @@ export default function WarehouseOrder() {
   
   return (
     <>
-      <div className="wpWrapper">
+      {loader || hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Warehouse Order List</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="wpWrapper">
         <div className="container-fluid">
           <div className="row manageFreight">
             <div className="col-md-12">
@@ -1367,7 +1417,7 @@ export default function WarehouseOrder() {
                       <table className="table table-striped tableICon">
                         <tbody>
                           {(() => {
-                            const isReadOnly = activeTab !== "Out";
+                            const isReadOnly = activeTab !== "In Store";
                             return data &&
                               data.length > 0 &&
                               data.map((item) => {
@@ -3131,6 +3181,7 @@ export default function WarehouseOrder() {
           )}
         </div>
       </div >
+      )}
     </>
   );
 }

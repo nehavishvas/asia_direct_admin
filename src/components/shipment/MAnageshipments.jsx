@@ -384,15 +384,15 @@ export default function MAnageshipments() {
             Swal.fire("Deleted!", "Your file has been deleted.", "success");
           } catch (error) {
             console.error(error.response?.data || error.message);
-            toast.error("Failed to delete the warehouse!");
+            toast.error(error.response?.data.message || "Failed to delete the warehouse!");
           }
         }
       }
     } catch (error) {
       if (error.response && error.response.data.status === 400) {
-        toast.error("Permission Denied: You don’t have access to this page");
+        toast.error(error?.response?.data.message || "Permission Denied");
       } else {
-        toast.error("Something went wrong while checking permission.");
+        toast.error("Permission Denied");
       }
     }
   };

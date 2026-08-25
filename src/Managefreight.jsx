@@ -432,33 +432,37 @@ export default function Managefreight() {
     // };
   };
   const handlelcickseedata1212 = async (item) => {
-    const datapost = {
-      staff_id: userid,
-      route_url: "/freight-list",
-      user_type: usertype,
-    };
-    const permission = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-      datapost,
-    );
-    if (permission.data.success === true) {
-      const payload = {
-        freight_id: item?.freight_id,
+    try {
+      const datapost = {
+        staff_id: userid,
+        route_url: "/AssignFreightToClearing",
+        user_type: usertype,
       };
-      axios
-        .post(
-          `${process.env.REACT_APP_BASE_URL}AssignFreightToClearing`,
-          payload,
-        )
-        .then((response) => {
-          console.log(response.data);
-          toast.success(response.data.message);
-        })
-        .catch((error) => {
-          toast.error(error.response.data.message);
-        });
-    } else {
-      toast.error("You don't have permission to access this page");
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        datapost,
+      );
+      if (permission.data && permission.data.success === true) {
+        const payload = {
+          freight_id: item?.freight_id,
+        };
+        axios
+          .post(
+            `${process.env.REACT_APP_BASE_URL}AssignFreightToClearing`,
+            payload,
+          )
+          .then((response) => {
+            console.log(response.data);
+            toast.success(response.data.message);
+          })
+          .catch((error) => {
+            toast.error(error.response?.data?.message || "Something went wrong");
+          });
+      } else {
+        toast.error("You don't have permission to access this page");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "You don't have permission to access this page");
     }
   };
   const hanldeclicknavi = async (freight_id) => {
@@ -557,30 +561,34 @@ export default function Managefreight() {
   };
   ////////////////////////order move.//////////////////////////////////////////////
   const handlemoveOrder = async (item) => {
-    const datapost = {
-      staff_id: userid,
-      route_url: "/MoveToOrder",
-      user_type: usertype,
-    };
-    const permission = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-      datapost,
-    );
-    if (permission.data.success === true) {
-      axios
-        .post(`${process.env.REACT_APP_BASE_URL}MoveToOrder`, {
-          freight_id: item?.freight_id,
-          client_id: item.client_ref,
-        })
-        .then((response) => {
-          toast.success(response.data.message);
-          frightData(currentPage);
-        })
-        .catch((error) => {
-          toast.error(error.response.data.message);
-        });
-    } else {
-      toast.error("You don't have permission to access this page");
+    try {
+      const datapost = {
+        staff_id: userid,
+        route_url: "/MoveToOrder",
+        user_type: usertype,
+      };
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        datapost,
+      );
+      if (permission.data && permission.data.success === true) {
+        axios
+          .post(`${process.env.REACT_APP_BASE_URL}MoveToOrder`, {
+            freight_id: item?.freight_id,
+            client_id: item.client_ref,
+          })
+          .then((response) => {
+            toast.success(response.data.message);
+            frightData(currentPage);
+          })
+          .catch((error) => {
+            toast.error(error.response?.data?.message || "Something went wrong");
+          });
+      } else {
+        toast.error("You don't have permission to access this page");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "You don't have permission to access this page");
     }
   };
   const handlekey = (e) => {
@@ -848,7 +856,8 @@ export default function Managefreight() {
           }
         })
         .catch((error) => {
-          console.log(error.response.data);
+          console.log(error.response?.data);
+          toast.error(error.response?.data?.message || "Failed to attach quote");
         });
   };
 

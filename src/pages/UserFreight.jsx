@@ -192,46 +192,50 @@ export default function UserFreight() {
   }, []);
 
   const handledelete = async (id) => {
-    const permission = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-      {
-        staff_id: userid,
-        route_url: "/delete-freight",
-        user_type: usertype,
-      }
-    );
-    console.log(permission.data);
-    if (permission.status === 200 && permission.data.success) {
-      Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          axios
-            .post(`${process.env.REACT_APP_BASE_URL}delete-freight`, {
-              freight_id: id,
-            })
-            .then((response) => {
-              frightData();
-              toast.success(response.data.message);
-            })
-            .catch((error) => {
-              toast.error(error.response.data.message);
-            });
-          Swal.fire({
-            title: "Deleted!",
-            text: "Your file has been deleted.",
-            icon: "success",
-          });
+    try {
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/delete-freight",
+          user_type: usertype,
         }
-      });
-    } else {
-      toast.error("Permission denied");
+      );
+      console.log(permission.data);
+      if (permission.status === 200 && permission.data.success) {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            axios
+              .post(`${process.env.REACT_APP_BASE_URL}delete-freight`, {
+                freight_id: id,
+              })
+              .then((response) => {
+                frightData();
+                toast.success(response.data.message);
+              })
+              .catch((error) => {
+                toast.error(error.response?.data?.message || "Failed to delete freight");
+              });
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your file has been deleted.",
+              icon: "success",
+            });
+          }
+        });
+      } else {
+        toast.error("Permission denied");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission denied");
     }
   };
 
@@ -284,92 +288,96 @@ export default function UserFreight() {
   };
 
   const handleupdateapipost = async (id) => {
-    const permission = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-      {
-        staff_id: userid,
-        route_url: "/update-freights",
-        user_type: usertype,
-      }
-    );
-    console.log(permission);
-    if (permission.status === 200) {
-      console.log("Client ID:", inputdata.client_id);
-      const formData12 = new FormData();
-      formData12.append("client_id", inputdata.client_id);
-      formData12.append("freight_id", inputdata.freight_id);
-      formData12.append("product_desc", inputdata.product_desc);
-      formData12.append("freight_type", inputdata.freight_type);
-      formData12.append("freight", inputdata.freight);
-      formData12.append("dimension", inputdata.dimension);
-      formData12.append("shipment_des", inputdata.shipment_des);
-      formData12.append("weight", inputdata.weight);
-      formData12.append("status", inputdata.status);
-      formData12.append("shipment_origin", inputdata.shipment_origin);
-      formData12.append("shipment_ref", inputdata.shipment_ref);
-      formData12.append("freight_number", inputdata.freight_number);
-      formData12.append("nature_of_goods", inputdata.nature_of_goods);
-      formData12.append("comment", inputdata.comment);
-      formData12.append("no_of_packages", inputdata.no_of_packages);
-      formData12.append("package_type", inputdata.package_type);
-      formData12.append("commodity", inputdata.commodity);
-      formData12.append("insurance", inputdata.insurance);
-      formData12.append("assign_to_clearing", inputdata.assign_to_clearing);
-      formData12.append("user_type", inputdata.user_type);
-      formData12.append("fcl_lcl", inputdata.fcl_lcl);
-      formData12.append("port_of_loading", inputdata.port_of_loading);
-      formData12.append("post_of_discharge", inputdata.post_of_discharge);
-      formData12.append("delivery_to_country", inputdata.delivery_to_country);
-      formData12.append("delivery_address", inputdata.delivery_address);
-      formData12.append("delivery_to", inputdata.delivery_to);
-      formData12.append("add_attachments", inputdata.add_attachments);
-      formData12.append("auto_calculate", inputdata.auto_calculate);
-      formData12.append("added_by", inputdata.added_by);
-      formData12.append("client_name", inputdata.client_name);
-      formData12.append("collection_address", inputdata.collection_address);
-      formData12.append("collection_from", inputdata.collection_from);
-      formData12.append("documentName", inputdata.documentName);
-      formData12.append(
-        "collection_from_country",
-        inputdata.collection_from_country
+    try {
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/update-freights",
+          user_type: usertype,
+        }
       );
-      formData12.append("road_freight_option", inputdata.road_freight_option);
-      formData12.append("sea_freight_option", inputdata.sea_freight_option);
-      // if (formData2) {
-      //   for (let i = 0; i < formData2.licenses.length; i++) {
-      //     formData12.append("document", formData2.licenses[i]);
-      //   }
-      // }
-      selectedDocs.forEach((doc) => {
-        console.log("Doc Type:", doc.name);
-        doc.files.forEach((file) => {
-          formData12.append(doc.name, file); // 👈 each file append
-          console.log("File:", file.name, "| Size:", file.size, "bytes");
+      console.log(permission);
+      if (permission.status === 200 && permission.data.success) {
+        console.log("Client ID:", inputdata.client_id);
+        const formData12 = new FormData();
+        formData12.append("client_id", inputdata.client_id);
+        formData12.append("freight_id", inputdata.freight_id);
+        formData12.append("product_desc", inputdata.product_desc);
+        formData12.append("freight_type", inputdata.freight_type);
+        formData12.append("freight", inputdata.freight);
+        formData12.append("dimension", inputdata.dimension);
+        formData12.append("shipment_des", inputdata.shipment_des);
+        formData12.append("weight", inputdata.weight);
+        formData12.append("status", inputdata.status);
+        formData12.append("shipment_origin", inputdata.shipment_origin);
+        formData12.append("shipment_ref", inputdata.shipment_ref);
+        formData12.append("freight_number", inputdata.freight_number);
+        formData12.append("nature_of_goods", inputdata.nature_of_goods);
+        formData12.append("comment", inputdata.comment);
+        formData12.append("no_of_packages", inputdata.no_of_packages);
+        formData12.append("package_type", inputdata.package_type);
+        formData12.append("commodity", inputdata.commodity);
+        formData12.append("insurance", inputdata.insurance);
+        formData12.append("assign_to_clearing", inputdata.assign_to_clearing);
+        formData12.append("user_type", inputdata.user_type);
+        formData12.append("fcl_lcl", inputdata.fcl_lcl);
+        formData12.append("port_of_loading", inputdata.port_of_loading);
+        formData12.append("post_of_discharge", inputdata.post_of_discharge);
+        formData12.append("delivery_to_country", inputdata.delivery_to_country);
+        formData12.append("delivery_address", inputdata.delivery_address);
+        formData12.append("delivery_to", inputdata.delivery_to);
+        formData12.append("add_attachments", inputdata.add_attachments);
+        formData12.append("auto_calculate", inputdata.auto_calculate);
+        formData12.append("added_by", inputdata.added_by);
+        formData12.append("client_name", inputdata.client_name);
+        formData12.append("collection_address", inputdata.collection_address);
+        formData12.append("collection_from", inputdata.collection_from);
+        formData12.append("documentName", inputdata.documentName);
+        formData12.append(
+          "collection_from_country",
+          inputdata.collection_from_country
+        );
+        formData12.append("road_freight_option", inputdata.road_freight_option);
+        formData12.append("sea_freight_option", inputdata.sea_freight_option);
+        // if (formData2) {
+        //   for (let i = 0; i < formData2.licenses.length; i++) {
+        //     formData12.append("document", formData2.licenses[i]);
+        //   }
+        // }
+        selectedDocs.forEach((doc) => {
+          console.log("Doc Type:", doc.name);
+          doc.files.forEach((file) => {
+            formData12.append(doc.name, file); // 👈 each file append
+            console.log("File:", file.name, "| Size:", file.size, "bytes");
+          });
         });
-      });
-      for (let pair of formData12.entries()) {
-        console.log(`${pair[0]}: ${pair[1]}`);
+        for (let pair of formData12.entries()) {
+          console.log(`${pair[0]}: ${pair[1]}`);
+        }
+        await axios
+          .post(`${process.env.REACT_APP_BASE_URL}update-freights`, formData12)
+          .then((response) => {
+            toast.success(response.data.message);
+            console.log("Response data:", response.data);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.message
+            ) {
+              toast.error(error.response.data.message);
+            } else {
+              toast.error("An error occurred");
+            }
+          });
+      } else {
+        toast.error("Permission denied");
       }
-      await axios
-        .post(`${process.env.REACT_APP_BASE_URL}update-freights`, formData12)
-        .then((response) => {
-          toast.success(response.data.message);
-          console.log("Response data:", response.data);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.message
-          ) {
-            toast.error(error.response.data.message);
-          } else {
-            toast.error("An error occurred");
-          }
-        });
-    } else {
-      toast.error("Permission denied");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission denied");
     }
   };
   ////////////////////////////////////get app api////////////////////////////////////////////////////
@@ -385,58 +393,66 @@ export default function UserFreight() {
     getdata();
   }, []);
   const handleaccepted = async (id) => {
-    const permission = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-      {
-        staff_id: userid,
-        route_url: "/status-freight",
-        user_type: usertype,
+    try {
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/status-freight",
+          user_type: usertype,
+        }
+      );
+      console.log(permission);
+      if (permission.data && permission.data.success === true) {
+        await axios
+          .post(`${process.env.REACT_APP_BASE_URL}status-Freight`, {
+            status: 1,
+            freight_id: id,
+          })
+          .then((response) => {
+            console.log(response.data.message);
+            toast.success(response.data.message);
+            frightData();
+          })
+          .catch((error) => {
+            toast.error(error.response?.data?.message || "Failed to update status");
+          });
+      } else {
+        toast.error("Permission denied");
       }
-    );
-    console.log(permission);
-    if (permission.data.success === true) {
-      await axios
-        .post(`${process.env.REACT_APP_BASE_URL}status-Freight`, {
-          status: 1,
-          freight_id: id,
-        })
-        .then((response) => {
-          console.log(response.data.message);
-          toast.success(response.data.message);
-          frightData();
-        })
-        .catch((error) => {
-          toast.error(error.response.data.message);
-        });
-    } else {
-      toast.error("Permission denied");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission denied");
     }
   };
   const handledeclined = async (id) => {
-    const permission = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-      {
-        staff_id: userid,
-        route_url: "/status-Freight",
-        user_type: usertype,
+    try {
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/status-freight",
+          user_type: usertype,
+        }
+      );
+      if (permission.status === 200 && permission.data.success) {
+        axios
+          .post(`${process.env.REACT_APP_BASE_URL}status-Freight`, {
+            status: 2,
+            freight_id: id,
+          })
+          .then((response) => {
+            console.log(response.data);
+            frightData();
+            toast.success(response.data.message);
+          })
+          .catch((error) => {
+            toast.error(error.response?.data?.message || "Failed to update status");
+          });
+      } else {
+        toast.error("Permission denied");
       }
-    );
-    if (permission.status === 200 && permission.data.success) {
-      axios
-        .post(`${process.env.REACT_APP_BASE_URL}status-Freight`, {
-          status: 2,
-          freight_id: id,
-        })
-        .then((response) => {
-          console.log(response.data);
-          frightData();
-          toast.error(response.data.message);
-        })
-        .catch((error) => {
-          toast.error(error.response.data.message);
-        });
-    } else {
-      toast.error("Permission denied");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission denied");
     }
   };
   const hanldeclicknavicalc = async (id, estimate_id) => {
@@ -445,20 +461,24 @@ export default function UserFreight() {
       return item.freight_id === id;
     });
     console.log(alldtaaa);
-    const permission = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-      {
-        staff_id: userid,
-        route_url: "/Admin/shipping-estimate-client",
-        user_type: usertype,
+    try {
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/Admin/shipping-estimate-client",
+          user_type: usertype,
+        }
+      );
+      if (permission.status === 200 && permission.data.success) {
+        naviagte("/Admin/shipping-estimate-client", {
+          state: { data: alldtaaa, estimateid: estimate_id },
+        });
+      } else {
+        toast.error("Permission denied");
       }
-    );
-    if (permission.status === 200 && permission.data.success) {
-      naviagte("/Admin/shipping-estimate-client", {
-        state: { data: alldtaaa, estimateid: estimate_id },
-      });
-    } else {
-      toast.error("Permission denied");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission denied");
     }
   };
   const handlelcickapiupdae = () => {
@@ -730,19 +750,23 @@ export default function UserFreight() {
     setData1({ ...data1, [name]: value });
   };
   const handleopenmodal = async (id) => {
-    const permission = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-      {
-        staff_id: userid,
-        route_url: "/AttachedShippingEstimate",
-        user_type: usertype,
+    try {
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/AttachedShippingEstimate",
+          user_type: usertype,
+        }
+      );
+      if (permission.status === 200 && permission.data.success) {
+        setEid(id);
+        setOpenModal1(true);
+      } else {
+        toast.error("Permission denied");
       }
-    );
-    if (permission.status === 200 && permission.data.success) {
-      setEid(id);
-      setOpenModal1(true);
-    } else {
-      toast.error("Permission denied");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission denied");
     }
   };
   const handlefilechange = (e) => {

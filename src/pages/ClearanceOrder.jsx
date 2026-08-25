@@ -40,6 +40,7 @@ export default function ClearanceOrder() {
   };
   const userid = JSON.parse(localStorage.getItem("data123"))?.id;
   const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
+  const [hasPermission, setHasPermission] = useState(null);
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -74,8 +75,39 @@ export default function ClearanceOrder() {
   const navigate = useNavigate();
   const deletedIdsRef = useRef(new Set());
 
+  const checkPermission = async () => {
+    try {
+      setLoader(true);
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const postdata = {
+        staff_id: userid,
+        route_url: "/Admin/calculation-order",
+        user_type: usertype,
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        postdata
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+        getdata();
+      } else {
+        setHasPermission(false);
+        toast.error("You don't have permission to access this page");
+      }
+    } catch (error) {
+      setHasPermission(false);
+      toast.error(error.response?.data?.message || "You don't have permission to access this page");
+    } finally {
+      setLoader(false);
+    }
+  };
+
   useEffect(() => {
-    getdata();
+    checkPermission();
   }, []);
   const getdata = async (page = currentPage) => {
     setLoader(true);
@@ -132,17 +164,15 @@ export default function ClearanceOrder() {
             console.log(response.data);
           })
           .catch((error) => {
-            console.log(error.response.data);
+            console.log(error.response?.data);
+            toast.error(error.response?.data?.message || "Something went wrong while completing clearance order.");
           });
       } else {
-        toast.error("Permission Denied");
+        toast.error("Permission Denied: You don’t have access to this page");
       }
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        toast.error("Permission Denied: You don’t have access to this page");
-      } else {
-        toast.error("Something went wrong while checking permission.");
-      }
+      console.error("Error checking permission:", error);
+      toast.error(error.response?.data?.message || "Permission Denied: You don’t have access to this page");
     }
   };
   const handleclick1212 = async (item) => {
@@ -167,18 +197,14 @@ export default function ClearanceOrder() {
           console.log(response.data);
         } catch (error) {
           console.error("Error in second request:", error);
-          toast.error("Failed to process clearance order.");
+          toast.error(error.response?.data?.message || "Failed to process clearance order.");
         }
       } else {
         toast.error("Permission Denied: You don’t have access to this page");
       }
     } catch (error) {
       console.error("Error checking permission:", error);
-      if (error.response && error.response.status === 400) {
-        toast.error("Permission Denied: You don’t have access to this page");
-      } else {
-        toast.error("Something went wrong while checking permission.");
-      }
+      toast.error(error.response?.data?.message || "Permission Denied: You don’t have access to this page");
     }
   };
 
@@ -210,18 +236,14 @@ export default function ClearanceOrder() {
           console.log(response.data);
         } catch (error) {
           console.error("Error in second request:", error);
-          toast.error("Failed to process clearance order.");
+          toast.error(error.response?.data?.message || "Failed to process clearance order.");
         }
       } else {
         toast.error("Permission Denied: You don’t have access to this page");
       }
     } catch (error) {
       console.error("Error checking permission:", error);
-      if (error.response && error.response.status === 400) {
-        toast.error("Permission Denied: You don’t have access to this page");
-      } else {
-        toast.error("Something went wrong while checking permission.");
-      }
+      toast.error(error.response?.data?.message || "Permission Denied: You don’t have access to this page");
     }
   };
 
@@ -443,11 +465,7 @@ export default function ClearanceOrder() {
       }
     } catch (error) {
       console.error("Error checking permission:", error);
-      if (error.response && error.response.status === 400) {
-        toast.error("Permission Denied: You don’t have access to this page");
-      } else {
-        toast.error("Something went wrong while checking permission.");
-      }
+      toast.error(error.response?.data?.message || "Permission Denied: You don’t have access to this page");
     }
   };
   const handlechangefile = (e) => {
@@ -577,7 +595,28 @@ export default function ClearanceOrder() {
   };
   return (
     <>
-      <Modal
+      {loader || hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Order Clearance</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <Modal
         open={isModalOpen2}
         onClose={handleCloseModal4}
         aria-labelledby="modal-modal-title"
@@ -1529,6 +1568,8 @@ export default function ClearanceOrder() {
         </div>
         
       </>
+      </>
+      )}
     </>
   );
 }

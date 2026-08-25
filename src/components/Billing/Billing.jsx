@@ -99,6 +99,10 @@ const SearchableDropdown = ({ value, options, onChange, placeholder }) => {
 
 export default function BillingTable() {
   const navigate = useNavigate();
+  const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
+  const userid = userdata?.id;
+  const usertype = userdata?.user_type;
+
   const [tableData, setTableData] = useState([]);
   const [dropdownData, setDropdownData] = useState({});
   const [selectedDueDates, setSelectedDueDates] = useState({});
@@ -112,9 +116,41 @@ export default function BillingTable() {
   const [openAdModal, setOpenAdModal] = useState(false);
   const [adDocumentUrl, setAdDocumentUrl] = useState("");
   const [modalTitle, setModalTitle] = useState("AD Document");
+  const [hasPermission, setHasPermission] = useState(null);
+
+  const checkPermission = async () => {
+    try {
+      setLoader(true);
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const postdata = {
+        staff_id: userid,
+        route_url: "/Admin/billing",
+        user_type: usertype,
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        postdata
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+        getTableData();
+      } else {
+        setHasPermission(false);
+        toast.error("You don't have permission to access this page");
+      }
+    } catch (error) {
+      setHasPermission(false);
+      toast.error(error.response?.data?.message || "You don't have permission to access this page");
+    } finally {
+      setLoader(false);
+    }
+  };
 
   useEffect(() => {
-    getTableData();
+    checkPermission();
   }, []);
 
   const getTableData = async (page) => {
@@ -139,6 +175,7 @@ export default function BillingTable() {
         "Error fetching table data:",
         error.response?.data || error.message
       );
+      toast.error(error.response?.data?.message || "Failed to fetch billing list");
     }
   };
 
@@ -310,10 +347,24 @@ export default function BillingTable() {
   
   return (
     <>
-      {loader ? (
+      {loader || hasPermission === null ? (
         <div className="loader-container">
           <div className="loader"></div>
-          <p className="loader-text">Updating... Invoice may take some time</p>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid manageFreight">
+            <div className="row">
+              <div className="col-12 my-3">
+                <h4 className="freight_hd">Invoice List</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="wpWrapper">

@@ -10,6 +10,10 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 const pageSize = 10;
 const Notification = () => {
+  const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
+  const userid = userdata?.id;
+  const usertype = userdata?.user_type;
+
   const [data, setData] = useState([]);
   const [inpdata, setInpdata] = useState({
     send_to: "",
@@ -32,11 +36,50 @@ const Notification = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState({});
+  const [loader, setLoader] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
+
   const titleRef = useRef();
   const messageRef = useRef();
   const documentRef = useRef();
+
+  const checkPermission = async () => {
+    try {
+      setLoader(true);
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const postdata = {
+        staff_id: userid,
+        route_url: "/Admin/notifications",
+        user_type: usertype,
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        postdata
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+      } else {
+        setHasPermission(false);
+        toast.error("You don't have permission to access this page");
+      }
+    } catch (error) {
+      setHasPermission(false);
+      toast.error(error.response?.data?.message || "You don't have permission to access this page");
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    checkPermission();
+  }, []);
+
   const showdata = async (page = 1, search = "") => {
     try {
+      setLoader(true);
       const payload = {
         page: page,
         limit: pageSize,
@@ -53,7 +96,9 @@ const Notification = () => {
 
     } catch (err) {
       console.error(err);
-      setError("Failed to load notifications");
+      toast.error(err.response?.data?.message || "Failed to load notifications");
+    } finally {
+      setLoader(false);
     }
   };
   const handledelete = (id) => {
@@ -211,8 +256,10 @@ const Notification = () => {
     setCurrentPage(page);
   };
   useEffect(() => {
-    showdata(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
+    if (hasPermission === true) {
+      showdata(currentPage, searchQuery);
+    }
+  }, [currentPage, searchQuery, hasPermission]);
   // const totalPage = Math.ceil(data.length / pageSize);
   // const startIndex = (currentPage - 1) * pageSize;
   // const currentdata = data.slice(startIndex, startIndex + pageSize);
@@ -223,8 +270,28 @@ const Notification = () => {
   };
   return (
     <>
-      <div className="wpWrapper">
-        <div className="container-fluid  ">
+      {loader || hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Notification</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="wpWrapper">
+          <div className="container-fluid  ">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h4>Notification</h4>
             <div className="d-flex gap-2 manageFreight">
@@ -537,6 +604,7 @@ const Notification = () => {
 
         
       </div>
+      )}
     </>
   );
 };

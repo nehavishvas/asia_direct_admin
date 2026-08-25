@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 export default function Excel() {
+  const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
+  const userid = userdata?.id;
+  const usertype = userdata?.user_type;
+  const [hasPermission, setHasPermission] = useState(null);
+  const [pageLoader, setPageLoader] = useState(false);
   const [freightFile, setFreightFile] = useState(null);
   const [orderFile, setOrderFile] = useState(null);
   const [batchesFile, setBatchesFile] = useState(null);
@@ -20,6 +25,41 @@ export default function Excel() {
     sageinvoice:false,
     cashbook:false,
   });
+  const checkPermission = async () => {
+    try {
+      setPageLoader(true);
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const checkPost = {
+        staff_id: userid,
+        user_type: usertype,
+        route_url: "/Admin/upload-excel",
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        checkPost
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+      } else {
+        setHasPermission(false);
+        toast.error("Permission Denied: You don't have access to this page");
+      }
+    } catch (error) {
+      console.error("Error checking permission:", error);
+      setHasPermission(false);
+      toast.error(error.response?.data?.message || "Permission Denied: You don't have access to this page");
+    } finally {
+      setPageLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    checkPermission();
+  }, []);
+
   const validateFile = (file) => {
     const allowedExtensions = ["xlsx", "xls"];
     const fileExtension = file.name.split(".").pop().toLowerCase();
@@ -57,7 +97,28 @@ export default function Excel() {
       });
   };
   return (
-    <div className="wpWrapper">
+    <>
+      {pageLoader || hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Upload Excel Files</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="wpWrapper">
       <div className="container-fluid">
         <div className="row manageFreight">
           <div className="col-12">
@@ -223,5 +284,7 @@ export default function Excel() {
         </div>
       </div >
     </div >
+      )}
+    </>
   );
 }

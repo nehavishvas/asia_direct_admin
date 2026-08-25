@@ -9,6 +9,10 @@ import PrintIcon from "@mui/icons-material/Print";
 const SupplierBalancesReport = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
+    const userid = userdata?.id;
+    const usertype = userdata?.user_type;
+    const [hasPermission, setHasPermission] = useState(null);
 
     // Default to today's date
     const getTodayDateString = () => {
@@ -36,10 +40,41 @@ const SupplierBalancesReport = () => {
 
     const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
+    const checkPermission = async () => {
+        try {
+            setLoader(true);
+            if (!userid || !usertype) {
+                setHasPermission(false);
+                return;
+            }
+            const postdata = {
+                staff_id: userid,
+                route_url: "/Admin/supplier-balance-report",
+                user_type: usertype,
+            };
+            const response = await axios.post(
+                `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+                postdata
+            );
+            if (response.data && response.data.success === true) {
+                setHasPermission(true);
+                fetchReportData();
+            } else {
+                setHasPermission(false);
+                toast.error("You don't have permission to access this page");
+            }
+        } catch (error) {
+            setHasPermission(false);
+            toast.error(error.response?.data?.message || "You don't have permission to access this page");
+        } finally {
+            setLoader(false);
+        }
+    };
+
     useEffect(() => {
-        fetchReportData();
+        checkPermission();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.state]);
+    }, []);
 
     // Fetch report data
     const fetchReportData = async (e) => {
@@ -137,6 +172,27 @@ const SupplierBalancesReport = () => {
 
     return (
         <>
+            {loader || hasPermission === null ? (
+                <div className="loader-container">
+                    <div className="loader"></div>
+                    <p className="loader-text">Loading...</p>
+                </div>
+            ) : hasPermission === false ? (
+                <div className="wpWrapper">
+                    <div className="container-fluid no-print">
+                        <div className="row manageFreight">
+                            <div className="col-12">
+                                <h4 className="freight_hd">Supplier Balance</h4>
+                                <div className="line"></div>
+                            </div>
+                        </div>
+                        <div className="text-center mt-5">
+                            <h3 className="text-danger">You don't have permission to access this page</h3>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <>
             <div className="wpWrapper report-wrapper">
                 <div className="container-fluid no-print">
                     <div className="d-flex justify-content-between align-items-center mb-3">
@@ -492,6 +548,8 @@ const SupplierBalancesReport = () => {
                      }
                  }
              `}</style>
+                </>
+            )}
         </>
     );
 };

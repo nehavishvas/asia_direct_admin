@@ -8,15 +8,54 @@ import Swal from "sweetalert2";
 import ViewNewFreightQuoteInvoice from "./ViewNewFreightQuoteInvoice";
 
 const Invoices = () => {
+    const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
+    const userid = userdata?.id;
+    const usertype = userdata?.user_type;
+
     const [data, setData] = useState([]);
     const [loader, setLoader] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
     const [search, setSearch] = useState("");
     const [printItem, setPrintItem] = useState(null);
+    const [hasPermission, setHasPermission] = useState(null);
     const limit = 10;
     const navigate = useNavigate();
     const location = useLocation();
+
+    const checkPermission = async () => {
+        try {
+            setLoader(true);
+            if (!userid || !usertype) {
+                setHasPermission(false);
+                return;
+            }
+            const postdata = {
+                staff_id: userid,
+                route_url: "/Admin/invoices",
+                user_type: usertype,
+            };
+            const response = await axios.post(
+                `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+                postdata
+            );
+            if (response.data && response.data.success === true) {
+                setHasPermission(true);
+            } else {
+                setHasPermission(false);
+                toast.error("You don't have permission to access this page");
+            }
+        } catch (error) {
+            setHasPermission(false);
+            toast.error(error.response?.data?.message || "You don't have permission to access this page");
+        } finally {
+            setLoader(false);
+        }
+    };
+
+    useEffect(() => {
+        checkPermission();
+    }, []);
 
     useEffect(() => {
         const msg = sessionStorage.getItem("toastMessage");
@@ -27,8 +66,10 @@ const Invoices = () => {
     }, []);
 
     useEffect(() => {
-        getInvoices(currentPage);
-    }, [currentPage]);
+        if (hasPermission === true) {
+            getInvoices(currentPage);
+        }
+    }, [currentPage, hasPermission]);
 
     const getInvoices = async (pageNo = 1) => {
         setLoader(true);
@@ -51,6 +92,7 @@ const Invoices = () => {
                 "Error fetching invoices:",
                 error.message
             );
+            toast.error(error.response?.data?.message || "Failed to fetch invoices list");
         }
     };
 
@@ -112,10 +154,24 @@ const Invoices = () => {
 
     return (
         <>
-            {loader ? (
+            {loader || hasPermission === null ? (
                 <div className="loader-container">
                     <div className="loader"></div>
-                    <p className="loader-text">Updating... Invoice may take some time</p>
+                    <p className="loader-text">Loading...</p>
+                </div>
+            ) : hasPermission === false ? (
+                <div className="wpWrapper">
+                    <div className="container-fluid">
+                        <div className="row manageFreight">
+                            <div className="col-12">
+                                <h4 className="freight_hd">Invoices</h4>
+                                <div className="line"></div>
+                            </div>
+                        </div>
+                        <div className="text-center mt-5">
+                            <h3 className="text-danger">You don't have permission to access this page</h3>
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <div className="wpWrapper">

@@ -232,13 +232,13 @@ const CustomClearaceOrder = () => {
             setShowModal(false);
           })
           .catch((error) => {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "An error occurred");
           });
       } else {
         toast.error("Permission Denied");
       }
-    } catch {
-      console.log("access denied");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission Denied");
     }
   };
   const handleGetDataForUpdate = (id) => {
@@ -323,10 +323,10 @@ const CustomClearaceOrder = () => {
           toast.error(error.response?.data?.message || "Something went wrong");
         }
       } else {
-        toast.error("Permission Denied");
+        toast.error("Permission Denied: You don't have access to this page");
       }
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error(error.response?.data?.message || "Permission Denied");
     } finally {
       setLoader(false);
     }
@@ -572,13 +572,13 @@ const CustomClearaceOrder = () => {
             getdata();
           })
           .catch((error) => {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Failed to move order");
           });
       } else {
         toast.error("Permission Denied");
       }
     } catch (error) {
-      toast.error("permission Denied");
+      toast.error(error.response?.data?.message || "Permission Denied");
     }
   };
   const handlelcickdelete1234 = async (id) => {
@@ -598,7 +598,7 @@ const CustomClearaceOrder = () => {
         toast.error("Permission Denied");
       }
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error(error.response?.data?.message || "Permission Denied");
     }
   };
   useEffect(() => {

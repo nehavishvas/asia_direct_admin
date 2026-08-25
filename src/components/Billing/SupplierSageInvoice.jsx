@@ -25,6 +25,10 @@ const formatValue = (val, dec = 2, isPercent = false) => {
 };
 
 export default function SupplierSageInvoice() {
+  const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
+  const userid = userdata?.id;
+  const usertype = userdata?.user_type;
+
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
@@ -32,13 +36,52 @@ export default function SupplierSageInvoice() {
   const navigate = useNavigate();
   const [printItem, setPrintItem] = useState(null);
   const [search, setSearch] = useState("");
+  const [loader, setLoader] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
+
+  const checkPermission = async () => {
+    try {
+      setLoader(true);
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const postdata = {
+        staff_id: userid,
+        route_url: "/Admin/Supplier_Invoice",
+        user_type: usertype,
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        postdata
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+      } else {
+        setHasPermission(false);
+        toast.error("You don't have permission to access this page");
+      }
+    } catch (error) {
+      setHasPermission(false);
+      toast.error(error.response?.data?.message || "You don't have permission to access this page");
+    } finally {
+      setLoader(false);
+    }
+  };
 
   useEffect(() => {
-    getClients(currentPage);
-  }, [currentPage]);
+    checkPermission();
+  }, []);
+
+  useEffect(() => {
+    if (hasPermission === true) {
+      getClients(currentPage);
+    }
+  }, [currentPage, hasPermission]);
 
   const getClients = async (pageNo = 1) => {
     try {
+      setLoader(true);
       const response = await axios.get(
         `${process.env.REACT_APP_BASE_URL}getAllSupplierShipmentInvoices?page=${pageNo}&limit=${limit}&search=${search}`
       );
@@ -59,6 +102,9 @@ export default function SupplierSageInvoice() {
         "Error fetching clients:",
         error.message
       );
+      toast.error(error.response?.data?.message || "Failed to fetch supplier invoices");
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -130,8 +176,29 @@ export default function SupplierSageInvoice() {
   };
 
   return (
-    <div className="wpWrapper">
-      <div className="container-fluid">
+    <>
+      {loader || hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Supplier Invoice</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="wpWrapper">
+          <div className="container-fluid">
         <div className="d-flex justify-content-between align-items-center mb-3 manageFreight">
           <button
             className="btn btn-secondary"
@@ -331,5 +398,7 @@ export default function SupplierSageInvoice() {
       {printItem && <Viewsupplierinvoice hiddenPrintItem={printItem} onPrintComplete={() => setPrintItem(null)} />}
       
     </div>
+      )}
+    </>
   );
 }

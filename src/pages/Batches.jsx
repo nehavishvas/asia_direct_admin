@@ -25,6 +25,10 @@ import Swal from "sweetalert2";
 import PrintIcon from "@mui/icons-material/Print";
 
 export default function Batches() {
+  const userid = JSON.parse(localStorage.getItem("data123"))?.id;
+  const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
+  const [hasPermission, setHasPermission] = useState(null);
+
   const [datauser, setDatauser] = useState([]);
   const [countruies, setCountruies] = useState([]);
   const [apidata, setApidata] = useState([]);
@@ -98,14 +102,50 @@ export default function Batches() {
       setLoader(false);
     }
   };
+  const checkPermission = async () => {
+    try {
+      setLoader(true);
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const checkPost = {
+        staff_id: userid,
+        user_type: usertype,
+        route_url: "/Admin/Batches",
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        checkPost
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+      } else {
+        setHasPermission(false);
+        toast.error("Permission Denied: You don't have access to this page");
+      }
+    } catch (error) {
+      console.error("Error checking permission:", error);
+      setHasPermission(false);
+      toast.error(error.response?.data?.message || "Permission Denied: You don't have access to this page");
+    } finally {
+      setLoader(false);
+    }
+  };
+
   useEffect(() => {
+    checkPermission();
+  }, []);
+
+  useEffect(() => {
+    if (hasPermission !== true) return;
     const delayDebounce = setTimeout(() => {
       setCurrentPage(1);
       getdata();
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [querry]);
+  }, [querry, hasPermission]);
   const openModal = () => {
     navigate("/Admin/AddBatch");
   };
@@ -327,8 +367,10 @@ export default function Batches() {
     navigate("/Admin/BatchesOrder", { state: { data: datta[0] } });
   };
   useEffect(() => {
-    getcountry();
-  }, []);
+    if (hasPermission === true) {
+      getcountry();
+    }
+  }, [hasPermission]);
   const getcountry = () => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}GetCountries`)
@@ -363,9 +405,6 @@ export default function Batches() {
     const file = e.target.files[0];
     setSelectedimage(file);
   };
-
-  const userid = JSON.parse(localStorage.getItem("data123"))?.id;
-  const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
 
   const copy1 = async (id) => {
     console.log(id);
@@ -501,7 +540,27 @@ export default function Batches() {
 
   return (
     <>
-      <div className="wpWrapper">
+      {loader || hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Batches</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="wpWrapper">
         <div className="container-fluid">
           <div className="row">
             <div className=" manageFreight">
@@ -1654,6 +1713,7 @@ export default function Batches() {
           </Modal>
         </div>
       </div>
+      )}
     </>
   );
 }

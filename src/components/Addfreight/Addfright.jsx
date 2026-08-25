@@ -31,7 +31,8 @@ const Addfright = () => {
     licenses: [],
     packing_list: [],
   });
-  const [loader, setLoader] = useState(false);
+  const [loader, setLoader] = useState(true);
+  const [hasPermission, setHasPermission] = useState(null);
   const [showhazardous, setShowhazardous] = useState(false);
   const [data, setData] = useState({
     client_ref: "",
@@ -94,10 +95,7 @@ const Addfright = () => {
   let month = String(today.getMonth() + 1).padStart(2, "0");
   let day = String(today.getDate()).padStart(2, "0");
   let formattedDate = `${year}-${month}-${day}`;
-  useEffect(() => {
-    getcountry();
-    getstaff();
-  }, []);
+
   const getcountry = () => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}GetCountries`)
@@ -224,8 +222,35 @@ const Addfright = () => {
     setError(error);
   };
 
-  const apihit = () => {
+  const apihit = async () => {
     setLoader(true);
+    try {
+      const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
+      const userid = userdata?.id;
+      const usertype = userdata?.user_type;
+
+      const postdata = {
+        staff_id: userid,
+        route_url: "/add-freight",
+        user_type: usertype,
+      };
+
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        postdata
+      );
+
+      if (!permission.data || permission.data.success !== true) {
+        setLoader(false);
+        toast.error("You don't have permission to perform this action");
+        return;
+      }
+    } catch (err) {
+      setLoader(false);
+      toast.error("You don't have permission to perform this action");
+      return;
+    }
+
     console.log(reemail?.clientemail);
     console.log(selectedOption);
     console.log(reemail);
@@ -335,9 +360,7 @@ const Addfright = () => {
   };
   const volumetricweight = 167 * parseInt(data.dimension);
   console.log(volumetricweight);
-  useEffect(() => {
-    getClient();
-  }, []);
+
   const getClient = () => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}client-list`)
@@ -400,9 +423,7 @@ const Addfright = () => {
         console.log(error.response.data);
       });
   };
-  useEffect(() => {
-    getdataap();
-  }, []);
+
   const getdataap = () => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}getCommodities`)
@@ -425,6 +446,52 @@ const Addfright = () => {
       console.log(error.response.data.data);
     }
   };
+
+  const checkPermission = async () => {
+    try {
+      const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
+      const userid = userdata?.id;
+      const usertype = userdata?.user_type;
+
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        setLoader(false);
+        toast.error("You don't have permission to access this page");
+        return;
+      }
+
+      const postdata = {
+        staff_id: userid,
+        route_url: "/Admin/Addfreight",
+        user_type: usertype,
+      };
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        postdata
+      );
+
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+        getcountry();
+        getstaff();
+        getClient();
+        getdataap();
+      } else {
+        setHasPermission(false);
+        toast.error("You don't have permission to access this page");
+      }
+    } catch (error) {
+      setHasPermission(false);
+      toast.error("You don't have permission to access this page");
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    checkPermission();
+  }, []);
   const [show, setShow] = useState(false);
   const [selectedDocs, setSelectedDocs] = useState([]);
   const docOptions = [
@@ -468,6 +535,27 @@ const Addfright = () => {
         <div class="loader-container">
           <div class="loader"></div>
           <p class="loader-text">Updating... This may take some time</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <div className="d-flex gap-3">
+                  <div style={{ cursor: "pointer" }}>
+                    <ArrowBackIcon onClick={handleclick2} />
+                  </div>
+                  <div>
+                    <h4 className="det_hd">Add Freight</h4>
+                    <div className="line"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="wpWrapper ">

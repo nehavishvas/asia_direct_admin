@@ -6,6 +6,10 @@ import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 
 export default function ReleasedDashboadrs() {
+  const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
+  const userid = userdata?.id;
+  const usertype = userdata?.user_type;
+
   const [data, setData] = useState([]);
 
   // current page
@@ -17,28 +21,71 @@ export default function ReleasedDashboadrs() {
   // limit per page
   const limit = 10;
 
+  const [loader, setLoader] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
+
+  const checkPermission = async () => {
+    try {
+      setLoader(true);
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const postdata = {
+        staff_id: userid,
+        route_url: "/Admin/releasedDashboard",
+        user_type: usertype,
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        postdata
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+      } else {
+        setHasPermission(false);
+        toast.error("You don't have permission to access this page");
+      }
+    } catch (error) {
+      setHasPermission(false);
+      toast.error(error.response?.data?.message || "You don't have permission to access this page");
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    checkPermission();
+  }, []);
+
   // ================= GET DATA =================
 
-useEffect(() => {
-  getdatatable(currentPage);
-}, [currentPage]);
+  useEffect(() => {
+    if (hasPermission === true) {
+      getdatatable(currentPage);
+    }
+  }, [currentPage, hasPermission]);
 
-const getdatatable = async (pageNo) => {
-  try {
-    const response = await axios.get(
-      `${process.env.REACT_APP_BASE_URL}GetRealeseDashboard?page=${pageNo}&limit=${limit}`
-    );
+  const getdatatable = async (pageNo) => {
+    try {
+      setLoader(true);
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}GetRealeseDashboard?page=${pageNo}&limit=${limit}`
+      );
 
-    console.log(response.data);
+      console.log(response.data);
 
-    setData([...response.data.data]);
+      setData([...response.data.data]);
 
-    setTotalPages(response.data.totalPages || 1);
+      setTotalPages(response.data.totalPages || 1);
 
-  } catch (error) {
-    console.log(error);
-  }
-};
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Failed to fetch released dashboard list");
+    } finally {
+      setLoader(false);
+    }
+  };
 
 const handlePageChange = (event, value) => {
   setCurrentPage(value);
@@ -82,8 +129,29 @@ const handlePageChange = (event, value) => {
   };
 
   return (
-    <div className="wpWrapper">
-      <div className="container-fluid">
+    <>
+      {loader || hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Released Dashboard</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="wpWrapper">
+          <div className="container-fluid">
         <div className="row">
           {/* HEADER */}
 
@@ -225,5 +293,7 @@ const handlePageChange = (event, value) => {
         </div>
       </div>
     </div>
+      )}
+    </>
   );
 }

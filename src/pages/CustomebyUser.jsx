@@ -199,126 +199,127 @@ export default function CustomebyUserap() {
   const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
   /////////////////////////////////////////delete functin //////////////////////////////////////////
   const handlelcickdelete = async (id) => {
-    const postdata = {
-      staff_id: userid,
-      route_url: "/freight-list",
-      user_type: usertype,
-    };
-    const permisssion = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-      postdata
-    );
-    if (permisssion.data.success === true) {
-      const result = await Swal.fire({
-        title: "Are you sure?",
-        text: "Do you want to delete this Clearance?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, delete it!",
-      });
-      if (result.isConfirmed) {
-        try {
-          const response = await axios.post(`${process.env.REACT_APP_BASE_URL}delete-clearing`, {
-            clearing_id: id,
-          });
-          if (response.data.success) {
-            Swal.fire({
-              icon: "success",
-              title: "Deleted!",
-              text: response?.data?.message || "Clearance Deleted successfully.",
-              confirmButtonColor: "#3085d6",
+    try {
+      const postdata = {
+        staff_id: userid,
+        route_url: "/delete-clearing",
+        user_type: usertype,
+      };
+      const permisssion = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        postdata
+      );
+      if (permisssion.data.success === true) {
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to delete this Clearance?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, delete it!",
+        });
+        if (result.isConfirmed) {
+          try {
+            const response = await axios.post(`${process.env.REACT_APP_BASE_URL}delete-clearing`, {
+              clearing_id: id,
             });
-            getdata();
-          } else {
-            toast.error(response.data.message || "Failed to delete Clearance.");
+            if (response.data.success) {
+              Swal.fire({
+                icon: "success",
+                title: "Deleted!",
+                text: response?.data?.message || "Clearance Deleted successfully.",
+                confirmButtonColor: "#3085d6",
+              });
+              getdata();
+            } else {
+              toast.error(response.data.message || "Failed to delete Clearance.");
+            }
+          } catch (error) {
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: error?.response?.data?.message || "Something went wrong!",
+              confirmButtonColor: "#d33",
+            });
           }
-        } catch (error) {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: error?.response?.data?.message || "Something went wrong!",
-            confirmButtonColor: "#d33",
-          });
         }
+      } else {
+        toast.error(permisssion.data.message || "Permission Denied");
       }
-      // axios
-      //   .post(`${process.env.REACT_APP_BASE_URL}delete-clearing`, {
-      //     clearing_id: id,
-      //   })
-      //   .then((response) => {
-      //     toast.success(response.data.message);
-      //     getdata();
-      //   })
-      //   .catch((error) => {
-      //     toast.error(error.response.data.message);
-      //   });
-    } else {
-      toast.error(permisssion.data.message);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission Denied");
     }
   };
   //////////////////////////////////////////////////get data/////////////////////////////////////////////////
   const getdata = async (currentData) => {
-    const permission = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-      {
-        staff_id: userid,
-        route_url: "/clearing-list",
-        user_type: usertype,
+    try {
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/clearing-list",
+          user_type: usertype,
+        }
+      );
+      if (permission.data.success === true) {
+        setLoader(true);
+        axios
+          .post(`${process.env.REACT_APP_BASE_URL}clearing-list`, {
+            added_by: 2,
+            user_id: userid,
+            page: currentData,
+          })
+          .then((response) => {
+            console.log(response?.data?.data);
+            setConstgetdata(response?.data?.data);
+            setPagenationData(response.data);
+            setLoader(false);
+          })
+          .catch((error) => {
+            setLoader(false);
+            toast.error(error.response?.data?.message || "Something went wrong");
+          });
+      } else {
+        toast.error(permission.data.message || "Permission Denied");
       }
-    );
-    if (permission.data.success === true) {
-      setLoader(true);
-      axios
-        .post(`${process.env.REACT_APP_BASE_URL}clearing-list`, {
-          added_by: 2,
-          user_id: userid,
-          page: currentData,
-        })
-        .then((response) => {
-          console.log(response?.data?.data);
-          setConstgetdata(response?.data?.data);
-          setPagenationData(response.data);
-          setLoader(false);
-        })
-        .catch((error) => {
-          setLoader(false);
-          toast.error(error.response.data.message);
-        });
-    } else {
-      toast.error("error");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission Denied");
     }
   };
   const getdata11 = async (currentData) => {
-    const permission = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-      {
-        staff_id: userid,
-        route_url: "/clearing-list",
-        user_type: usertype,
+    try {
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/clearing-list",
+          user_type: usertype,
+        }
+      );
+      if (permission.data.success === true) {
+        setLoader(true);
+        axios
+          .post(`${process.env.REACT_APP_BASE_URL}clearing-list`, {
+            added_by: 2,
+            user_id: userid,
+            search: currentData,
+          })
+          .then((response) => {
+            console.log(response?.data?.data);
+            setConstgetdata(response?.data?.data);
+            setPagenationData(response.data);
+            setLoader(false);
+          })
+          .catch((error) => {
+            setLoader(false);
+            toast.error(error.response?.data?.message || "Something went wrong");
+          });
+      } else {
+        toast.error(permission.data.message || "Permission Denied");
       }
-    );
-    if (permission.data.success === true) {
-      setLoader(true);
-      axios
-        .post(`${process.env.REACT_APP_BASE_URL}clearing-list`, {
-          added_by: 2,
-          user_id: userid,
-          search: currentData,
-        })
-        .then((response) => {
-          console.log(response?.data?.data);
-          setConstgetdata(response?.data?.data);
-          setPagenationData(response.data);
-          setLoader(false);
-        })
-        .catch((error) => {
-          setLoader(false);
-          toast.error(error.response.data.message);
-        });
-    } else {
-      toast.error("error");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission Denied");
     }
   };
   useEffect(() => {
@@ -439,36 +440,69 @@ export default function CustomebyUserap() {
           toast.error(error.response?.data?.message || "Something went wrong");
         }
       } else {
-        toast.error("Access Denied");
+        toast.error(permission.data.message || "Access Denied");
       }
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error(error.response?.data?.message || "Permission Denied");
     }
   };
 
-  const handleclickdecli = (id) => {
-    axios
-      .post(`${process.env.REACT_APP_BASE_URL}status-clearance`, {
-        clearance_id: id,
-        status: "2",
-      })
-      .then((response) => {
-        console.log(response.data);
-        toast.error(response.data.message);
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
+  const handleclickdecli = async (id) => {
+    try {
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/status-clearance",
+          user_type: usertype,
+        }
+      );
+      if (permission.data.success) {
+        axios
+          .post(`${process.env.REACT_APP_BASE_URL}status-clearance`, {
+            clearance_id: id,
+            status: "2",
+          })
+          .then((response) => {
+            console.log(response.data);
+            getdata();
+            toast.success(response.data.message);
+          })
+          .catch((error) => {
+            toast.error(error.response?.data?.message || "Something went wrong");
+          });
+      } else {
+        toast.error(permission.data.message || "Access Denied");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission Denied");
+    }
   };
 
-  const handleclickaccname123234 = (id) => {
-    const dataval = constgetdata.filter((item) => {
-      return item.id === id.id;
-    });
-    console.log(dataval);
-    navigate("/Admin/Editclearence", {
-      state: { data: dataval },
-    });
+  const handleclickaccname123234 = async (id) => {
+    try {
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/Admin/shipping-estimate-clearence",
+          user_type: usertype,
+        }
+      );
+      if (permission.data.success) {
+        const dataval = constgetdata.filter((item) => {
+          return item.id === id.id;
+        });
+        console.log(dataval);
+        navigate("/Admin/Editclearence", {
+          state: { data: dataval },
+        });
+      } else {
+        toast.error(permission.data.message || "Access Denied");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission Denied");
+    }
   };
   const handleclickaccname123 = async (item) => {
     try {
@@ -496,14 +530,14 @@ export default function CustomebyUserap() {
             getdata();
           })
           .catch((error) => {
-            console.log(error.response.data);
-            toast.error(error.response.data.message);
+            console.log(error.response?.data);
+            toast.error(error.response?.data?.message || "Something went wrong");
           });
       } else {
-        toast.error(permission.data.message);
+        toast.error(permission.data.message || "Access Denied");
       }
     } catch (error) {
-      toast.error("permisiion denied");
+      toast.error(error.response?.data?.message || "Permission Denied");
     }
   };
   useEffect(() => {
@@ -521,9 +555,25 @@ export default function CustomebyUserap() {
   };
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
-  const handleModal = (id) => {
-    setEid(id);
-    setIsModalOpen1(true);
+  const handleModal = async (id) => {
+    try {
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/AttachedShippingEstimate",
+          user_type: usertype,
+        }
+      );
+      if (permission.status === 200 && permission.data.success) {
+        setEid(id);
+        setIsModalOpen1(true);
+      } else {
+        toast.error("Permission denied");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission denied");
+    }
   };
   const handleCloseModal1 = () => setIsModalOpen1(false);
   const postData = () => {
@@ -557,35 +607,39 @@ export default function CustomebyUserap() {
   };
 
   const postData123 = async () => {
-    const permission = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}CheckPermission`,
-      {
-        staff_id: userid,
-        route_url: "/AttachedShippingEstimate",
-        user_type: usertype,
+    try {
+      const permission = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        {
+          staff_id: userid,
+          route_url: "/AttachedShippingEstimate",
+          user_type: usertype,
+        }
+      );
+      console.log(permission);
+      if (permission.data.success === true) {
+        const fromdata = new FormData();
+        fromdata.append("clearing_id", eid);
+        fromdata.append("file", file1);
+        axios
+          .post(
+            `${process.env.REACT_APP_BASE_URL}AttachedShippingEstimate`,
+            fromdata
+          )
+          .then((response) => {
+            if (response.data.success === true) {
+              handleCloseModal1();
+              toast.success(response.data.message);
+            }
+          })
+          .catch((error) => {
+            toast.error(error.response?.data?.message || "Something went wrong");
+          });
+      } else {
+        toast.error(permission.data.message || "Access Denied");
       }
-    );
-    console.log(permission);
-    if (permission.data.success === true) {
-      const fromdata = new FormData();
-      fromdata.append("clearing_id", eid);
-      fromdata.append("file", file1);
-      axios
-        .post(
-          `${process.env.REACT_APP_BASE_URL}AttachedShippingEstimate`,
-          fromdata
-        )
-        .then((response) => {
-          if (response.data.success === true) {
-            handleCloseModal1();
-            toast.success(response.data.message);
-          }
-        })
-        .catch((error) => {
-          toast.error(error.response.data.message);
-        });
-    } else {
-      toast.error("Access Denied");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Permission Denied");
     }
   };
 
@@ -2069,7 +2123,7 @@ export default function CustomebyUserap() {
                 <input
                   type="file"
                   className="border px-3 rounded py-2 my-2 w-100"
-                  onChange={handleCloseModal1}
+                  onChange={handlefilechange}
                 ></input>
                 <div className="text-center mt-3">
 
