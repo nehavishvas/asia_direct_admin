@@ -1281,7 +1281,7 @@ export default function WarehouseOrder() {
       console.error("AssignSupplier Error:", error);
     }
   };
-  
+
   return (
     <>
       {loader || hasPermission === null ? (
@@ -1305,1320 +1305,1320 @@ export default function WarehouseOrder() {
         </div>
       ) : (
         <div className="wpWrapper">
-        <div className="container-fluid">
-          <div className="row manageFreight">
-            <div className="col-md-12">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <h4 className="freight_hd">Warehouse Order List</h4>
-                </div>
-                <div className="d-flex justify-content-end align-items-center gap-2">
-                  <div className="searchManageFre">
-                    <input
-                      className="px-2 py-1 rounded "
-                      placeholder="Search"
-                      value={searchQuery}
-                      onChange={handleSearch}
-                      style={{ height: "38px", border: "1px solid #ced4da" }}
-                    />
-                  </div>
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-md-12">
+                <div className="d-flex justify-content-between align-items-center">
                   <div>
-                    <select
-                      className="form-select form-select-sm"
-                      value={sortOrder}
-                      onChange={(e) => {
-                        const newSort = e.target.value;
-                        setSortOrder(newSort);
-                        setCurrentPage(1);
-                        fetchWarehouseOrders(1, activeTab, searchQuery, advancedFilters, itemsPerPage, newSort);
-                      }}
-                      style={{ width: "120px", height: "38px", fontSize: "14px", borderRadius: "8px", border: "1px solid #ced4da", cursor: "pointer" }}
-                    >
-                      <option value="newest">Newest</option>
-                      <option value="oldest">Oldest</option>
-                    </select>
+                    <h4 className="freight_hd">Warehouse Order List</h4>
                   </div>
-                  <div>
-                    <Button
-                      variant="contained"
-                      onClick={() => {
-                        handleOpenModal2();
-                      }}
-                      style={{ height: "38px" }}
-                    >
-                      Filter
-                    </Button>
+                  <div className="d-flex justify-content-end align-items-center gap-2">
+                    <div className="searchManageFre">
+                      <input
+                        className="px-2 py-1 rounded "
+                        placeholder="Search"
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        style={{ height: "38px", border: "1px solid #ced4da" }}
+                      />
+                    </div>
+                    <div>
+                      <select
+                        className="form-select form-select-sm"
+                        value={sortOrder}
+                        onChange={(e) => {
+                          const newSort = e.target.value;
+                          setSortOrder(newSort);
+                          setCurrentPage(1);
+                          fetchWarehouseOrders(1, activeTab, searchQuery, advancedFilters, itemsPerPage, newSort);
+                        }}
+                        style={{ width: "120px", height: "38px", fontSize: "14px", borderRadius: "8px", border: "1px solid #ced4da", cursor: "pointer" }}
+                      >
+                        <option value="newest">Newest</option>
+                        <option value="oldest">Oldest</option>
+                      </select>
+                    </div>
+                    <div>
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          handleOpenModal2();
+                        }}
+                        style={{ height: "38px" }}
+                      >
+                        Filter
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <ul className="nav nav-tabs mb-3 mt-3">
-            <li className="nav-item" style={{ cursor: "pointer" }}>
-              <a
-                className={`nav-link ${activeTab === 'In Store' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                onClick={() => {
-                  setActiveTab('In Store');
-                  setCurrentPage(1);
-                  fetchWarehouseOrders(1, 'In Store', searchQuery, advancedFilters, itemsPerPage, sortOrder);
-                }}
-              >
-                In - store ({counts.inStore})
-              </a>
-            </li>
-            <li className="nav-item" style={{ cursor: "pointer" }}>
-              <a
-                className={`nav-link ${activeTab === 'Batch Assigned' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                onClick={() => {
-                  setActiveTab('Batch Assigned');
-                  setCurrentPage(1);
-                  fetchWarehouseOrders(1, 'Batch Assigned', searchQuery, advancedFilters, itemsPerPage, sortOrder);
-                }}
-              >
-                Batch Assigned ({counts.batchAssigned})
-              </a>
-            </li>
-            <li className="nav-item" style={{ cursor: "pointer" }}>
-              <a
-                className={`nav-link ${activeTab === 'Batch not Assigned' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                onClick={() => {
-                  setActiveTab('Batch not Assigned');
-                  setCurrentPage(1);
-                  fetchWarehouseOrders(1, 'Batch not Assigned', searchQuery, advancedFilters, itemsPerPage, sortOrder);
-                }}
-              >
-                Batch not Assigned ({counts.batchNotAssigned})
-              </a>
-            </li>
-            <li className="nav-item" style={{ cursor: "pointer" }}>
-              <a
-                className={`nav-link ${activeTab === 'Out' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                onClick={() => {
-                  setActiveTab('Out');
-                  setCurrentPage(1);
-                  fetchWarehouseOrders(1, 'Out', searchQuery, advancedFilters, itemsPerPage, sortOrder);
-                }}
-              >
-                Out ({counts.out})
-              </a>
-            </li>
-          </ul>
-          {loader ? (
-            <div class="loader-container">
-              <div class="loader"></div>
-              <p class="loader-text">Updating... This may take some time</p>
-            </div>
-          ) : (
-            <div className="row">
-              <div className="col-md-12">
-                <div className="  mt-3">
-                  <div className="">
-                    <div className="table-responsive">
-                      <table className="table table-striped tableICon">
-                        <tbody>
-                          {(() => {
-                            const isReadOnly = activeTab !== "In Store";
-                            return data &&
-                              data.length > 0 &&
-                              data.map((item) => {
-                                return (
-                                <>
-                                  <tr key={item.id}>
-                                    <td className="list_bd">
-                                      <div className="container-fluid">
-                                        <div className="d-flex justify-content-between align-items-center">
-                                          <div className="d-flex align-items-center">
-                                            <p
-                                              className="client_nm"
-                                              style={{ fontSize: "18px" }}
-                                            >
-                                              {item.client_name}
-                                            </p>
-                                            <p
-                                              className="fright_no mx-2"
-                                              style={{ fontSize: "14px" }}
-                                            >
-                                              {[item.batch_number, item.freight_number, item.order_number]
-                                                .filter(Boolean)
-                                                .join(" / ") || "-"}
-                                            </p>
-                                          </div>
-                                          <div className="">
-                                            <p className="port_date">
-                                              {new Date(
-                                                item.date,
-                                              ).toLocaleDateString("en-GB")}
-                                            </p>
-                                          </div>
-                                        </div>
-                                        <div className="row align-items-center">
-                                          <div className="col-md-3">
-                                            <div className="">
-                                              <p
-                                                className="origin"
-                                                style={{ fontSize: "14px" }}
-                                              >
-                                                {item.product_desc}
-                                              </p>
-                                            </div>
-                                            <div className="">
-                                              <p className="origin">
-                                                Days in Warehouse: {item.days_in_warehouse || 0}
-                                              </p>
-                                            </div>
-
-                                          </div>
-                                          <div className="col-md-4">
-                                            <div className="d-flex align-items-center">
-                                              <div className="d-flex align-items-center">
-                                                <p className="origin">
-                                                  {item.collection_from_name}
-                                                </p>
-                                                <div className="arrow">
-                                                  <i className="fi fi-rr-arrow-right mx-2 arr_icon"></i>
-                                                </div>
-                                                <p className="origin">
-                                                  {item.delivery_to_name}
-                                                  <span className="fright_type">
-                                                    (
-                                                    {item.Freight
-                                                      ? item.Freight
-                                                      : item.freight_type}
-                                                    )
-                                                  </span>
-                                                </p>
-                                              </div>
-                                            </div>
-                                            <div className="">
-                                              {/* <p className="origin">Status: {item.warehouse_dispatch === "Yes" ? "Out" : (item.warehouse_item_status || "In Store")}</p> */}
-                                              <p className="origin">Status: {item.warehouse_item_status}</p>
-                                            </div>
-                                          </div>
-                                          <div className="col-md-3">
-                                            <div className="">
-                                              <p className="origin">Weight:{item.total_weight || 0}
-                                                <p className="origin">Dimension: {item.total_dimension || 0}</p>
-                                                <p className="origin">Packages: {item.total_packages || 0}</p>
-                                              </p>
-                                            </div>
-                                          </div>
-                                          <div className="col-md-2">
-                                            <div className="text-end">
-                                              <div className="dropdown">
-                                                <select
-                                                  onClick={isReadOnly ? null : () => {
-                                                    getAllBatch(item);
-                                                  }}
-                                                  onChange={isReadOnly ? null : (e) =>
-                                                    handleBatchChange(e, item)
-                                                  }
-                                                  disabled={isReadOnly}
-                                                  name="dropval"
-                                                  value={item?.dropval}
-                                                  className="py-1 ps-1 sel_batches"
-                                                  style={{
-                                                    cursor: isReadOnly ? "not-allowed" : "pointer",
-                                                    opacity: isReadOnly ? 0.6 : 1,
-                                                  }}
-                                                >
-                                                  <option
-                                                    className="op_tion"
-                                                    value=""
-                                                  >
-                                                    Select Batch
-                                                  </option>
-                                                  {batch &&
-                                                    batch.length > 0 &&
-                                                    batch.map(
-                                                      (batchItem, index) => (
-                                                        <option
-                                                          className="op_tion"
-                                                          key={index}
-                                                          value={
-                                                            batchItem.batch_id
-                                                          }
-                                                        >
-                                                          {
-                                                            batchItem.batch_number
-                                                          }
-                                                        </option>
-                                                      ),
-                                                    )}
-                                                </select>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div className="row">
-                                          <div className="col-md-6">
-                                            <div className="d-flex align-items-center">
-                                              <p
-                                                type="radio"
-                                                className="input_user mb-0"
-                                              />
-                                              {item.assign_to_batch === 0 ? (
-                                                <div className="d-flex align-items-center">
-                                                  <span className="dot bg-danger me-2"></span>
-                                                  <p
-                                                    className="text-danger mb-0"
-                                                    style={{ fontSize: "12px" }}
-                                                  >
-                                                    Batch Not Assigned
-                                                  </p>
-                                                </div>
-                                              ) : (
-                                                <div className="d-flex align-items-center">
-                                                  <span className="dot bg-success me-2"></span>
-                                                  <p
-                                                    className="text-success mb-0"
-                                                    style={{ fontSize: "12px" }}
-                                                  >
-                                                    Batch Assigned
-                                                  </p>
-                                                </div>
-                                              )}
-                                            </div>
-                                          </div>
-                                          <div className="col-md-6 text-end">
-                                            <i
-                                              className="fa fa-tasks me-2 mt-2"
-                                              onClick={isReadOnly ? null : () => {
-                                                console.log("Clicked Item Details:", item);
-                                                handleEditClickAssign(
-                                                  item.freight_id || item.freight_ID || item.id,
-                                                  item.order_id,
-                                                );
-                                              }}
-                                              style={{
-                                                color: "#1d2044",
-                                                cursor: isReadOnly ? "not-allowed" : "pointer",
-                                                opacity: isReadOnly ? 0.4 : 1,
-                                                pointerEvents: isReadOnly ? "none" : "auto",
-                                              }}
-                                            />
-                                            <FaEdit
-                                              onClick={isReadOnly ? null : () =>
-                                                handleEditClick(
-                                                  item.freight_id,
-                                                  item.warehouse_assign_order_id,
-                                                  item.order_id,
-                                                )
-                                              }
-                                              style={{
-                                                color: "#1d2044",
-                                                cursor: isReadOnly ? "not-allowed" : "pointer",
-                                                opacity: isReadOnly ? 0.4 : 1,
-                                                pointerEvents: isReadOnly ? "none" : "auto",
-                                              }}
-                                            />
-                                            <DeleteIcon
-                                              onClick={isReadOnly ? null : () =>
-                                                handleEditClick12(
-                                                  item.warehouse_assign_order_id,
-                                                  item.order_id,
-                                                  item.freight_id,
-                                                )
-                                              }
-                                              style={{
-                                                color: "#1d2044",
-                                                cursor: isReadOnly ? "not-allowed" : "pointer",
-                                                opacity: isReadOnly ? 0.4 : 1,
-                                                pointerEvents: isReadOnly ? "none" : "auto",
-                                              }}
-                                            />
-                                            <VisibilityIcon
-                                              onClick={() =>
-                                                handleclicknavi(item)
-                                              }
-                                              style={{
-                                                color: "rgb(27 34 69)",
-                                                cursor: "pointer",
-                                                width: "20px",
-                                              }}
-                                            />
-                                            <PictureAsPdfIcon
-                                              style={{ cursor: "pointer" }}
-                                              onClick={() => {
-                                                handlePdfPrint(item);
-                                              }}
-                                            />
-                                          </div>{" "}
-                                        </div>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                </>
-                              );
-                            });
-                          })()}
-                        </tbody>
-                      </table>
-                      <div className="text-center d-flex justify-content-end align-items-center gap-2 mt-3 mb-4">
-                        {/* Rows per page dropdown */}
-                        <div className="d-flex align-items-center me-3" style={{ gap: "8px" }}>
-                          <span style={{ fontSize: "13px", fontWeight: "600", color: "#5c6378" }}>Rows per page:</span>
-                          <select
-                            value={itemsPerPage}
-                            onChange={(e) => {
-                              const newLimit = parseInt(e.target.value, 10);
-                              setItemsPerPage(newLimit);
-                              setCurrentPage(1);
-                              fetchWarehouseOrders(1, activeTab, searchQuery, advancedFilters, newLimit, sortOrder);
-                            }}
-                            className="form-select form-select-sm"
-                            style={{ width: "80px", fontSize: "13px", height: "30px", padding: "2px 8px" }}
-                          >
-                            <option value={10}>10</option>
-                            <option value={25}>25</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
-                          </select>
-                        </div>
-
-                        {/* First Page button */}
-                        <button
-                          disabled={currentPage === 1}
-                          className="bg_page"
-                          onClick={() => handlePageChange(1)}
-                          title="First Page"
-                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                        >
-                          <i className="fa fa-angle-double-left" style={{ fontSize: "14px" }}></i>
-                        </button>
-
-                        {/* Prev Page button */}
-                        <button
-                          disabled={currentPage === 1}
-                          className="bg_page"
-                          onClick={() => handlePageChange(currentPage - 1)}
-                          title="Previous Page"
-                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                        >
-                          <i className="fa fa-angle-left" style={{ fontSize: "14px" }}></i>
-                        </button>
-
-                        {/* Dynamic page selection dropdown */}
-                        <div className="d-flex align-items-center gap-1" style={{ fontSize: "13px", fontWeight: "600", color: "#1b2245" }}>
-                          <span>Page</span>
-                          <select
-                            value={currentPage}
-                            onChange={(e) => {
-                              const val = parseInt(e.target.value, 10);
-                              if (!isNaN(val)) {
-                                handlePageChange(val);
-                              }
-                            }}
-                            className="form-select form-select-sm text-center px-1"
-                            style={{ width: "80px", height: "30px", fontSize: "13px", borderRadius: "4px", padding: "2px 20px 2px 8px" }}
-                          >
-                            {Array.from({ length: totalPage || 1 }, (_, i) => i + 1).map((page) => (
-                              <option key={page} value={page}>
-                                {page}
-                              </option>
-                            ))}
-                          </select>
-                          <span>of {totalPage || 1}</span>
-                        </div>
-
-                        {/* Next Page button */}
-                        <button
-                          disabled={currentPage === totalPage || totalPage === 0}
-                          className="bg_page"
-                          onClick={() => handlePageChange(currentPage + 1)}
-                          title="Next Page"
-                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                        >
-                          <i className="fa fa-angle-right" style={{ fontSize: "14px" }}></i>
-                        </button>
-
-                        {/* Last Page button */}
-                        <button
-                          disabled={currentPage === totalPage || totalPage === 0}
-                          className="bg_page"
-                          onClick={() => handlePageChange(totalPage)}
-                          title="Last Page"
-                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                        >
-                          <i className="fa fa-angle-double-right" style={{ fontSize: "14px" }}></i>
-                        </button>
-                      </div>
-                      
-                      <Modal
-                        open={handleassignsupplier}
-                        onClose={handleclose}
-                        aria-labelledby="modal-modal-title"
-                        aria-describedby="modal-modal-description"
-                      >
-                        <Box
-                          sx={{
-                            position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            transform: "translate(-50%, -50%)",
-                            bgcolor: "background.paper",
-                            boxShadow: 24,
-                            width: {
-                              xs: "95%",
-                              sm: "80%",
-                              md: "60%",
-                              lg: "40%",
-                            },
-                          }}
-                        >
-                          <div className="modal-header">
-                            <h2 className="modal-title" id="modal-modal-title text-dark">
-                              Assign Supplier
-                            </h2>
-                          </div>
-                          <div className="newModalGap  noFormaControl">
-                            <select
-                              className="form-select"
-                              onChange={handleChangeSupplier}
-                            >
-                              <option>select</option>
-
-                              {handlsupplier &&
-                                handlsupplier.length > 0 &&
-                                handlsupplier.map((item, index) => {
+            <ul className="nav nav-tabs mb-3 mt-3">
+              <li className="nav-item" style={{ cursor: "pointer" }}>
+                <a
+                  className={`nav-link ${activeTab === 'In Store' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                  onClick={() => {
+                    setActiveTab('In Store');
+                    setCurrentPage(1);
+                    fetchWarehouseOrders(1, 'In Store', searchQuery, advancedFilters, itemsPerPage, sortOrder);
+                  }}
+                >
+                  In - store ({counts.inStore})
+                </a>
+              </li>
+              <li className="nav-item" style={{ cursor: "pointer" }}>
+                <a
+                  className={`nav-link ${activeTab === 'Batch Assigned' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                  onClick={() => {
+                    setActiveTab('Batch Assigned');
+                    setCurrentPage(1);
+                    fetchWarehouseOrders(1, 'Batch Assigned', searchQuery, advancedFilters, itemsPerPage, sortOrder);
+                  }}
+                >
+                  Batch Assigned ({counts.batchAssigned})
+                </a>
+              </li>
+              <li className="nav-item" style={{ cursor: "pointer" }}>
+                <a
+                  className={`nav-link ${activeTab === 'Batch not Assigned' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                  onClick={() => {
+                    setActiveTab('Batch not Assigned');
+                    setCurrentPage(1);
+                    fetchWarehouseOrders(1, 'Batch not Assigned', searchQuery, advancedFilters, itemsPerPage, sortOrder);
+                  }}
+                >
+                  Batch not Assigned ({counts.batchNotAssigned})
+                </a>
+              </li>
+              <li className="nav-item" style={{ cursor: "pointer" }}>
+                <a
+                  className={`nav-link ${activeTab === 'Out' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                  onClick={() => {
+                    setActiveTab('Out');
+                    setCurrentPage(1);
+                    fetchWarehouseOrders(1, 'Out', searchQuery, advancedFilters, itemsPerPage, sortOrder);
+                  }}
+                >
+                  Out ({counts.out})
+                </a>
+              </li>
+            </ul>
+            {loader ? (
+              <div class="loader-container">
+                <div class="loader"></div>
+                <p class="loader-text">Updating... This may take some time</p>
+              </div>
+            ) : (
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="  mt-3">
+                    <div className="">
+                      <div className="table-responsive">
+                        <table className="table table-striped tableICon">
+                          <tbody>
+                            {(() => {
+                              const isReadOnly = activeTab !== "In Store";
+                              return data &&
+                                data.length > 0 &&
+                                data.map((item) => {
                                   return (
                                     <>
-                                      <option key={index} value={item.id}>
-                                        {item.name}
-                                      </option>
+                                      <tr key={item.id}>
+                                        <td className="list_bd">
+                                          <div className="container-fluid">
+                                            <div className="d-flex justify-content-between align-items-center">
+                                              <div className="d-flex align-items-center">
+                                                <p
+                                                  className="client_nm"
+                                                  style={{ fontSize: "18px" }}
+                                                >
+                                                  {item.client_name}
+                                                </p>
+                                                <p
+                                                  className="fright_no mx-2"
+                                                  style={{ fontSize: "14px" }}
+                                                >
+                                                  {[item.batch_number, item.freight_number, item.order_number]
+                                                    .filter(Boolean)
+                                                    .join(" / ") || "-"}
+                                                </p>
+                                              </div>
+                                              <div className="">
+                                                <p className="port_date">
+                                                  {new Date(
+                                                    item.date,
+                                                  ).toLocaleDateString("en-GB")}
+                                                </p>
+                                              </div>
+                                            </div>
+                                            <div className="row align-items-center">
+                                              <div className="col-md-3">
+                                                <div className="">
+                                                  <p
+                                                    className="origin"
+                                                    style={{ fontSize: "14px" }}
+                                                  >
+                                                    {item.product_desc}
+                                                  </p>
+                                                </div>
+                                                <div className="">
+                                                  <p className="origin">
+                                                    Days in Warehouse: {item.days_in_warehouse || 0}
+                                                  </p>
+                                                </div>
+
+                                              </div>
+                                              <div className="col-md-4">
+                                                <div className="d-flex align-items-center">
+                                                  <div className="d-flex align-items-center">
+                                                    <p className="origin">
+                                                      {item.collection_from_name}
+                                                    </p>
+                                                    <div className="arrow">
+                                                      <i className="fi fi-rr-arrow-right mx-2 arr_icon"></i>
+                                                    </div>
+                                                    <p className="origin">
+                                                      {item.delivery_to_name}
+                                                      <span className="fright_type">
+                                                        (
+                                                        {item.Freight
+                                                          ? item.Freight
+                                                          : item.freight_type}
+                                                        )
+                                                      </span>
+                                                    </p>
+                                                  </div>
+                                                </div>
+                                                <div className="">
+                                                  {/* <p className="origin">Status: {item.warehouse_dispatch === "Yes" ? "Out" : (item.warehouse_item_status || "In Store")}</p> */}
+                                                  <p className="origin">Status: {item.warehouse_item_status}</p>
+                                                </div>
+                                              </div>
+                                              <div className="col-md-3">
+                                                <div className="">
+                                                  <p className="origin">Weight:{item.total_weight || 0}
+                                                    <p className="origin">Dimension: {item.total_dimension || 0}</p>
+                                                    <p className="origin">Packages: {item.total_packages || 0}</p>
+                                                  </p>
+                                                </div>
+                                              </div>
+                                              <div className="col-md-2">
+                                                <div className="text-end">
+                                                  <div className="dropdown">
+                                                    <select
+                                                      onClick={isReadOnly ? null : () => {
+                                                        getAllBatch(item);
+                                                      }}
+                                                      onChange={isReadOnly ? null : (e) =>
+                                                        handleBatchChange(e, item)
+                                                      }
+                                                      disabled={isReadOnly}
+                                                      name="dropval"
+                                                      value={item?.dropval}
+                                                      className="py-1 ps-1 sel_batches"
+                                                      style={{
+                                                        cursor: isReadOnly ? "not-allowed" : "pointer",
+                                                        opacity: isReadOnly ? 0.6 : 1,
+                                                      }}
+                                                    >
+                                                      <option
+                                                        className="op_tion"
+                                                        value=""
+                                                      >
+                                                        Select Batch
+                                                      </option>
+                                                      {batch &&
+                                                        batch.length > 0 &&
+                                                        batch.map(
+                                                          (batchItem, index) => (
+                                                            <option
+                                                              className="op_tion"
+                                                              key={index}
+                                                              value={
+                                                                batchItem.batch_id
+                                                              }
+                                                            >
+                                                              {
+                                                                batchItem.batch_number
+                                                              }
+                                                            </option>
+                                                          ),
+                                                        )}
+                                                    </select>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div className="row">
+                                              <div className="col-md-6">
+                                                <div className="d-flex align-items-center">
+                                                  <p
+                                                    type="radio"
+                                                    className="input_user mb-0"
+                                                  />
+                                                  {item.assign_to_batch === 0 ? (
+                                                    <div className="d-flex align-items-center">
+                                                      <span className="dot bg-danger me-2"></span>
+                                                      <p
+                                                        className="text-danger mb-0"
+                                                        style={{ fontSize: "12px" }}
+                                                      >
+                                                        Batch Not Assigned
+                                                      </p>
+                                                    </div>
+                                                  ) : (
+                                                    <div className="d-flex align-items-center">
+                                                      <span className="dot bg-success me-2"></span>
+                                                      <p
+                                                        className="text-success mb-0"
+                                                        style={{ fontSize: "12px" }}
+                                                      >
+                                                        Batch Assigned
+                                                      </p>
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              </div>
+                                              <div className="col-md-6 text-end">
+                                                <i
+                                                  className="fa fa-tasks me-2 mt-2"
+                                                  onClick={isReadOnly ? null : () => {
+                                                    console.log("Clicked Item Details:", item);
+                                                    handleEditClickAssign(
+                                                      item.freight_id || item.freight_ID || item.id,
+                                                      item.order_id,
+                                                    );
+                                                  }}
+                                                  style={{
+                                                    color: "#1d2044",
+                                                    cursor: isReadOnly ? "not-allowed" : "pointer",
+                                                    opacity: isReadOnly ? 0.4 : 1,
+                                                    pointerEvents: isReadOnly ? "none" : "auto",
+                                                  }}
+                                                />
+                                                <FaEdit
+                                                  onClick={isReadOnly ? null : () =>
+                                                    handleEditClick(
+                                                      item.freight_id,
+                                                      item.warehouse_assign_order_id,
+                                                      item.order_id,
+                                                    )
+                                                  }
+                                                  style={{
+                                                    color: "#1d2044",
+                                                    cursor: isReadOnly ? "not-allowed" : "pointer",
+                                                    opacity: isReadOnly ? 0.4 : 1,
+                                                    pointerEvents: isReadOnly ? "none" : "auto",
+                                                  }}
+                                                />
+                                                <DeleteIcon
+                                                  onClick={isReadOnly ? null : () =>
+                                                    handleEditClick12(
+                                                      item.warehouse_assign_order_id,
+                                                      item.order_id,
+                                                      item.freight_id,
+                                                    )
+                                                  }
+                                                  style={{
+                                                    color: "#1d2044",
+                                                    cursor: isReadOnly ? "not-allowed" : "pointer",
+                                                    opacity: isReadOnly ? 0.4 : 1,
+                                                    pointerEvents: isReadOnly ? "none" : "auto",
+                                                  }}
+                                                />
+                                                <VisibilityIcon
+                                                  onClick={() =>
+                                                    handleclicknavi(item)
+                                                  }
+                                                  style={{
+                                                    color: "rgb(27 34 69)",
+                                                    cursor: "pointer",
+                                                    width: "20px",
+                                                  }}
+                                                />
+                                                <PictureAsPdfIcon
+                                                  style={{ cursor: "pointer" }}
+                                                  onClick={() => {
+                                                    handlePdfPrint(item);
+                                                  }}
+                                                />
+                                              </div>{" "}
+                                            </div>
+                                          </div>
+                                        </td>
+                                      </tr>
                                     </>
                                   );
-                                })}
+                                });
+                            })()}
+                          </tbody>
+                        </table>
+                        <div className="text-center d-flex justify-content-end align-items-center gap-2 mt-3 mb-4">
+                          {/* Rows per page dropdown */}
+                          <div className="d-flex align-items-center me-3" style={{ gap: "8px" }}>
+                            <span style={{ fontSize: "13px", fontWeight: "600", color: "#5c6378" }}>Rows per page:</span>
+                            <select
+                              value={itemsPerPage}
+                              onChange={(e) => {
+                                const newLimit = parseInt(e.target.value, 10);
+                                setItemsPerPage(newLimit);
+                                setCurrentPage(1);
+                                fetchWarehouseOrders(1, activeTab, searchQuery, advancedFilters, newLimit, sortOrder);
+                              }}
+                              className="form-select form-select-sm"
+                              style={{ width: "80px", fontSize: "13px", height: "30px", padding: "2px 8px" }}
+                            >
+                              <option value={10}>10</option>
+                              <option value={25}>25</option>
+                              <option value={50}>50</option>
+                              <option value={100}>100</option>
                             </select>
-                            <div className="d-flex justify-content-center  mt-3">
-                              <button
-                                variant="contained"
-                                className="blueBtn"
-                                onClick={AssignSupplier}>
-                                Submit
-                              </button>
-                            </div>
                           </div>
-                        </Box>
-                      </Modal>
-                      <Modal
-                        open={isModalOpen1}
-                        onClose={closeModal1}
-                        aria-labelledby="modal-modal-title"
-                        aria-describedby="modal-modal-description"
-                      >
-                        <Box
-                          sx={{
-                            position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            transform: "translate(-50%, -50%)",
-                            height: 300,
-                            width: 450,
-                            bgcolor: "background.paper",
-                            boxShadow: 24,
-                            p: 4,
-                          }}
-                        >
-                          <h4 id="modal-modal-title">Add Excel</h4>
-                          <input
-                            type="file"
-                            accept=".xlsx,.xls"
-                            onChange={handleFileChange}
-                            className="mb-3 border ps-2 py-2 rounded w-100"
-                            style={{ display: "block", marginTop: "16px" }}
-                          />
-                          <Button
-                            variant="contained"
-                            className="submit_btn"
-                            onClick={postData1}
+
+                          {/* First Page button */}
+                          <button
+                            disabled={currentPage === 1}
+                            className="bg_page"
+                            onClick={() => handlePageChange(1)}
+                            title="First Page"
+                            style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
                           >
-                            Submit
-                          </Button>
-                        </Box>
-                      </Modal>
-                      <Modal
-                        open={isModalOpen2}
-                        onClose={handleCloseModal2}
-                        aria-labelledby="modal-modal-title"
-                        aria-describedby="modal-modal-description"
-                      >
-                        <Box
-                          sx={{
-                            position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            transform: "translate(-50%, -50%)",
-                            width: {
-                              xs: "95%",
-                              sm: "80%",
-                              md: "60%",
-                              lg: "40%",
-                            },
-                          }}
-                        >
-                          <div className="modal-header">
-                            <h2 id="modal-modal-title">Filter</h2>
-                            <button
-                              className="btn btn-close"
-                              onClick={handleCloseModal2}
+                            <i className="fa fa-angle-double-left" style={{ fontSize: "14px" }}></i>
+                          </button>
+
+                          {/* Prev Page button */}
+                          <button
+                            disabled={currentPage === 1}
+                            className="bg_page"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            title="Previous Page"
+                            style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                          >
+                            <i className="fa fa-angle-left" style={{ fontSize: "14px" }}></i>
+                          </button>
+
+                          {/* Dynamic page selection dropdown */}
+                          <div className="d-flex align-items-center gap-1" style={{ fontSize: "13px", fontWeight: "600", color: "#1b2245" }}>
+                            <span>Page</span>
+                            <select
+                              value={currentPage}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value, 10);
+                                if (!isNaN(val)) {
+                                  handlePageChange(val);
+                                }
+                              }}
+                              className="form-select form-select-sm text-center px-1"
+                              style={{ width: "80px", height: "30px", fontSize: "13px", borderRadius: "4px", padding: "2px 20px 2px 8px" }}
                             >
-                              <CloseIcon />
-                            </button>
+                              {Array.from({ length: totalPage || 1 }, (_, i) => i + 1).map((page) => (
+                                <option key={page} value={page}>
+                                  {page}
+                                </option>
+                              ))}
+                            </select>
+                            <span>of {totalPage || 1}</span>
                           </div>
-                          <div className="newModalGap noFormaControl">
-                            <div className="row my-3  ">
-                              <div className="col-6">
-                                <label>Delivery Type</label>
-                                <select name="type" onChange={handlechange}>
-                                  <option value="">Select</option>
-                                  <option value="express">Express</option>
-                                  <option value="normal">Consolidation</option>
-                                </select>
-                              </div>
-                              <div className="col-6">
-                                <label>Priority </label>
-                                <div className="shipRefer1 d-flex">
-                                  <div>
-                                    <input
-                                      type="radio"
-                                      id="shipper"
-                                      name="priority"
-                                      style={{ cursor: "pointer" }}
-                                      value="High"
-                                      onChange={handlechange}
-                                    />
-                                    <label htmlFor="shipper">High</label>
-                                  </div>
-                                  <div>
-                                    <input
-                                      type="radio"
-                                      id="shipper2"
-                                      style={{ cursor: "pointer" }}
-                                      name="priority"
-                                      value="Medium"
-                                      onChange={handlechange}
-                                    />
-                                    <label htmlFor="consignee">Medium</label>
-                                  </div>
-                                  <div>
-                                    <input
-                                      type="radio"
-                                      id="shipper3"
-                                      name="priority"
-                                      style={{ cursor: "pointer" }}
-                                      value="Low"
-                                      onChange={handlechange}
-                                    />
-                                    <label htmlFor="mediumPr">Low</label>
-                                  </div>
-                                </div>
+
+                          {/* Next Page button */}
+                          <button
+                            disabled={currentPage === totalPage || totalPage === 0}
+                            className="bg_page"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            title="Next Page"
+                            style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                          >
+                            <i className="fa fa-angle-right" style={{ fontSize: "14px" }}></i>
+                          </button>
+
+                          {/* Last Page button */}
+                          <button
+                            disabled={currentPage === totalPage || totalPage === 0}
+                            className="bg_page"
+                            onClick={() => handlePageChange(totalPage)}
+                            title="Last Page"
+                            style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                          >
+                            <i className="fa fa-angle-double-right" style={{ fontSize: "14px" }}></i>
+                          </button>
+                        </div>
+
+                        <Modal
+                          open={handleassignsupplier}
+                          onClose={handleclose}
+                          aria-labelledby="modal-modal-title"
+                          aria-describedby="modal-modal-description"
+                        >
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              bgcolor: "background.paper",
+                              boxShadow: 24,
+                              width: {
+                                xs: "95%",
+                                sm: "80%",
+                                md: "60%",
+                                lg: "40%",
+                              },
+                            }}
+                          >
+                            <div className="modal-header">
+                              <h2 className="modal-title" id="modal-modal-title text-dark">
+                                Assign Supplier
+                              </h2>
+                            </div>
+                            <div className="newModalGap  noFormaControl">
+                              <select
+                                className="form-select"
+                                onChange={handleChangeSupplier}
+                              >
+                                <option>select</option>
+
+                                {handlsupplier &&
+                                  handlsupplier.length > 0 &&
+                                  handlsupplier.map((item, index) => {
+                                    return (
+                                      <>
+                                        <option key={index} value={item.id}>
+                                          {item.name}
+                                        </option>
+                                      </>
+                                    );
+                                  })}
+                              </select>
+                              <div className="d-flex justify-content-center  mt-3">
+                                <button
+                                  variant="contained"
+                                  className="blueBtn"
+                                  onClick={AssignSupplier}>
+                                  Submit
+                                </button>
                               </div>
                             </div>
-                            <div className="row mb-3">
-                              <div className="col-6">
-                                <label>Country of Origin</label>
-                                <select name="origin" onChange={handlechange}>
-                                  <option value="">Select</option>
-                                  {updatedata &&
-                                    updatedata.length > 0 &&
-                                    updatedata.map((item, index) => {
-                                      return (
-                                        <>
-                                          <option value={item.id}>
-                                            {item.name}
-                                          </option>
-                                        </>
-                                      );
-                                    })}
-                                </select>
-                              </div>
-                              <div className="col-6">
-                                <label>Delivery to Country </label>
-                                <select
-                                  name="destination"
-                                  onChange={handlechange}
-                                >
-                                  <option value="">Select</option>
-                                  {updatedata &&
-                                    updatedata.length > 0 &&
-                                    updatedata.map((item, index) => {
-                                      return (
-                                        <>
-                                          <option value={item.id}>
-                                            {item.name}
-                                          </option>
-                                        </>
-                                      );
-                                    })}
-                                </select>
-                              </div>
-                            </div>
-                            <div className="row mb-3">
-                              <div className="col-6">
-                                <label>Start Date</label>
-                                <input
-                                  type="date"
-                                  id="shipper3"
-                                  name="startDate"
-                                  style={{ cursor: "pointer" }}
-                                  className="form-control"
-                                  onChange={handlechange}
-                                />
-                              </div>
-                              <div className="col-6">
-                                <label>End Date </label>
-                                <input
-                                  type="date"
-                                  id="shipper3"
-                                  name="endDate"
-                                  style={{ cursor: "pointer" }}
-                                  className="form-control"
-                                  onChange={handlechange}
-                                />
-                              </div>
-                            </div>
-                            <div className="row mb-3">
-                              <div className="col-6">
-                                <label>Freight</label>
-                                <select name="freight" onChange={handlechange}>
-                                  <option value="">Select...</option>
-                                  <option value="Sea">Sea</option>
-                                  <option value="Air">Air</option>
-                                  <option value="Road">Road</option>
-                                </select>
-                              </div>
-                            </div>
-                            <div className="d-flex justify-content-center">
-                              <button className="blueBtn" variant="contained" onClick={postData}>
-                                Apply
+                          </Box>
+                        </Modal>
+                        <Modal
+                          open={isModalOpen1}
+                          onClose={closeModal1}
+                          aria-labelledby="modal-modal-title"
+                          aria-describedby="modal-modal-description"
+                        >
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              height: 300,
+                              width: 450,
+                              bgcolor: "background.paper",
+                              boxShadow: 24,
+                              p: 4,
+                            }}
+                          >
+                            <h4 id="modal-modal-title">Add Excel</h4>
+                            <input
+                              type="file"
+                              accept=".xlsx,.xls"
+                              onChange={handleFileChange}
+                              className="mb-3 border ps-2 py-2 rounded w-100"
+                              style={{ display: "block", marginTop: "16px" }}
+                            />
+                            <Button
+                              variant="contained"
+                              className="submit_btn"
+                              onClick={postData1}
+                            >
+                              Submit
+                            </Button>
+                          </Box>
+                        </Modal>
+                        <Modal
+                          open={isModalOpen2}
+                          onClose={handleCloseModal2}
+                          aria-labelledby="modal-modal-title"
+                          aria-describedby="modal-modal-description"
+                        >
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              width: {
+                                xs: "95%",
+                                sm: "80%",
+                                md: "60%",
+                                lg: "40%",
+                              },
+                            }}
+                          >
+                            <div className="modal-header">
+                              <h2 id="modal-modal-title">Filter</h2>
+                              <button
+                                className="btn btn-close"
+                                onClick={handleCloseModal2}
+                              >
+                                <CloseIcon />
                               </button>
                             </div>
-                          </div>
-                        </Box>
-                      </Modal>
-                      <Modal
-                        open={isModalOpen}
-                        onClose={handleCloseModalpopup}
-                        aria-labelledby="modal-title"
-                        aria-describedby="modal-description"
-                        className="editWare"
-                      >
-                        <Box sx={style1}>
-                          <div className="modal-header">
-                            <h2 id="modal-modal-title">Edit Warehouse Order</h2>
-                            <button
-                              className="btn btn-close"
-                              onClick={handleCloseModalpopup}
-                            >
-                              <CloseIcon />
-                            </button>
-                          </div>
-                          <div className="newModalGap noFormControl">
-                            <div className="text-center">
-                              <div className="d-flex justify-content-between">
-                                <div
-                                  className="fs-3  d-flex align-items-center justify-content-center rounded-circle   text-white mb-3"
-                                  style={{
-                                    cursor: "pointer",
-                                    height: 35,
-                                    width: 35,
-                                    background: "#1b2245",
-                                  }}
-                                  data-bs-toggle="modal"
-                                  data-bs-target="#exampleModal"
-                                  onClick={handleCloseModal}
-                                >
-                                  <i
-                                    class="fa fa-plus"
-                                    style={{ fontSize: "16px" }}
-                                    aria-hidden="true"
-                                  ></i>
+                            <div className="newModalGap noFormaControl">
+                              <div className="row my-3  ">
+                                <div className="col-6">
+                                  <label>Delivery Type</label>
+                                  <select name="type" onChange={handlechange}>
+                                    <option value="">Select</option>
+                                    <option value="express">Express</option>
+                                    <option value="normal">Consolidation</option>
+                                  </select>
+                                </div>
+                                <div className="col-6">
+                                  <label>Priority </label>
+                                  <div className="shipRefer1 d-flex radioBtn">
+                                    <div>
+                                      <input
+                                        type="radio"
+                                        id="shipper"
+                                        name="priority"
+                                        style={{ cursor: "pointer" }}
+                                        value="High"
+                                        onChange={handlechange}
+                                      />
+                                      <label htmlFor="shipper">High</label>
+                                    </div>
+                                    <div>
+                                      <input
+                                        type="radio"
+                                        id="shipper2"
+                                        style={{ cursor: "pointer" }}
+                                        name="priority"
+                                        value="Medium"
+                                        onChange={handlechange}
+                                      />
+                                      <label htmlFor="consignee">Medium</label>
+                                    </div>
+                                    <div>
+                                      <input
+                                        type="radio"
+                                        id="shipper3"
+                                        name="priority"
+                                        style={{ cursor: "pointer" }}
+                                        value="Low"
+                                        onChange={handlechange}
+                                      />
+                                      <label htmlFor="mediumPr">Low</label>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
+                              <div className="row mb-3">
+                                <div className="col-6">
+                                  <label>Country of Origin</label>
+                                  <select name="origin" onChange={handlechange}>
+                                    <option value="">Select</option>
+                                    {updatedata &&
+                                      updatedata.length > 0 &&
+                                      updatedata.map((item, index) => {
+                                        return (
+                                          <>
+                                            <option value={item.id}>
+                                              {item.name}
+                                            </option>
+                                          </>
+                                        );
+                                      })}
+                                  </select>
+                                </div>
+                                <div className="col-6">
+                                  <label>Delivery to Country </label>
+                                  <select
+                                    name="destination"
+                                    onChange={handlechange}
+                                  >
+                                    <option value="">Select</option>
+                                    {updatedata &&
+                                      updatedata.length > 0 &&
+                                      updatedata.map((item, index) => {
+                                        return (
+                                          <>
+                                            <option value={item.id}>
+                                              {item.name}
+                                            </option>
+                                          </>
+                                        );
+                                      })}
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <div className="col-6">
+                                  <label>Start Date</label>
+                                  <input
+                                    type="date"
+                                    id="shipper3"
+                                    name="startDate"
+                                    style={{ cursor: "pointer" }}
+                                    className="form-control"
+                                    onChange={handlechange}
+                                  />
+                                </div>
+                                <div className="col-6">
+                                  <label>End Date </label>
+                                  <input
+                                    type="date"
+                                    id="shipper3"
+                                    name="endDate"
+                                    style={{ cursor: "pointer" }}
+                                    className="form-control"
+                                    onChange={handlechange}
+                                  />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <div className="col-6">
+                                  <label>Freight</label>
+                                  <select name="freight" onChange={handlechange}>
+                                    <option value="">Select...</option>
+                                    <option value="Sea">Sea</option>
+                                    <option value="Air">Air</option>
+                                    <option value="Road">Road</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="d-flex justify-content-center">
+                                <button className="blueBtn" variant="contained" onClick={postData}>
+                                  Apply
+                                </button>
+                              </div>
                             </div>
-                            {selectedData && (
-                              <div container spacing={2}>
-                                <div className="row g-2">
-                                  <div item className="col-md-6">
-                                    <label htmlFor="">Customer Name</label>
-                                    <input
-                                      className="form-control"
-                                      value={selectedData.customer_name}
-                                      name="customer_name"
-                                      onChange={handleInputChange}
-                                      placeholder="customer name"
-                                    />
+                          </Box>
+                        </Modal>
+                        <Modal
+                          open={isModalOpen}
+                          onClose={handleCloseModalpopup}
+                          aria-labelledby="modal-title"
+                          aria-describedby="modal-description"
+                          className="editWare"
+                        >
+                          <Box sx={style1}>
+                            <div className="modal-header">
+                              <h2 id="modal-modal-title">Edit Warehouse Order</h2>
+                              <button
+                                className="btn btn-close"
+                                onClick={handleCloseModalpopup}
+                              >
+                                <CloseIcon />
+                              </button>
+                            </div>
+                            <div className="newModalGap noFormControl">
+                              <div className="text-center">
+                                <div className="d-flex justify-content-between">
+                                  <div
+                                    className="fs-3  d-flex align-items-center justify-content-center rounded-circle   text-white mb-3"
+                                    style={{
+                                      cursor: "pointer",
+                                      height: 35,
+                                      width: 35,
+                                      background: "#1b2245",
+                                    }}
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal"
+                                    onClick={handleCloseModal}
+                                  >
+                                    <i
+                                      class="fa fa-plus"
+                                      style={{ fontSize: "16px" }}
+                                      aria-hidden="true"
+                                    ></i>
                                   </div>
-                                  <div item className="col-md-6">
-                                    <label htmlFor="">Customer Ref</label>
-                                    <input
-                                      className="form-control"
-                                      value={selectedData.customer_ref}
-                                      name="customer_ref"
-                                      onChange={handleInputChange}
-                                      placeholder="customer name"
-                                    />
-                                  </div>
-                                  <div item className="col-md-6">
-                                    <label htmlFor="">Date</label>
-                                    <input
-                                      className="form-control"
-                                      label="Date Received"
-                                      type="date"
-                                      variant="outlined"
-                                      name="date_received"
-                                      InputLabelProps={{
-                                        shrink: true,
-                                      }}
-                                      value={
-                                        selectedData?.date_received &&
-                                          !isNaN(
-                                            new Date(selectedData.date_received),
-                                          )
-                                          ? new Date(selectedData.date_received)
-                                            .toISOString()
-                                            .split("T")[0]
-                                          : ""
-                                      }
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
-                                  <div className="col-md-6">
-                                    <label>Warehouse Order Id</label>
-                                    <input
-                                      type="type"
-                                      className="form-control"
-                                      value={selectedData.warehouse_order_id}
-                                      name="warehouse_order_id"
-                                      onChange={handleInputChange}
-                                      placeholder=""
-                                    />
-                                  </div>
+                                </div>
+                              </div>
+                              {selectedData && (
+                                <div container spacing={2}>
+                                  <div className="row g-2">
+                                    <div item className="col-md-6">
+                                      <label htmlFor="">Customer Name</label>
+                                      <input
+                                        className="form-control"
+                                        value={selectedData.customer_name}
+                                        name="customer_name"
+                                        onChange={handleInputChange}
+                                        placeholder="customer name"
+                                      />
+                                    </div>
+                                    <div item className="col-md-6">
+                                      <label htmlFor="">Customer Ref</label>
+                                      <input
+                                        className="form-control"
+                                        value={selectedData.customer_ref}
+                                        name="customer_ref"
+                                        onChange={handleInputChange}
+                                        placeholder="customer name"
+                                      />
+                                    </div>
+                                    <div item className="col-md-6">
+                                      <label htmlFor="">Date</label>
+                                      <input
+                                        className="form-control"
+                                        label="Date Received"
+                                        type="date"
+                                        variant="outlined"
+                                        name="date_received"
+                                        InputLabelProps={{
+                                          shrink: true,
+                                        }}
+                                        value={
+                                          selectedData?.date_received &&
+                                            !isNaN(
+                                              new Date(selectedData.date_received),
+                                            )
+                                            ? new Date(selectedData.date_received)
+                                              .toISOString()
+                                              .split("T")[0]
+                                            : ""
+                                        }
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
+                                    <div className="col-md-6">
+                                      <label>Warehouse Order Id</label>
+                                      <input
+                                        type="type"
+                                        className="form-control"
+                                        value={selectedData.warehouse_order_id}
+                                        name="warehouse_order_id"
+                                        onChange={handleInputChange}
+                                        placeholder=""
+                                      />
+                                    </div>
 
-                                  <div className="col-md-6">
-                                    <label>Courier waybill_ref</label>
-                                    <input
-                                      type="type"
-                                      className="form-control"
-                                      value={selectedData.courier_waybill_ref}
-                                      name="courier_waybill_ref"
-                                      onChange={handleInputChange}
-                                      placeholder=""
-                                    />
-                                  </div>
-                                  <div className="col-md-6">
-                                    <label>Dispatch Date</label>
-                                    <input
-                                      type="date"
-                                      className="form-control"
-                                      value={
-                                        selectedData?.dispatched_date &&
-                                          !isNaN(
-                                            new Date(selectedData.dispatched_date),
-                                          )
-                                          ? new Date(selectedData.dispatched_date)
-                                            .toISOString()
-                                            .split("T")[0]
-                                          : ""
-                                      }
-                                      name="dispatched_date"
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
-                                  <div className="col-md-12">
-                                    <h5 className="mt-3 mb-2">
-                                      Package Information
-                                    </h5>
-                                  </div>
+                                    <div className="col-md-6">
+                                      <label>Courier waybill_ref</label>
+                                      <input
+                                        type="type"
+                                        className="form-control"
+                                        value={selectedData.courier_waybill_ref}
+                                        name="courier_waybill_ref"
+                                        onChange={handleInputChange}
+                                        placeholder=""
+                                      />
+                                    </div>
+                                    <div className="col-md-6">
+                                      <label>Dispatch Date</label>
+                                      <input
+                                        type="date"
+                                        className="form-control"
+                                        value={
+                                          selectedData?.dispatched_date &&
+                                            !isNaN(
+                                              new Date(selectedData.dispatched_date),
+                                            )
+                                            ? new Date(selectedData.dispatched_date)
+                                              .toISOString()
+                                              .split("T")[0]
+                                            : ""
+                                        }
+                                        name="dispatched_date"
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
+                                    <div className="col-md-12">
+                                      <h5 className="mt-3 mb-2">
+                                        Package Information
+                                      </h5>
+                                    </div>
 
-                                  <div item className="col-md-6">
-                                    <label htmlFor="">Customer Name</label>
-                                    {/* <input
+                                    <div item className="col-md-6">
+                                      <label htmlFor="">Customer Name</label>
+                                      {/* <input
                                       className="form-control"
                                       value={selectedData.customer_name}
                                       name="customer_name"
                                       onChange={handleInputChange}
                                       placeholder="customer name"
                                     /> */}
-                                    <Autocomplete
-                                      options={clientData || []}
-                                      getOptionLabel={(option) =>
-                                        option.full_name || ""
-                                      }
-                                      filterOptions={filterOptions}
-                                      value={
-                                        clientData.find(
-                                          (item) =>
-                                            Number(item.id) ===
-                                            Number(
-                                              nameData?.client_id ??
+                                      <Autocomplete
+                                        options={clientData || []}
+                                        getOptionLabel={(option) =>
+                                          option.full_name || ""
+                                        }
+                                        filterOptions={filterOptions}
+                                        value={
+                                          clientData.find(
+                                            (item) =>
+                                              Number(item.id) ===
+                                              Number(
+                                                nameData?.client_id ??
                                                 selectedData?.client_id,
-                                            ),
-                                        ) || null
-                                      }
-                                      onChange={(event, newValue) => {
-                                        const newClientId = newValue
-                                          ? newValue.id
-                                          : "";
-                                        handlechangewarehouse({
-                                          target: {
-                                            name: "client_id",
-                                            value: newClientId,
-                                          },
-                                        });
-                                        setSelectedData((prev) => ({
-                                          ...prev,
-                                          client_id: newClientId,
-                                        }));
-                                      }}
-                                      isOptionEqualToValue={(option, value) =>
-                                        Number(option.id) === Number(value.id)
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField {...params} />
-                                      )}
-                                    />
-                                  </div>
-                                  <div item className="col-md-6">
-                                    <label htmlFor="">Freight</label>
-                                    <select
-                                      className="form-control py-3"
-                                      value={
-                                        (
-                                          selectedData?.freight ||
-                                          selectedData?.Freight ||
-                                          selectedData?.freight_type ||
-                                          ""
-                                        ).toLowerCase()
-                                      }
-                                      name="freight"
-                                      onChange={handleInputChange}
-                                    >
-                                      <option value="">select</option>
-                                      <option value="sea">Sea</option>
-                                      <option value="air">Air</option>
-                                      <option value="road">Road</option>
-                                    </select>
-                                  </div>
-                                  <div item className="col-md-6">
-                                    <label htmlFor="">Customer Ref</label>
+                                              ),
+                                          ) || null
+                                        }
+                                        onChange={(event, newValue) => {
+                                          const newClientId = newValue
+                                            ? newValue.id
+                                            : "";
+                                          handlechangewarehouse({
+                                            target: {
+                                              name: "client_id",
+                                              value: newClientId,
+                                            },
+                                          });
+                                          setSelectedData((prev) => ({
+                                            ...prev,
+                                            client_id: newClientId,
+                                          }));
+                                        }}
+                                        isOptionEqualToValue={(option, value) =>
+                                          Number(option.id) === Number(value.id)
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField {...params} />
+                                        )}
+                                      />
+                                    </div>
+                                    <div item className="col-md-6">
+                                      <label htmlFor="">Freight</label>
+                                      <select
+                                        className="form-control py-3"
+                                        value={
+                                          (
+                                            selectedData?.freight ||
+                                            selectedData?.Freight ||
+                                            selectedData?.freight_type ||
+                                            ""
+                                          ).toLowerCase()
+                                        }
+                                        name="freight"
+                                        onChange={handleInputChange}
+                                      >
+                                        <option value="">select</option>
+                                        <option value="sea">Sea</option>
+                                        <option value="air">Air</option>
+                                        <option value="road">Road</option>
+                                      </select>
+                                    </div>
+                                    <div item className="col-md-6">
+                                      <label htmlFor="">Customer Ref</label>
 
-                                    <input
-                                      className="form-control"
-                                      value={selectedData.customer_ref}
-                                      name="customer_ref"
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
-
-                                  <div className="col-md-6">
-                                    <label>Country of Origin</label>
-                                    <select
-                                      name="collection_from"
-                                      value={selectedData.collection_from}
-                                      onChange={handleInputChange}
-                                      className="form-select"
-                                    >
-                                      <option>Select</option>
-                                      {countries &&
-                                        countries.length > 0 &&
-                                        countries.map((item, index) => {
-                                          return (
-                                            <>
-                                              <option key={index} value={item.id}>
-                                                {item.name}
-                                              </option>
-                                            </>
-                                          );
-                                        })}
-                                    </select>
-                                  </div>
-                                  <div className="col-md-6">
-                                    <label> Destination Country</label>
-                                    <select
-                                      name="delivery_to"
-                                      value={selectedData.delivery_to}
-                                      onChange={handleInputChange}
-                                      className="form-select"
-                                    >
-                                      <option>Select</option>
-                                      {countries &&
-                                        countries.length > 0 &&
-                                        countries.map((item, index) => {
-                                          return (
-                                            <>
-                                              <option key={index} value={item.id}>
-                                                {item.name}
-                                              </option>
-                                            </>
-                                          );
-                                        })}
-                                    </select>
-                                  </div>
-                                  <div className="col-md-6">
-                                    <label>Box Marking</label>
-                                    <input
-                                      className="form-control"
-                                      name="box_marking"
-                                      value={selectedData.box_marking}
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
-                                  <div className="col-md-6">
-                                    <label>Good Description</label>
-                                    <input
-                                      type="Good Description"
-                                      className="form-control"
-                                      value={selectedData.goods_description}
-                                      name="goods_description"
-                                      onChange={handleInputChange}
-                                      placeholder=""
-                                    />
-                                  </div>
-                                  <div className="col-md-6">
-                                    <label>Packing Type</label>
-                                    <select
-                                      className="form-select"
-                                      value={selectedData.package_type}
-                                      name="package_type"
-                                      onChange={handleInputChange}
-                                      placeholder=""
-                                    >
-                                      <option value="">Select</option>
-                                      <option value="carte">carte</option>
-                                      <option value="pallet">pallet</option>
-                                      <option value="Box">Box</option>
-                                      <option value="Bag">Bag</option>
-                                    </select>
-                                  </div>
-                                  <div className="col-md-6">
-                                    <label>Hazardous </label>
-                                    <select
-                                      className="form-select"
-                                      value={selectedData.hazardous}
-                                      name="hazardous"
-                                      onChange={handleInputChange}
-                                      placeholder=""
-                                    >
-                                      <option value="">Select</option>
-                                      <option value="yes">Yes</option>
-                                      <option value="no">No</option>
-                                    </select>
-                                  </div>
-                                  {selectedData.hazardous === "Yes" ? (
-                                    <div className="col-md-6">
-                                      <label>Description of Hazardous </label>
                                       <input
-                                        type="type"
                                         className="form-control"
-                                        value={selectedData.hazard_description}
-                                        name="hazard_description"
+                                        value={selectedData.customer_ref}
+                                        name="customer_ref"
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
+
+                                    <div className="col-md-6">
+                                      <label>Country of Origin</label>
+                                      <select
+                                        name="collection_from"
+                                        value={selectedData.collection_from}
+                                        onChange={handleInputChange}
+                                        className="form-select"
+                                      >
+                                        <option>Select</option>
+                                        {countries &&
+                                          countries.length > 0 &&
+                                          countries.map((item, index) => {
+                                            return (
+                                              <>
+                                                <option key={index} value={item.id}>
+                                                  {item.name}
+                                                </option>
+                                              </>
+                                            );
+                                          })}
+                                      </select>
+                                    </div>
+                                    <div className="col-md-6">
+                                      <label> Destination Country</label>
+                                      <select
+                                        name="delivery_to"
+                                        value={selectedData.delivery_to}
+                                        onChange={handleInputChange}
+                                        className="form-select"
+                                      >
+                                        <option>Select</option>
+                                        {countries &&
+                                          countries.length > 0 &&
+                                          countries.map((item, index) => {
+                                            return (
+                                              <>
+                                                <option key={index} value={item.id}>
+                                                  {item.name}
+                                                </option>
+                                              </>
+                                            );
+                                          })}
+                                      </select>
+                                    </div>
+                                    <div className="col-md-6">
+                                      <label>Box Marking</label>
+                                      <input
+                                        className="form-control"
+                                        name="box_marking"
+                                        value={selectedData.box_marking}
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
+                                    <div className="col-md-6">
+                                      <label>Good Description</label>
+                                      <input
+                                        type="Good Description"
+                                        className="form-control"
+                                        value={selectedData.goods_description}
+                                        name="goods_description"
                                         onChange={handleInputChange}
                                         placeholder=""
                                       />
                                     </div>
-                                  ) : (
-                                    ""
-                                  )}
+                                    <div className="col-md-6">
+                                      <label>Packing Type</label>
+                                      <select
+                                        className="form-select"
+                                        value={selectedData.package_type}
+                                        name="package_type"
+                                        onChange={handleInputChange}
+                                        placeholder=""
+                                      >
+                                        <option value="">Select</option>
+                                        <option value="carte">carte</option>
+                                        <option value="pallet">pallet</option>
+                                        <option value="Box">Box</option>
+                                        <option value="Bag">Bag</option>
+                                      </select>
+                                    </div>
+                                    <div className="col-md-6">
+                                      <label>Hazardous </label>
+                                      <select
+                                        className="form-select"
+                                        value={selectedData.hazardous}
+                                        name="hazardous"
+                                        onChange={handleInputChange}
+                                        placeholder=""
+                                      >
+                                        <option value="">Select</option>
+                                        <option value="yes">Yes</option>
+                                        <option value="no">No</option>
+                                      </select>
+                                    </div>
+                                    {selectedData.hazardous === "Yes" ? (
+                                      <div className="col-md-6">
+                                        <label>Description of Hazardous </label>
+                                        <input
+                                          type="type"
+                                          className="form-control"
+                                          value={selectedData.hazard_description}
+                                          name="hazard_description"
+                                          onChange={handleInputChange}
+                                          placeholder=""
+                                        />
+                                      </div>
+                                    ) : (
+                                      ""
+                                    )}
 
-                                  <div className="col-md-6">
-                                    <label>Total cbm</label>
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      value={selectedData.total_cbm}
-                                      name="total_cbm"
-                                      onChange={handleInputChange}
-                                      placeholder=""
-                                    ></input>
-                                  </div>
-                                  <div item className="col-md-6">
-                                    <label htmlFor="">Total Packages</label>
-                                    <input
-                                      className="form-control"
-                                      label="Total Packages"
-                                      variant="outlined"
-                                      name="no_of_packages"
-                                      value={selectedData.no_of_packages || ""}
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
-                                  <div item className="col-md-6">
-                                    <label htmlFor="">Total Dimension</label>
-                                    <input
-                                      className="form-control"
-                                      label="Dimension"
-                                      variant="outlined"
-                                      name="total_dimension"
-                                      value={selectedData.total_dimension || ""}
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
+                                    <div className="col-md-6">
+                                      <label>Total cbm</label>
+                                      <input
+                                        type="text"
+                                        className="form-control"
+                                        value={selectedData.total_cbm}
+                                        name="total_cbm"
+                                        onChange={handleInputChange}
+                                        placeholder=""
+                                      ></input>
+                                    </div>
+                                    <div item className="col-md-6">
+                                      <label htmlFor="">Total Packages</label>
+                                      <input
+                                        className="form-control"
+                                        label="Total Packages"
+                                        variant="outlined"
+                                        name="no_of_packages"
+                                        value={selectedData.no_of_packages || ""}
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
+                                    <div item className="col-md-6">
+                                      <label htmlFor="">Total Dimension</label>
+                                      <input
+                                        className="form-control"
+                                        label="Dimension"
+                                        variant="outlined"
+                                        name="total_dimension"
+                                        value={selectedData.total_dimension || ""}
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
 
-                                  <div item className="col-md-12">
-                                    <label htmlFor="">Weight</label>
-                                    <input
-                                      className="form-control"
-                                      label="Weight"
-                                      variant="outlined"
-                                      name="weight"
-                                      value={selectedData.total_weight || ""}
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
+                                    <div item className="col-md-12">
+                                      <label htmlFor="">Weight</label>
+                                      <input
+                                        className="form-control"
+                                        label="Weight"
+                                        variant="outlined"
+                                        name="weight"
+                                        value={selectedData.total_weight || ""}
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
 
-                                  <div className="col-lg-12">
-                                    <label>Comment on Packages</label>
-                                    <textarea
-                                      className="w-100 form-control"
-                                      name="package_comment"
-                                      value={selectedData.package_comment}
-                                      onChange={handleInputChange}
-                                      placeholder="Other Information"
-                                    ></textarea>
-                                  </div>
+                                    <div className="col-lg-12">
+                                      <label>Comment on Packages</label>
+                                      <textarea
+                                        className="w-100 form-control"
+                                        name="package_comment"
+                                        value={selectedData.package_comment}
+                                        onChange={handleInputChange}
+                                        placeholder="Other Information"
+                                      ></textarea>
+                                    </div>
 
-                                  <div className="col-md-12">
-                                    <h5 className="mt-3 mb-2">Damaged Goods</h5>
-                                  </div>
+                                    <div className="col-md-12">
+                                      <h5 className="mt-3 mb-2">Damaged Goods</h5>
+                                    </div>
 
-                                  <div className="col-md-6">
-                                    <label>Damaged Goods</label>
-                                    <select
-                                      type="text"
-                                      className="form-select"
-                                      value={selectedData.damage_goods}
-                                      name="damage_goods"
-                                      onChange={handleInputChange}
-                                      placeholder=""
-                                    >
-                                      <option value="">Select</option>
-                                      <option value="Yes">Yes</option>
-                                      <option value="No">No</option>
-                                    </select>
-                                  </div>
-                                  <div className="col-md-6">
-                                    <label>Damaged Packed (qty)</label>
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      value={selectedData.damaged_pkg_qty}
-                                      name="damaged_pkg_qty"
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
-                                  <div className="col-md-12">
-                                    <label>Attach File</label>
-                                    <input
-                                      type="file"
-                                      className="form-control"
-                                      name="attach_file"
-                                      onChange={handleInputChange}
-                                    ></input>
-                                  </div>
+                                    <div className="col-md-6">
+                                      <label>Damaged Goods</label>
+                                      <select
+                                        type="text"
+                                        className="form-select"
+                                        value={selectedData.damage_goods}
+                                        name="damage_goods"
+                                        onChange={handleInputChange}
+                                        placeholder=""
+                                      >
+                                        <option value="">Select</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                      </select>
+                                    </div>
+                                    <div className="col-md-6">
+                                      <label>Damaged Packed (qty)</label>
+                                      <input
+                                        type="text"
+                                        className="form-control"
+                                        value={selectedData.damaged_pkg_qty}
+                                        name="damaged_pkg_qty"
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
+                                    <div className="col-md-12">
+                                      <label>Attach File</label>
+                                      <input
+                                        type="file"
+                                        className="form-control"
+                                        name="attach_file"
+                                        onChange={handleInputChange}
+                                      ></input>
+                                    </div>
 
-                                  <div className="col-md-12">
-                                    <label>Comment on Damaged</label>
+                                    <div className="col-md-12">
+                                      <label>Comment on Damaged</label>
 
-                                    <textarea
-                                      className="w-100 form-control"
-                                      name="damage_comment"
-                                      onChange={handleInputChange}
-                                      value={selectedData.damage_comment}
-                                    ></textarea>
-                                  </div>
-                                  <div className="col-md-12">
-                                    <h5 className="mt-3 mb-2">
-                                      Supplier Information
-                                    </h5>
-                                  </div>
+                                      <textarea
+                                        className="w-100 form-control"
+                                        name="damage_comment"
+                                        onChange={handleInputChange}
+                                        value={selectedData.damage_comment}
+                                      ></textarea>
+                                    </div>
+                                    <div className="col-md-12">
+                                      <h5 className="mt-3 mb-2">
+                                        Supplier Information
+                                      </h5>
+                                    </div>
 
-                                  <div className="col-md-6">
-                                    <label>Supplier Name (Company)</label>
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      value={selectedData.supplier_company}
-                                      name="supplier_company"
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
-                                  <div className="col-md-6">
-                                    <label>Supplier Name (Person)</label>
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      value={selectedData.supplier_person}
-                                      name="supplier_person"
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
-                                  <div className="col-md-6">
-                                    <label>Supplier Address</label>
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      value={selectedData.supplier_address}
-                                      name="supplier_address"
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
-                                  <div className="col-md-6">
-                                    <label>Supplier Contact</label>
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      value={selectedData.supplier_contact_no}
-                                      name="supplier_contact_no"
-                                      onChange={handleInputChange}
-                                      placeholder=""
-                                    />
-                                  </div>
+                                    <div className="col-md-6">
+                                      <label>Supplier Name (Company)</label>
+                                      <input
+                                        type="text"
+                                        className="form-control"
+                                        value={selectedData.supplier_company}
+                                        name="supplier_company"
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
+                                    <div className="col-md-6">
+                                      <label>Supplier Name (Person)</label>
+                                      <input
+                                        type="text"
+                                        className="form-control"
+                                        value={selectedData.supplier_person}
+                                        name="supplier_person"
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
+                                    <div className="col-md-6">
+                                      <label>Supplier Address</label>
+                                      <input
+                                        type="text"
+                                        className="form-control"
+                                        value={selectedData.supplier_address}
+                                        name="supplier_address"
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
+                                    <div className="col-md-6">
+                                      <label>Supplier Contact</label>
+                                      <input
+                                        type="text"
+                                        className="form-control"
+                                        value={selectedData.supplier_contact_no}
+                                        name="supplier_contact_no"
+                                        onChange={handleInputChange}
+                                        placeholder=""
+                                      />
+                                    </div>
 
-                                  <div className="col-md-12">
-                                    <h5 className="mt-3 mb-2">Cargo Handeling</h5>
-                                  </div>
+                                    <div className="col-md-12">
+                                      <h5 className="mt-3 mb-2">Cargo Handeling</h5>
+                                    </div>
 
-                                  <div item className="col-md-6">
-                                    <label htmlFor="">Warehouse Collect</label>
+                                    <div item className="col-md-6">
+                                      <label htmlFor="">Warehouse Collect</label>
 
-                                    <select
-                                      className="form-select"
-                                      label="Warehouse Collect"
-                                      variant="outlined"
-                                      name="warehouse_collect"
-                                      value={selectedData.warehouse_collect || ""}
-                                      onChange={handleInputChange}
-                                    >
-                                      <option></option>
-                                      <option value="Yes">Yes</option>
-                                      <option value="No">No</option>
-                                    </select>
-                                  </div>
-                                  <div item className="col-md-6">
-                                    <label htmlFor="">Costs to collect</label>
-                                    <input
-                                      className="form-control"
-                                      label="Costs to collect"
-                                      variant="outlined"
-                                      name="costs_to_collect"
-                                      value={
-                                        selectedData.costs_to_collect || ""
-                                      }
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
+                                      <select
+                                        className="form-select"
+                                        label="Warehouse Collect"
+                                        variant="outlined"
+                                        name="warehouse_collect"
+                                        value={selectedData.warehouse_collect || ""}
+                                        onChange={handleInputChange}
+                                      >
+                                        <option></option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                      </select>
+                                    </div>
+                                    <div item className="col-md-6">
+                                      <label htmlFor="">Costs to collect</label>
+                                      <input
+                                        className="form-control"
+                                        label="Costs to collect"
+                                        variant="outlined"
+                                        name="costs_to_collect"
+                                        value={
+                                          selectedData.costs_to_collect || ""
+                                        }
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
 
-                                  <div className="col-md-6">
-                                    <label>Warehouse Storage</label>
-                                    <select
-                                      className="form-select"
-                                      value={selectedData.warehouse_storage}
-                                      name="warehouse_storage"
-                                      onChange={handleInputChange}
-                                    >
-                                      <option value="">Select</option>
-                                      <option value="Yes">Yes</option>
-                                      <option value="No">No</option>
-                                    </select>
-                                  </div>
-                                  <div item className="col-md-6">
-                                    <label htmlFor="">Warehouse Cost</label>
-                                    <input
-                                      className="form-control"
-                                      label="Warehouse Cost"
-                                      variant="outlined"
-                                      name="warehouse_cost"
-                                      value={
-                                        selectedData.warehouse_cost || ""
-                                      }
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
+                                    <div className="col-md-6">
+                                      <label>Warehouse Storage</label>
+                                      <select
+                                        className="form-select"
+                                        value={selectedData.warehouse_storage}
+                                        name="warehouse_storage"
+                                        onChange={handleInputChange}
+                                      >
+                                        <option value="">Select</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                      </select>
+                                    </div>
+                                    <div item className="col-md-6">
+                                      <label htmlFor="">Warehouse Cost</label>
+                                      <input
+                                        className="form-control"
+                                        label="Warehouse Cost"
+                                        variant="outlined"
+                                        name="warehouse_cost"
+                                        value={
+                                          selectedData.warehouse_cost || ""
+                                        }
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
 
-                                  <div className="col-md-6">
-                                    <label>Handeling Required</label>
-                                    <select
-                                      type="text"
-                                      className="form-select"
-                                      value={selectedData.handling_required}
-                                      name="handling_required"
-                                      onChange={handleInputChange}
-                                      placeholder=""
-                                    >
-                                      <option value="">Select</option>
-                                      <option value="Yes">Yes</option>
-                                      <option value="No">No</option>
-                                    </select>
-                                  </div>
-                                  <div className="col-md-6">
-                                    <label>Handeling cost</label>
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      value={selectedData.handling_cost}
-                                      name="handling_cost"
-                                      onChange={handleInputChange}
-                                      placeholder=""
-                                    />
-                                  </div>
-                                  <div className="col-md-6">
-                                    <label>Warehouse Dispatch</label>
-                                    <select
-                                      className="form-select"
-                                      value={selectedData.warehouse_dispatch}
-                                      name="warehouse_dispatch"
-                                      onChange={handleInputChange}
-                                      placeholder=""
-                                    >
-                                      <option value="">Select</option>
-                                      <option value="Yes">Yes</option>
-                                      <option value="No">No</option>
-                                    </select>
-                                  </div>
-                                  <div item className="col-md-6">
-                                    <label htmlFor="">Cost to Dispatch</label>
-                                    <input
-                                      className="form-control"
-                                      label="Cost to Dispatch"
-                                      variant="outlined"
-                                      name="cost_to_dispatch"
-                                      value={selectedData.cost_to_dispatch || ""}
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
-                                  <div className="col-md-12">
-                                    <label>Attach Product Image</label>
-                                    <input
-                                      type="file"
-                                      className="form-control"
-                                      name="Attach_Product_Image"
-                                      onChange={handlechangewarehouse}
-                                      placeholder=""
-                                    ></input>
-                                  </div>
-                                  <div className="col-md-12">
-                                    <label>Attach Other</label>
-                                    <input
-                                      type="file"
-                                      className="form-control"
-                                      name="attach_other"
-                                      onChange={handlechangewarehouse}
-                                      placeholder=""
-                                    ></input>
-                                  </div>
-                                  <div className="col-md-12">
-                                    <label>Warehouse Comment</label>
-                                    <textarea
-                                      className="form-control"
-                                      value={selectedData.warehouse_comment}
-                                      name="warehouse_comment"
-                                      onChange={handleInputChange}
-                                      placeholder=""
-                                    ></textarea>
-                                  </div>
+                                    <div className="col-md-6">
+                                      <label>Handeling Required</label>
+                                      <select
+                                        type="text"
+                                        className="form-select"
+                                        value={selectedData.handling_required}
+                                        name="handling_required"
+                                        onChange={handleInputChange}
+                                        placeholder=""
+                                      >
+                                        <option value="">Select</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                      </select>
+                                    </div>
+                                    <div className="col-md-6">
+                                      <label>Handeling cost</label>
+                                      <input
+                                        type="text"
+                                        className="form-control"
+                                        value={selectedData.handling_cost}
+                                        name="handling_cost"
+                                        onChange={handleInputChange}
+                                        placeholder=""
+                                      />
+                                    </div>
+                                    <div className="col-md-6">
+                                      <label>Warehouse Dispatch</label>
+                                      <select
+                                        className="form-select"
+                                        value={selectedData.warehouse_dispatch}
+                                        name="warehouse_dispatch"
+                                        onChange={handleInputChange}
+                                        placeholder=""
+                                      >
+                                        <option value="">Select</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                      </select>
+                                    </div>
+                                    <div item className="col-md-6">
+                                      <label htmlFor="">Cost to Dispatch</label>
+                                      <input
+                                        className="form-control"
+                                        label="Cost to Dispatch"
+                                        variant="outlined"
+                                        name="cost_to_dispatch"
+                                        value={selectedData.cost_to_dispatch || ""}
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
+                                    <div className="col-md-12">
+                                      <label>Attach Product Image</label>
+                                      <input
+                                        type="file"
+                                        className="form-control"
+                                        name="Attach_Product_Image"
+                                        onChange={handlechangewarehouse}
+                                        placeholder=""
+                                      ></input>
+                                    </div>
+                                    <div className="col-md-12">
+                                      <label>Attach Other</label>
+                                      <input
+                                        type="file"
+                                        className="form-control"
+                                        name="attach_other"
+                                        onChange={handlechangewarehouse}
+                                        placeholder=""
+                                      ></input>
+                                    </div>
+                                    <div className="col-md-12">
+                                      <label>Warehouse Comment</label>
+                                      <textarea
+                                        className="form-control"
+                                        value={selectedData.warehouse_comment}
+                                        name="warehouse_comment"
+                                        onChange={handleInputChange}
+                                        placeholder=""
+                                      ></textarea>
+                                    </div>
 
-                                  {/* <div item className="col-md-6">
+                                    {/* <div item className="col-md-6">
                                     <label htmlFor="">Warehouse Receipt No</label>
                                     <input
                                       className="form-control"
@@ -2629,7 +2629,7 @@ export default function WarehouseOrder() {
                                       onChange={handleInputChange}
                                     />
                                   </div> */}
-                                  {/* <div item className="col-md-6">
+                                    {/* <div item className="col-md-6">
                                     <label htmlFor="">Waybill</label>
 
                                     <input
@@ -2642,7 +2642,7 @@ export default function WarehouseOrder() {
                                     />
                                   </div> */}
 
-                                  {/* <div className="col-8 mt-4">
+                                    {/* <div className="col-8 mt-4">
                                     <h5>
                                       Document Section
                                     </h5>
@@ -2682,7 +2682,7 @@ export default function WarehouseOrder() {
                                           <h2>Upload Documents</h2>
 
                                           {/* Dropdown */}
-                                  {/* <FormControl
+                                    {/* <FormControl
                                             fullWidth
                                             sx={{ mt: 2 }}
                                           >
@@ -2706,7 +2706,7 @@ export default function WarehouseOrder() {
                                           </FormControl>
 
                                           {/* Dynamic file inputs */}
-                                  {/* <div className="mt-3">
+                                    {/* <div className="mt-3">
                                             {selectedDocs.map(
                                               (doc, index) => (
                                                 <div
@@ -2734,7 +2734,7 @@ export default function WarehouseOrder() {
                                           </div>
 
                                           {/* Footer buttons */}
-                                  {/* <Box
+                                    {/* <Box
                                             sx={{
                                               display: "flex",
                                               justifyContent: "flex-end",
@@ -2760,383 +2760,383 @@ export default function WarehouseOrder() {
                                     )}
                                   </div> */}
 
-                                  <div className="d-flex justify-content-center mt-4">
-                                    <button
-                                      variant="contained"
-                                      className="blueBtn"
-                                      onClick={handleSubmit}
-                                    >
-                                      Submit
-                                    </button>
+                                    <div className="d-flex justify-content-center mt-4">
+                                      <button
+                                        variant="contained"
+                                        className="blueBtn"
+                                        onClick={handleSubmit}
+                                      >
+                                        Submit
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            )}
-                          </div>
-                        </Box>
-                      </Modal>
-                      <Modal open={isModalOpen3} onClose={handleCloseModal3}>
-                        <Box
-                          sx={{
-                            position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            transform: "translate(-50%, -50%)",
-                            width: "80%",
-                            bgcolor: "background.paper",
-                            boxShadow: 24,
+                              )}
+                            </div>
+                          </Box>
+                        </Modal>
+                        <Modal open={isModalOpen3} onClose={handleCloseModal3}>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              width: "80%",
+                              bgcolor: "background.paper",
+                              boxShadow: 24,
 
-                            width: {
-                              xs: "95%",
-                              sm: "80%",
-                              md: "60%",
-                              lg: "40%",
-                            },
-                          }}
-                        >
-                          <div
-                            className="modal-header"
+                              width: {
+                                xs: "95%",
+                                sm: "80%",
+                                md: "60%",
+                                lg: "40%",
+                              },
+                            }}
                           >
-                            <h2 className="modal-title">
-                              Warehouse Detail
-                            </h2>
-                            <button onClick={handleCloseModal3}>
-                              <CloseIcon />
-                            </button>
-                          </div>
-                          <div className="newModalGap  noFormaControl">
-                            <div className="row mb-3">
-                              <div className="col-md-6">
-                                <label className="form-label">
-                                  Product Description
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="product description"
-                                  onChange={handlechangepro}
-                                  name="product_description"
-                                />
-                              </div>
-                              <div className="col-md-6 noFormaControl">
-                                <label className="form-label">Harzadous</label>
-                                <select
-                                  onChange={handlechangepro}
-                                  name="Hazardous"
-                                >
-                                  <option>Select...</option>
-                                  <option value="Yes">Yes</option>
-                                  <option value="No">No</option>
-                                </select>
-                              </div>
+                            <div
+                              className="modal-header"
+                            >
+                              <h2 className="modal-title">
+                                Warehouse Detail
+                              </h2>
+                              <button onClick={handleCloseModal3}>
+                                <CloseIcon />
+                              </button>
                             </div>
-                            <div className="row mb-3">
-                              <div className="col-md-6">
-                                <label className="form-label">
-                                  Warehouse Ref.
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="warehouse reference"
-                                  name="warehouse_ref"
-                                  onChange={handlechangepro}
-                                />
-                              </div>
-                              <div className="col-md-6">
-                                <label className="form-label">
-                                  Data Received
-                                </label>
-                                <input
-                                  type="date"
-                                  className="form-control"
-                                  placeholder=""
-                                  name="date_received"
-                                  onChange={handlechangepro}
-                                />
-                              </div>
-                            </div>
-                            <div className="row mb-3">
-                              <div className="col-md-6 noFormaControl">
-                                <label className="form-label">
-                                  Package Type
-                                </label>
-                                <select
-                                  name="package_type"
-                                  onChange={handlechangepro}
-                                >
-                                  <option value="">Select...</option>
-                                  <option value="box">Box</option>
-                                  <option value="crate">Crate</option>
-                                  <option value="pallet">Pallet</option>
-                                  <option value="bags">Bags</option>
-                                </select>
-                              </div>
-                              <div className="col-md-6">
-                                <label className="form-label">
-                                  Total Packages
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="0.00"
-                                  onKeyPress={handlekey}
-                                  name="packages"
-                                  onChange={handlechangepro}
-                                />
-                              </div>
-                            </div>
-                            <div className="row mb-3">
-                              <div className="col-md-6">
-                                <label className="form-label">Dimension</label>
-                                <input
-                                  type="text"
-                                  name="dimension"
-                                  className="form-control"
-                                  placeholder="0.00"
-                                  onChange={handlechangepro}
-                                  onKeyPress={handlekey}
-                                />
-                              </div>
-                              <div className="col-md-6">
-                                <label className="form-label">Weight</label>
-                                <input
-                                  type="text"
-                                  name="weight"
-                                  className="form-control"
-                                  placeholder="0.00"
-                                  onKeyPress={handlekey}
-                                  onChange={handlechangepro}
-                                />
-                              </div>
-                            </div>
-                            <div className="row mb-3">
-                              <div className="col-md-6">
-                                <label className="form-label">
-                                  Supplier Address
-                                </label>
-                                <input
-                                  type="text"
-                                  name="supplier_address"
-                                  className="form-control"
-                                  placeholder="0.00"
-                                  onChange={handlechangepro}
-                                />
-                              </div>
-                              <div className="col-md-6">
-                                <label className="form-label">Supplier</label>
-                                <input
-                                  type="text"
-                                  name="supplier"
-                                  className="form-control"
-                                  placeholder="0.00"
-                                  onChange={handlechangepro}
-                                />
-                              </div>
-                            </div>
-
-                            <div className="row mb-3">
-                              <div className="col-md-6">
-                                <label className="form-label">
-                                  Warehouse Order
-                                </label>
-                                <input
-                                  type="text"
-                                  name="warehouse_order_id"
-                                  className="form-control"
-                                  placeholder="0.00"
-                                  onChange={handlechangepro}
-                                  onKeyPress={handlekey}
-                                />
-                              </div>
-                              <div className="col-md-6">
-                                <label className="form-label">
-                                  Costs to Collect
-                                </label>
-                                <input
-                                  type="text"
-                                  name="costs_to_collect"
-                                  className="form-control"
-                                  placeholder="0.00"
-                                  onKeyPress={handlekey}
-                                  onChange={handlechangepro}
-                                />
-                              </div>
-                            </div>
-                            <div className="row mb-3">
-                              <div className="col-md-6">
-                                <label className="form-label">
-                                  Warehouse dispatch
-                                </label>
-                                <input
-                                  type="text"
-                                  name="warehouse_dispatch"
-                                  className="form-control"
-                                  placeholder="0.00"
-                                  onChange={handlechangepro}
-                                />
-                              </div>
-                              <div className="col-md-6">
-                                <label className="form-label">
-                                  Waybill Ref
-                                </label>
-                                <input
-                                  type="text"
-                                  name="waybill_ref"
-                                  className="form-control"
-                                  placeholder="0.00"
-                                  onChange={handlechangepro}
-                                />
-                              </div>
-                            </div>
-                            <div className="row mb-3">
-                              <div className="col-md-6">
-                                <label className="form-label">
-                                  Warehouse Cost
-                                </label>
-                                <input
-                                  type="text"
-                                  name="warehouse_cost"
-                                  className="form-control"
-                                  placeholder="0.00"
-                                  onChange={handlechangepro}
-                                  onKeyPress={handlekey}
-                                />
-                              </div>
-                              <div className="col-md-6">
-                                <label className="form-label">
-                                  Cost to Dispatch
-                                </label>
-                                <input
-                                  type="text"
-                                  name="cost_to_dispatch"
-                                  className="form-control"
-                                  placeholder="0.00"
-                                  onKeyPress={handlekey}
-                                  onChange={handlechangepro}
-                                />
-                              </div>
-                            </div>
-                            <div className="row mb-3 mt-4">
-                              <div className="col-sm-6">
-                                <h4 className="freight_hd">Document Section</h4>
-                                <span class="line"></span>
-                              </div>
-                              <div className="col-sm-6">
-                                <div className="text-end">
-                                  <button
-                                    className="redBtn"
-                                    onClick={handleShow}
-                                  >
-                                    Upload Documents
-                                  </button>
-
+                            <div className="newModalGap  noFormaControl">
+                              <div className="row mb-3">
+                                <div className="col-md-6">
+                                  <label className="form-label">
+                                    Product Description
+                                  </label>
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="product description"
+                                    onChange={handlechangepro}
+                                    name="product_description"
+                                  />
                                 </div>
-
-                                {show1 ? (
-                                  <Modal
-                                    open={show1}
-                                    onClose={handleClose}
-                                    slotProps={{
-                                      backdrop: {
-                                        sx: {
-                                          backgroundColor: "rgba(0,0,0,0.2)",
-                                        }, // lighter background
-                                      },
-                                    }}
+                                <div className="col-md-6 noFormaControl">
+                                  <label className="form-label">Harzadous</label>
+                                  <select
+                                    onChange={handlechangepro}
+                                    name="Hazardous"
                                   >
-                                    <Box
-                                      sx={{
-                                        bgcolor: "background.paper",
-                                        borderRadius: 2,
-                                        mx: "auto",
-                                        mt: 10,
-                                        width: {
-                                          xs: "95%",
-                                          sm: "80%",
-                                          md: "60%",
-                                          lg: "40%",
+                                    <option>Select...</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <div className="col-md-6">
+                                  <label className="form-label">
+                                    Warehouse Ref.
+                                  </label>
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="warehouse reference"
+                                    name="warehouse_ref"
+                                    onChange={handlechangepro}
+                                  />
+                                </div>
+                                <div className="col-md-6">
+                                  <label className="form-label">
+                                    Data Received
+                                  </label>
+                                  <input
+                                    type="date"
+                                    className="form-control"
+                                    placeholder=""
+                                    name="date_received"
+                                    onChange={handlechangepro}
+                                  />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <div className="col-md-6 noFormaControl">
+                                  <label className="form-label">
+                                    Package Type
+                                  </label>
+                                  <select
+                                    name="package_type"
+                                    onChange={handlechangepro}
+                                  >
+                                    <option value="">Select...</option>
+                                    <option value="box">Box</option>
+                                    <option value="crate">Crate</option>
+                                    <option value="pallet">Pallet</option>
+                                    <option value="bags">Bags</option>
+                                  </select>
+                                </div>
+                                <div className="col-md-6">
+                                  <label className="form-label">
+                                    Total Packages
+                                  </label>
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="0.00"
+                                    onKeyPress={handlekey}
+                                    name="packages"
+                                    onChange={handlechangepro}
+                                  />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <div className="col-md-6">
+                                  <label className="form-label">Dimension</label>
+                                  <input
+                                    type="text"
+                                    name="dimension"
+                                    className="form-control"
+                                    placeholder="0.00"
+                                    onChange={handlechangepro}
+                                    onKeyPress={handlekey}
+                                  />
+                                </div>
+                                <div className="col-md-6">
+                                  <label className="form-label">Weight</label>
+                                  <input
+                                    type="text"
+                                    name="weight"
+                                    className="form-control"
+                                    placeholder="0.00"
+                                    onKeyPress={handlekey}
+                                    onChange={handlechangepro}
+                                  />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <div className="col-md-6">
+                                  <label className="form-label">
+                                    Supplier Address
+                                  </label>
+                                  <input
+                                    type="text"
+                                    name="supplier_address"
+                                    className="form-control"
+                                    placeholder="0.00"
+                                    onChange={handlechangepro}
+                                  />
+                                </div>
+                                <div className="col-md-6">
+                                  <label className="form-label">Supplier</label>
+                                  <input
+                                    type="text"
+                                    name="supplier"
+                                    className="form-control"
+                                    placeholder="0.00"
+                                    onChange={handlechangepro}
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="row mb-3">
+                                <div className="col-md-6">
+                                  <label className="form-label">
+                                    Warehouse Order
+                                  </label>
+                                  <input
+                                    type="text"
+                                    name="warehouse_order_id"
+                                    className="form-control"
+                                    placeholder="0.00"
+                                    onChange={handlechangepro}
+                                    onKeyPress={handlekey}
+                                  />
+                                </div>
+                                <div className="col-md-6">
+                                  <label className="form-label">
+                                    Costs to Collect
+                                  </label>
+                                  <input
+                                    type="text"
+                                    name="costs_to_collect"
+                                    className="form-control"
+                                    placeholder="0.00"
+                                    onKeyPress={handlekey}
+                                    onChange={handlechangepro}
+                                  />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <div className="col-md-6">
+                                  <label className="form-label">
+                                    Warehouse dispatch
+                                  </label>
+                                  <input
+                                    type="text"
+                                    name="warehouse_dispatch"
+                                    className="form-control"
+                                    placeholder="0.00"
+                                    onChange={handlechangepro}
+                                  />
+                                </div>
+                                <div className="col-md-6">
+                                  <label className="form-label">
+                                    Waybill Ref
+                                  </label>
+                                  <input
+                                    type="text"
+                                    name="waybill_ref"
+                                    className="form-control"
+                                    placeholder="0.00"
+                                    onChange={handlechangepro}
+                                  />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <div className="col-md-6">
+                                  <label className="form-label">
+                                    Warehouse Cost
+                                  </label>
+                                  <input
+                                    type="text"
+                                    name="warehouse_cost"
+                                    className="form-control"
+                                    placeholder="0.00"
+                                    onChange={handlechangepro}
+                                    onKeyPress={handlekey}
+                                  />
+                                </div>
+                                <div className="col-md-6">
+                                  <label className="form-label">
+                                    Cost to Dispatch
+                                  </label>
+                                  <input
+                                    type="text"
+                                    name="cost_to_dispatch"
+                                    className="form-control"
+                                    placeholder="0.00"
+                                    onKeyPress={handlekey}
+                                    onChange={handlechangepro}
+                                  />
+                                </div>
+                              </div>
+                              <div className="row mb-3 mt-4">
+                                <div className="col-sm-6">
+                                  <h4 className="freight_hd">Document Section</h4>
+                                  <span class="line"></span>
+                                </div>
+                                <div className="col-sm-6">
+                                  <div className="text-end">
+                                    <button
+                                      className="redBtn"
+                                      onClick={handleShow}
+                                    >
+                                      Upload Documents
+                                    </button>
+
+                                  </div>
+
+                                  {show1 ? (
+                                    <Modal
+                                      open={show1}
+                                      onClose={handleClose}
+                                      slotProps={{
+                                        backdrop: {
+                                          sx: {
+                                            backgroundColor: "rgba(0,0,0,0.2)",
+                                          }, // lighter background
                                         },
                                       }}
                                     >
-                                      <div className="modal-header">
-                                        <h5>Upload Documents</h5>
-                                      </div>
-                                      <div className="newModalGap  noFormaControl">
-
-
-                                        {/* Dropdown */}
-                                        <FormControl fullWidth sx={{ mt: 2 }}>
-                                          <InputLabel id="doc-select-label">
-                                            Select Document Type
-                                          </InputLabel>
-                                          <Select
-                                            labelId="doc-select-label"
-                                            // value={selected}
-                                            onChange={handleSelect}
-                                          >
-                                            {docOptions.map((option) => (
-                                              <MenuItem
-                                                key={option.id}
-                                                value={option.id}
-                                              >
-                                                {option.label}
-                                              </MenuItem>
-                                            ))}
-                                          </Select>
-                                        </FormControl>
-
-                                        {/* Dynamic file inputs */}
-                                        <div className="mt-3">
-                                          {selectedDocs.map((doc, index) => (
-                                            <div key={index} className="mb-3">
-                                              <label className="fw-bold">
-                                                {doc.name}
-                                              </label>
-                                              <input
-                                                type="file"
-                                                className="form-control"
-                                                multiple
-                                                accept="image/*,application/pdf"
-                                                onChange={(e) =>
-                                                  handleFileChangefil(e, doc.name)
-                                                }
-                                              />
-                                            </div>
-                                          ))}
+                                      <Box
+                                        sx={{
+                                          bgcolor: "background.paper",
+                                          borderRadius: 2,
+                                          mx: "auto",
+                                          mt: 10,
+                                          width: {
+                                            xs: "95%",
+                                            sm: "80%",
+                                            md: "60%",
+                                            lg: "40%",
+                                          },
+                                        }}
+                                      >
+                                        <div className="modal-header">
+                                          <h5>Upload Documents</h5>
                                         </div>
+                                        <div className="newModalGap  noFormaControl">
 
-                                        {/* Footer buttons */}
-                                        <Box
-                                          sx={{
-                                            display: "flex",
-                                            justifyContent: "flex-end",
-                                            gap: 2,
-                                            mt: 3,
-                                          }}
-                                        >
-                                          <button className="redBtn" onClick={handleClose}>
-                                            Cancel
-                                          </button>
-                                          <button
-                                            variant="contained"
-                                            color="success"
-                                            onClick={handleSave}
-                                            className="blueBtn"
+
+                                          {/* Dropdown */}
+                                          <FormControl fullWidth sx={{ mt: 2 }}>
+                                            <InputLabel id="doc-select-label">
+                                              Select Document Type
+                                            </InputLabel>
+                                            <Select
+                                              labelId="doc-select-label"
+                                              // value={selected}
+                                              onChange={handleSelect}
+                                            >
+                                              {docOptions.map((option) => (
+                                                <MenuItem
+                                                  key={option.id}
+                                                  value={option.id}
+                                                >
+                                                  {option.label}
+                                                </MenuItem>
+                                              ))}
+                                            </Select>
+                                          </FormControl>
+
+                                          {/* Dynamic file inputs */}
+                                          <div className="mt-3">
+                                            {selectedDocs.map((doc, index) => (
+                                              <div key={index} className="mb-3">
+                                                <label className="fw-bold">
+                                                  {doc.name}
+                                                </label>
+                                                <input
+                                                  type="file"
+                                                  className="form-control"
+                                                  multiple
+                                                  accept="image/*,application/pdf"
+                                                  onChange={(e) =>
+                                                    handleFileChangefil(e, doc.name)
+                                                  }
+                                                />
+                                              </div>
+                                            ))}
+                                          </div>
+
+                                          {/* Footer buttons */}
+                                          <Box
+                                            sx={{
+                                              display: "flex",
+                                              justifyContent: "flex-end",
+                                              gap: 2,
+                                              mt: 3,
+                                            }}
                                           >
-                                            Save Documents
-                                          </button>
-                                        </Box>
-                                      </div>
-                                    </Box>
-                                  </Modal>
-                                ) : (
-                                  ""
-                                )}
+                                            <button className="redBtn" onClick={handleClose}>
+                                              Cancel
+                                            </button>
+                                            <button
+                                              variant="contained"
+                                              color="success"
+                                              onClick={handleSave}
+                                              className="blueBtn"
+                                            >
+                                              Save Documents
+                                            </button>
+                                          </Box>
+                                        </div>
+                                      </Box>
+                                    </Modal>
+                                  ) : (
+                                    ""
+                                  )}
 
+                                </div>
                               </div>
-                            </div>
-                            {/* <div className="row mb-3">
+                              {/* <div className="row mb-3">
                               <div className="col-6 mt-3">
                           <select name="documentName" className="w-100 py-3"  onChange={handlechangepro}>
                             <option value="">Select Document</option>
@@ -3159,28 +3159,28 @@ export default function WarehouseOrder() {
                           />
                         </div>
                             </div> */}
-                            <div mt={3} className="d-flex justify-content-center">
-                              <button
-                                className="blueBtn"
-                                variant="contained"
-                                onClick={handpechangepro}
-                              >
-                                Add Product
-                              </button>
+                              <div mt={3} className="d-flex justify-content-center">
+                                <button
+                                  className="blueBtn"
+                                  variant="contained"
+                                  onClick={handpechangepro}
+                                >
+                                  Add Product
+                                </button>
+                              </div>
                             </div>
-                          </div>
 
 
-                        </Box>
-                      </Modal>
+                          </Box>
+                        </Modal>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-      </div >
+            )}
+          </div>
+        </div >
       )}
     </>
   );

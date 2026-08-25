@@ -142,7 +142,7 @@ export default function SupplierWarehouse() {
   }, []);
   const userid = JSON.parse(localStorage.getItem("data123"))?.id;
   const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
-  
+
   const getData = async (
     page = 1,
     currentTab = tab,
@@ -771,7 +771,7 @@ export default function SupplierWarehouse() {
       if (error.response) {
         toast.error(
           error.response.data?.message ||
-            `Request failed with status ${error.response.status}`,
+          `Request failed with status ${error.response.status}`,
         );
       } else if (error.request) {
         toast.error("Server not responding. Please try again later.");
@@ -941,7 +941,7 @@ export default function SupplierWarehouse() {
                                             <p className="port_date">
                                               <div className="ss text-end">
                                                 {item?.move_to_adminWarhouse ==
-                                                "1" ? (
+                                                  "1" ? (
                                                   <span className="text-success">
                                                     Moved To Warehouse
                                                   </span>
@@ -1071,7 +1071,7 @@ export default function SupplierWarehouse() {
                                           </div>
                                           <div className="col-md-2 text-end">
                                             {item.move_to_adminWarhouse ===
-                                            0 ? (
+                                              0 ? (
                                               <DriveFileMoveIcon
                                                 className="me-2 mt-1"
                                                 fontSize="small"
@@ -1087,7 +1087,7 @@ export default function SupplierWarehouse() {
                                               ""
                                             )}
                                             {item.move_to_adminWarhouse ===
-                                            0 ? (
+                                              0 ? (
                                               <FaEdit
                                                 onClick={() =>
                                                   handleEditClick(item.id)
@@ -1227,7 +1227,7 @@ export default function SupplierWarehouse() {
                           <i className="fa fa-angle-double-right" style={{ fontSize: "14px" }}></i>
                         </button>
                       </div>
-                      
+
                       <Modal
                         open={handleassignsupplier}
                         onClose={handleclose}
@@ -1350,7 +1350,7 @@ export default function SupplierWarehouse() {
                               <div className="col-6">
                                 <label>Priority </label>
                                 <div className="shipRefer1 d-flex">
-                                  <div>
+                                  <div className="d-flex">
                                     <input
                                       type="radio"
                                       id="shipper"
@@ -1359,9 +1359,9 @@ export default function SupplierWarehouse() {
                                       value="High"
                                       onChange={handlechange}
                                     />
-                                    <label htmlFor="shipper">High</label>
+                                    <label className="mb-0" htmlFor="shipper">High</label>
                                   </div>
-                                  <div>
+                                  <div className="d-flex">
                                     <input
                                       type="radio"
                                       id="shipper2"
@@ -1370,9 +1370,9 @@ export default function SupplierWarehouse() {
                                       value="Medium"
                                       onChange={handlechange}
                                     />
-                                    <label htmlFor="consignee">Medium</label>
+                                    <label className="mb-0" htmlFor="consignee">Medium</label>
                                   </div>
-                                  <div>
+                                  <div className="d-flex">
                                     <input
                                       type="radio"
                                       id="shipper3"
@@ -1381,7 +1381,7 @@ export default function SupplierWarehouse() {
                                       value="Low"
                                       onChange={handlechange}
                                     />
-                                    <label htmlFor="mediumPr">Low</label>
+                                    <label className="mb-0" htmlFor="mediumPr">Low</label>
                                   </div>
                                 </div>
                               </div>
@@ -1460,9 +1460,11 @@ export default function SupplierWarehouse() {
                                 </select>
                               </div>
                             </div>
-                            <Button variant="contained" onClick={postData}>
-                              Apply
-                            </Button>
+                            <div className="text-center">
+                              <button className="blueBtn" variant="contained" onClick={postData}>
+                                Apply
+                              </button>
+                            </div>
                           </div>
                         </Box>
                       </Modal>
@@ -1631,8 +1633,8 @@ export default function SupplierWarehouse() {
                                         value={
                                           selectedData.date_received
                                             ? selectedData.date_received.split(
-                                                "T",
-                                              )[0]
+                                              "T",
+                                            )[0]
                                             : ""
                                         }
                                         name="date_received"
@@ -1680,8 +1682,8 @@ export default function SupplierWarehouse() {
                                         value={
                                           selectedData.dispatch_date
                                             ? selectedData.dispatch_date.split(
-                                                "T",
-                                              )[0]
+                                              "T",
+                                            )[0]
                                             : ""
                                         }
                                         name="dispatch_date"
@@ -1879,17 +1881,17 @@ export default function SupplierWarehouse() {
                                       ></input>
                                     </div>
                                     <div item className="col-md-6">
-                                    <label htmlFor="">Weight</label>
-                                    <input
-                                      className="form-control"
-                                      disabled
-                                      label="Weight"
-                                      variant="outlined"
-                                      name="weight"
-                                      value={selectedData.weight || ""}
-                                      onChange={handleInputChange}
-                                    />
-                                  </div>
+                                      <label htmlFor="">Weight</label>
+                                      <input
+                                        className="form-control"
+                                        disabled
+                                        label="Weight"
+                                        variant="outlined"
+                                        name="weight"
+                                        value={selectedData.weight || ""}
+                                        onChange={handleInputChange}
+                                      />
+                                    </div>
                                     <div className="col-lg-md">
                                       <label>Comment on Packages</label>
                                       <textarea
@@ -1900,7 +1902,7 @@ export default function SupplierWarehouse() {
                                         placeholder="Other Information"
                                       ></textarea>
                                     </div>
-                                    
+
                                     <div className="col-md-12">
                                       <h5 className="mt-3 mb-2">
                                         Damaged Goods

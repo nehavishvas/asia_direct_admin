@@ -1068,7 +1068,7 @@ const ManageCollectionDelivery = () => {
                                 This may take some time</p>
                         </div>
                     ) : (
-                        <div className="table-responsive">
+                        <div>
                             <table className="table table-striped tableICon supplierMainTable">
                                 <tbody>
                                     {currentData && currentData.length > 0 &&
@@ -1532,7 +1532,7 @@ const ManageCollectionDelivery = () => {
                         <div className="modal-content text-dark" style={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 30px rgba(0,0,0,0.3)' }}>
                             <div className="modal-header" style={{ background: '#1d2044', color: '#fff', borderTopLeftRadius: '12px', borderTopRightRadius: '12px' }}>
                                 <h5 className="modal-title fw-bold">Collection & Delivery Details</h5>
-                                <button type="button" className="btn btn-close btn-close-white" onClick={() => setViewModalOpen(false)} style={{ filter: 'invert(1)' }}><CloseIcon /></button>
+                                <button type="button" className="btn btn-close btn-close-white" onClick={() => setViewModalOpen(false)} style={{}}><CloseIcon /></button>
                             </div>
                             <div className="modal-body p-4" style={{ maxHeight: '75vh', overflowY: 'auto' }}>
                                 <div className="formDetails p-0">
@@ -1787,7 +1787,7 @@ const ManageCollectionDelivery = () => {
                 </div>
             )}
 
-            
+
         </>
     )
 }
