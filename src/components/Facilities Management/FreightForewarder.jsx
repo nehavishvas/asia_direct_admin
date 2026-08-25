@@ -209,16 +209,15 @@ export default function FreightForewarder() {
           <div className="container-fluid">
             <div className="d-flex justify-content-between my-3">
               <h4>Freight Forwarder Agent</h4>
-              <div className="d-flex searchManageFre">
+              <div className="d-flex gap-2 searchManageFre">
                 <input
                   type="text"
                   placeholder="Search"
-                  className="px-2 py-1"
                   value={searchQuery}
                   onChange={handleSearch}
                 />
                 <button
-                  className="btn btn-primary ms-2"
+                  className="blueBtn"
                   onClick={() => setIsModalOpen(true)}
                 >
                   Add Freight Forwarder
@@ -319,7 +318,7 @@ export default function FreightForewarder() {
                   <CloseIcon />
                 </button>
               </div>
-               <div className="newModalGap  noFormaControl">
+              <div className="newModalGap  noFormaControl">
                 <label>Email</label>
                 <input
                   type="email"
@@ -462,7 +461,7 @@ export default function FreightForewarder() {
             </div>
           </Box>
         </Modal>
-        
+
       </>
     </>
   );

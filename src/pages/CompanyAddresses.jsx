@@ -342,164 +342,166 @@ export default function CompanyAddresses() {
       ) : (
         <>
           <div className="wpWrapper">
-        <div className="container-fluid">
-          <div className="d-flex justify-content-between my-3">
-            <h4>Company Addresses</h4>
+            <div className="container-fluid">
+              <div className="d-flex justify-content-between my-3">
+                <h4>Company Addresses</h4>
 
-            <div className="d-flex gap-2 searchManageFre">
-              <input
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setCurrentPage(1);
-                }}
-              />
-            </div>
-          </div>
-          {/* ---------------- TABLE ---------------- */}
-          {loader ? (
-            <div className="loader-container">
-              <div className="loader"></div>
-              <p>Loading...</p>
-            </div>
-          ) : (
-            <div className="table-responsive">
-              <table className="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Sr.No.</th>
-                    <th>Company Name</th>
-                    <th>Email</th>
-                    <th>Country</th>
-                    <th>Telephone</th>
-                    <th>Registration No / Tax No</th>
-                    <th>Address</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {displayedAddresses.map((item, index) => (
-                    <tr key={item.id || index}>
-                      <td>{(pageIndex - 1) * pageSize + index + 1}</td>
-                      <td>{item.company_name || "-"}</td>
-                      <td>{item.email || "-"}</td>
-                      <td>{item.country || "-"}</td>
-                      <td>{item.telephone || "-"}</td>
-                      <td>
-                        <div><strong>Reg:</strong> {item.company_registration_no || "-"}</div>
-                        <div><strong>Tax:</strong> {item.tax_vat_no || "-"}</div>
-                      </td>
-                      <td>
-                        {[
-                          item.address_line,
-                          item.city,
-                          item.state_region,
-                          item.country,
-                          item.postal_code,
-                        ]
-                          .filter(Boolean)
-                          .join(", ") || "-"}
-                      </td>
-                      <td>
-                        <FaEye
-                          onClick={() => openEditModal(item.id, true)}
-                          style={{
-                            color: "#1b2245",
-                            marginRight: "10px",
-                            cursor: "pointer",
-                          }}
-                        />
-                        <FaEdit
-                          onClick={() => openEditModal(item.id, false)}
-                          style={{
-                            color: "#1b2245",
-                            marginRight: "10px",
-                            cursor: "pointer",
-                          }}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                  {displayedAddresses.length === 0 && (
-                    <tr>
-                      <td colSpan="8" className="text-center">
-                        No company addresses found
-                      </td>
-                    </tr>
+                <div className="d-flex gap-2 searchManageFre">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+              </div>
+              {/* ---------------- TABLE ---------------- */}
+              {loader ? (
+                <div className="loader-container">
+                  <div className="loader"></div>
+                  <p>Loading...</p>
+                </div>
+              ) : (
+                <div className="table-responsive">
+                  <table className="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Sr.No.</th>
+                        <th>Company Name</th>
+                        <th>Email</th>
+                        <th>Country</th>
+                        <th>Telephone</th>
+                        <th>Registration No / Tax No</th>
+                        <th>Address</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {displayedAddresses.map((item, index) => (
+                        <tr key={item.id || index}>
+                          <td>{(pageIndex - 1) * pageSize + index + 1}</td>
+                          <td>{item.company_name || "-"}</td>
+                          <td>{item.email || "-"}</td>
+                          <td>{item.country || "-"}</td>
+                          <td>{item.telephone || "-"}</td>
+                          <td>
+                            <div><strong>Reg:</strong> {item.company_registration_no || "-"}</div>
+                            <div><strong>Tax:</strong> {item.tax_vat_no || "-"}</div>
+                          </td>
+                          <td>
+                            {[
+                              item.address_line,
+                              item.city,
+                              item.state_region,
+                              item.country,
+                              item.postal_code,
+                            ]
+                              .filter(Boolean)
+                              .join(", ") || "-"}
+                          </td>
+                          <td>
+                            <div className="d-flex gap-1">
+                              <FaEye
+                                onClick={() => openEditModal(item.id, true)}
+                                style={{
+                                  color: "#1b2245",
+                                  marginRight: "10px",
+                                  cursor: "pointer",
+                                }}
+                              />
+                              <FaEdit
+                                onClick={() => openEditModal(item.id, false)}
+                                style={{
+                                  color: "#1b2245",
+                                  marginRight: "10px",
+                                  cursor: "pointer",
+                                }}
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                      {displayedAddresses.length === 0 && (
+                        <tr>
+                          <td colSpan="8" className="text-center">
+                            No company addresses found
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+
+                  {/* PAGINATION */}
+                  {totalPages > 1 && (
+                    <div className="d-flex justify-content-end align-items-end my-3">
+                      <button
+                        disabled={currentPage === 1}
+                        onClick={() => {
+                          setCurrentPage(currentPage - 1);
+                        }}
+                        className="bg_page"
+                      >
+                        <i className="fi fi-rr-angle-small-left page_icon"></i>
+                      </button>
+
+                      <span className="mx-2">
+                        Page {currentPage} of {totalPages}
+                      </span>
+
+                      <button
+                        disabled={currentPage === totalPages}
+                        className="bg_page"
+                        onClick={() => {
+                          setCurrentPage(currentPage + 1);
+                        }}
+                      >
+                        <i className="fi fi-rr-angle-small-right page_icon"></i>
+                      </button>
+                    </div>
                   )}
-                </tbody>
-              </table>
-
-              {/* PAGINATION */}
-              {totalPages > 1 && (
-                <div className="d-flex justify-content-end align-items-end my-3">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => {
-                      setCurrentPage(currentPage - 1);
-                    }}
-                    className="bg_page"
-                  >
-                    <i className="fi fi-rr-angle-small-left page_icon"></i>
-                  </button>
-
-                  <span className="mx-2">
-                    Page {currentPage} of {totalPages}
-                  </span>
-
-                  <button
-                    disabled={currentPage === totalPages}
-                    className="bg_page"
-                    onClick={() => {
-                      setCurrentPage(currentPage + 1);
-                    }}
-                  >
-                    <i className="fi fi-rr-angle-small-right page_icon"></i>
-                  </button>
                 </div>
               )}
             </div>
-          )}
-        </div>
-      </div>
-
-      {/* ---------------- EDIT MODAL ---------------- */}
-      {isModalOpen && (
-        <div className="custom-modal supplier-modal-overlay">
-          <div className="custom-modal-content supplier-modal-content">
-            <div className="custom-modal-header">
-              <h5>{isReadOnly ? "View Company Address" : "Edit Company Address"}</h5>
-              <button className="btn-close" onClick={() => setIsModalOpen(false)}>
-                <CloseIcon />
-              </button>
-            </div>
-            <div className="custom-modal-body">
-              {renderFields()}
-            </div>
-            <div className="custom-modal-footer supplier-modal-footer">
-              {isReadOnly ? (
-                <button
-                  type="button"
-                  className="btn btn-secondary supplier-modal-submit"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Close
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="btn btn-secondary supplier-modal-submit"
-                  onClick={handleUpdate}
-                >
-                  Update Address
-                </button>
-              )}
-            </div>
           </div>
-        </div>
-      )}
+
+          {/* ---------------- EDIT MODAL ---------------- */}
+          {isModalOpen && (
+            <div className="custom-modal supplier-modal-overlay">
+              <div className="custom-modal-content supplier-modal-content">
+                <div className="custom-modal-header">
+                  <h5>{isReadOnly ? "View Company Address" : "Edit Company Address"}</h5>
+                  <button className="btn-close" onClick={() => setIsModalOpen(false)}>
+                    <CloseIcon />
+                  </button>
+                </div>
+                <div className="custom-modal-body">
+                  {renderFields()}
+                </div>
+                <div className="custom-modal-footer supplier-modal-footer">
+                  {isReadOnly ? (
+                    <button
+                      type="button"
+                      className="blueBtn mt-3"
+                      onClick={() => setIsModalOpen(false)}
+                    >
+                      Close
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="blueBtn mt-3"
+                      onClick={handleUpdate}
+                    >
+                      Update Address
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
     </>

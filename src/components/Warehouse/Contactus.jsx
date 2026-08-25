@@ -60,18 +60,21 @@ export default function Contactus() {
           <div className="container-fluid">
             <div className="row manageFreight">
               <div className="col-12">
-                <div className="d-flex justify-content-between align-items-center searchManageFre">
+                <div className="d-flex justify-content-between align-items-center">
                   <h4 className="freight_hd">Contact Us Enquiries</h4>
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="form-control w-25"
-                    value={search}
-                    onChange={(e) => {
-                      setSearch(e.target.value);
-                      setCurrentPage(1); // reset page
-                    }}
-                  />
+                  <div className="searchManageFre">
+
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      className="form-control"
+                      value={search}
+                      onChange={(e) => {
+                        setSearch(e.target.value);
+                        setCurrentPage(1); // reset page
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -114,7 +117,7 @@ export default function Contactus() {
                           <AiFillDelete
                             onClick={() => deleteContact(item.id)}
                             style={{
-                              color: "red",
+                              color: "#be191d",
                               cursor: "pointer",
                             }}
                           />
@@ -155,7 +158,7 @@ export default function Contactus() {
           </div>
         </div>
       )}
-      
+
     </>
   );
 }

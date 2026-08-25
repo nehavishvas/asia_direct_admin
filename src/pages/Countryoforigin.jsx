@@ -54,7 +54,7 @@ export default function CountryOfOrigin({ countryID = null }) {
   const [selectedCities3, setSelectedCities3] = useState([]);
   const [selectedCities4, setSelectedCities4] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [errorMessage, setErrorMessage] = useState("");
   const [open, setOpen] = useState(false);
   const [currentData, setCurrentData] = useState([]);
@@ -190,37 +190,37 @@ const [totalPages, setTotalPages] = useState(1);
     console.log(dataToSend);
     const request = isEditMode
       ? axios.post(
-          `${process.env.REACT_APP_BASE_URL}update-country`,
-          dataToSend
-        )
+        `${process.env.REACT_APP_BASE_URL}update-country`,
+        dataToSend
+      )
       : axios.post(`${process.env.REACT_APP_BASE_URL}add-country`, dataToSend);
     request
       .then((response) => {
         toast.success(response.data.message);
         setOpen(false); // Close modal after saving
-       getdata(currentPage) // Reload data to update the table
+        getdata(currentPage) // Reload data to update the table
       })
       .catch((error) => toast.error(error.response.data.message));
   };
 
-const getdata = (page = 1, search = "") => {
-  axios
-    .post(`${process.env.REACT_APP_BASE_URL}country-list`, {
-      page: page,
-      limit: pageSize,
-      search: search, // 👈 search key
-    })
-    .then((response) => {
-      setCurrentData(response.data.data || []);
-      setTotalPages(response.data.total_pages || 1);
-    })
-    .catch((error) => console.log(error.response?.data));
-};
-useEffect(() => {
-  getdata(currentPage, search); // ✅ search pass karo
-}, [currentPage, search]);
+  const getdata = (page = 1, search = "") => {
+    axios
+      .post(`${process.env.REACT_APP_BASE_URL}country-list`, {
+        page: page,
+        limit: pageSize,
+        search: search, // 👈 search key
+      })
+      .then((response) => {
+        setCurrentData(response.data.data || []);
+        setTotalPages(response.data.total_pages || 1);
+      })
+      .catch((error) => console.log(error.response?.data));
+  };
+  useEffect(() => {
+    getdata(currentPage, search); // ✅ search pass karo
+  }, [currentPage, search]);
 
-const currentdata = currentData;
+  const currentdata = currentData;
 
   const handledelete = (item) => {
     Swal.fire({
@@ -239,7 +239,7 @@ const currentdata = currentData;
           })
           .then((response) => {
             toast.success(response.data.message);
-          getdata(currentPage)
+            getdata(currentPage)
           })
           .catch((error) => {
             toast.error(error.response.data.message);
@@ -254,12 +254,12 @@ const currentdata = currentData;
   };
 
   useEffect(() => {
-  const delay = setTimeout(() => {
-    getdata(currentPage, search);
-  }, 500);
+    const delay = setTimeout(() => {
+      getdata(currentPage, search);
+    }, 500);
 
-  return () => clearTimeout(delay);
-}, [currentPage, search]);
+    return () => clearTimeout(delay);
+  }, [currentPage, search]);
   return (
     <div className="wpWrapper">
       <div className="container-fluid">
@@ -271,32 +271,33 @@ const currentdata = currentData;
                   <div className="">
                     <h4 className="freight_hd">Country of Origin</h4>
                   </div>
-    <div className="d-flex">
-    <div className="searchManageFre">
+                  <div className="d-flex gap-2">
+                    <div className="searchManageFre">
 
-                  <input
-  type="text"
-  placeholder="Search country..."
-  className="form-control mb-3 me-2"
-  value={search}
-  onChange={(e) => {
-    setSearch(e.target.value);
-    setCurrentPage(1); // 👈 reset page
-  }}
-/>
-    </div>
-    <div>
+                      <input
+                        type="text"
+                        placeholder="Search country..."
+                        className="form-control"
+                        value={search}
+                        onChange={(e) => {
+                          setSearch(e.target.value);
+                          setCurrentPage(1); // 👈 reset page
+                        }}
+                      />
+                    </div>
+                    <div>
 
 
-                  <Button
-                    onClick={handleAdd}
-                    variant="contained"
-                    color="primary"
-                    >
-                    Add Country
-                    </Button>
-    </div>
-    </div>
+                      <button
+                        className="blueBtn"
+                        onClick={handleAdd}
+                        variant="contained"
+                        color="primary"
+                      >
+                        Add Country
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -304,7 +305,7 @@ const currentdata = currentData;
               <Box sx={style}>
                 <div className="modal-header">
                   <h2 id="modal-modal-title">
-                   {isEditMode ? "Update Country" : "Add Country"}
+                    {isEditMode ? "Update Country" : "Add Country"}
                   </h2>
                   <button className="btn btn-close" onClick={oncloseModal}>
                     <CloseIcon />
@@ -524,27 +525,27 @@ const currentdata = currentData;
               </div>
             </TableContainer>
             <div className="text-center d-flex justify-content-end align-items-center">
-             <button
-  disabled={currentPage === 1}
-  className="bg_page"
-  onClick={() => setCurrentPage((prev) => prev - 1)}
->
-   <i class="fi fi-rr-angle-small-left page_icon"></i>
-</button>
+              <button
+                disabled={currentPage === 1}
+                className="bg_page"
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+              >
+                <i class="fi fi-rr-angle-small-left page_icon"></i>
+              </button>
 
-<span className="mx-2">
-  Page {currentPage} of {totalPages}
-</span>
+              <span className="mx-2">
+                Page {currentPage} of {totalPages}
+              </span>
 
-<button
-  disabled={currentPage === totalPages}
-  className="bg_page"
-  onClick={() => setCurrentPage((prev) => prev + 1)}
->
-   <i class="fi fi-rr-angle-small-right page_icon"></i>
-</button>
+              <button
+                disabled={currentPage === totalPages}
+                className="bg_page"
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+              >
+                <i class="fi fi-rr-angle-small-right page_icon"></i>
+              </button>
             </div>
-           
+
           </div>
         </div>
       </div>

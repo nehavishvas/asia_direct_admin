@@ -601,9 +601,9 @@ export default function Warehouse() {
                           </div>
                         </div>
                         <div className="text-center mt-2 unsetLt">
-                          <Button variant="contained" onClick={apiupdatepost}>
+                          <button variant="contained" className="blueBtn" onClick={apiupdatepost}>
                             Update Warehouse
-                          </Button>
+                          </button>
                         </div>
                       </div>
                     </Box>
@@ -839,13 +839,13 @@ export default function Warehouse() {
                           </div>
                         </div>
                         <div className="text-center mt-2 unsetLt">
-                          <Button
+                          <button
                             variant="contained"
-                            className="submit_btn"
+                            className="blueBtn"
                             onClick={postData1}
                           >
                             Submit
-                          </Button>
+                          </button>
                         </div>
                       </div>
                     </Box>

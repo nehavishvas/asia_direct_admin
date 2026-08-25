@@ -734,45 +734,56 @@ export default function Taskmanager() {
     <>
       <div className="wpWrapper">
         <div className="container-fluid">
-          <h4>Task Manager</h4>
+          <div className="">
+            <h4 className="mb-0">Task Manager</h4>
+
+          </div>
 
           {/* Tabs */}
-          <div className="mb-3">
-            <button
-              className={`btn mx-2 ${activeTab === "assigned" ? "btn-primary" : "btn-outline-primary"
-                }`}
-              onClick={() => setActiveTab("assigned")}
-            >
-              Freight
-            </button>
-
-            <button
-              className={`btn mx-2 ${activeTab === "clearance" ? "btn-primary" : "btn-outline-primary"
-                }`}
-              onClick={() => setActiveTab("clearance")}
-            >
-              Clearance
-            </button>
-
-            <button
-              className={`btn mx-2 ${activeTab === "Custom" ? "btn-primary" : "btn-outline-primary"
-                }`}
-              onClick={() => setActiveTab("Custom")}
-            >
-              Custom
-            </button>
-            {activeTab === "Custom" && (
-              <div className="d-flex justify-content-end mb-2">
+          <div className="my-3 d-flex justify-content-between">
+            <div className="taskManagerTab">
+              <div>
                 <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    handleclickassigntask();
-                  }}
+                  className={`btn ${activeTab === "assigned" ? "btn-primary" : "btn-outline-primary"
+                    }`}
+                  onClick={() => setActiveTab("assigned")}
                 >
-                  Add Task
+                  Freight
                 </button>
               </div>
-            )}
+              <div>
+                <button
+                  className={`btn ${activeTab === "clearance" ? "btn-primary" : "btn-outline-primary"
+                    }`}
+                  onClick={() => setActiveTab("clearance")}
+                >
+                  Clearance
+                </button>
+              </div>
+              <div>
+                <button
+                  className={`btn  ${activeTab === "Custom" ? "btn-primary" : "btn-outline-primary"
+                    }`}
+                  onClick={() => setActiveTab("Custom")}
+                >
+                  Custom
+                </button>
+              </div>
+            </div>
+            <div>
+              {activeTab === "Custom" && (
+                <div>
+                  <button
+                    className="blueBtn"
+                    onClick={() => {
+                      handleclickassigntask();
+                    }}
+                  >
+                    Add Task
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* TABLE */}
@@ -851,12 +862,12 @@ export default function Taskmanager() {
                     <td>
                       <div style={{ display: "flex", gap: "10px" }}>
                         <AddCommentIcon
-                          style={{ cursor: "pointer", color: "#1976d2" }}
+                          style={{ cursor: "pointer", }}
                           onClick={() => handleAddComment(item)}
                           titleAccess="Add Comment"
                         />
                         <VisibilityIcon
-                          style={{ cursor: "pointer", color: "green" }}
+                          style={{ cursor: "pointer", }}
                           onClick={() => handleView(item)}
                           titleAccess="View Details"
                         />

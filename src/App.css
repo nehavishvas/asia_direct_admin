@@ -1054,7 +1054,7 @@ div#basic-button img {
   padding: 15px 10px !important;
   background: #ffffff;
   border: unset !important;
-  height: 65px !important;
+
 }
 
 .css-1q1u3t4-MuiTableRow-root> :not(caption)>*>* {
@@ -3021,17 +3021,7 @@ table .esti_tbody tr th {
   overflow-y: auto !important;
 }
 
-.link_btn {
-  background-color: #1b2245 !important;
-  color: #fff;
-  border: unset;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 16px;
-  font-weight: 600;
-  margin-top: 5px;
-  line-height: normal !important;
-}
+
 
 .shipRefer input {
   width: unset;
@@ -4399,11 +4389,7 @@ th.MuiTableCell-root {
   background: #1b2245;
 }
 
-.searchManageFre input {
-  border: 1px solid #1b2245;
-  padding: 7px 10px !important;
-  height: 100%;
-}
+
 
 .manageFreight input {
   border: 1px solid #1b2245;
@@ -5013,7 +4999,8 @@ button.bg_page {
 .blueBtn,
 button.btn.btn-secondary,
 .privacy_btn,
-.updateLoading button {
+.updateLoading button,
+.link_btn {
   background-color: #1b2245 !important;
   color: #fff;
   border: unset;
@@ -6580,4 +6567,33 @@ h4 {
   background-color: #fff !important;
   color: var(--blue);
   border: 1px dotted var(--gray);
+}
+
+.searchManageFre input {
+  border: 1px solid var(--blue);
+  padding: 7px 10px !important;
+  height: 100%;
+}
+
+.taskManagerTab {
+  display: flex;
+  gap: 7px;
+}
+
+.taskManagerTab button {
+  padding: 2px 10px;
+  border: 1px solid var(--blue);
+  color: #1b2245;
+  font-size: 13px;
+}
+
+.taskManagerTab .btn-primary {
+  background: var(--blue);
+  color: #fff;
+}
+
+.taskManagerTab button:hover {
+  background-color: var(--maroon);
+  color: #fff;
+  border: 1px solid var(--maroon);
 }

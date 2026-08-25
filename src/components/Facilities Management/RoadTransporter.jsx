@@ -207,16 +207,15 @@ export default function RoadTransporter() {
           <div className="container-fluid">
             <div className="d-flex justify-content-between my-3">
               <h4>Transporter Agent</h4>
-              <div className="d-flex searchManageFre">
+              <div className="d-flex gap-2 searchManageFre">
                 <input
                   type="text"
                   placeholder="Search"
-                  className="px-2 py-1"
                   value={searchQuery}
                   onChange={handleSearch}
                 />
                 <button
-                  className="btn btn-primary ms-2"
+                  className="blueBtn"
                   onClick={() => setIsModalOpen(true)}
                 >
                   Add Transporter
@@ -460,7 +459,7 @@ export default function RoadTransporter() {
             </div>
           </Box>
         </Modal>
-        
+
       </>
     </>
   );

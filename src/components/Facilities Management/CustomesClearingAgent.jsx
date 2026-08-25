@@ -209,16 +209,16 @@ export default function CustomesClearingAgent() {
           <div className="container-fluid">
             <div className="d-flex justify-content-between my-3">
               <h4>Customs Agent</h4>
-              <div className="d-flex searchManageFre">
+              <div className="d-flex searchManageFre gap-2">
                 <input
                   type="text"
                   placeholder="Search"
-                  className="px-2 py-1"
+                  className=" "
                   value={searchQuery}
                   onChange={handleSearch}
                 />
                 <button
-                  className="btn btn-primary ms-2"
+                  className="blueBtn"
                   onClick={() => setIsModalOpen(true)}
                 >
                   Add Customs Agent
@@ -461,7 +461,7 @@ export default function CustomesClearingAgent() {
             </div>
           </Box>
         </Modal>
-        
+
       </>
     </>
   );
