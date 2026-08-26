@@ -4649,8 +4649,8 @@ span.cursor-pointer {
 }
 
 .mainPer {
-  max-height: 550px;
-  overflow: auto;
+  /* max-height: 550px;
+  overflow: auto; */
 }
 
 .newModalGap {

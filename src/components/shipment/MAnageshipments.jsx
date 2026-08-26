@@ -23,6 +23,9 @@ import Swal from "sweetalert2";
 
 const pageSize = 10;
 export default function MAnageshipments() {
+  const userid = JSON.parse(localStorage.getItem("data123"))?.id;
+  const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
+  const [hasPermission, setHasPermission] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
   const [data1, setData1] = useState({
@@ -81,6 +84,34 @@ export default function MAnageshipments() {
     }, 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  useEffect(() => {
+    const checkPermission = async () => {
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+          {
+            staff_id: userid,
+            user_type: usertype,
+            route_url: "/Admin/manage-shipment",
+          }
+        );
+        if (response.data?.success === true) {
+          setHasPermission(true);
+        } else {
+          setHasPermission(false);
+        }
+      } catch (error) {
+        setHasPermission(false);
+      }
+    };
+
+    if (userid) {
+      checkPermission();
+    } else {
+      setHasPermission(false);
+    }
+  }, [userid, usertype]);
   const handleSave = () => {
     console.log("Uploaded Documents:", selectedDocs);
     selectedDocs.forEach((doc) => {
@@ -121,8 +152,7 @@ export default function MAnageshipments() {
     setCurrentPage(page);
     getwarehouse(page, searchQuery, activeTab);
   };
-  const userid = JSON.parse(localStorage.getItem("data123"))?.id;
-  const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
+
   const openModal1 = async () => {
     try {
       const permission = await axios.post(
@@ -191,8 +221,10 @@ export default function MAnageshipments() {
     }
   };
   useEffect(() => {
-    getcountry();
-  }, []);
+    if (hasPermission === true) {
+      getcountry();
+    }
+  }, [hasPermission]);
   const getcountry = () => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}GetCountries`)
@@ -204,10 +236,11 @@ export default function MAnageshipments() {
       });
   };
   useEffect(() => {
-    console.log("API HIT:", activeTab);
-
-    getwarehouse(currentPage, debouncedSearch, activeTab);
-  }, [currentPage, debouncedSearch, activeTab]);
+    if (hasPermission === true) {
+      console.log("API HIT:", activeTab);
+      getwarehouse(currentPage, debouncedSearch, activeTab);
+    }
+  }, [currentPage, debouncedSearch, activeTab, hasPermission]);
   // const getwarehouse = (page = 1, search = "") => {
   //   setLoader(true);
 
@@ -603,6 +636,28 @@ export default function MAnageshipments() {
   const formattedETD = formatDate(inputdata.ETD);
   const formattedATD = formatDate(inputdata.ATD);
   const formatteddispatch = formatDate(inputdata.date_of_dispatch);
+  if (hasPermission === null) {
+    return (
+      <div className="loader-container" style={{ height: "80vh", background: "transparent" }}>
+        <div className="loader"></div>
+        <p className="loader-text">Loading permissions...</p>
+      </div>
+    );
+  }
+
+  if (hasPermission === false) {
+    return (
+      <div className="wpWrapper text-center mt-5">
+        <div className="container-fluid">
+          <div className="card shadow-sm p-4 mx-auto" style={{ maxWidth: "500px" }}>
+            <h3 className="text-danger fw-bold mb-3">Permission Denied</h3>
+            <p className="text-muted">You do not have access to the Shipment List page.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="wpWrapper">

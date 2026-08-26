@@ -1,7 +1,11 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { toast } from "react-toastify";export default function CMS() {
+import { toast } from "react-toastify";
+
+export default function CMS() {
     const [data, setData] = useState({})
+    const [hasPermission, setHasPermission] = useState(null);
+    const [loader, setLoader] = useState(false);
     const handlechange = (e) => {
         const { name, value } = e.target
         setData({ ...data, [name]: value })
@@ -20,13 +24,73 @@ import { toast } from "react-toastify";export default function CMS() {
             toast.error(error.response.data)
         })
     }
+    const userid = JSON.parse(localStorage.getItem("data123"))?.id;
+    const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
+
+    const checkPermission = async () => {
+        try {
+            setLoader(true);
+            if (!userid || !usertype) {
+                setHasPermission(false);
+                return;
+            }
+            const checkPost = {
+                staff_id: userid,
+                user_type: usertype,
+                route_url: "/Admin/link",
+            };
+            const response = await axios.post(
+                `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+                checkPost
+            );
+            if (response.data && response.data.success === true) {
+                setHasPermission(true);
+                getlibnk();
+            } else {
+                setHasPermission(false);
+                toast.error("Permission Denied: You don't have access to this page");
+            }
+        } catch (error) {
+            console.error("Error checking permission:", error);
+            setHasPermission(false);
+            toast.error(
+                error.response?.data?.message || "Permission Denied: You don't have access to this page"
+            );
+        } finally {
+            setLoader(false);
+        }
+    };
+
     useEffect(() => {
-        getlibnk()
-    }, [])
+        checkPermission();
+    }, []);
     return (
         <>
-            <div className="wpWrapper">
-                <div className="container-fluid">
+            {hasPermission === null ? (
+                <div className="loader-container">
+                    <div className="loader"></div>
+                    <p className="loader-text">Loading...</p>
+                </div>
+            ) : hasPermission === false ? (
+                <div className="wpWrapper">
+                    <div className="container-fluid">
+                        <div className="row manageFreight">
+                            <div className="col-12">
+                                <div className="d-flex ">
+                                    <div>
+                                        <h4 className="freight_hd">Add Links</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="text-center mt-5">
+                            <h3 className="text-danger">You don't have permission to access this page</h3>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="wpWrapper">
+                    <div className="container-fluid">
                     <div className="row manageFreight">
                         <div className="col-12">
                             <div className="d-flex ">
@@ -76,7 +140,7 @@ import { toast } from "react-toastify";export default function CMS() {
                     </div>
                 </div>
             </div>
-            
+            )}
         </>
     )
 }

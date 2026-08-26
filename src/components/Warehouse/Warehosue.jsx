@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 const pageSize = 10;
 
 export default function Warehouse() {
+  const [hasPermission, setHasPermission] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
   const [file, setFile] = useState(null);
@@ -45,8 +46,46 @@ export default function Warehouse() {
     setIsModalOpen1(false);
   };
 
+  const checkPermission = async () => {
+    try {
+      setLoader(true);
+      const uId = useirid?.id;
+      const uType = useirid?.user_type;
+      if (!uId || !uType) {
+        setHasPermission(false);
+        return;
+      }
+      const checkPost = {
+        staff_id: uId,
+        user_type: uType,
+        route_url: "/Admin/Warehouse",
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        checkPost
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+        getwarehouse();
+        supplierlist();
+        getcountry();
+      } else {
+        setHasPermission(false);
+        toast.error("Permission Denied: You don't have access to this page");
+      }
+    } catch (error) {
+      console.error("Error checking permission:", error);
+      setHasPermission(false);
+      toast.error(
+        error.response?.data?.message || "Permission Denied: You don't have access to this page"
+      );
+    } finally {
+      setLoader(false);
+    }
+  };
+
   useEffect(() => {
-    supplierlist();
+    checkPermission();
   }, []);
 
   const supplierlist = async () => {
@@ -98,9 +137,7 @@ export default function Warehouse() {
       });
   };
 
-  useEffect(() => {
-    getcountry();
-  }, []);
+
   const getcountry = () => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}GetCountries`)
@@ -111,9 +148,7 @@ export default function Warehouse() {
         console.log(error.response.data.data);
       });
   };
-  useEffect(() => {
-    getwarehouse();
-  }, []);
+
   const getwarehouse = () => {
     setLoader(true);
     axios
@@ -288,13 +323,34 @@ export default function Warehouse() {
 
   return (
     <>
-      {loader ? (
-        <div class="loader-container">
-          <div class="loader"></div>
-          <p class="loader-text">Updating... This may take some time</p>
+      {hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Manage Warehouse</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
         </div>
       ) : (
-        <div className="wpWrapper">
+        <>
+          {loader ? (
+            <div className="loader-container">
+              <div className="loader"></div>
+              <p className="loader-text">Updating... This may take some time</p>
+            </div>
+          ) : (
+            <div className="wpWrapper">
           <div className="container-fluid">
             <div>
               <div>
@@ -856,6 +912,8 @@ export default function Warehouse() {
             </div>
           </div>
         </div>
+          )}
+        </>
       )}
     </>
   );

@@ -45,6 +45,9 @@ const style = {
 };
 const pageSize = 10;
 export default function CountryOfOrigin({ countryID = null }) {
+  const [hasPermission, setHasPermission] = useState(null);
+  const userid = JSON.parse(localStorage.getItem("data123"))?.id;
+  const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
   const [country, setCountry] = useState([]);
   const [cities, setCities] = useState([]);
   const [selectedCountryID, setSelectedCountryID] = useState(countryID);
@@ -103,10 +106,47 @@ export default function CountryOfOrigin({ countryID = null }) {
       typeof value === "string" ? value.split(",").map(Number) : value
     );
   };
+  const checkPermission = async () => {
+    try {
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const checkPost = {
+        staff_id: userid,
+        user_type: usertype,
+        route_url: "/Admin/countryoforigin",
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        checkPost
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+        fetchCountries();
+        if (countryID) loadCountryData(countryID);
+      } else {
+        setHasPermission(false);
+        toast.error("Permission Denied: You don't have access to this page");
+      }
+    } catch (error) {
+      console.error("Error checking permission:", error);
+      setHasPermission(false);
+      toast.error(
+        error.response?.data?.message || "Permission Denied: You don't have access to this page"
+      );
+    }
+  };
+
   useEffect(() => {
-    fetchCountries();
-    if (countryID) loadCountryData(countryID);
-  }, [countryID]);
+    checkPermission();
+  }, []);
+
+  useEffect(() => {
+    if (hasPermission === true && countryID) {
+      loadCountryData(countryID);
+    }
+  }, [countryID, hasPermission]);
 
   const fetchCountries = () => {
     axios
@@ -216,9 +256,7 @@ export default function CountryOfOrigin({ countryID = null }) {
       })
       .catch((error) => console.log(error.response?.data));
   };
-  useEffect(() => {
-    getdata(currentPage, search); // ✅ search pass karo
-  }, [currentPage, search]);
+
 
   const currentdata = currentData;
 
@@ -254,15 +292,38 @@ export default function CountryOfOrigin({ countryID = null }) {
   };
 
   useEffect(() => {
-    const delay = setTimeout(() => {
-      getdata(currentPage, search);
-    }, 500);
+    if (hasPermission === true) {
+      const delay = setTimeout(() => {
+        getdata(currentPage, search);
+      }, 500);
 
-    return () => clearTimeout(delay);
-  }, [currentPage, search]);
+      return () => clearTimeout(delay);
+    }
+  }, [currentPage, search, hasPermission]);
   return (
-    <div className="wpWrapper">
-      <div className="container-fluid">
+    <>
+      {hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Country of Origin</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="wpWrapper">
+          <div className="container-fluid">
         <div className=" ">
           <div className=" ">
             <div className="row manageFreight">
@@ -550,5 +611,7 @@ export default function CountryOfOrigin({ countryID = null }) {
         </div>
       </div>
     </div>
+      )}
+    </>
   );
 }

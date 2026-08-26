@@ -78,7 +78,7 @@ export default function Profile() {
                   />
                 </div>
                 <h5 className="fw-bold mb-1" style={{ color: '#1b2245' }}>{data?.full_name}</h5>
-                <p className="text-muted mb-4">{data?.Role || 'Administrator'}</p>
+                <p className="text-muted mb-4">{data?.user_type === "2" || data?.user_type === 2 ? 'Staff' : (data?.Role || 'Administrator')}</p>
                 <button
                   type="button"
                   className="btn mx-4 py-2 rounded-pill text-white fw-medium shadow-md"
@@ -109,7 +109,7 @@ export default function Profile() {
                   <div className="col-sm-4 text-muted fw-semibold">Role</div>
                   <div className="col-sm-8 fw-medium">
                     <span className="badge rounded-pill px-3 py-2 text-white" style={{ background: "linear-gradient(135deg, #0b4170 0%, #1b2245 100%)" }}>
-                       {data?.Role || 'Admin'}
+                       {data?.user_type === "2" || data?.user_type === 2 ? 'Staff' : (data?.Role || 'Admin')}
                     </span>
                   </div>
                 </div>

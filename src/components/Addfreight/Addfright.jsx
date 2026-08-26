@@ -231,7 +231,7 @@ const Addfright = () => {
 
       const postdata = {
         staff_id: userid,
-        route_url: "/add-freight",
+        route_url: "/Admin/Addfreight",
         user_type: usertype,
       };
 

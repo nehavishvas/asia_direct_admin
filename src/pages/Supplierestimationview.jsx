@@ -349,7 +349,7 @@ export default function Supplierestimationview() {
   };
 
   const handleclicknav = () => {
-    navigate("/Admin/SupplierEstimation", { state: { data: localFreigtId } });
+    navigate("/Admin/SupplierEstimation", { state: { data: localFreigtId, from: location.state?.from } });
   };
 
   const handlechangecalc = (e) => {

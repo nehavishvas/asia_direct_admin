@@ -7,8 +7,47 @@ import { toast } from "react-toastify";
 const TermConditions = () => {
   const [description12, setDescription12] = useState([]);
   const [heading, setHeading] = useState('');
+  const [hasPermission, setHasPermission] = useState(null);
+  const [loader, setLoader] = useState(false);
+  const userid = JSON.parse(localStorage.getItem("data123"))?.id;
+  const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
+
+  const checkPermission = async () => {
+    try {
+      setLoader(true);
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const checkPost = {
+        staff_id: userid,
+        user_type: usertype,
+        route_url: "/Admin/term-conditions",
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        checkPost
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+        getdataapi();
+      } else {
+        setHasPermission(false);
+        toast.error("Permission Denied: You don't have access to this page");
+      }
+    } catch (error) {
+      console.error("Error checking permission:", error);
+      setHasPermission(false);
+      toast.error(
+        error.response?.data?.message || "Permission Denied: You don't have access to this page"
+      );
+    } finally {
+      setLoader(false);
+    }
+  };
+
   useEffect(() => {
-    getdataapi();
+    checkPermission();
   }, []);
   const getdataapi = () => {
     axios.get(`${process.env.REACT_APP_BASE_URL}get-terms`).then((response) => {
@@ -39,8 +78,28 @@ const TermConditions = () => {
 
   return (
     <>
-      <div className="wpWrapper">
-        <div className="container-fluid">
+      {hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Terms and Conditions</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="wpWrapper">
+          <div className="container-fluid">
           <div className="card ">
             <div className="card-body">
               <div className="row manageFreight">
@@ -68,9 +127,7 @@ const TermConditions = () => {
           </div>
         </div>
       </div>
-
-      
-
+      )}
     </>
   );
 };

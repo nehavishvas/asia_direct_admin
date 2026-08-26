@@ -44,14 +44,14 @@ export default function SupplierEstimation() {
 
   const handleclicknanvi = (item) => {
     navigate("/Admin/supplier-estimation-view", {
-      state: { data: item, freight_id: id },
+      state: { data: item, freight_id: id, from: location.state?.from },
     });
   };
 
   const handleclicknav = () => {
-    navigate("/Admin/managefreight");
-    // window.history.back();
-  }
+    const fromPath = location.state?.from || "/Admin/managefreight";
+    navigate(fromPath);
+  };
   const querryinQChat = (item) => {
     console.log("item", item);
     navigate("/Admin/QuotationInFreightSupplier", { state: { data: item } });

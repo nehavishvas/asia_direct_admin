@@ -525,7 +525,7 @@ export default function Managefreight() {
   const hanldeclicknavi11 = async (freight_id) => {
     console.log(freight_id);
     JSON.stringify(localStorage.setItem("freightid", freight_id));
-    navigate("/Admin/SupplierEstimation", { state: { data: freight_id } });
+    navigate("/Admin/SupplierEstimation", { state: { data: freight_id, from: "/Admin/managefreight" } });
   };
   ///////////////////////pegenation//////////////////////////////////////////
   const filteredData = data.filter((item) => {

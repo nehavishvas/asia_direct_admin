@@ -26,7 +26,7 @@ const TreeNode = ({ node, handleCheck }) => {
       {isExpanded && (
         <div className="ml-4 border-l-2 border-gray-300 pl-2 dropPermission">
           {node.children.map((child) => (
-            <TreeNode key={child.id} node={child} handleCheck={handleCheck} />
+            <TreeNode key={`${child.type}-${child.id}`} node={child} handleCheck={handleCheck} />
           ))}
         </div>
       )}
@@ -49,11 +49,13 @@ const UserPermission = ({ staffId }) => {
         const transformedData = response.data.data.map((menu) => ({
           id: menu.id,
           menu_name: menu.menu_name,
+          type: "menu",
           isChecked: menu.is_checked === 1,
           children: menu.menu_Routes
             ? menu.menu_Routes.map((route) => ({
               id: route.id,
               name: route.name || route.route_url,
+              type: "route",
               isChecked: route.is_checked === 1,
               children: [],
             }))
@@ -86,22 +88,43 @@ const UserPermission = ({ staffId }) => {
   const handleCheck = (node) => {
     const isChecked = !node.isChecked;
 
-    // Update checked state in tree
+    // Helper to recursively update checked state of a node and all its descendants
+    const updateAllDescendants = (n) => ({
+      ...n,
+      isChecked: isChecked,
+      children: n.children ? n.children.map(updateAllDescendants) : [],
+    });
+
+    // Update checked state in the tree
     const updateCheckedState = (nodes) =>
-      nodes.map((n) => ({
-        ...n,
-        isChecked: n.id === node.id ? isChecked : n.isChecked,
-        children: updateCheckedState(n.children),
-      }));
+      nodes.map((n) => {
+        if (n.id === node.id && n.type === node.type) {
+          return updateAllDescendants(n);
+        }
+        return {
+          ...n,
+          children: updateCheckedState(n.children),
+        };
+      });
 
-    setTreeData(updateCheckedState(treeData));
+    const newTreeData = updateCheckedState(treeData);
+    setTreeData(newTreeData);
 
-    // Update permissions array
-    setStaffPermissions((prevPermissions) =>
-      isChecked
-        ? [...prevPermissions, node.id] // Add if checked
-        : prevPermissions.filter((id) => id !== node.id) // Remove if unchecked
-    );
+    // Collect all checked IDs from the updated tree data
+    const collectCheckedIds = (nodes) => {
+      let ids = [];
+      nodes.forEach((n) => {
+        if (n.isChecked) {
+          ids.push(n.id);
+        }
+        if (n.children && n.children.length > 0) {
+          ids = [...ids, ...collectCheckedIds(n.children)];
+        }
+      });
+      return ids;
+    };
+
+    setStaffPermissions(collectCheckedIds(newTreeData));
   };
 
   // Send updated permissions to API
@@ -132,7 +155,7 @@ const UserPermission = ({ staffId }) => {
           </div>
           <div className="bg-white shadow-md rounded mainPer">
             {treeData.map((node) => (
-              <TreeNode key={node.id} node={node} handleCheck={handleCheck} />
+              <TreeNode key={`${node.type}-${node.id}`} node={node} handleCheck={handleCheck} />
             ))}
           </div>
           <button onClick={handleUpdate} className="btn btn-secondary mt-3">

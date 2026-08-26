@@ -47,6 +47,7 @@ const style1 = {
 };
 
 export default function SupplierWarehouse() {
+  const [hasPermission, setHasPermission] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [tab, setTab] = useState("all");
   const [sortOrder, setSortOrder] = useState("newest");
@@ -137,8 +138,45 @@ export default function SupplierWarehouse() {
   const handleOpenModal3 = () => setIsModalOpen3(true);
   const handleCloseModal2 = () => setIsModalOpen2(false);
   const handleCloseModal3 = () => setIsModalOpen3(false);
+  const checkPermission = async () => {
+    try {
+      setLoader(true);
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const checkPost = {
+        staff_id: userid,
+        user_type: usertype,
+        route_url: "Admin/SupplierWarehouse",
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        checkPost
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+        getData(1, tab, sortOrder, searchQuery, limit);
+        getSupplier();
+        getBatches();
+        getclientdata();
+      } else {
+        setHasPermission(false);
+        toast.error("Permission Denied: You don't have access to this page");
+      }
+    } catch (error) {
+      console.error("Error checking permission:", error);
+      setHasPermission(false);
+      toast.error(
+        error.response?.data?.message || "Permission Denied: You don't have access to this page"
+      );
+    } finally {
+      setLoader(false);
+    }
+  };
+
   useEffect(() => {
-    getData(1, tab, sortOrder, searchQuery, limit);
+    checkPermission();
   }, []);
   const userid = JSON.parse(localStorage.getItem("data123"))?.id;
   const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
@@ -708,10 +746,7 @@ export default function SupplierWarehouse() {
   //     }
   //   }
   // };
-  useEffect(() => {
-    getSupplier();
-    getBatches();
-  }, []);
+
   const getBatches = async () => {
     try {
       const response = await axios.get(
@@ -791,9 +826,7 @@ export default function SupplierWarehouse() {
     const { name, value } = e.target;
     setNameData({ ...nameData, [name]: value });
   };
-  useEffect(() => {
-    getclientdata();
-  }, []);
+
   const getclientdata = async () => {
     try {
       const response = await axios.get(
@@ -812,8 +845,28 @@ export default function SupplierWarehouse() {
   }));
   return (
     <>
-      <div className="wpWrapper">
-        <div className="container-fluid">
+      {hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
+        <div className="wpWrapper">
+          <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Supplier Warehouse</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="wpWrapper">
+          <div className="container-fluid">
           <div className="row manageFreight">
             <div className="col-md-12">
               <div className="d-flex justify-content-between align-items-center">
@@ -2533,6 +2586,7 @@ export default function SupplierWarehouse() {
           )}
         </div>
       </div>
+      )}
     </>
   );
 }

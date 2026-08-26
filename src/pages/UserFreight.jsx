@@ -856,7 +856,7 @@ export default function UserFreight() {
   };
 
   const hanldeclicknavi11 = async (freight_id) => {
-    navigate("/Admin/SupplierEstimation", { state: { data: freight_id } });
+    navigate("/Admin/SupplierEstimation", { state: { data: freight_id, from: "/Admin/freight" } });
   };
   return (
     <>

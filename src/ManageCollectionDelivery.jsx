@@ -13,6 +13,7 @@ import logo from './Assests/logo.png';
 
 const ManageCollectionDelivery = () => {
     const navigate = useNavigate();
+    const [hasPermission, setHasPermission] = useState(null);
     const [collection, setCollection] = useState([]);
     const [delivery, setDelivery] = useState([]);
     const [activeTab, setActiveTab] = useState("collection");
@@ -162,23 +163,61 @@ const ManageCollectionDelivery = () => {
         }
     };
 
-    useEffect(() => {
-        FetchCollectDeliveryList(currentPage, searchQuery);
-    }, [currentPage, searchQuery]);
+    const checkPermission = async () => {
+        try {
+            setLoader(true);
+            if (!userid || !usertype) {
+                setHasPermission(false);
+                return;
+            }
+            const checkPost = {
+                staff_id: userid,
+                user_type: usertype,
+                route_url: "/Admin/manage-collection-delivery",
+            };
+            const response = await axios.post(
+                `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+                checkPost
+            );
+            if (response.data && response.data.success === true) {
+                setHasPermission(true);
+                FetchCollectDeliveryList(currentPage, searchQuery);
+                fetchSuppliers();
+            } else {
+                setHasPermission(false);
+                toast.error("Permission Denied: You don't have access to this page");
+            }
+        } catch (error) {
+            console.error("Error checking permission:", error);
+            setHasPermission(false);
+            toast.error(
+                error.response?.data?.message || "Permission Denied: You don't have access to this page"
+            );
+        } finally {
+            setLoader(false);
+        }
+    };
+
+    const fetchSuppliers = async () => {
+        try {
+            const res = await axios.get(`${process.env.REACT_APP_BASE_URL}supplier-list`);
+            if (res.data.success) {
+                setSupplierList(res.data.data);
+            }
+        } catch (err) {
+            console.error("Error fetching suppliers", err);
+        }
+    };
 
     useEffect(() => {
-        const fetchSuppliers = async () => {
-            try {
-                const res = await axios.get(`${process.env.REACT_APP_BASE_URL}supplier-list`);
-                if (res.data.success) {
-                    setSupplierList(res.data.data);
-                }
-            } catch (err) {
-                console.error("Error fetching suppliers", err);
-            }
-        };
-        fetchSuppliers();
+        checkPermission();
     }, []);
+
+    useEffect(() => {
+        if (hasPermission === true) {
+            FetchCollectDeliveryList(currentPage, searchQuery);
+        }
+    }, [currentPage, searchQuery, hasPermission]);
 
     const handleStatusChange = (item, type, e) => {
         const newStatus = e.target.value;
@@ -1025,8 +1064,29 @@ const ManageCollectionDelivery = () => {
 
     return (
         <>
-            <div className="wpWrapper">
-                <div className="container-fluid">
+            {hasPermission === null ? (
+                <div className="loader-container">
+                    <div className="loader"></div>
+                    <p className="loader-text">Loading...</p>
+                </div>
+            ) : hasPermission === false ? (
+                <div className="wpWrapper">
+                    <div className="container-fluid">
+                        <div className="row manageFreight">
+                            <div className="col-12">
+                                <h4 className="freight_hd">Collection and Delivery Module</h4>
+                                <div className="line"></div>
+                            </div>
+                        </div>
+                        <div className="text-center mt-5">
+                            <h3 className="text-danger">You don't have permission to access this page</h3>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <>
+                    <div className="wpWrapper">
+                        <div className="container-fluid">
                     <div className="d-flex justify-content-between my-3">
                         <h4 className="freight_hd">Collection and Delivery
                             Module</h4>
@@ -1786,8 +1846,8 @@ const ManageCollectionDelivery = () => {
                     </div>
                 </div>
             )}
-
-            
+                </>
+            )}
         </>
     )
 }

@@ -7,8 +7,12 @@ import { Box, Button, Modal } from "@mui/material";
 import { FaEdit } from "react-icons/fa";
 import CloseIcon from "@mui/icons-material/Close";
 const pageSize = 10;
+
 export default function FreightForewarder() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [hasPermission, setHasPermission] = useState(null);
+  const userid = JSON.parse(localStorage.getItem("data123"))?.id;
+  const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
   const [data, setData] = useState([]);
   const [countruies, setCountruies] = useState([]);
   const [loader, setLoader] = useState(false);
@@ -61,8 +65,43 @@ export default function FreightForewarder() {
     }
   };
 
+  const checkPermission = async () => {
+    try {
+      setLoader(true);
+      if (!userid || !usertype) {
+        setHasPermission(false);
+        return;
+      }
+      const checkPost = {
+        staff_id: userid,
+        user_type: usertype,
+        route_url: "/Admin/freightForwarder",
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+        checkPost
+      );
+      if (response.data && response.data.success === true) {
+        setHasPermission(true);
+        getdata(currentPage, searchQuery);
+        getcountry();
+      } else {
+        setHasPermission(false);
+        toast.error("Permission Denied: You don't have access to this page");
+      }
+    } catch (error) {
+      console.error("Error checking permission:", error);
+      setHasPermission(false);
+      toast.error(
+        error.response?.data?.message || "Permission Denied: You don't have access to this page"
+      );
+    } finally {
+      setLoader(false);
+    }
+  };
+
   useEffect(() => {
-    getdata(currentPage, searchQuery);
+    checkPermission();
   }, []);
 
   const totalPages = Math.ceil(pagenationData.total / pagenationData.limit);
@@ -193,9 +232,7 @@ export default function FreightForewarder() {
       });
   };
 
-  useEffect(() => {
-    getcountry();
-  }, []);
+
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
@@ -204,9 +241,29 @@ export default function FreightForewarder() {
   };
   return (
     <>
-      <>
+      {hasPermission === null ? (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p className="loader-text">Loading...</p>
+        </div>
+      ) : hasPermission === false ? (
         <div className="wpWrapper">
           <div className="container-fluid">
+            <div className="row manageFreight">
+              <div className="col-12">
+                <h4 className="freight_hd">Freight Forwarder Agent</h4>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <h3 className="text-danger">You don't have permission to access this page</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="wpWrapper">
+            <div className="container-fluid">
             <div className="d-flex justify-content-between my-3">
               <h4>Freight Forwarder Agent</h4>
               <div className="d-flex gap-2 searchManageFre">
@@ -461,8 +518,8 @@ export default function FreightForewarder() {
             </div>
           </Box>
         </Modal>
-
-      </>
+        </>
+      )}
     </>
   );
 }
