@@ -9,6 +9,7 @@ import { Modal } from "bootstrap";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 const pageSize = 10;
+
 const Notification = () => {
   const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
   const userid = userdata?.id;
@@ -50,6 +51,10 @@ const Notification = () => {
         setHasPermission(false);
         return;
       }
+      if (Number(usertype) === 2) {
+        setHasPermission(true);
+        return;
+      }
       const postdata = {
         staff_id: userid,
         route_url: "/Admin/notifications",
@@ -80,16 +85,29 @@ const Notification = () => {
   const showdata = async (page = 1, search = "") => {
     try {
       setLoader(true);
-      const payload = {
-        page: page,
-        limit: pageSize,
-        search: search,
-      };
-
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}notification-list`,
-        payload
-      );
+      let response;
+      if (Number(usertype) === 2) {
+        const payload = {
+          user_id: userid,
+          page: page,
+          limit: pageSize,
+          search: search,
+        };
+        response = await axios.post(
+          `${process.env.REACT_APP_BASE_URL}notification-users`,
+          payload
+        );
+      } else {
+        const payload = {
+          page: page,
+          limit: pageSize,
+          search: search,
+        };
+        response = await axios.post(
+          `${process.env.REACT_APP_BASE_URL}notification-list`,
+          payload
+        );
+      }
 
       setData(response?.data?.data || []);
       setTotalPage(response?.data?.totalPages || 1);
@@ -308,16 +326,17 @@ const Notification = () => {
                 />
 
               </div>
-              <div>
-
-                <button
-                  data-bs-toggle="modal"
-                  data-bs-target="#exampleModal"
-                  className="blueBtn"
-                >
-                  Send Notification
-                </button>
-              </div>
+              {Number(usertype) !== 2 && (
+                <div>
+                  <button
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal"
+                    className="blueBtn"
+                  >
+                    Send Notification
+                  </button>
+                </div>
+              )}
             </div>
           </div>
           <div className="modal fade" id="exampleModal" tabIndex="-1">
@@ -516,7 +535,7 @@ const Notification = () => {
                   <th>Message</th>
                   <th>Date</th>
                   <th>Documents</th>
-                  <th>Action</th>
+                  {Number(usertype) !== 2 && <th>Action</th>}
                 </tr>
               </thead>
               <tbody>
@@ -551,13 +570,15 @@ const Notification = () => {
                             </a>
                           ))}
                       </td>
-                      <td>
-                        <AiFillDelete
-                          className="text-danger"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handledelete(item.id)}
-                        />
-                      </td>
+                      {Number(usertype) !== 2 && (
+                        <td>
+                          <AiFillDelete
+                            className="text-danger"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => handledelete(item.id)}
+                          />
+                        </td>
+                      )}
                     </tr>
                   );
                 })}

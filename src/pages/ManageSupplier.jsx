@@ -686,7 +686,6 @@ export default function ManageSupplier() {
               </div>
             </div>
           )}
-
         </>
       )}
     </>
