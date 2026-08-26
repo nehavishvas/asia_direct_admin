@@ -530,163 +530,163 @@ export default function ManageSupplier() {
       ) : (
         <>
           <div className="wpWrapper">
-          <div className="container-fluid">
-            <div className="d-flex justify-content-between my-3">
-              <h4>Manage Supplier</h4>
+            <div className="container-fluid">
+              <div className="d-flex justify-content-between my-3">
+                <h4>Manage Supplier</h4>
 
-              <div className="d-flex gap-2 searchManageFre">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className=" "
-                  value={searchQuery}
-                  onChange={handleSearch}
-                />
-                <button
-                  className="blueBtn"
-                  onClick={openAddModal}
-                >
-                  Add Supplier
-                </button>
+                <div className="d-flex gap-2 searchManageFre">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    className=" "
+                    value={searchQuery}
+                    onChange={handleSearch}
+                  />
+                  <button
+                    className="blueBtn"
+                    onClick={openAddModal}
+                  >
+                    Add Supplier
+                  </button>
+                </div>
               </div>
-            </div>
-            {/* ---------------- TABLE ---------------- */}
-            {loader ? (
-              <div className="loader-container">
-                <div className="loader"></div>
-                <p>Loading...</p>
-              </div>
-            ) : (
-              <div className="table-responsive">
-                <table className="table table-striped">
-                  <thead>
-                    <tr>
-                      <th>Sr.No.</th>
-                      {/* <th>Company</th> */}
-                      <th>Full Name</th>
-                      <th>Email</th>
-                      <th>Phone</th>
-                      {/* <th>Service Type</th> */}
-                      <th>Country</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.map((item, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        {/* <td>{item.company_name || "-"}</td> */}
-                        <td>{item.name}</td>
-                        <td>{item.email}</td>
-                        <td>{item.phone_no}</td>
-                        {/* <td>{getServiceLabel(item.service_type)}</td>
+              {/* ---------------- TABLE ---------------- */}
+              {loader ? (
+                <div className="loader-container">
+                  <div className="loader"></div>
+                  <p>Loading...</p>
+                </div>
+              ) : (
+                <div className="table-responsive">
+                  <table className="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Sr.No.</th>
+                        {/* <th>Company</th> */}
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        {/* <th>Service Type</th> */}
+                        <th>Country</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.map((item, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          {/* <td>{item.company_name || "-"}</td> */}
+                          <td>{item.name}</td>
+                          <td>{item.email}</td>
+                          <td>{item.phone_no}</td>
+                          {/* <td>{getServiceLabel(item.service_type)}</td>
                         <td>
                           {item.country_based_name ||
                             getCountryNameById(item.country_based)}
                         </td> */}
-                        <td>{item.country_name}</td>
-                        <td>
-                          <FaEdit
-                            onClick={() => openModal2(item.id)}
-                            style={{
-                              color: "#1b2245",
-                              marginRight: "10px",
-                              cursor: "pointer",
-                            }}
-                          />
-                          <AiFillDelete
-                            className="text-danger"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => handledelete(item.id)}
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {/* PAGINATION */}
-                <div className="d-flex justify-content-end align-items-end">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => {
-                      setCurrentPage(currentPage - 1);
-                      getdata(currentPage - 1, searchQuery);
-                    }}
-                    className="bg_page"
-                  >
-                    <i class="fi fi-rr-angle-small-left page_icon"></i>
+                          <td>{item.country_name}</td>
+                          <td>
+                            <FaEdit
+                              onClick={() => openModal2(item.id)}
+                              style={{
+                                color: "#1b2245",
+                                marginRight: "10px",
+                                cursor: "pointer",
+                              }}
+                            />
+                            <AiFillDelete
+                              className="text-danger"
+                              style={{ cursor: "pointer" }}
+                              onClick={() => handledelete(item.id)}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {/* PAGINATION */}
+                  <div className="d-flex justify-content-end align-items-end">
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() => {
+                        setCurrentPage(currentPage - 1);
+                        getdata(currentPage - 1, searchQuery);
+                      }}
+                      className="bg_page"
+                    >
+                      <i class="fi fi-rr-angle-small-left page_icon"></i>
+                    </button>
+
+                    <span className="mx-2">
+                      Page {currentPage} of {totalPages}
+                    </span>
+
+                    <button
+                      disabled={currentPage === totalPages}
+                      className="bg_page"
+                      onClick={() => {
+                        setCurrentPage(currentPage + 1);
+                        getdata(currentPage + 1, searchQuery);
+                      }}
+                    >
+                      <i class="fi fi-rr-angle-small-right page_icon"></i>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          {/* ---------------- ADD SUPPLIER MODAL ---------------- */}
+          {isModalOpen && (
+            <div className="custom-modal supplier-modal-overlay">
+              <div className="custom-modal-content supplier-modal-content">
+                <div className="custom-modal-header">
+                  <h5>Add Supplier</h5>
+                  <button className="btn-close" onClick={closeAddModal}>
+                    <CloseIcon />
                   </button>
-
-                  <span className="mx-2">
-                    Page {currentPage} of {totalPages}
-                  </span>
-
+                </div>
+                <div className="custom-modal-body">
+                  {renderSupplierFields(input, handlechange, false)}
+                </div>
+                <div className="custom-modal-footer supplier-modal-footer pt-3">
                   <button
-                    disabled={currentPage === totalPages}
-                    className="bg_page"
-                    onClick={() => {
-                      setCurrentPage(currentPage + 1);
-                      getdata(currentPage + 1, searchQuery);
-                    }}
+                    type="button"
+                    className="blueBtn"
+                    onClick={handleAddSupplier}
                   >
-                    <i class="fi fi-rr-angle-small-right page_icon"></i>
+                    Add Supplier
                   </button>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
-        {/* ---------------- ADD SUPPLIER MODAL ---------------- */}
-        {isModalOpen && (
-          <div className="custom-modal supplier-modal-overlay">
-            <div className="custom-modal-content supplier-modal-content">
-              <div className="custom-modal-header">
-                <h5>Add Supplier</h5>
-                <button className="btn-close" onClick={closeAddModal}>
-                  <CloseIcon />
-                </button>
-              </div>
-              <div className="custom-modal-body">
-                {renderSupplierFields(input, handlechange, false)}
-              </div>
-              <div className="custom-modal-footer supplier-modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-primary supplier-modal-submit"
-                  onClick={handleAddSupplier}
-                >
-                  Add Supplier
-                </button>
-              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {isModalOpen2 && (
-          <div className="custom-modal supplier-modal-overlay">
-            <div className="custom-modal-content supplier-modal-content">
-              <div className="custom-modal-header">
-                <h5>Edit Supplier</h5>
-                <button className="btn-close" onClick={closeEditModal}>
-                  <CloseIcon />
-                </button>
-              </div>
-              <div className="custom-modal-body">
-                {renderSupplierFields(inputdata, handleupdateapi, true)}
-              </div>
-              <div className="custom-modal-footer supplier-modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-primary supplier-modal-submit"
-                  onClick={postData1234}
-                >
-                  Update Supplier
-                </button>
+          {isModalOpen2 && (
+            <div className="custom-modal supplier-modal-overlay">
+              <div className="custom-modal-content supplier-modal-content">
+                <div className="custom-modal-header">
+                  <h5>Edit Supplier</h5>
+                  <button className="btn-close" onClick={closeEditModal}>
+                    <CloseIcon />
+                  </button>
+                </div>
+                <div className="custom-modal-body">
+                  {renderSupplierFields(inputdata, handleupdateapi, true)}
+                </div>
+                <div className="custom-modal-footer supplier-modal-footer pt-3">
+                  <button
+                    type="button"
+                    className="blueBtn"
+                    onClick={postData1234}
+                  >
+                    Update Supplier
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        
+          )}
+
         </>
       )}
     </>
