@@ -39,6 +39,7 @@ const Notification = () => {
   const [error, setError] = useState({});
   const [loader, setLoader] = useState(false);
   const [hasPermission, setHasPermission] = useState(null);
+  const [useAdminApi, setUseAdminApi] = useState(false);
 
   const titleRef = useRef();
   const messageRef = useRef();
@@ -49,10 +50,6 @@ const Notification = () => {
       setLoader(true);
       if (!userid || !usertype) {
         setHasPermission(false);
-        return;
-      }
-      if (Number(usertype) === 2) {
-        setHasPermission(true);
         return;
       }
       const postdata = {
@@ -66,13 +63,24 @@ const Notification = () => {
       );
       if (response.data && response.data.success === true) {
         setHasPermission(true);
+        setUseAdminApi(true);
       } else {
-        setHasPermission(false);
-        toast.error("You don't have permission to access this page");
+        if (Number(usertype) === 2) {
+          setHasPermission(true);
+          setUseAdminApi(false);
+        } else {
+          setHasPermission(false);
+          toast.error("You don't have permission to access this page");
+        }
       }
     } catch (error) {
-      setHasPermission(false);
-      toast.error(error.response?.data?.message || "You don't have permission to access this page");
+      if (Number(usertype) === 2) {
+        setHasPermission(true);
+        setUseAdminApi(false);
+      } else {
+        setHasPermission(false);
+        toast.error(error.response?.data?.message || "You don't have permission to access this page");
+      }
     } finally {
       setLoader(false);
     }
@@ -86,7 +94,17 @@ const Notification = () => {
     try {
       setLoader(true);
       let response;
-      if (Number(usertype) === 2) {
+      if (useAdminApi) {
+        const payload = {
+          page: page,
+          limit: pageSize,
+          search: search,
+        };
+        response = await axios.post(
+          `${process.env.REACT_APP_BASE_URL}notification-list`,
+          payload
+        );
+      } else {
         const payload = {
           user_id: userid,
           page: page,
@@ -95,16 +113,6 @@ const Notification = () => {
         };
         response = await axios.post(
           `${process.env.REACT_APP_BASE_URL}notification-users`,
-          payload
-        );
-      } else {
-        const payload = {
-          page: page,
-          limit: pageSize,
-          search: search,
-        };
-        response = await axios.post(
-          `${process.env.REACT_APP_BASE_URL}notification-list`,
           payload
         );
       }
@@ -277,7 +285,7 @@ const Notification = () => {
     if (hasPermission === true) {
       showdata(currentPage, searchQuery);
     }
-  }, [currentPage, searchQuery, hasPermission]);
+  }, [currentPage, searchQuery, hasPermission, useAdminApi]);
   // const totalPage = Math.ceil(data.length / pageSize);
   // const startIndex = (currentPage - 1) * pageSize;
   // const currentdata = data.slice(startIndex, startIndex + pageSize);
@@ -326,7 +334,7 @@ const Notification = () => {
                 />
 
               </div>
-              {Number(usertype) !== 2 && (
+              {useAdminApi && Number(usertype) !== 2 && (
                 <div>
                   <button
                     data-bs-toggle="modal"
@@ -535,7 +543,7 @@ const Notification = () => {
                   <th>Message</th>
                   <th>Date</th>
                   <th>Documents</th>
-                  {Number(usertype) !== 2 && <th>Action</th>}
+                  {useAdminApi && Number(usertype) !== 2 && <th>Action</th>}
                 </tr>
               </thead>
               <tbody>
@@ -570,7 +578,7 @@ const Notification = () => {
                             </a>
                           ))}
                       </td>
-                      {Number(usertype) !== 2 && (
+                      {useAdminApi && Number(usertype) !== 2 && (
                         <td>
                           <AiFillDelete
                             className="text-danger"

@@ -158,7 +158,7 @@ const Uniovwersalpage = lazy(() => import("./components/Uniovwersalpage"));
 export default function App() {
   const [text, setText] = useState("");
   const [permission, setPermission] = useState("");
-  console.log("25-08-26", "12:53");
+  console.log("26-08-26", "14:24");
 
   useEffect(() => {
     const handleDropdownClick = (event) => {

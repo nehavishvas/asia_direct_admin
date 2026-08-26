@@ -28,8 +28,38 @@ const Header = () => {
   }, [userId]);
   const fetchNotifications = async () => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}notification-users`, { user_id: userId });
-      console.log(response.data.data)
+      const userType = JSON.parse(localStorage.getItem("data123") || "{}")?.user_type;
+      let useAdminList = false;
+
+      if (userId && userType) {
+        try {
+          const postdata = {
+            staff_id: userId,
+            route_url: "/Admin/notifications",
+            user_type: userType,
+          };
+          const permResponse = await axios.post(
+            `${process.env.REACT_APP_BASE_URL}CheckPermission`,
+            postdata
+          );
+          if (permResponse.data && permResponse.data.success === true) {
+            useAdminList = true;
+          }
+        } catch (err) {
+          console.error("Permission check failed in Header:", err);
+        }
+      }
+
+      let response;
+      if (useAdminList) {
+        response = await axios.post(`${process.env.REACT_APP_BASE_URL}notification-list`, {
+          page: 1,
+          limit: 10,
+        });
+      } else {
+        response = await axios.post(`${process.env.REACT_APP_BASE_URL}notification-users`, { user_id: userId });
+      }
+
       setNotifications(response.data.data || []);
       setCount(response.data.unseenCount || 0);
     } catch (error) {
