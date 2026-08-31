@@ -201,119 +201,73 @@ export default function BatchesOrder() {
                   </div>
                 </div>
               </div>
-              <div className="row mt-4">
+              <div className="row mt-4 viewDetails">
                 <div className="col-md-4 pe-4">
                   <div className="card desti_card">
                     <div className="card-body">
                       <div className="">
                         <h6 className="orgin_hd">Batchs</h6>
-                        <span className="line"></span>
                       </div>
                       <div className="main_det">
-                        <div class="table-responsive">
-                          <table class="det_show">
-                            <tbody>
-                              <tr>
-                                <td class="fright_num">
-                                  <p class="client_para1">Batch Number:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.batch_number}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Batch Name:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.batch_name}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1 ">Origin:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1 ">
-                                    {datat1.origin_country_name}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p className="client_para1">Warehouse</p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Origin Handler:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.origin_handler}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Destination:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.des_country_name}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">
-                                    Destination Handler:
-                                  </p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">{datat1.agent}</p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1 ">Date Start:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1 ">
-                                    {new Date(
-                                      datat1.created_at
-                                    ).toLocaleDateString("en-GB")}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p className="client_para1">
-                                    Date of Dispatch
-                                  </p>
-                                </td>
-                                <td>
-                                  <p className="client_para1">
-                                    {datat1.date_dispatch}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Days in Storage:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.total_days_storage}
-                                  </p>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+                        <div className="ship_section_title">
+                          <p className="ship_hd">
+                            <i className="fi fi-rs-boxes-stacked build_icon"></i> Batch Info
+                          </p>
+                        </div>
+
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Batch Number</p>
+                            <p className="or_para">{datat1.batch_number}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Batch Name</p>
+                            <p className="or_para">{datat1.batch_name}</p>
+                          </div>
+                        </div>
+
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Origin</p>
+                            <p className="or_para">{datat1.origin_country_name}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Destination</p>
+                            <p className="or_para">{datat1.des_country_name}</p>
+                          </div>
+                        </div>
+
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Origin Handler</p>
+                            <p className="or_para">{datat1.origin_handler}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Destination Handler</p>
+                            <p className="or_para">{datat1.agent}</p>
+                          </div>
+                        </div>
+
+                        <div className="view_box">
+                          <p className="client_para">Warehouse</p>
+                        </div>
+
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Date Start</p>
+                            <p className="or_para">
+                              {new Date(datat1.created_at).toLocaleDateString("en-GB")}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="client_para">Date of Dispatch</p>
+                            <p className="or_para">{datat1.date_dispatch}</p>
+                          </div>
+                        </div>
+
+                        <div className="view_box">
+                          <p className="client_para">Days in Storage</p>
+                          <p className="or_para">{datat1.total_days_storage}</p>
                         </div>
                       </div>
                     </div>
@@ -324,143 +278,83 @@ export default function BatchesOrder() {
                     <div className="card-body">
                       <div className="">
                         <h6 className="orgin_hd">Batch Costs</h6>
-                        <span className="line"></span>
                       </div>
                       <div className="main_det">
-                        <div class="table-responsive">
-                          <table class="det_show">
-                            <tbody>
-                              <tr>
-                                <td class="fright_num">
-                                  <p class="client_para1">Dimension:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.total_dimensions}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Weight:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.total_weight}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1 ">Freight Costs:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1 ">
-                                    {datat1.freight_cost}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p className="client_para1">
-                                    Cost to Collect
-                                  </p>
-                                </td>
-                                <td>
-                                  <p class="client_para1 ">
-                                    {datat1.costs_to_collect}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Warehouse Costs:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.warehouse_cost}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Warehouse Costs Destination:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.warehouse_cost_des}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">On carriage costs:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.origin_oncarriage_costs}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Warehouse Costs Destination:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.warehouse_cost_des}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Cost to Collect Destination:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.costs_to_collect_des}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Destination Costs:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.destination_country}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Incidental Cost:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.origin_Incidental_costs}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Packages :</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1 ">  {datat1.total_freight_packages}</p>
-                                </td>
-                              </tr>
+                        <div className="ship_section_title">
+                          <p className="ship_hd">
+                            <i className="fi fi-rs-dollar build_icon"></i> Cost Breakdown
+                          </p>
+                        </div>
 
-                              <tr>
-                                <td>
-                                  <p class="client_para1 ">Shipments:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1 mb-3">{datat1.count_freight}</p>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Dimension</p>
+                            <p className="or_para">{datat1.total_dimensions}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Weight</p>
+                            <p className="or_para">{datat1.total_weight}</p>
+                          </div>
+                        </div>
+
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Freight Costs</p>
+                            <p className="or_para">{datat1.freight_cost}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Cost to Collect</p>
+                            <p className="or_para">{datat1.costs_to_collect}</p>
+                          </div>
+                        </div>
+
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Warehouse Costs</p>
+                            <p className="or_para">{datat1.warehouse_cost}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Warehouse Costs Destination</p>
+                            <p className="or_para">{datat1.warehouse_cost_des}</p>
+                          </div>
+                        </div>
+
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">On carriage costs</p>
+                            <p className="or_para">{datat1.origin_oncarriage_costs}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Warehouse Costs Destination</p>
+                            <p className="or_para">{datat1.warehouse_cost_des}</p>
+                          </div>
+                        </div>
+
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Cost to Collect Destination</p>
+                            <p className="or_para">{datat1.costs_to_collect_des}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Destination Costs</p>
+                            <p className="or_para">{datat1.destination_country}</p>
+                          </div>
+                        </div>
+
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Incidental Cost</p>
+                            <p className="or_para">{datat1.origin_Incidental_costs}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Packages</p>
+                            <p className="or_para">{datat1.total_freight_packages}</p>
+                          </div>
+                        </div>
+
+                        <div className="view_box">
+                          <p className="client_para">Shipments</p>
+                          <p className="or_para">{datat1.count_freight}</p>
                         </div>
                       </div>
                     </div>
@@ -471,215 +365,125 @@ export default function BatchesOrder() {
                     <div className="card-body">
                       <div className="">
                         <h6 className="orgin_hd">Booking Information</h6>
-                        <span className="line"></span>
                       </div>
                       <div className="main_det">
-                        <div class="table-responsive">
-                          <table class="det_show">
-                            <tbody>
-                              <tr>
-                                <td>
-                                  <p className="client_para1">
-                                    Place of Loading
-                                  </p>
-                                </td>
-                                <td>
-                                  <p className="client_para1"></p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Port of Loading:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.port_loading}
-                                  </p>
-                                </td>
-                              </tr>
-                              {/* 
-                                <tr>                        
-                              */}
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Collection Address:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.collection_address}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Batch Name:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.batch_name}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p className="ship_hd">Transit Information</p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Freight Option:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">{datat1.freight}</p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">ETD:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">{datat1.ETD}</p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Carrier:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">{datat1.carrier}</p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Vessel Name:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">{datat1.vessel}</p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Master Bill:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.master_waybill}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">House Bill:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">{datat1.house_waybill}</p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Container Number:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.container_no}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Release Type:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {new Date(datat1.ETA).toLocaleDateString(
-                                      "en-GB"
-                                    )}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p className="ship_hd">POD Information</p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Place of Loading:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.devy_port_of_loading}
-                                  </p>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <p class="client_para1">Port of Discharge:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.devy_port_of_discharge}
-                                  </p>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+                        {/* BOOKING DETAILS SECTION */}
+                        <div className="ship_section_title">
+                          <p className="ship_hd">Booking Details</p>
+                        </div>
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Place of Loading</p>
+                            <p className="or_para"></p>
+                          </div>
+                          <div>
+                            <p className="client_para">Port of Loading</p>
+                            <p className="or_para">{datat1.port_loading}</p>
+                          </div>
+                        </div>
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Collection Address</p>
+                            <p className="or_para">{datat1.collection_address}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Batch Name</p>
+                            <p className="or_para">{datat1.batch_name}</p>
+                          </div>
+                        </div>
+
+                        {/* TRANSIT SECTION */}
+                        <div className="ship_section_title">
+                          <p className="ship_hd">Transit Information</p>
+                        </div>
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Freight Option</p>
+                            <p className="or_para">{datat1.freight}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">ETD</p>
+                            <p className="or_para">{datat1.ETD}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Carrier</p>
+                            <p className="or_para">{datat1.carrier}</p>
+                          </div>
+                        </div>
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Vessel Name</p>
+                            <p className="or_para">{datat1.vessel}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Master Bill</p>
+                            <p className="or_para">{datat1.master_waybill}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">House Bill</p>
+                            <p className="or_para">{datat1.house_waybill}</p>
+                          </div>
+                        </div>
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Container Number</p>
+                            <p className="or_para">{datat1.container_no}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Release Type</p>
+                            <p className="or_para">
+                              {new Date(datat1.ETA).toLocaleDateString("en-GB")}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* POD SECTION */}
+                        <div className="ship_section_title">
+                          <p className="ship_hd">POD Information</p>
+                        </div>
+                        <div className="d-flex gap-2 view_box justify-content-between flex-wrap">
+                          <div>
+                            <p className="client_para">Place of Loading</p>
+                            <p className="or_para">{datat1.devy_port_of_loading}</p>
+                          </div>
+                          <div>
+                            <p className="client_para">Port of Discharge</p>
+                            <p className="or_para">{datat1.devy_port_of_discharge}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="row my-3">
-                <div className="col-md-4 pe-4">
-                  <div className="card desti_card">
-                    <div className="card-body">
-                      <div className="">
-                        <h6 className="orgin_hd">Comment</h6>
-                        <span className="line"></span>
-                      </div>
-                      <div className="main_det">
-                        <div class="table-responsive">
-                          <table class="det_show">
-                            <tbody>
-                              <tr>
-                                <td class="fright_num">
-                                  <p class="client_para1">Comment:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">{datat1.comment}</p>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+              <div className="view_card viewDetails">
+                <div className="row my-3">
+                  <div className="col-md-4 pe-4">
+                    <div className="card desti_card">
+                      <div className="card-body">
+                        <div className="">
+                          <h6 className="orgin_hd">Comment</h6>
+                        </div>
+                        <div className="main_det">
+                          <div className="view_box">
+                            <p className="client_para">Comment</p>
+                            <p className="or_para">{datat1.comment}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="col-md-4 ">
-                  <div className="card desti_card">
-                    <div className="card-body">
-                      <div className="">
-                        <h6 className="orgin_hd">Attachment's</h6>
-                        <span className="line"></span>
-                      </div>
-                      <div className="main_det">
-                        <div class="table-responsive">
-                          <table class="det_show">
-                            <tbody>
-                              <tr>
-                                <td class="fright_num">
-                                  <p class="client_para1">File:</p>
-                                </td>
-                                <td>
-                                  <p class="client_para1">
-                                    {datat1.attachment}
-                                  </p>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+                  <div className="col-md-4 ">
+                    <div className="card desti_card">
+                      <div className="card-body">
+                        <div className="">
+                          <h6 className="orgin_hd">Attachment's</h6>
+                        </div>
+                        <div className="main_det">
+                          <div className="view_box">
+                            <p className="client_para">File</p>
+                            <p className="or_para">{datat1.attachment}</p>
+                          </div>
                         </div>
                       </div>
                     </div>

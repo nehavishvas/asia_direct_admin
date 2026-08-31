@@ -585,7 +585,7 @@ export default function Sageinvoices() {
                   </button>
                 </div>
               </div>
-              <div className="d-flex gap-2 mb-4 flex-wrap">
+              <div className="d-flex gap-2 mb-4 flex-wrap taskManagerTab">
                 <button
                   className={`btn ${activeTab === "general"
                     ? "btn-primary"
@@ -674,7 +674,7 @@ export default function Sageinvoices() {
                                 Upload
                               </button>
                             </td>
-                             <td className="text-center">
+                            <td className="text-center">
                               {item.freight_invoice_docs?.find((doc) => doc.document_name === "Invoice (AD)") ? (
                                 <i
                                   className="fi fi-rr-document"
@@ -689,7 +689,7 @@ export default function Sageinvoices() {
                               ) : (
                                 "-"
                               )}
-                             </td>
+                            </td>
 
                             <td>
                               <AiFillDelete
@@ -727,7 +727,7 @@ export default function Sageinvoices() {
                     <i className="fi fi-rr-angle-small-right page_icon"></i>
                   </button>
                 </div>
-                
+
               </div>
               <Modal
                 open={openmodal}

@@ -899,17 +899,15 @@ export default function Cashbook() {
                   top: "50%",
                   left: "50%",
                   transform: "translate(-50%, -50%)",
-                  width: "500px",
-                  maxHeight: "90vh",
+
                   overflowY: "auto",
                   bgcolor: "background.paper",
                   boxShadow: 24,
-                  p: 4,
                   borderRadius: "8px",
                 }}
               >
-                <div className="d-flex justify-content-between mb-4 border-bottom pb-2">
-                  <h4 className="m-0">{addEditMode === "edit" ? "Edit Cashbook" : "Add Cashbook"}</h4>
+                <div className="d-flex justify-content-between mb-4 border-bottom pb-2 modal-header">
+                  <h2 id="modal-modal-title" className="m-0">{addEditMode === "edit" ? "Edit Cashbook" : "Add Cashbook"}</h2>
                   <button
                     onClick={() => setOpenAddEditModal(false)}
                     className="btn-close"
@@ -918,60 +916,66 @@ export default function Cashbook() {
                     &times;
                   </button>
                 </div>
-                <form onSubmit={handleAddEditSubmit}>
-                  <div className="mb-3">
-                    <label className="form-label font-weight-bold">Date <span className="text-danger">*</span></label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      value={cashbookForm.date}
-                      onChange={(e) => setCashbookForm({ ...cashbookForm, date: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label font-weight-bold">Bank Ref.</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="e.g. 2026-2342"
-                      value={cashbookForm.bank_ref}
-                      onChange={(e) => setCashbookForm({ ...cashbookForm, bank_ref: e.target.value })}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label font-weight-bold">Description of Receipt</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Description"
-                      value={cashbookForm.description_on_receipt}
-                      onChange={(e) => setCashbookForm({ ...cashbookForm, description_on_receipt: e.target.value })}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label font-weight-bold">Receipt <span className="text-danger">*</span></label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="form-control"
-                      placeholder="0.00"
-                      value={cashbookForm.receipt}
-                      onChange={(e) => setCashbookForm({ ...cashbookForm, receipt: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="d-flex justify-content-end mt-4">
-                    <button
-                      type="button"
-                      onClick={() => setOpenAddEditModal(false)}
-                      className="btn btn-secondary me-2 mx-1"
-                    >
-                      Cancel
-                    </button>
-                    <button type="submit" className="btn btn-primary">
-                      Save
-                    </button>
+                <form onSubmit={handleAddEditSubmit} className="">
+                  <div className="newModalGap noFormaControl">
+                    <div className="row">
+                      <div className="mb-3 col-md-6">
+                        <label className="form-label font-weight-bold">Date <span className="text-danger">*</span></label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          value={cashbookForm.date}
+                          onChange={(e) => setCashbookForm({ ...cashbookForm, date: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="mb-3 col-md-6">
+                        <label className="form-label font-weight-bold">Bank Ref.</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="e.g. 2026-2342"
+                          value={cashbookForm.bank_ref}
+                          onChange={(e) => setCashbookForm({ ...cashbookForm, bank_ref: e.target.value })}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label font-weight-bold">Description of Receipt</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Description"
+                          value={cashbookForm.description_on_receipt}
+                          onChange={(e) => setCashbookForm({ ...cashbookForm, description_on_receipt: e.target.value })}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label font-weight-bold">Receipt <span className="text-danger">*</span></label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          className="form-control"
+                          placeholder="0.00"
+                          value={cashbookForm.receipt}
+                          onChange={(e) => setCashbookForm({ ...cashbookForm, receipt: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="d-flex gap-2 justify-content-end mt-3">
+                        <button
+                          type="button"
+                          onClick={() => setOpenAddEditModal(false)}
+                          className="redBtn"
+                        >
+                          Cancel
+                        </button>
+                        <button type="submit" className="blueBtn">
+                          Save
+                        </button>
+                      </div>
+
+                    </div>
+
                   </div>
                 </form>
               </Box>
@@ -1211,7 +1215,7 @@ export default function Cashbook() {
                 </form>
               </Box>
             </Modal>
-            
+
           </div>
         </div>
       )}

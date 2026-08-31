@@ -206,71 +206,40 @@ export default function Supplierwarhousproduct() {
               </div>
             </div>
           </div>
-          <div className="details_box">
+          <div className="details_box viewDetails">
             <div className="row">
               <div className="col-md-4 pe-4">
                 <div className=" card desti_card">
                   <div className="card-body">
                     <div>
                       <h6 className="orgin_hd">Warehouse Details</h6>
-                      <span className="line"></span>
                     </div>
                     <div className="main_det">
-                      <div className="table-responsive">
-                        <table className="det_show">
-                          <tbody>
-                            <tr>
-                              <td className="fright_num">
-                                <p className="client_para1">Order number:</p>
-                              </td>
-                              <td>
-                                <p className="client_para1">
-                                 OR000 {info.order_id}
-                                </p>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <p className="client_para1">Date:</p>
-                              </td>
-                              <td>
-                                <p className="client_para1">
-                                  {new Date(info.created_at).toLocaleDateString(
-                                    "en-GB",
-                                  )}
-                                </p>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <p className="client_para1">Client:</p>
-                              </td>
-                              <td>
-                                <p className="client_para1">
-                                  {info.customer_name}
-                                </p>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <p className="client_para1">Client Ref:</p>
-                              </td>
-                              <td>
-                                <p className="client_para1">
-                                  {info.customer_ref}
-                                </p>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <p className="client_para1">Groupage:</p>
-                              </td>
-                              <td>
-                                <p className="client_para1">{info?.batch_number}</p>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                      <div className="view_box">
+                        <h6 className="ship_hd">
+                          <i className="fi fi-rs-receipt build_icon"></i> Order Details
+                        </h6>
+
+                        <div className="d-flex align-items-start">
+                          <div>
+                            <p className="client_para">Order Number:</p>
+                            <p className="or_para">OR000{info.order_id}</p>
+
+                            <p className="client_para">Date:</p>
+                            <p className="or_para">
+                              {new Date(info.created_at).toLocaleDateString("en-GB")}
+                            </p>
+
+                            <p className="client_para">Client:</p>
+                            <p className="or_para">{info.customer_name}</p>
+
+                            <p className="client_para">Client Ref:</p>
+                            <p className="or_para">{info.customer_ref}</p>
+
+                            <p className="client_para">Groupage:</p>
+                            <p className="or_para">{info?.batch_number}</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -281,90 +250,31 @@ export default function Supplierwarhousproduct() {
                   <div className="card-body">
                     <div className="">
                       <h6 className="orgin_hd">Costs Estimates</h6>
-                      <span className="line"></span>
                     </div>
                     <div className="main_det">
-                      <div className="table-responsive">
-                        <table className="det_show">
-                          <thead>
-                            <tr>
-                              <td className="ship_hd1"></td>
-                              <td className="ship_hd2">Warehouse</td>
-                              <td className="ship_hd3 pe-2">Other</td>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>
-                                <p className="client_para1">Collection</p>
-                              </td>
-                              <td>
-                                <p className="client_para1"></p>
-                              </td>
-                              <td>
-                                <p className="client_para1">
-                                  {info.costs_to_collect}
-                                </p>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <p className="client_para1">Warehouse</p>
-                              </td>
-                              <td>
-                                <p className="client_para1"></p>
-                              </td>
-                              <td>
-                                <p className="client_para1">
-                                  {info.warehouse_cost}
-                                </p>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <p className="client_para1 ">cost to collect</p>
-                              </td>
-                              <td>
-                                <p className="client_para1 "></p>
-                              </td>
-                              <td>
-                                <p className="client_para1 ">
-                                  {info.costs_to_collect}
-                                </p>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <p className="client_para1 ">
-                                  Origin On Carriage Costs
-                                </p>
-                              </td>
-                              <td>
-                                <p className="client_para1 "></p>
-                              </td>
-                              <td>
-                                <p className="client_para1 ">
-                                  {info.origin_oncarriage_costs}
-                                </p>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <p className="client_para1 ">
-                                  Origin Incidental cost
-                                </p>
-                              </td>
-                              <td>
-                                <p className="client_para1 mb-3"></p>
-                              </td>
-                              <td>
-                                <p className="client_para1 mb-3">
-                                  {info.origin_Incidental_costs}
-                                </p>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                      <div className="view_box">
+                        <h6 className="ship_hd">
+                          <i className="fi fi-rs-dollar build_icon"></i> Cost Breakdown
+                        </h6>
+
+                        <div className="d-flex align-items-start">
+                          <div>
+                            <p className="client_para">Collection</p>
+                            <p className="or_para">{info.costs_to_collect}</p>
+
+                            <p className="client_para">Warehouse</p>
+                            <p className="or_para">{info.warehouse_cost}</p>
+
+                            <p className="client_para">Cost to Collect</p>
+                            <p className="or_para">{info.costs_to_collect}</p>
+
+                            <p className="client_para">Origin On Carriage Costs</p>
+                            <p className="or_para">{info.origin_oncarriage_costs}</p>
+
+                            <p className="client_para">Origin Incidental Cost</p>
+                            <p className="or_para">{info.origin_Incidental_costs}</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -375,42 +285,25 @@ export default function Supplierwarhousproduct() {
                   <div className="card-body">
                     <div>
                       <h6 className="orgin_hd">Packages Details</h6>
-                      <span className="line"></span>
                     </div>
                     <div className="main_det">
-                      <div className="table-responsive">
-                        <table className="det_show">
-                          <tbody>
-                            <tr>
-                              <td className="fright_num">
-                                <p className="client_para1">Weight:</p>
-                              </td>
-                              <td>
-                                <p className="client_para1">{totals.weight}</p>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <p className="client_para1">Dimensions:</p>
-                              </td>
-                              <td>
-                                <p className="client_para1">
-                                  {totals.dimension}
-                                </p>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <p className="client_para1">Packages:</p>
-                              </td>
-                              <td>
-                                <p className="client_para1">
-                                  {totals.packages}
-                                </p>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                      <div className="view_box">
+                        <h6 className="ship_hd">
+                          <i className="fi fi-rs-box build_icon"></i> Package Summary
+                        </h6>
+
+                        <div className="d-flex align-items-start">
+                          <div>
+                            <p className="client_para">Weight:</p>
+                            <p className="or_para">{totals.weight}</p>
+
+                            <p className="client_para">Dimensions:</p>
+                            <p className="or_para">{totals.dimension}</p>
+
+                            <p className="client_para">Packages:</p>
+                            <p className="or_para">{totals.packages}</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
