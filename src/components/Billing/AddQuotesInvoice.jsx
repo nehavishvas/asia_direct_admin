@@ -327,13 +327,13 @@ export default function AddQuotesInvoice() {
       const apiEndpoint = isInvoice ? "GetNewFreightQuoteInvoiceById" : "GetFreightQuoteEstimateById";
       const payload = isInvoice
         ? {
-            quote_invoice_id: parseInt(invoiceId),
-            freight_id: (freightId && parseInt(freightId) !== 0) ? parseInt(freightId) : null
-          }
+          quote_invoice_id: parseInt(invoiceId),
+          freight_id: (freightId && parseInt(freightId) !== 0) ? parseInt(freightId) : null
+        }
         : {
-            freight_quote_estimate_id: parseInt(invoiceId),
-            freight_id: (freightId && parseInt(freightId) !== 0) ? parseInt(freightId) : null
-          };
+          freight_quote_estimate_id: parseInt(invoiceId),
+          freight_id: (freightId && parseInt(freightId) !== 0) ? parseInt(freightId) : null
+        };
 
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}${apiEndpoint}`,
@@ -1767,7 +1767,7 @@ export default function AddQuotesInvoice() {
                     {renderRowsForSection(destinationRowsData, destinationRows, setDestinationRows, destinationDropdown, "Destination Charges", totalChaDestinationTransit, totalChaDestinationTransitRoe)}
                     {renderRowsForSection(adminRowsData, adminRows, setAdminRows, adminDropdown, "Admin Charges", totaAdminransit, totalAdminnsitRoe)}
                     {renderRowsForSection(customsRowsData, customsRows, setCustomsRows, customsDropdown, "Customs Charges", customsTotalTCost, customsTotalFinalAmt)}
-                    
+
                     <tr>
                       <td colSpan={6}>
                         <strong>Total - Charge</strong>
@@ -1790,13 +1790,13 @@ export default function AddQuotesInvoice() {
           </section>
 
           <div className="text-center mt-3 mb-5">
-            <button type="button" className="ship_btn" onClick={estimateCalculate}>
+            <button type="button" className="blueBtn" onClick={estimateCalculate}>
               Save Estimate
             </button>
           </div>
         </div>
       </div>
-      
+
     </>
   );
 }

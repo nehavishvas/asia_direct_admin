@@ -351,174 +351,174 @@ export default function Warehouse() {
             </div>
           ) : (
             <div className="wpWrapper">
-          <div className="container-fluid">
-            <div>
-              <div>
-                <div className="row  manageFreight">
-                  <div className="col-12">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div>
-                        <h4 className="freight_hd">Warehouse List</h4>
-                      </div>
-                      <div className="d-flex justify-content-end align-items-center">
-                        <div className="mx-2">
-                          <button onClick={openModal1}>Add Warehouse</button>
+              <div className="container-fluid">
+                <div>
+                  <div>
+                    <div className="row  manageFreight">
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div>
+                            <h4 className="freight_hd">Warehouse List</h4>
+                          </div>
+                          <div className="d-flex justify-content-end align-items-center">
+                            <div className="mx-2">
+                              <button onClick={openModal1}>Add Warehouse</button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                <div className="table-responsive mt-3">
-                  <table className="table table-striped tableICon">
-                    <thead>
-                      <tr>
-                        <th>Sr.No.</th>
-                        <th>User </th>
-                        <th>Country</th>
-                        <th>Email</th>
-                        <th>Mobile Number</th>
-                        <th>Town</th>
-                        <th>Warehouse Name</th>
-                        <th>Warehouse Number</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {currentdata &&
-                        currentdata.length > 0 &&
-                        currentdata.map((item, index) => (
-                          <tr key={item.id}>
-                            <td>{startIndex + index + 1}</td>
-                            <td>{item.contact_person}</td>
-                            <td>{item.country_name}</td>
-                            <td>{item.email}</td>
-                            <td>{item.mobile_number}</td>
-                            <td>{item.town}</td>
-                            <td>{item.warehouse_name}</td>
-                            <td>{item.warehouse_number}</td>
-                            <td style={{ display: "flex", alignItems: "center" }}>
-                              <FaEdit
-                                onClick={() => {
-                                  openModal2(item.warehouse_id);
-                                }}
-                                style={{
-                                  color: "rgb(27 34 69)",
-                                  marginRight: "10px",
-
-                                  cursor: "pointer",
-                                }}
-                              />
-                              <AiFillDelete
-                                onClick={() => {
-                                  deletewarehouse(item.warehouse_id);
-                                }}
-                                style={{
-
-                                  cursor: "pointer",
-                                }}
-                                className="text-danger"
-                              />
-                            </td>
+                    <div className="table-responsive mt-3">
+                      <table className="table table-striped tableICon">
+                        <thead>
+                          <tr>
+                            <th>Sr.No.</th>
+                            <th>User </th>
+                            <th>Country</th>
+                            <th>Email</th>
+                            <th>Mobile Number</th>
+                            <th>Town</th>
+                            <th>Warehouse Name</th>
+                            <th>Warehouse Number</th>
+                            <th>Action</th>
                           </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                  <div className="text-center d-flex justify-content-end align-items-center">
-                    <button
-                      disabled={currentPage === 1}
-                      className="bg_page"
-                      onClick={() => handlePageChange(currentPage - 1)}
-                    >
-                      <i class="fi fi-rr-angle-small-left page_icon"></i>
-                    </button>
-                    <span className="mx-2">{`Page ${currentPage} of ${totalPage}`}</span>
-                    <button
-                      disabled={currentPage === totalPage}
-                      className="bg_page"
-                      onClick={() => handlePageChange(currentPage + 1)}
-                    >
-                      <i class="fi fi-rr-angle-small-right page_icon"></i>
-                    </button>
-                  </div>
-                  <Modal
-                    open={isModalOpen}
-                    onClose={closeModal}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                  >
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        height: 300,
-                        width: 450,
-                        bgcolor: "background.paper",
-                        boxShadow: 24,
-                        p: 4,
-                      }}
-                    >
-                      <h5 id="modal-modal-title">Add Excel</h5>
-                      <input
-                        type="file"
-                        accept=".xlsx,.xls"
-                        onChange={handleFileChange}
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                        style={{ display: "block", marginTop: "16px" }}
-                      />
-                      <Button variant="contained" onClick={postData}>
-                        Submit
-                      </Button>
-                    </Box>
-                  </Modal>
-                  <Modal
-                    open={isModalOpen2}
-                    onClose={closeModal2}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                  >
-                    <Box
-                      className="warehouse_modal"
-                      sx={{
-                        position: "absolute",
-                        overflow: "scroll",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        bgcolor: "background.paper",
-                        boxShadow: 24,
-                      }}
-                    >
-                      <div className="modal-header">
-                        <h2 id="modal-modal-title">Edit Warehouse</h2>
-                        <button className="btn btn-close" onClick={closeModal2}>
-                          <CloseIcon />
+                        </thead>
+                        <tbody>
+                          {currentdata &&
+                            currentdata.length > 0 &&
+                            currentdata.map((item, index) => (
+                              <tr key={item.id}>
+                                <td>{startIndex + index + 1}</td>
+                                <td>{item.contact_person}</td>
+                                <td>{item.country_name}</td>
+                                <td>{item.email}</td>
+                                <td>{item.mobile_number}</td>
+                                <td>{item.town}</td>
+                                <td>{item.warehouse_name}</td>
+                                <td>{item.warehouse_number}</td>
+                                <td style={{ display: "flex", alignItems: "center" }}>
+                                  <FaEdit
+                                    onClick={() => {
+                                      openModal2(item.warehouse_id);
+                                    }}
+                                    style={{
+                                      color: "rgb(27 34 69)",
+                                      marginRight: "10px",
+
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                  <AiFillDelete
+                                    onClick={() => {
+                                      deletewarehouse(item.warehouse_id);
+                                    }}
+                                    style={{
+
+                                      cursor: "pointer",
+                                    }}
+                                    className="text-danger"
+                                  />
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                      <div className="text-center d-flex justify-content-end align-items-center">
+                        <button
+                          disabled={currentPage === 1}
+                          className="bg_page"
+                          onClick={() => handlePageChange(currentPage - 1)}
+                        >
+                          <i class="fi fi-rr-angle-small-left page_icon"></i>
+                        </button>
+                        <span className="mx-2">{`Page ${currentPage} of ${totalPage}`}</span>
+                        <button
+                          disabled={currentPage === totalPage}
+                          className="bg_page"
+                          onClick={() => handlePageChange(currentPage + 1)}
+                        >
+                          <i class="fi fi-rr-angle-small-right page_icon"></i>
                         </button>
                       </div>
-                      <div className="newModalGap noFormaControl">
-                        <div className="row">
-                          <div className="col-6">
-                            <label className="ware_label">Warehouse For</label>
-                            <select
-                              name="Warehouse_For"
-                              value={inputdata.Warehouse_For}
-                              onChange={handleFileChange1}
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                            >
-                              <option value="Own">
-                                Asia Direct warehouse
-                              </option>
-                              <option value="Supplier">Supplier</option>
-                            </select>
+                      <Modal
+                        open={isModalOpen}
+                        onClose={closeModal}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                      >
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            height: 300,
+                            width: 450,
+                            bgcolor: "background.paper",
+                            boxShadow: 24,
+                            p: 4,
+                          }}
+                        >
+                          <h5 id="modal-modal-title">Add Excel</h5>
+                          <input
+                            type="file"
+                            accept=".xlsx,.xls"
+                            onChange={handleFileChange}
+                            className="mb-3 border ps-2 py-2 rounded w-100"
+                            style={{ display: "block", marginTop: "16px" }}
+                          />
+                          <button className="blueBtn" variant="contained" onClick={postData}>
+                            Submit
+                          </button>
+                        </Box>
+                      </Modal>
+                      <Modal
+                        open={isModalOpen2}
+                        onClose={closeModal2}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                      >
+                        <Box
+                          className="warehouse_modal"
+                          sx={{
+                            position: "absolute",
+                            overflow: "scroll",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            bgcolor: "background.paper",
+                            boxShadow: 24,
+                          }}
+                        >
+                          <div className="modal-header">
+                            <h2 id="modal-modal-title">Edit Warehouse</h2>
+                            <button className="btn btn-close" onClick={closeModal2}>
+                              <CloseIcon />
+                            </button>
                           </div>
+                          <div className="newModalGap noFormaControl">
+                            <div className="row">
+                              <div className="col-6">
+                                <label className="ware_label">Warehouse For</label>
+                                <select
+                                  name="Warehouse_For"
+                                  value={inputdata.Warehouse_For}
+                                  onChange={handleFileChange1}
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                >
+                                  <option value="Own">
+                                    Asia Direct warehouse
+                                  </option>
+                                  <option value="Supplier">Supplier</option>
+                                </select>
+                              </div>
 
-                          {inputdata.Warehouse_For === "Supplier" && (
-                            <div className="col-6">
-                              <label className="ware_label">
-                                Select Supplier
-                              </label>
-                              {/* <select
+                              {inputdata.Warehouse_For === "Supplier" && (
+                                <div className="col-6">
+                                  <label className="ware_label">
+                                    Select Supplier
+                                  </label>
+                                  {/* <select
                                 name="supplier_name"
                                 value={inputdata.supplier_name}
                                 onChange={handleFileChange1}
@@ -531,194 +531,194 @@ export default function Warehouse() {
                                   </option>
                                 ))}
                               </select> */}
-                              <select
-                                name="supplier_name"
-                                value={inputdata.supplier_name}
-                                onChange={handleFileChange1}
-                              >
-                                <option value="">Select</option>
-                                {supplierData.map((item) => (
-                                  <option key={item.id} value={item.id}>
-                                    {item.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                          )}
-                        </div>
-                        <div className="row">
-                          <div className="col-6">
-                            <label className="ware_label">Warehouse Name</label>
-                            <input
-                              type="text"
-                              placeholder="Warehouse Name"
-                              value={inputdata.warehouse_name}
-                              onChange={handleFileChange1}
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                              name="warehouse_name"
-                            />
-                          </div>
-                          <div className="col-6">
-                            <label className="ware_label">
-                              Warehouse Address
-                            </label>
-                            <input
-                              type="text"
-                              name="warehouse_address"
-                              value={inputdata.warehouse_address}
-                              placeholder="Warehouse Address"
-                              onChange={handleFileChange1}
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                            />
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-6">
-                            <label className="ware_label">Country</label>
-                            <select
-                              name="country"
-                              onChange={handleFileChange1}
-                              value={inputdata.country}
-                              className="py-2 w-100 "
-                            >
-                              <option>Select Country....</option>
-                              {countries &&
-                                countries.length > 0 &&
-                                countries.map((item, index) => {
-                                  console.log(item);
-                                  return (
-                                    <>
-                                      <option key={index} value={item.id}>
+                                  <select
+                                    name="supplier_name"
+                                    value={inputdata.supplier_name}
+                                    onChange={handleFileChange1}
+                                  >
+                                    <option value="">Select</option>
+                                    {supplierData.map((item) => (
+                                      <option key={item.id} value={item.id}>
                                         {item.name}
                                       </option>
-                                    </>
-                                  );
-                                })}
-                            </select>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
+                            </div>
+                            <div className="row">
+                              <div className="col-6">
+                                <label className="ware_label">Warehouse Name</label>
+                                <input
+                                  type="text"
+                                  placeholder="Warehouse Name"
+                                  value={inputdata.warehouse_name}
+                                  onChange={handleFileChange1}
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                  name="warehouse_name"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label className="ware_label">
+                                  Warehouse Address
+                                </label>
+                                <input
+                                  type="text"
+                                  name="warehouse_address"
+                                  value={inputdata.warehouse_address}
+                                  placeholder="Warehouse Address"
+                                  onChange={handleFileChange1}
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                />
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col-6">
+                                <label className="ware_label">Country</label>
+                                <select
+                                  name="country"
+                                  onChange={handleFileChange1}
+                                  value={inputdata.country}
+                                  className="py-2 w-100 "
+                                >
+                                  <option>Select Country....</option>
+                                  {countries &&
+                                    countries.length > 0 &&
+                                    countries.map((item, index) => {
+                                      console.log(item);
+                                      return (
+                                        <>
+                                          <option key={index} value={item.id}>
+                                            {item.name}
+                                          </option>
+                                        </>
+                                      );
+                                    })}
+                                </select>
+                              </div>
+                              <div className="col-6">
+                                <label className="ware_label">Town</label>
+                                <input
+                                  type="text"
+                                  onChange={handleFileChange1}
+                                  value={inputdata.town}
+                                  name="town"
+                                  placeholder="Town"
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                />
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col-6">
+                                <label className="ware_label">Mobile Number</label>
+                                <input
+                                  type="text"
+                                  onChange={handleFileChange1}
+                                  name="mobile_number"
+                                  placeholder="Mobile Number"
+                                  value={inputdata.mobile_number}
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label className="ware_label">Contact Person</label>
+                                <input
+                                  type="text"
+                                  onChange={handleFileChange1}
+                                  placeholder="Contact Person"
+                                  value={inputdata.contact_person}
+                                  name="contact_person"
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                />
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col-6">
+                                <label className="ware_label">Email Address</label>
+                                <input
+                                  type="text"
+                                  onChange={handleFileChange1}
+                                  value={inputdata.email}
+                                  name="email"
+                                  placeholder="Email Address"
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label className="ware_label">Company Name</label>
+                                <input
+                                  type="text"
+                                  onChange={handleFileChange1}
+                                  value={inputdata.company_name}
+                                  name="company_name"
+                                  placeholder="company_name Address"
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                />
+                              </div>
+                            </div>
+                            <div className="text-center mt-2 unsetLt">
+                              <button variant="contained" className="blueBtn" onClick={apiupdatepost}>
+                                Update Warehouse
+                              </button>
+                            </div>
                           </div>
-                          <div className="col-6">
-                            <label className="ware_label">Town</label>
-                            <input
-                              type="text"
-                              onChange={handleFileChange1}
-                              value={inputdata.town}
-                              name="town"
-                              placeholder="Town"
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                            />
+                        </Box>
+                      </Modal>
+                      <Modal
+                        open={isModalOpen1}
+                        onClose={closeModal1}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                      >
+                        <Box
+                          className="warehouse_modal"
+                          sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            bgcolor: "background.paper",
+                            boxShadow: 24,
+                          }}
+                        >
+                          {validationErrors.warehouse_number && (
+                            <p className="mb-0" style={{ color: "red" }}>
+                              {validationErrors.warehouse_number}
+                            </p>
+                          )}
+                          <div className="modal-header">
+                            <h2 id="modal-modal-title">Add Warehouse</h2>
+                            <button className="btn btn-close" onClick={closeModal1}>
+                              <CloseIcon />
+                            </button>
                           </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-6">
-                            <label className="ware_label">Mobile Number</label>
-                            <input
-                              type="text"
-                              onChange={handleFileChange1}
-                              name="mobile_number"
-                              placeholder="Mobile Number"
-                              value={inputdata.mobile_number}
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                            />
-                          </div>
-                          <div className="col-6">
-                            <label className="ware_label">Contact Person</label>
-                            <input
-                              type="text"
-                              onChange={handleFileChange1}
-                              placeholder="Contact Person"
-                              value={inputdata.contact_person}
-                              name="contact_person"
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                            />
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-6">
-                            <label className="ware_label">Email Address</label>
-                            <input
-                              type="text"
-                              onChange={handleFileChange1}
-                              value={inputdata.email}
-                              name="email"
-                              placeholder="Email Address"
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                            />
-                          </div>
-                          <div className="col-6">
-                            <label className="ware_label">Company Name</label>
-                            <input
-                              type="text"
-                              onChange={handleFileChange1}
-                              value={inputdata.company_name}
-                              name="company_name"
-                              placeholder="company_name Address"
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                            />
-                          </div>
-                        </div>
-                        <div className="text-center mt-2 unsetLt">
-                          <button variant="contained" className="blueBtn" onClick={apiupdatepost}>
-                            Update Warehouse
-                          </button>
-                        </div>
-                      </div>
-                    </Box>
-                  </Modal>
-                  <Modal
-                    open={isModalOpen1}
-                    onClose={closeModal1}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                  >
-                    <Box
-                      className="warehouse_modal"
-                      sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        bgcolor: "background.paper",
-                        boxShadow: 24,
-                      }}
-                    >
-                      {validationErrors.warehouse_number && (
-                        <p className="mb-0" style={{ color: "red" }}>
-                          {validationErrors.warehouse_number}
-                        </p>
-                      )}
-                      <div className="modal-header">
-                        <h2 id="modal-modal-title">Add Warehouse</h2>
-                        <button className="btn btn-close" onClick={closeModal1}>
-                          <CloseIcon />
-                        </button>
-                      </div>
-                      <div className="newModalGap noFormaControl">
-                        <div className="row">
-                          <div className="col-6">
-                            <label className="ware_label">Warehouse For</label>
-                            <select
-                              type="text"
-                              placeholder="Warehouse Name"
-                              onChange={handleFileChange1}
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                              name="Warehouse_For"
-                            >
-                              <option>select</option>
-                              <option value="Own">Asia Direct Warehouse </option>
-                              <option value="Supplier">Supplier </option>
-                            </select>
-                            {validationErrors.Warehouse_For && (
-                              <p className="mb-0" style={{ color: "red" }}>
-                                {validationErrors.Warehouse_For}
-                              </p>
-                            )}
-                          </div>
-                          {inputdata.Warehouse_For === "Supplier" ? (
-                            <div className="col-6">
-                              <label className="ware_label">
-                                Select Supplier
-                              </label>
-                              {/* <select
+                          <div className="newModalGap noFormaControl">
+                            <div className="row">
+                              <div className="col-6">
+                                <label className="ware_label">Warehouse For</label>
+                                <select
+                                  type="text"
+                                  placeholder="Warehouse Name"
+                                  onChange={handleFileChange1}
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                  name="Warehouse_For"
+                                >
+                                  <option>select</option>
+                                  <option value="Own">Asia Direct Warehouse </option>
+                                  <option value="Supplier">Supplier </option>
+                                </select>
+                                {validationErrors.Warehouse_For && (
+                                  <p className="mb-0" style={{ color: "red" }}>
+                                    {validationErrors.Warehouse_For}
+                                  </p>
+                                )}
+                              </div>
+                              {inputdata.Warehouse_For === "Supplier" ? (
+                                <div className="col-6">
+                                  <label className="ware_label">
+                                    Select Supplier
+                                  </label>
+                                  {/* <select
                                 type="text"
                                 onChange={handleFileChange1}
                                 className="mb-3 border ps-2 py-2 rounded w-100"
@@ -733,185 +733,185 @@ export default function Warehouse() {
                                   );
                                 })}
                               </select> */}
-                              <select
-                                name="supplier_name"
-                                onChange={handleFileChange1}
-                                className="mb-3 border ps-2 py-2 rounded w-100"
-                              >
-                                <option value="">Select</option>
-                                {supplierData.map((item) => (
-                                  <option key={item.id} value={item.id}>
-                                    {item.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                          ) : (
-                            ""
-                          )}
-                          <div className="row">
-                            <div className="col-6">
-                              <label className="ware_label">
-                                Warehouse Address
-                              </label>
-                              <input
-                                type="text"
-                                name="warehouse_address"
-                                placeholder="Warehouse Address"
-                                onChange={handleFileChange1}
-                                className="mb-3 border ps-2 py-2 rounded w-100"
-                              />
-                              {validationErrors.warehouse_address && (
-                                <p className="mb-0" style={{ color: "red" }}>
-                                  {validationErrors.warehouse_address}
-                                </p>
-                              )}
-                            </div>
-                            <div className="col-6">
-                              <label className="ware_label">
-                                Warehouse Name
-                              </label>
-                              <input
-                                type="text"
-                                placeholder="Warehouse Name"
-                                onChange={handleFileChange1}
-                                className="mb-3 border ps-2 py-2 rounded w-100"
-                                name="warehouse_name"
-                              />
-                              {validationErrors.warehouse_name && (
-                                <p className="mb-0" style={{ color: "red" }}>
-                                  {validationErrors.warehouse_name}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-6">
-                            <label className="ware_label">Country</label>
-                            <select
-                              name="country"
-                              onChange={handleFileChange1}
-                              className="py-2 w-100 "
-                            >
-                              <option>Select Country....</option>
-                              {countries &&
-                                countries.length > 0 &&
-                                countries.map((item, index) => {
-                                  console.log(item);
-                                  return (
-                                    <>
-                                      <option key={index} value={item.id}>
+                                  <select
+                                    name="supplier_name"
+                                    onChange={handleFileChange1}
+                                    className="mb-3 border ps-2 py-2 rounded w-100"
+                                  >
+                                    <option value="">Select</option>
+                                    {supplierData.map((item) => (
+                                      <option key={item.id} value={item.id}>
                                         {item.name}
                                       </option>
-                                    </>
-                                  );
-                                })}
-                            </select>
-                            {validationErrors.country && (
-                              <p className="mb-0" style={{ color: "red" }}>
-                                {validationErrors.country}
-                              </p>
-                            )}
+                                    ))}
+                                  </select>
+                                </div>
+                              ) : (
+                                ""
+                              )}
+                              <div className="row">
+                                <div className="col-6">
+                                  <label className="ware_label">
+                                    Warehouse Address
+                                  </label>
+                                  <input
+                                    type="text"
+                                    name="warehouse_address"
+                                    placeholder="Warehouse Address"
+                                    onChange={handleFileChange1}
+                                    className="mb-3 border ps-2 py-2 rounded w-100"
+                                  />
+                                  {validationErrors.warehouse_address && (
+                                    <p className="mb-0" style={{ color: "red" }}>
+                                      {validationErrors.warehouse_address}
+                                    </p>
+                                  )}
+                                </div>
+                                <div className="col-6">
+                                  <label className="ware_label">
+                                    Warehouse Name
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="Warehouse Name"
+                                    onChange={handleFileChange1}
+                                    className="mb-3 border ps-2 py-2 rounded w-100"
+                                    name="warehouse_name"
+                                  />
+                                  {validationErrors.warehouse_name && (
+                                    <p className="mb-0" style={{ color: "red" }}>
+                                      {validationErrors.warehouse_name}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col-6">
+                                <label className="ware_label">Country</label>
+                                <select
+                                  name="country"
+                                  onChange={handleFileChange1}
+                                  className="py-2 w-100 "
+                                >
+                                  <option>Select Country....</option>
+                                  {countries &&
+                                    countries.length > 0 &&
+                                    countries.map((item, index) => {
+                                      console.log(item);
+                                      return (
+                                        <>
+                                          <option key={index} value={item.id}>
+                                            {item.name}
+                                          </option>
+                                        </>
+                                      );
+                                    })}
+                                </select>
+                                {validationErrors.country && (
+                                  <p className="mb-0" style={{ color: "red" }}>
+                                    {validationErrors.country}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="col-6">
+                                <label className="ware_label">Town</label>
+                                <input
+                                  type="text"
+                                  onChange={handleFileChange1}
+                                  name="town"
+                                  placeholder="Town"
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                />
+                                {validationErrors.town && (
+                                  <p className="mb-0" style={{ color: "red" }}>
+                                    {validationErrors.town}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col-6">
+                                <label className="ware_label">Mobile Number</label>
+                                <input
+                                  type="text"
+                                  onChange={handleFileChange1}
+                                  name="mobile_number"
+                                  placeholder="Mobile Number"
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                />
+                                {validationErrors.mobile_number && (
+                                  <p className="mb-0" style={{ color: "red" }}>
+                                    {validationErrors.mobile_number}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="col-6">
+                                <label className="ware_label">Contact person</label>
+                                <input
+                                  type="text"
+                                  onChange={handleFileChange1}
+                                  placeholder="Contact Person"
+                                  name="contact_person"
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                />
+                                {validationErrors.contact_person && (
+                                  <p className="mb-0" style={{ color: "red" }}>
+                                    {validationErrors.contact_person}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col-6">
+                                <label className="ware_label">Email address</label>
+                                <input
+                                  type="email"
+                                  onChange={handleFileChange1}
+                                  name="email"
+                                  placeholder="Email Address"
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                />
+                                {validationErrors.email && (
+                                  <p className="mb-0" style={{ color: "red" }}>
+                                    {validationErrors.email}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="col-6">
+                                <label className="ware_label">Company Name</label>
+                                <input
+                                  type="text"
+                                  onChange={handleFileChange1}
+                                  name="company_name"
+                                  placeholder="company_name"
+                                  className="mb-3 border ps-2 py-2 rounded w-100"
+                                />
+                                {validationErrors.company_name && (
+                                  <p className="mb-0" style={{ color: "red" }}>
+                                    {validationErrors.company_name}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-center mt-2 unsetLt">
+                              <button
+                                variant="contained"
+                                className="blueBtn"
+                                onClick={postData1}
+                              >
+                                Submit
+                              </button>
+                            </div>
                           </div>
-                          <div className="col-6">
-                            <label className="ware_label">Town</label>
-                            <input
-                              type="text"
-                              onChange={handleFileChange1}
-                              name="town"
-                              placeholder="Town"
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                            />
-                            {validationErrors.town && (
-                              <p className="mb-0" style={{ color: "red" }}>
-                                {validationErrors.town}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-6">
-                            <label className="ware_label">Mobile Number</label>
-                            <input
-                              type="text"
-                              onChange={handleFileChange1}
-                              name="mobile_number"
-                              placeholder="Mobile Number"
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                            />
-                            {validationErrors.mobile_number && (
-                              <p className="mb-0" style={{ color: "red" }}>
-                                {validationErrors.mobile_number}
-                              </p>
-                            )}
-                          </div>
-                          <div className="col-6">
-                            <label className="ware_label">Contact person</label>
-                            <input
-                              type="text"
-                              onChange={handleFileChange1}
-                              placeholder="Contact Person"
-                              name="contact_person"
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                            />
-                            {validationErrors.contact_person && (
-                              <p className="mb-0" style={{ color: "red" }}>
-                                {validationErrors.contact_person}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-6">
-                            <label className="ware_label">Email address</label>
-                            <input
-                              type="email"
-                              onChange={handleFileChange1}
-                              name="email"
-                              placeholder="Email Address"
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                            />
-                            {validationErrors.email && (
-                              <p className="mb-0" style={{ color: "red" }}>
-                                {validationErrors.email}
-                              </p>
-                            )}
-                          </div>
-                          <div className="col-6">
-                            <label className="ware_label">Company Name</label>
-                            <input
-                              type="text"
-                              onChange={handleFileChange1}
-                              name="company_name"
-                              placeholder="company_name"
-                              className="mb-3 border ps-2 py-2 rounded w-100"
-                            />
-                            {validationErrors.company_name && (
-                              <p className="mb-0" style={{ color: "red" }}>
-                                {validationErrors.company_name}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="text-center mt-2 unsetLt">
-                          <button
-                            variant="contained"
-                            className="blueBtn"
-                            onClick={postData1}
-                          >
-                            Submit
-                          </button>
-                        </div>
-                      </div>
-                    </Box>
-                  </Modal>
-                  <ToastContainer />
+                        </Box>
+                      </Modal>
+                      <ToastContainer />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
           )}
         </>
       )}
