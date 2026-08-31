@@ -146,6 +146,17 @@ const SalesBySalesRepReport = () => {
         return isNegative ? `${currencySymbol}-${absVal}` : `${currencySymbol}${absVal}`;
     };
 
+    const getCurrencySymbol = (currency) => {
+        if (!currency) return "R";
+        const val = currency.toString().trim().toLowerCase();
+        if (val === "usd") return "$";
+        if (val === "rand" || val === "zar" || val === "r") return "R";
+        if (val === "kwacha" || val === "mwk" || val === "k") return "K";
+        if (val === "euro" || val === "eur") return "€";
+        if (val === "inr") return "₹";
+        return currency;
+    };
+
     const formatDateString = (dateVal) => {
         if (!dateVal) return "-";
         const date = new Date(dateVal);
@@ -361,13 +372,13 @@ const SalesBySalesRepReport = () => {
                                                                                 {parseFloat(inv.qty || 0).toFixed(4)}
                                                                             </td>
                                                                             <td className="text-end">
-                                                                                {formatCurrency(inv.total_cost, "R")}
+                                                                                {formatCurrency(inv.total_cost, getCurrencySymbol(inv.final_base_currency))}
                                                                             </td>
                                                                             <td className="text-end">
-                                                                                {formatCurrency(inv.total_selling, "R")}
+                                                                                {formatCurrency(inv.total_selling, getCurrencySymbol(inv.final_base_currency))}
                                                                             </td>
                                                                             <td className="text-end">
-                                                                                {formatCurrency(inv.gp_amount, "R")}
+                                                                                {formatCurrency(inv.gp_amount, getCurrencySymbol(inv.final_base_currency))}
                                                                             </td>
                                                                             <td className="text-end">
                                                                                 {parseFloat(inv.gp_percent || 0).toFixed(2)}%
@@ -385,9 +396,9 @@ const SalesBySalesRepReport = () => {
                                                                 <tr className="customer-total-row">
                                                                     <td colSpan="3" className="text-start ps-3">Total for Sales Rep:  {repGroup.sales_rep}</td>
                                                                     <td className="text-end">{(parseFloat(repGroup.total_qty) || 0).toFixed(4)}</td>
-                                                                    <td className="text-end">{formatCurrency(repGroup.total_cost, "R")}</td>
-                                                                    <td className="text-end">{formatCurrency(repGroup.total_selling, "R")}</td>
-                                                                    <td className="text-end">{formatCurrency(repGroup.gp_amount, "R")}</td>
+                                                                    <td className="text-end">{formatCurrency(repGroup.total_cost, getCurrencySymbol(repGroup.final_base_currency || repGroup.invoices?.[0]?.final_base_currency))}</td>
+                                                                    <td className="text-end">{formatCurrency(repGroup.total_selling, getCurrencySymbol(repGroup.final_base_currency || repGroup.invoices?.[0]?.final_base_currency))}</td>
+                                                                    <td className="text-end">{formatCurrency(repGroup.gp_amount, getCurrencySymbol(repGroup.final_base_currency || repGroup.invoices?.[0]?.final_base_currency))}</td>
                                                                     <td className="text-end">{parseFloat(repGroup.gp_percent || 0).toFixed(2)}%</td>
                                                                 </tr>
                                                                 {/* Spacer Row between reps */}
@@ -410,9 +421,9 @@ const SalesBySalesRepReport = () => {
                                                     <tr className="grand-total-row">
                                                         <td colSpan="3" className="text-start ps-3">Grand Total:</td>
                                                         <td className="text-end">{(parseFloat(grandTotal.qty) || 0).toFixed(4)}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.total_cost, "R")}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.total_selling, "R")}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.gp_amount, "R")}</td>
+                                                        <td className="text-end">{formatCurrency(grandTotal.total_cost, getCurrencySymbol(grandTotal.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.invoices?.[0]?.final_base_currency))}</td>
+                                                        <td className="text-end">{formatCurrency(grandTotal.total_selling, getCurrencySymbol(grandTotal.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.invoices?.[0]?.final_base_currency))}</td>
+                                                        <td className="text-end">{formatCurrency(grandTotal.gp_amount, getCurrencySymbol(grandTotal.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.invoices?.[0]?.final_base_currency))}</td>
                                                         <td className="text-end">{parseFloat(grandTotal.gp_percent || 0).toFixed(2)}%</td>
                                                     </tr>
                                                 </tfoot>
@@ -437,9 +448,9 @@ const SalesBySalesRepReport = () => {
                                                             <tr key={repIndex} className="invoice-item-row">
                                                                 <td className="text-start py-2">{repGroup.sales_rep || "Unknown Sales Rep"}</td>
                                                                 <td className="text-end py-2">{(parseFloat(repGroup.total_qty) || 0).toFixed(4)}</td>
-                                                                <td className="text-end py-2">{formatCurrency(repGroup.total_cost, "R")}</td>
-                                                                <td className="text-end py-2">{formatCurrency(repGroup.total_selling, "R")}</td>
-                                                                <td className="text-end py-2">{formatCurrency(repGroup.gp_amount, "R")}</td>
+                                                                <td className="text-end py-2">{formatCurrency(repGroup.total_cost, getCurrencySymbol(repGroup.final_base_currency || repGroup.invoices?.[0]?.final_base_currency))}</td>
+                                                                <td className="text-end py-2">{formatCurrency(repGroup.total_selling, getCurrencySymbol(repGroup.final_base_currency || repGroup.invoices?.[0]?.final_base_currency))}</td>
+                                                                <td className="text-end py-2">{formatCurrency(repGroup.gp_amount, getCurrencySymbol(repGroup.final_base_currency || repGroup.invoices?.[0]?.final_base_currency))}</td>
                                                                 <td className="text-end py-2">{parseFloat(repGroup.gp_percent || 0).toFixed(2)}%</td>
                                                             </tr>
                                                         );
@@ -457,9 +468,9 @@ const SalesBySalesRepReport = () => {
                                                     <tr className="grand-total-row">
                                                         <td className="text-start py-2">Grand Total:</td>
                                                         <td className="text-end">{(parseFloat(grandTotal.qty) || 0).toFixed(4)}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.total_cost, "R")}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.total_selling, "R")}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.gp_amount, "R")}</td>
+                                                        <td className="text-end">{formatCurrency(grandTotal.total_cost, getCurrencySymbol(grandTotal.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.invoices?.[0]?.final_base_currency))}</td>
+                                                        <td className="text-end">{formatCurrency(grandTotal.total_selling, getCurrencySymbol(grandTotal.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.invoices?.[0]?.final_base_currency))}</td>
+                                                        <td className="text-end">{formatCurrency(grandTotal.gp_amount, getCurrencySymbol(grandTotal.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.invoices?.[0]?.final_base_currency))}</td>
                                                         <td className="text-end">{parseFloat(grandTotal.gp_percent || 0).toFixed(2)}%</td>
                                                     </tr>
                                                 </tfoot>

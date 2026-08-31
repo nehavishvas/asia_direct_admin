@@ -561,132 +561,132 @@ export default function Batches() {
         </div>
       ) : (
         <div className="wpWrapper">
-        <div className="container-fluid">
-          <div className="row">
-            <div className=" manageFreight">
-              <div className="col-12">
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <h4 className="freight_hd">Batches</h4>
-                  </div>
-                  <div className="d-flex align-items-center justify-content-end">
-                    <div className="me-2 searchManageFre">
-                      <input
-                        class="py-1 rounded ps-1"
-                        type="text"
-                        placeholder="Search"
-                        id="outlined-basic"
-                        value={querry}
-                        onChange={handlechnage}
-                      />
-                    </div>
+          <div className="container-fluid">
+            <div className="row">
+              <div className=" manageFreight">
+                <div className="col-12">
+                  <div className="d-flex justify-content-between align-items-center">
                     <div>
-                      <Button
-                        variant="contained"
-                        className="btn_batch"
-                        onClick={openModal}
-                      >
-                        Add Batch
-                      </Button>
+                      <h4 className="freight_hd">Batches</h4>
+                    </div>
+                    <div className="d-flex align-items-center justify-content-end">
+                      <div className="me-2 searchManageFre">
+                        <input
+                          class="py-1 rounded ps-1"
+                          type="text"
+                          placeholder="Search"
+                          id="outlined-basic"
+                          value={querry}
+                          onChange={handlechnage}
+                        />
+                      </div>
+                      <div>
+                        <Button
+                          variant="contained"
+                          className="btn_batch"
+                          onClick={openModal}
+                        >
+                          Add Batch
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <ul className="nav nav-tabs mb-3">
-              <li className="nav-item" style={{ cursor: "pointer" }}>
-                <a
-                  className={`nav-link ${activeTab === 'shift' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                  onClick={() => {
-                    setActiveTab('shift');
-                    setCurrentPage(1);
-                  }}
-                >
-                  Shift
-                </a>
-              </li>
-              <li className="nav-item" style={{ cursor: "pointer" }}>
-                <a
-                  className={`nav-link ${activeTab === 'unshift' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                  onClick={() => {
-                    setActiveTab('unshift');
-                    setCurrentPage(1);
-                  }}
-                >
-                  Unshift
-                </a>
-              </li>
-            </ul>
-            <div className="table-responsive mt-4">
-              {loader ? (
-                <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
-                  <div className="loader"></div>
-                  <p className="loader-text">Updating... This may take some time</p>
-                </div>
-              ) : (
-                <TableContainer className="table table-striped tableICon">
-                  <Table className="batch_table">
-                    <TableHead>
-                      <TableRow className="border-bottom">
-                        <TableCell className="fw-bold">Batch No.</TableCell>
-                        <TableCell className="fw-bold">Freight</TableCell>
-                        <TableCell className="fw-bold">Dim.</TableCell>
-                        <TableCell className="fw-bold">Weight</TableCell>
-                        <TableCell className="fw-bold">Packages</TableCell>
-                        <TableCell className="fw-bold col-1">Origin</TableCell>
-                        <TableCell className="fw-bold">Destination</TableCell>
-                        <TableCell className="fw-bold">
-                          Forwarding Agent
-                        </TableCell>
-                        <TableCell className="fw-bold">Total Freight</TableCell>
-                        <TableCell className="fw-bold col-3">Status</TableCell>
-                        <TableCell className="fw-bold">Action</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {displayedData &&
-                        displayedData.length > 0 &&
-                        displayedData.map((item, index) => {
-                          const isDisabled =
-                            !!item.track_status &&
-                            item.track_status?.toLowerCase() !== "goods are in transit"; // 🔥 important
+              <ul className="nav nav-tabs mb-3">
+                <li className="nav-item" style={{ cursor: "pointer" }}>
+                  <a
+                    className={`nav-link ${activeTab === 'shift' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                    onClick={() => {
+                      setActiveTab('shift');
+                      setCurrentPage(1);
+                    }}
+                  >
+                    Shipped
+                  </a>
+                </li>
+                <li className="nav-item" style={{ cursor: "pointer" }}>
+                  <a
+                    className={`nav-link ${activeTab === 'unshift' ? 'active text-primary fw-bold' : 'text-secondary'}`}
+                    onClick={() => {
+                      setActiveTab('unshift');
+                      setCurrentPage(1);
+                    }}
+                  >
+                    Unshipped
+                  </a>
+                </li>
+              </ul>
+              <div className="table-responsive mt-4">
+                {loader ? (
+                  <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
+                    <div className="loader"></div>
+                    <p className="loader-text">Updating... This may take some time</p>
+                  </div>
+                ) : (
+                  <TableContainer className="table table-striped tableICon">
+                    <Table className="batch_table">
+                      <TableHead>
+                        <TableRow className="border-bottom">
+                          <TableCell className="fw-bold">Batch No.</TableCell>
+                          <TableCell className="fw-bold">Freight</TableCell>
+                          <TableCell className="fw-bold">Dim.</TableCell>
+                          <TableCell className="fw-bold">Weight</TableCell>
+                          <TableCell className="fw-bold">Packages</TableCell>
+                          <TableCell className="fw-bold col-1">Origin</TableCell>
+                          <TableCell className="fw-bold">Destination</TableCell>
+                          <TableCell className="fw-bold">
+                            Forwarding Agent
+                          </TableCell>
+                          <TableCell className="fw-bold">Total Freight</TableCell>
+                          <TableCell className="fw-bold col-3">Status</TableCell>
+                          <TableCell className="fw-bold">Action</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {displayedData &&
+                          displayedData.length > 0 &&
+                          displayedData.map((item, index) => {
+                            const isDisabled =
+                              !!item.track_status &&
+                              item.track_status?.toLowerCase() !== "goods are in transit"; // 🔥 important
 
-                          return (
-                            <TableRow
-                              key={index + 1}
-                              className="border-bottom"
-                              style={{
-                                backgroundColor: isDisabled ? "#f5f5f5" : "",
-                              }}
-                            >
-                              <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.batch_number}</TableCell>
-                              <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.freight}</TableCell>
-
-                              <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.total_freight_dimension}</TableCell>
-                              <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.total_freight_weight}</TableCell>
-                              <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.total_freight_packages}</TableCell>
-                              <TableCell style={{ color: isDisabled ? "#999" : "" }} className="col-1">
-                                {item?.origin_country_name}
-                              </TableCell>
-                              <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.des_country_name}</TableCell>
-                              <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.forwarding_agent}</TableCell>
-
-                              {/* 🔒 Disable row click */}
-                              <TableCell style={{
-                                cursor: isDisabled ? "not-allowed" : "pointer", color: isDisabled ? "#999" : ""
-                              }}
-                                onClick={() => {
-                                  if (!isDisabled) {
-                                    handleclickid(item.id);
-                                  }
+                            return (
+                              <TableRow
+                                key={index + 1}
+                                className="border-bottom"
+                                style={{
+                                  backgroundColor: isDisabled ? "#f5f5f5" : "",
                                 }}
                               >
-                                {item?.count_freight}
-                              </TableCell>
+                                <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.batch_number}</TableCell>
+                                <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.freight}</TableCell>
 
-                              <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item.track_status}</TableCell>
+                                <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.total_freight_dimension}</TableCell>
+                                <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.total_freight_weight}</TableCell>
+                                <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.total_freight_packages}</TableCell>
+                                <TableCell style={{ color: isDisabled ? "#999" : "" }} className="col-1">
+                                  {item?.origin_country_name}
+                                </TableCell>
+                                <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.des_country_name}</TableCell>
+                                <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item?.forwarding_agent}</TableCell>
 
-                              {/* <div className="dropdown">
+                                {/* 🔒 Disable row click */}
+                                <TableCell style={{
+                                  cursor: isDisabled ? "not-allowed" : "pointer", color: isDisabled ? "#999" : ""
+                                }}
+                                  onClick={() => {
+                                    if (!isDisabled) {
+                                      handleclickid(item.id);
+                                    }
+                                  }}
+                                >
+                                  {item?.count_freight}
+                                </TableCell>
+
+                                <TableCell style={{ color: isDisabled ? "#999" : "" }}>{item.track_status}</TableCell>
+
+                                {/* <div className="dropdown">
             <a
               href="#"
               type="button"
@@ -703,7 +703,7 @@ export default function Batches() {
                 <ul className="p-0 m-0">
 
                   {/* ✅ ALWAYS ALLOWED */}
-                              {/* <li
+                                {/* <li
                     className="page_list"
                     style={{ cursor: "pointer", fontSize: "15px" }}
                     onClick={() => handleclickid(item.id)}
@@ -720,7 +720,7 @@ export default function Batches() {
                   </li>
 
                   {/* ❌ DISABLED WHEN STATUS EXISTS */}
-                              {/* <li
+                                {/* <li
   className="page_list"
   style={{
     cursor: isDisabled ? "not-allowed" : "pointer",
@@ -781,99 +781,151 @@ export default function Batches() {
               </a>
             </div>
           </div> */}
-                              <div className="dropdown">
-                                <a
-                                  href="#"
-                                  type="button"
-                                  className="act_btn dropdown-toggle mb-3"
-                                  data-bs-toggle="dropdown"
-                                  aria-expanded="false"
-                                  onClick={(e) => e.preventDefault()}
-                                >
-                                  Action
-                                </a>
-
-                                <div className="dropdown-menu">
-                                  <a className="dropdown-item det_page">
-                                    <ul className="p-0 m-0">
-
-                                      {/* ✅ ALWAYS SHOW */}
-                                      <li
-                                        className="page_list"
-                                        style={{ cursor: "pointer", fontSize: "15px" }}
-                                        onClick={() => handleclickid(item.id)}
-                                      >
-                                        <RemoveRedEyeIcon /> View Details
-                                      </li>
-
-                                      <li
-                                        className="page_list"
-                                        style={{ cursor: "pointer", fontSize: "15px" }}
-                                        onClick={() => openModal2(item.id)}
-                                      >
-                                        <ContentCopyIcon /> Edit Batch
-                                      </li>
-
-                                      <li
-                                        className="page_list"
-                                        style={{ cursor: "pointer", fontSize: "15px" }}
-                                        onClick={() => track(item?.id)}
-                                      >
-                                        <RoomIcon /> Track Batch
-                                      </li>
-
-                                      <li
-                                        className="page_list"
-                                        style={{ cursor: "pointer", fontSize: "15px" }}
-                                        onClick={() => navigate("/Admin/batch-report", { state: { batchId: item.id } })}
-                                      >
-                                        <PrintIcon /> Batch Report
-                                      </li>
-
-                                      {/* ❌ SHOW ONLY WHEN NOT DISABLED */}
-                                      {!isDisabled && (
-                                        <>
-                                          <li
-                                            className="page_list"
-                                            style={{ cursor: "pointer", fontSize: "15px" }}
-                                            onClick={() => copy1(item?.id)}
-                                          >
-                                            <CopyAll /> Copy
-                                          </li>
-
-                                          <li
-                                            className="page_list"
-                                            style={{ cursor: "pointer", fontSize: "15px" }}
-                                            onClick={() => track123(item)}
-                                          >
-                                            <WarehouseIcon /> Assign Clearing
-                                          </li>
-
-                                          <li
-                                            className="page_list"
-                                            style={{ cursor: "pointer", fontSize: "15px" }}
-                                            onClick={() => handleclickdelete(item?.id)}
-                                          >
-                                            <DeleteIcon /> Delete Batch
-                                          </li>
-                                        </>
-                                      )}
-
-                                    </ul>
+                                <div className="dropdown">
+                                  <a
+                                    href="#"
+                                    type="button"
+                                    className="act_btn dropdown-toggle mb-3"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    onClick={(e) => e.preventDefault()}
+                                  >
+                                    Action
                                   </a>
+
+                                  <div className="dropdown-menu">
+                                    <a className="dropdown-item det_page">
+                                      <ul className="p-0 m-0">
+
+                                        {/* ✅ ALWAYS SHOW */}
+                                        <li
+                                          className="page_list"
+                                          style={{ cursor: "pointer", fontSize: "15px" }}
+                                          onClick={() => handleclickid(item.id)}
+                                        >
+                                          <RemoveRedEyeIcon /> View Details
+                                        </li>
+
+                                        <li
+                                          className="page_list"
+                                          style={{ cursor: "pointer", fontSize: "15px" }}
+                                          onClick={() => openModal2(item.id)}
+                                        >
+                                          <ContentCopyIcon /> Edit Batch
+                                        </li>
+
+                                        <li
+                                          className="page_list"
+                                          style={{ cursor: "pointer", fontSize: "15px" }}
+                                          onClick={() => track(item?.id)}
+                                        >
+                                          <RoomIcon /> Track Batch
+                                        </li>
+
+                                        <li
+                                          className="page_list"
+                                          style={{ cursor: "pointer", fontSize: "15px" }}
+                                          onClick={() => navigate("/Admin/batch-report", { state: { batchId: item.id } })}
+                                        >
+                                          <PrintIcon /> Batch Report
+                                        </li>
+
+                                        {/* ❌ SHOW ONLY WHEN NOT DISABLED */}
+                                        {!isDisabled && (
+                                          <>
+                                            <li
+                                              className="page_list"
+                                              style={{ cursor: "pointer", fontSize: "15px" }}
+                                              onClick={() => copy1(item?.id)}
+                                            >
+                                              <CopyAll /> Copy
+                                            </li>
+
+                                            <li
+                                              className="page_list"
+                                              style={{ cursor: "pointer", fontSize: "15px" }}
+                                              onClick={() => track123(item)}
+                                            >
+                                              <WarehouseIcon /> Assign Clearing
+                                            </li>
+
+                                            <li
+                                              className="page_list"
+                                              style={{ cursor: "pointer", fontSize: "15px" }}
+                                              onClick={() => handleclickdelete(item?.id)}
+                                            >
+                                              <DeleteIcon /> Delete Batch
+                                            </li>
+                                          </>
+                                        )}
+
+                                      </ul>
+                                    </a>
+                                  </div>
                                 </div>
-                              </div>
-                            </TableRow>
-                          );
-                        })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              )}
+                              </TableRow>
+                            );
+                          })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
+              </div>
+              <Modal
+                open={isModalOpen1}
+                onClose={closeModal1}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    height: 300,
+                    width: 450,
+                    bgcolor: "background.paper",
+                    boxShadow: 24,
+                    p: 4,
+                  }}
+                >
+                  <h2 id="modal-modal-title">Add Excel</h2>
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls"
+                    onChange={handleFileChange}
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                    style={{ display: "block" }}
+                  />
+                  <Button variant="contained" onClick={postData}>
+                    Submit
+                  </Button>
+                </Box>
+              </Modal>
+
+
+              <div className="text-center d-flex justify-content-end align-items-center mt-3">
+                <button
+                  disabled={currentPage === 1}
+                  className="bg_page"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                >
+                  <i class="fi fi-rr-angle-small-left page_icon"></i>
+                </button>
+                <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
+                <button
+                  disabled={currentPage === totalPages}
+                  className="bg_page"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                >
+                  <i class="fi fi-rr-angle-small-right page_icon"></i>
+                </button>
+              </div>
             </div>
             <Modal
-              open={isModalOpen1}
-              onClose={closeModal1}
+              open={isModalOpen2}
+              onClose={closeModal2}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
@@ -883,836 +935,784 @@ export default function Batches() {
                   top: "50%",
                   left: "50%",
                   transform: "translate(-50%, -50%)",
-                  height: 300,
-                  width: 450,
                   bgcolor: "background.paper",
                   boxShadow: 24,
-                  p: 4,
                 }}
               >
-                <h2 id="modal-modal-title">Add Excel</h2>
-                <input
-                  type="file"
-                  accept=".xlsx,.xls"
-                  onChange={handleFileChange}
-                  className="mb-3 border ps-2 py-2 rounded w-100"
-                  style={{ display: "block" }}
-                />
-                <Button variant="contained" onClick={postData}>
-                  Submit
-                </Button>
-              </Box>
-            </Modal>
-
-            
-            <div className="text-center d-flex justify-content-end align-items-center mt-3">
-              <button
-                disabled={currentPage === 1}
-                className="bg_page"
-                onClick={() => handlePageChange(currentPage - 1)}
-              >
-                <i class="fi fi-rr-angle-small-left page_icon"></i>
-              </button>
-              <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
-              <button
-                disabled={currentPage === totalPages}
-                className="bg_page"
-                onClick={() => handlePageChange(currentPage + 1)}
-              >
-                <i class="fi fi-rr-angle-small-right page_icon"></i>
-              </button>
-            </div>
-          </div>
-          <Modal
-            open={isModalOpen2}
-            onClose={closeModal2}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                bgcolor: "background.paper",
-                boxShadow: 24,
-              }}
-            >
-              <div className="modal-header">
-                <h2 id="modal-modal-title">Update Batch</h2>
-                <button className="btn btn-close" onClick={closeModal2}>
-                  <CloseIcon />
-                </button>
-              </div>
-              <div className="newModalGap">
-                <div className="row manageFreight">
-                  <div className="col-12">
-                    <div className="d-flex justify-content-center align-items-center">
-                      <div></div>
-                    </div>
-                  </div>
+                <div className="modal-header">
+                  <h2 id="modal-modal-title">Update Batch</h2>
+                  <button className="btn btn-close" onClick={closeModal2}>
+                    <CloseIcon />
+                  </button>
                 </div>
-                <div>
-                  <div className=" add_fre_cd">
-                    <div className="row">
-                      <div className="col-12 mt-3">
-                        <h4 className="freight_hd mt-0">Shipment details</h4>
-                        <span class="line"></span>
+                <div className="newModalGap">
+                  <div className="row manageFreight">
+                    <div className="col-12">
+                      <div className="d-flex justify-content-center align-items-center">
+                        <div></div>
                       </div>
                     </div>
-                    <div className="row">
-                      <div className="col-12">
-                        <div className="borderShip updateLoading">
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Date Created</label>
-                              <input
-                                type="date"
-                                className="form-control"
-                                value={formattedDate}
-                              // name="date_created"
-                              />
-                            </div>
-                            <div className="col-6">
-                              <label>Date of First Received</label>
-                              <input
-                                type="date"
-                                className="form-control"
-                                onChange={handleupdateapi}
-                                name="date_of_first_received"
-                                value={
-                                  inputdata?.date_of_first_received
-                                    ? new Date(
-                                      inputdata.date_of_first_received,
-                                    )
-                                      .toISOString()
-                                      .split("T")[0]
-                                    : ""
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-12">
-                              <label>Total Days in Storage</label>
-                              <input
-                                type="text"
-                                name="total_days_storage"
-                                onChange={handleupdateapi}
-                                value={inputdata.total_days_storage}
-                                placeholder="Num of Days"
-                                className="form-control"
-                              ></input>
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-6">
-                              <label>You are</label>
-                              <div className="shipRefer1">
+                  </div>
+                  <div>
+                    <div className=" add_fre_cd">
+                      <div className="row">
+                        <div className="col-12 mt-3">
+                          <h4 className="freight_hd mt-0">Shipment details</h4>
+                          <span class="line"></span>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-12">
+                          <div className="borderShip updateLoading">
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Date Created</label>
                                 <input
-                                  type="radio"
-                                  style={{ cursor: "pointer" }}
-                                  id="collectOne1"
-                                  name="is_exporImport"
-                                  value="Exporting"
-                                  checked={
-                                    inputdata.is_exporImport === "Exporting"
-                                  }
-                                  onChange={handleupdateapi}
+                                  type="date"
+                                  className="form-control"
+                                  value={formattedDate}
+                                // name="date_created"
                                 />
-                                <label htmlFor="collectOne1">Exporting</label>
-
+                              </div>
+                              <div className="col-6">
+                                <label>Date of First Received</label>
                                 <input
-                                  type="radio"
-                                  style={{ cursor: "pointer" }}
-                                  id="collectTwo1"
-                                  name="is_exporImport"
-                                  value="Importing"
-                                  checked={
-                                    inputdata.is_exporImport === "Importing"
-                                  }
+                                  type="date"
+                                  className="form-control"
                                   onChange={handleupdateapi}
+                                  name="date_of_first_received"
+                                  value={
+                                    inputdata?.date_of_first_received
+                                      ? new Date(
+                                        inputdata.date_of_first_received,
+                                      )
+                                        .toISOString()
+                                        .split("T")[0]
+                                      : ""
+                                  }
                                 />
-                                <label htmlFor="collectTwo1">Importing</label>
                               </div>
                             </div>
-                            <div className="col-6">
-                              <label>Freight Type</label>
-                              <select
-                                name="freight"
-                                value={inputdata.freight}
-                                onChange={handleupdateapi}
-                              >
-                                <option value="">Select</option>
-                                <option value="Sea">Sea</option>
-                                <option value="Air">Air</option>
-                                <option value="Road">Road</option>
-                              </select>
+                            <div className="row">
+                              <div className="col-12">
+                                <label>Total Days in Storage</label>
+                                <input
+                                  type="text"
+                                  name="total_days_storage"
+                                  onChange={handleupdateapi}
+                                  value={inputdata.total_days_storage}
+                                  placeholder="Num of Days"
+                                  className="form-control"
+                                ></input>
+                              </div>
                             </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Batch Reference</label>
-                              <input
-                                type="text"
-                                placeholder="Batch Reference"
-                                value={inputdata.batch_number}
-                                onChange={handleupdateapi}
-                                name="batch_number"
-                                className="form-control"
-                              />
+                            <div className="row">
+                              <div className="col-6">
+                                <label>You are</label>
+                                <div className="shipRefer1">
+                                  <input
+                                    type="radio"
+                                    style={{ cursor: "pointer" }}
+                                    id="collectOne1"
+                                    name="is_exporImport"
+                                    value="Exporting"
+                                    checked={
+                                      inputdata.is_exporImport === "Exporting"
+                                    }
+                                    onChange={handleupdateapi}
+                                  />
+                                  <label htmlFor="collectOne1">Exporting</label>
+
+                                  <input
+                                    type="radio"
+                                    style={{ cursor: "pointer" }}
+                                    id="collectTwo1"
+                                    name="is_exporImport"
+                                    value="Importing"
+                                    checked={
+                                      inputdata.is_exporImport === "Importing"
+                                    }
+                                    onChange={handleupdateapi}
+                                  />
+                                  <label htmlFor="collectTwo1">Importing</label>
+                                </div>
+                              </div>
+                              <div className="col-6">
+                                <label>Freight Type</label>
+                                <select
+                                  name="freight"
+                                  value={inputdata.freight}
+                                  onChange={handleupdateapi}
+                                >
+                                  <option value="">Select</option>
+                                  <option value="Sea">Sea</option>
+                                  <option value="Air">Air</option>
+                                  <option value="Road">Road</option>
+                                </select>
+                              </div>
                             </div>
-                            <div className="col-6">
-                              <label>Batch Name</label>
-                              <input
-                                type="text"
-                                className="w-100 rounded"
-                                name="batch_name"
-                                value={inputdata.batch_name}
-                                placeholder="Batch Name"
-                                onChange={handleupdateapi}
-                              />
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Batch Reference</label>
+                                <input
+                                  type="text"
+                                  placeholder="Batch Reference"
+                                  value={inputdata.batch_number}
+                                  onChange={handleupdateapi}
+                                  name="batch_number"
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label>Batch Name</label>
+                                <input
+                                  type="text"
+                                  className="w-100 rounded"
+                                  name="batch_name"
+                                  value={inputdata.batch_name}
+                                  placeholder="Batch Name"
+                                  onChange={handleupdateapi}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-12">
-                              <label>Freight Speed</label>
-                              <select
-                                name="freight_speed"
-                                value={inputdata.freight_speed}
-                                onChange={handleupdateapi}
-                              >
-                                <option value="">Select</option>
-                                <option value="Express">Express</option>
-                                <option value="Normal">Normal</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row mt-4">
-                      <div className="col-12 mt-3">
-                        <h4 className="freight_hd">Location Details</h4>
-                        <span class="line"></span>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-12">
-                        <div className="borderShip updateLoading noFormaControl">
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Collection from (Warehouse Name)</label>
-                              <select
-                                name="collection_warehouse"
-                                value={inputdata.collection_warehouse}
-                                onChange={handleupdateapi}
-                                placeholder="Collection From Warehouse"
-                              >
-                                <option>Select...</option>
-                                {apidata &&
-                                  apidata.length > 0 &&
-                                  apidata.map((item, index) => {
-                                    console.log(item);
-                                    return (
-                                      <>
-                                        <option key={index} value={item.id}>
-                                          {item.warehouse_name}
-                                        </option>
-                                      </>
-                                    );
-                                  })}
-                              </select>
-                            </div>
-                            <div className="col-6">
-                              <label> Delivery to (Warehouse Name)</label>
-                              <select
-                                name="delivery_warehouse"
-                                value={inputdata.delivery_warehouse}
-                                onChange={handleupdateapi}
-                                placeholder="Collection From Warehouse"
-                              >
-                                <option>Select...</option>
-                                {apidata &&
-                                  apidata.length > 0 &&
-                                  apidata.map((item, index) => {
-                                    console.log(item);
-                                    return (
-                                      <>
-                                        <option key={index} value={item.id}>
-                                          {item.warehouse_name}
-                                        </option>
-                                      </>
-                                    );
-                                  })}
-                              </select>
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Country of Origin</label>
-                              <select
-                                name="origin_country_id"
-                                onChange={handleupdateapi}
-                                value={inputdata.origin_country_id}
-                              >
-                                <option>Select</option>
-                                {countruies &&
-                                  countruies.length > 0 &&
-                                  countruies.map((item, index) => {
-                                    return (
-                                      <>
-                                        <option key={index} value={item.id}>
-                                          {item.name}
-                                        </option>
-                                      </>
-                                    );
-                                  })}
-                              </select>
-                            </div>
-                            <div className="col-6">
-                              <label> Destination Country</label>
-                              <select
-                                name="detination_country_id"
-                                onChange={handleupdateapi}
-                                value={inputdata.detination_country_id}
-                              >
-                                <option>Select</option>
-                                {countruies &&
-                                  countruies.length > 0 &&
-                                  countruies.map((item, index) => {
-                                    return (
-                                      <>
-                                        <option key={index} value={item.id}>
-                                          {item.name}
-                                        </option>
-                                      </>
-                                    );
-                                  })}
-                              </select>
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Port of Loading</label>
-                              <input
-                                type="text"
-                                onChange={handleupdateapi}
-                                value={inputdata.port_loading}
-                                name="port_loading"
-                                placeholder="Port of Loading"
-                                className="form-control"
-                              />
-                            </div>
-                            <div className="col-6">
-                              <label>Port of Discharge</label>
-                              <input
-                                type="text"
-                                onChange={handleupdateapi}
-                                value={inputdata.port_discharge}
-                                name="port_discharge"
-                                placeholder="Port of Discharge"
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Collection Address</label>
-                              <input
-                                type="text"
-                                onChange={handleupdateapi}
-                                name="collection_address"
-                                value={inputdata.collection_address}
-                                placeholder="Place of Delivery"
-                                className="form-control"
-                              />
-                            </div>
-                            <div className="col-6">
-                              <label>Delivery Address</label>
-                              <input
-                                name="delivery_address"
-                                value={inputdata.delivery_address}
-                                placeholder="Delivery Address"
-                                className="form-control"
-                                onChange={handleupdateapi}
-                              ></input>
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-6">
-                              <label className="ware_label">
-                                Origin Handler
-                              </label>
-                              <select
-                                className=" mb-3 py-2"
-                                name="origin_handler"
-                                value={inputdata.origin_handler}
-                                onChange={handleupdateapi}
-                              >
-                                <option>Select...</option>
-                                <option>DHL</option>
-                                <option>Fedex</option>
-                                <option>SACO CFR</option>
-                                <option>Contra Consolidations</option>
-                                <option>Afristar</option>
-                                <option>Asia Direct - Africa</option>
-                              </select>
-                            </div>
-                            <div className="col-6">
-                              <label className="ware_label">
-                                Destination Handler
-                              </label>
-                              <select
-                                className="mb-3 py-2"
-                                name="des_handler"
-                                onChange={handleupdateapi}
-                                value={inputdata.des_handler}
-                              >
-                                <option>Select...</option>
-                                <option>Shenzhen Nimbus Shipping</option>
-                                <option>Shenzhen Portline</option>
-                                <option>OBD Logistics</option>
-                              </select>
+                            <div className="row">
+                              <div className="col-12">
+                                <label>Freight Speed</label>
+                                <select
+                                  name="freight_speed"
+                                  value={inputdata.freight_speed}
+                                  onChange={handleupdateapi}
+                                >
+                                  <option value="">Select</option>
+                                  <option value="Express">Express</option>
+                                  <option value="Normal">Normal</option>
+                                </select>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="row mt-4">
-                      <div className="col-12 mt-3">
-                        <h4 className="freight_hd">Cost details</h4>
-                        <span class="line"></span>
+                      <div className="row mt-4">
+                        <div className="col-12 mt-3">
+                          <h4 className="freight_hd">Location Details</h4>
+                          <span class="line"></span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-12">
-                        <div className="borderShip ">
-                          <div className="row mb-3">
-                            <div className="col-6">
-                              <label className="mb-3 fs-bold fw-bold">
-                                Origin
-                              </label>
-                              <br />
-                              <label>Cost to Collect</label>
-                              <input
-                                type="text"
-                                onChange={handleupdateapi}
-                                name="costs_to_collect"
-                                value={inputdata.costs_to_collect}
-                                placeholder="Cost to Collect"
-                                className="form-control"
-                              />
+                      <div className="row">
+                        <div className="col-12">
+                          <div className="borderShip updateLoading noFormaControl">
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Collection from (Warehouse Name)</label>
+                                <select
+                                  name="collection_warehouse"
+                                  value={inputdata.collection_warehouse}
+                                  onChange={handleupdateapi}
+                                  placeholder="Collection From Warehouse"
+                                >
+                                  <option>Select...</option>
+                                  {apidata &&
+                                    apidata.length > 0 &&
+                                    apidata.map((item, index) => {
+                                      console.log(item);
+                                      return (
+                                        <>
+                                          <option key={index} value={item.id}>
+                                            {item.warehouse_name}
+                                          </option>
+                                        </>
+                                      );
+                                    })}
+                                </select>
+                              </div>
+                              <div className="col-6">
+                                <label> Delivery to (Warehouse Name)</label>
+                                <select
+                                  name="delivery_warehouse"
+                                  value={inputdata.delivery_warehouse}
+                                  onChange={handleupdateapi}
+                                  placeholder="Collection From Warehouse"
+                                >
+                                  <option>Select...</option>
+                                  {apidata &&
+                                    apidata.length > 0 &&
+                                    apidata.map((item, index) => {
+                                      console.log(item);
+                                      return (
+                                        <>
+                                          <option key={index} value={item.id}>
+                                            {item.warehouse_name}
+                                          </option>
+                                        </>
+                                      );
+                                    })}
+                                </select>
+                              </div>
                             </div>
-                            <div className="col-6">
-                              <label className="mb-3 fs-bold fw-bold">
-                                Destination
-                              </label>
-                              <br />
-                              <label>Cost to Collect</label>
-                              <input
-                                type="text"
-                                onChange={handleupdateapi}
-                                name="costs_to_collect_des"
-                                value={inputdata.costs_to_collect_des}
-                                placeholder="Cost to Collect"
-                                className="form-control"
-                              />
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Country of Origin</label>
+                                <select
+                                  name="origin_country_id"
+                                  onChange={handleupdateapi}
+                                  value={inputdata.origin_country_id}
+                                >
+                                  <option>Select</option>
+                                  {countruies &&
+                                    countruies.length > 0 &&
+                                    countruies.map((item, index) => {
+                                      return (
+                                        <>
+                                          <option key={index} value={item.id}>
+                                            {item.name}
+                                          </option>
+                                        </>
+                                      );
+                                    })}
+                                </select>
+                              </div>
+                              <div className="col-6">
+                                <label> Destination Country</label>
+                                <select
+                                  name="detination_country_id"
+                                  onChange={handleupdateapi}
+                                  value={inputdata.detination_country_id}
+                                >
+                                  <option>Select</option>
+                                  {countruies &&
+                                    countruies.length > 0 &&
+                                    countruies.map((item, index) => {
+                                      return (
+                                        <>
+                                          <option key={index} value={item.id}>
+                                            {item.name}
+                                          </option>
+                                        </>
+                                      );
+                                    })}
+                                </select>
+                              </div>
                             </div>
-                          </div>
-                          <div className="row mb-3">
-                            <div className="col-6">
-                              <label>Warehouse Cost</label>
-                              <input
-                                type="text"
-                                onChange={handleupdateapi}
-                                name="warehouse_cost"
-                                value={inputdata.warehouse_cost}
-                                placeholder="Warehouse Cost"
-                                className="form-control"
-                              />
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Port of Loading</label>
+                                <input
+                                  type="text"
+                                  onChange={handleupdateapi}
+                                  value={inputdata.port_loading}
+                                  name="port_loading"
+                                  placeholder="Port of Loading"
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label>Port of Discharge</label>
+                                <input
+                                  type="text"
+                                  onChange={handleupdateapi}
+                                  value={inputdata.port_discharge}
+                                  name="port_discharge"
+                                  placeholder="Port of Discharge"
+                                  className="form-control"
+                                />
+                              </div>
                             </div>
-                            <div className="col-6">
-                              <label>Warehouse Cost</label>
-                              <input
-                                type="text"
-                                onChange={handleupdateapi}
-                                name="warehouse_cost_des"
-                                value={inputdata.warehouse_cost_des}
-                                placeholder="Warehouse Cost"
-                                className="form-control"
-                              />
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Collection Address</label>
+                                <input
+                                  type="text"
+                                  onChange={handleupdateapi}
+                                  name="collection_address"
+                                  value={inputdata.collection_address}
+                                  placeholder="Place of Delivery"
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label>Delivery Address</label>
+                                <input
+                                  name="delivery_address"
+                                  value={inputdata.delivery_address}
+                                  placeholder="Delivery Address"
+                                  className="form-control"
+                                  onChange={handleupdateapi}
+                                ></input>
+                              </div>
                             </div>
-                          </div>
-                          <div className="row mb-3">
-                            <div className="col-6">
-                              <label>Documentation Costs</label>
-                              <input
-                                type="text"
-                                onChange={handleupdateapi}
-                                name="origin_doc_costs"
-                                value={inputdata.origin_doc_costs}
-                                placeholder="Documentation Costs"
-                                className="form-control"
-                              />
-                            </div>
-                            <div className="col-6">
-                              <label>Documentation Costs </label>
-                              <input
-                                type="text"
-                                onChange={handleupdateapi}
-                                name="des_doc_costs"
-                                value={inputdata.des_doc_costs}
-                                placeholder="Documentation Costs"
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="row mb-3">
-                            <div className="col-6">
-                              <label>On carriage Costs</label>
-                              <input
-                                type="text"
-                                onChange={handleupdateapi}
-                                name="origin_oncarriage_costs"
-                                value={inputdata.origin_oncarriage_costs}
-                                placeholder="On carriage Costs"
-                                className="form-control"
-                              />
-                            </div>
-                            <div className="col-6">
-                              <label>On carriage Costs</label>
-                              <input
-                                type="text"
-                                onChange={handleupdateapi}
-                                value={inputdata.des_oncarriage_costs}
-                                name="des_oncarriage_costs"
-                                placeholder="On carriage Costs"
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="row mb-3">
-                            <div className="col-6">
-                              <label>Incidental Cost</label>
-                              <input
-                                type="text"
-                                onChange={handleupdateapi}
-                                name="origin_Incidental_costs"
-                                value={inputdata.origin_Incidental_costs}
-                                placeholder="Incidental Cost"
-                                className="form-control"
-                              />
-                            </div>
-                            <div className="col-6">
-                              <label>Incidental Cost</label>
-                              <input
-                                type="text"
-                                onChange={handleupdateapi}
-                                name="des_Incidental_costs"
-                                value={inputdata.des_Incidental_costs}
-                                placeholder="Incidental Cost"
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="row mb-3">
-                            <div className="col-6">
-                              <label>Freight Cost</label>
-                              <input
-                                type="text"
-                                value={inputdata.freight_cost}
-                                onChange={handleupdateapi}
-                                name="freight_cost"
-                                placeholder="Freight Cost"
-                                className="form-control"
-                              />
+                            <div className="row">
+                              <div className="col-6">
+                                <label className="ware_label">
+                                  Origin Handler
+                                </label>
+                                <select
+                                  className=" mb-3 py-2"
+                                  name="origin_handler"
+                                  value={inputdata.origin_handler}
+                                  onChange={handleupdateapi}
+                                >
+                                  <option>Select...</option>
+                                  <option>DHL</option>
+                                  <option>Fedex</option>
+                                  <option>SACO CFR</option>
+                                  <option>Contra Consolidations</option>
+                                  <option>Afristar</option>
+                                  <option>Asia Direct - Africa</option>
+                                </select>
+                              </div>
+                              <div className="col-6">
+                                <label className="ware_label">
+                                  Destination Handler
+                                </label>
+                                <select
+                                  className="mb-3 py-2"
+                                  name="des_handler"
+                                  onChange={handleupdateapi}
+                                  value={inputdata.des_handler}
+                                >
+                                  <option>Select...</option>
+                                  <option>Shenzhen Nimbus Shipping</option>
+                                  <option>Shenzhen Portline</option>
+                                  <option>OBD Logistics</option>
+                                </select>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="row mt-4">
-                      <div className="col-12 mt-3">
-                        <h4 className="freight_hd">Cargo Details</h4>
-                        <span class="line"></span>
+                      <div className="row mt-4">
+                        <div className="col-12 mt-3">
+                          <h4 className="freight_hd">Cost details</h4>
+                          <span class="line"></span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-12">
-                        <div className="borderShip updateLoading">
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Num. of Shipment</label>
-                              <input
-                                name="no_of_shipments"
-                                onChange={handleupdateapi}
-                                value={inputdata.no_of_shipments}
-                                placeholder="Number of Shipment"
-                                className="form-control"
-                              ></input>
+                      <div className="row">
+                        <div className="col-12">
+                          <div className="borderShip ">
+                            <div className="row mb-3">
+                              <div className="col-6">
+                                <label className="mb-3 fs-bold fw-bold">
+                                  Origin
+                                </label>
+                                <br />
+                                <label>Cost to Collect</label>
+                                <input
+                                  type="text"
+                                  onChange={handleupdateapi}
+                                  name="costs_to_collect"
+                                  value={inputdata.costs_to_collect}
+                                  placeholder="Cost to Collect"
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label className="mb-3 fs-bold fw-bold">
+                                  Destination
+                                </label>
+                                <br />
+                                <label>Cost to Collect</label>
+                                <input
+                                  type="text"
+                                  onChange={handleupdateapi}
+                                  name="costs_to_collect_des"
+                                  value={inputdata.costs_to_collect_des}
+                                  placeholder="Cost to Collect"
+                                  className="form-control"
+                                />
+                              </div>
                             </div>
-                            <div className="col-6 ">
-                              <label>Nature of Goods</label>
-                              <select
-                                name="nature_of_goods"
-                                value={inputdata.nature_of_good}
-                                onChange={handleupdateapi}
-                              >
-                                <option value="">Select...</option>
-                                <option value="General_Cargo">
-                                  General Cargo
-                                </option>
-                                <option value="Battery">Battery</option>
-                                <option value="Liquids">Liquids</option>
-                                <option value="Powders">Powders</option>
-                                <option value="Harzadous">Harzadous</option>
-                              </select>
+                            <div className="row mb-3">
+                              <div className="col-6">
+                                <label>Warehouse Cost</label>
+                                <input
+                                  type="text"
+                                  onChange={handleupdateapi}
+                                  name="warehouse_cost"
+                                  value={inputdata.warehouse_cost}
+                                  placeholder="Warehouse Cost"
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label>Warehouse Cost</label>
+                                <input
+                                  type="text"
+                                  onChange={handleupdateapi}
+                                  name="warehouse_cost_des"
+                                  value={inputdata.warehouse_cost_des}
+                                  placeholder="Warehouse Cost"
+                                  className="form-control"
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-12">
-                              <label>Type of Packing</label>
-                              <select
-                                name="type_of_packaging"
-                                value={inputdata.type_of_packaging}
-                                onChange={handleupdateapi}
-                              >
-                                <option>select...</option>
-                                <option value="Box">Box</option>
-                                <option value="Crate">Crate</option>
-                                <option value="Pallet">Pallet</option>
-                                <option value="Bags">Bags</option>
-                              </select>
+                            <div className="row mb-3">
+                              <div className="col-6">
+                                <label>Documentation Costs</label>
+                                <input
+                                  type="text"
+                                  onChange={handleupdateapi}
+                                  name="origin_doc_costs"
+                                  value={inputdata.origin_doc_costs}
+                                  placeholder="Documentation Costs"
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label>Documentation Costs </label>
+                                <input
+                                  type="text"
+                                  onChange={handleupdateapi}
+                                  name="des_doc_costs"
+                                  value={inputdata.des_doc_costs}
+                                  placeholder="Documentation Costs"
+                                  className="form-control"
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Total Box</label>
-                              <input
-                                type="text"
-                                onKeyPress={handlekey}
-                                name="total_boxes"
-                                value={inputdata.total_boxes}
-                                placeholder="Num.. of Package"
-                                onChange={handleupdateapi}
-                                className="form-control"
-                              />
+                            <div className="row mb-3">
+                              <div className="col-6">
+                                <label>On carriage Costs</label>
+                                <input
+                                  type="text"
+                                  onChange={handleupdateapi}
+                                  name="origin_oncarriage_costs"
+                                  value={inputdata.origin_oncarriage_costs}
+                                  placeholder="On carriage Costs"
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label>On carriage Costs</label>
+                                <input
+                                  type="text"
+                                  onChange={handleupdateapi}
+                                  value={inputdata.des_oncarriage_costs}
+                                  name="des_oncarriage_costs"
+                                  placeholder="On carriage Costs"
+                                  className="form-control"
+                                />
+                              </div>
                             </div>
-                            <div className="col-6">
-                              <label>Total Dimension</label>
-                              <input
-                                type="text"
-                                name="total_dimensions"
-                                value={inputdata.total_dimensions}
-                                onChange={handleupdateapi}
-                                placeholder="Dimension"
-                                className="form-control"
-                              />
+                            <div className="row mb-3">
+                              <div className="col-6">
+                                <label>Incidental Cost</label>
+                                <input
+                                  type="text"
+                                  onChange={handleupdateapi}
+                                  name="origin_Incidental_costs"
+                                  value={inputdata.origin_Incidental_costs}
+                                  placeholder="Incidental Cost"
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label>Incidental Cost</label>
+                                <input
+                                  type="text"
+                                  onChange={handleupdateapi}
+                                  name="des_Incidental_costs"
+                                  value={inputdata.des_Incidental_costs}
+                                  placeholder="Incidental Cost"
+                                  className="form-control"
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Total Weight</label>
-                              <input
-                                type="text"
-                                name="total_weight"
-                                value={inputdata.total_weight}
-                                onChange={handleupdateapi}
-                                placeholder="Weight"
-                                className="form-control"
-                              />
-                            </div>
-                            <div className="col-6">
-                              <label>Volumetric Weight</label>
-                              <input
-                                type="text"
-                                onKeyPress={handlekey}
-                                onChange={handleupdateapi}
-                                value={inputdata.volumentric_weight}
-                                name="volumentric_weight"
-                                placeholder="Volumetric Weight"
-                                className="form-control"
-                              />
+                            <div className="row mb-3">
+                              <div className="col-6">
+                                <label>Freight Cost</label>
+                                <input
+                                  type="text"
+                                  value={inputdata.freight_cost}
+                                  onChange={handleupdateapi}
+                                  name="freight_cost"
+                                  placeholder="Freight Cost"
+                                  className="form-control"
+                                />
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="row mt-4">
-                      <div className="col-12 mt-3">
-                        <h4 className="freight_hd">Delivery details</h4>
-                        <span class="line"></span>
+                      <div className="row mt-4">
+                        <div className="col-12 mt-3">
+                          <h4 className="freight_hd">Cargo Details</h4>
+                          <span class="line"></span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-12">
-                        <div className="borderShip updateLoading">
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Master Waybill</label>
-                              <input
-                                onChange={handleupdateapi}
-                                name="master_waybill"
-                                value={inputdata.master_waybill}
-                                className="form-control"
-                                placeholder="master_waybill"
-                              ></input>
+                      <div className="row">
+                        <div className="col-12">
+                          <div className="borderShip updateLoading">
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Num. of Shipment</label>
+                                <input
+                                  name="no_of_shipments"
+                                  onChange={handleupdateapi}
+                                  value={inputdata.no_of_shipments}
+                                  placeholder="Number of Shipment"
+                                  className="form-control"
+                                ></input>
+                              </div>
+                              <div className="col-6 ">
+                                <label>Nature of Goods</label>
+                                <select
+                                  name="nature_of_goods"
+                                  value={inputdata.nature_of_good}
+                                  onChange={handleupdateapi}
+                                >
+                                  <option value="">Select...</option>
+                                  <option value="General_Cargo">
+                                    General Cargo
+                                  </option>
+                                  <option value="Battery">Battery</option>
+                                  <option value="Liquids">Liquids</option>
+                                  <option value="Powders">Powders</option>
+                                  <option value="Harzadous">Harzadous</option>
+                                </select>
+                              </div>
                             </div>
-                            <div className="col-6 ">
-                              <label>House Waybill</label>
-                              <input
-                                onChange={handleupdateapi}
-                                name="house_waybill"
-                                value={inputdata.house_waybill}
-                                className="form-control"
-                                placeholder="house_waybill"
-                              ></input>
+                            <div className="row">
+                              <div className="col-12">
+                                <label>Type of Packing</label>
+                                <select
+                                  name="type_of_packaging"
+                                  value={inputdata.type_of_packaging}
+                                  onChange={handleupdateapi}
+                                >
+                                  <option>select...</option>
+                                  <option value="Box">Box</option>
+                                  <option value="Crate">Crate</option>
+                                  <option value="Pallet">Pallet</option>
+                                  <option value="Bags">Bags</option>
+                                </select>
+                              </div>
                             </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Carrier</label>
-                              <input
-                                type="text"
-                                name="carrier"
-                                placeholder="carrier"
-                                value={inputdata.carrier}
-                                onChange={handleupdateapi}
-                                className="form-control"
-                              />
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Total Box</label>
+                                <input
+                                  type="text"
+                                  onKeyPress={handlekey}
+                                  name="total_boxes"
+                                  value={inputdata.total_boxes}
+                                  placeholder="Num.. of Package"
+                                  onChange={handleupdateapi}
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label>Total Dimension</label>
+                                <input
+                                  type="text"
+                                  name="total_dimensions"
+                                  value={inputdata.total_dimensions}
+                                  onChange={handleupdateapi}
+                                  placeholder="Dimension"
+                                  className="form-control"
+                                />
+                              </div>
                             </div>
-                            <div className="col-6">
-                              <label>Vessel</label>
-                              <input
-                                type="text"
-                                name="vessel"
-                                value={inputdata.vessel}
-                                onChange={handleupdateapi}
-                                placeholder="vessel"
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-12">
-                              <label>Container Number / Flight Number</label>
-                              <input
-                                type="text"
-                                name="container_no"
-                                value={inputdata.container_no}
-                                onChange={handleupdateapi}
-                                placeholder="Container_no"
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Port of Loading</label>
-                              <input
-                                type="text"
-                                value={inputdata.devy_port_of_loading}
-                                name="devy_port_of_loading"
-                                placeholder="Port of Loading"
-                                onChange={handleupdateapi}
-                                className="form-control"
-                              />
-                            </div>
-                            <div className="col-6">
-                              <label>Port of Discharge</label>
-                              <input
-                                type="text"
-                                name="devy_port_of_discharge"
-                                value={inputdata.devy_port_of_discharge}
-                                onChange={handleupdateapi}
-                                placeholder="Port_of_Discharge"
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-12">
-                              <label>Final Destination</label>
-                              <input
-                                type="text"
-                                name="devy_final_des"
-                                onChange={handleupdateapi}
-                                value={inputdata.devy_final_des}
-                                placeholder="Final Destination"
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Origin Carrier</label>
-                              <input
-                                type="text"
-                                name="origin_carrier"
-                                value={inputdata.origin_carrier}
-                                onChange={handleupdateapi}
-                                placeholder="Origin Carrier"
-                                className="form-control"
-                              />
-                            </div>
-                            <div className="col-6">
-                              <label>Destination Carrier</label>
-                              <input
-                                type="text"
-                                name="des_carrier"
-                                value={inputdata.des_carrier}
-                                onChange={handleupdateapi}
-                                placeholder="Destination carrier"
-                                className="form-control"
-                              />
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Total Weight</label>
+                                <input
+                                  type="text"
+                                  name="total_weight"
+                                  value={inputdata.total_weight}
+                                  onChange={handleupdateapi}
+                                  placeholder="Weight"
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label>Volumetric Weight</label>
+                                <input
+                                  type="text"
+                                  onKeyPress={handlekey}
+                                  onChange={handleupdateapi}
+                                  value={inputdata.volumentric_weight}
+                                  name="volumentric_weight"
+                                  placeholder="Volumetric Weight"
+                                  className="form-control"
+                                />
+                              </div>
                             </div>
                           </div>
-                          <div className="row">
-                            <div className="col-6">
-                              <label>Registration Number</label>
-                              <input
-                                type="text"
-                                name="registration_number"
-                                onChange={handleupdateapi}
-                                value={inputdata.registration_number}
-                                placeholder="Registration Number"
-                                className="form-control"
-                              />
+                        </div>
+                      </div>
+                      <div className="row mt-4">
+                        <div className="col-12 mt-3">
+                          <h4 className="freight_hd">Delivery details</h4>
+                          <span class="line"></span>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-12">
+                          <div className="borderShip updateLoading">
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Master Waybill</label>
+                                <input
+                                  onChange={handleupdateapi}
+                                  name="master_waybill"
+                                  value={inputdata.master_waybill}
+                                  className="form-control"
+                                  placeholder="master_waybill"
+                                ></input>
+                              </div>
+                              <div className="col-6 ">
+                                <label>House Waybill</label>
+                                <input
+                                  onChange={handleupdateapi}
+                                  name="house_waybill"
+                                  value={inputdata.house_waybill}
+                                  className="form-control"
+                                  placeholder="house_waybill"
+                                ></input>
+                              </div>
                             </div>
-                            <div className="col-6">
-                              <label>comment </label>
-                              <input
-                                type="text"
-                                name="comment"
-                                value={inputdata.comment}
-                                onChange={handleupdateapi}
-                                placeholder="Comment"
-                                className="form-control"
-                              />
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Carrier</label>
+                                <input
+                                  type="text"
+                                  name="carrier"
+                                  placeholder="carrier"
+                                  value={inputdata.carrier}
+                                  onChange={handleupdateapi}
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label>Vessel</label>
+                                <input
+                                  type="text"
+                                  name="vessel"
+                                  value={inputdata.vessel}
+                                  onChange={handleupdateapi}
+                                  placeholder="vessel"
+                                  className="form-control"
+                                />
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col-12">
+                                <label>Container Number / Flight Number</label>
+                                <input
+                                  type="text"
+                                  name="container_no"
+                                  value={inputdata.container_no}
+                                  onChange={handleupdateapi}
+                                  placeholder="Container_no"
+                                  className="form-control"
+                                />
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Port of Loading</label>
+                                <input
+                                  type="text"
+                                  value={inputdata.devy_port_of_loading}
+                                  name="devy_port_of_loading"
+                                  placeholder="Port of Loading"
+                                  onChange={handleupdateapi}
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label>Port of Discharge</label>
+                                <input
+                                  type="text"
+                                  name="devy_port_of_discharge"
+                                  value={inputdata.devy_port_of_discharge}
+                                  onChange={handleupdateapi}
+                                  placeholder="Port_of_Discharge"
+                                  className="form-control"
+                                />
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col-12">
+                                <label>Final Destination</label>
+                                <input
+                                  type="text"
+                                  name="devy_final_des"
+                                  onChange={handleupdateapi}
+                                  value={inputdata.devy_final_des}
+                                  placeholder="Final Destination"
+                                  className="form-control"
+                                />
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Origin Carrier</label>
+                                <input
+                                  type="text"
+                                  name="origin_carrier"
+                                  value={inputdata.origin_carrier}
+                                  onChange={handleupdateapi}
+                                  placeholder="Origin Carrier"
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label>Destination Carrier</label>
+                                <input
+                                  type="text"
+                                  name="des_carrier"
+                                  value={inputdata.des_carrier}
+                                  onChange={handleupdateapi}
+                                  placeholder="Destination carrier"
+                                  className="form-control"
+                                />
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col-6">
+                                <label>Registration Number</label>
+                                <input
+                                  type="text"
+                                  name="registration_number"
+                                  onChange={handleupdateapi}
+                                  value={inputdata.registration_number}
+                                  placeholder="Registration Number"
+                                  className="form-control"
+                                />
+                              </div>
+                              <div className="col-6">
+                                <label>comment </label>
+                                <input
+                                  type="text"
+                                  name="comment"
+                                  value={inputdata.comment}
+                                  onChange={handleupdateapi}
+                                  placeholder="Comment"
+                                  className="form-control"
+                                />
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="text-center mt-4 unsetLt">
-                  <Button
-                    variant="contained"
-                    className="submit_btn mt-3"
-                    onClick={postData1234}
-                  >
-                    Submit
-                  </Button>
+                  <div className="text-center mt-4 unsetLt">
+                    <Button
+                      variant="contained"
+                      className="submit_btn mt-3"
+                      onClick={postData1234}
+                    >
+                      Submit
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </Box>
-          </Modal>
+              </Box>
+            </Modal>
+          </div>
         </div>
-      </div>
       )}
     </>
   );
