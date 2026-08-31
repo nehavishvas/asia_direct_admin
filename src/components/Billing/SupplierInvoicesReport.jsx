@@ -150,11 +150,22 @@ const SupplierInvoicesReport = () => {
     };
 
     // Helper to format currency values
+    const getCurrencySymbol = (currencyCode) => {
+        if (!currencyCode) return "R";
+        const val = currencyCode.toString().trim().toLowerCase();
+        if (val === "usd") return "$";
+        if (val === "rand" || val === "zar" || val === "r") return "R";
+        if (val === "kwacha" || val === "mwk" || val === "k") return "K";
+        if (val === "euro" || val === "eur") return "€";
+        if (val === "inr") return "₹";
+        return currencyCode;
+    };
+
     const formatCurrency = (amount, currencyCode = "ZAR") => {
         const num = parseFloat(amount);
         if (isNaN(num)) return "R 0.00";
-        const symbol = currencyCode === "USD" ? "$ " : (currencyCode === "ZAR" ? "R " : `${currencyCode} `);
-        return `${symbol}${num.toLocaleString("en-US", {
+        const symbol = getCurrencySymbol(currencyCode);
+        return `${symbol} ${num.toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         })}`;
@@ -434,18 +445,8 @@ const SupplierInvoicesReport = () => {
                                                         <td className="text-end fw-semibold">{formatCurrency(item.total_outstanding, item.currency)}</td>
                                                     </tr>
                                                 ))}
+
                                             </tbody>
-                                            {grandTotal && (
-                                                <tfoot className="fw-bold bg-white text-dark">
-                                                    <tr>
-                                                        <td colSpan="6" className="text-start ps-3">Total</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.exclusive)}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.vat)}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.total_purchase)}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.total_outstanding)}</td>
-                                                    </tr>
-                                                </tfoot>
-                                            )}
                                         </table>
                                     </div>
                                 </>
@@ -493,17 +494,13 @@ const SupplierInvoicesReport = () => {
                      -webkit-print-color-adjust: exact !important;
                      print-color-adjust: exact !important;
                  }
-                 .report-table tfoot {
-                     background-color: #ffffff !important;
-                     color: #000000 !important;
-                 }
-                 .report-table tfoot tr td {
-                     background-color: #ffffff !important;
-                     color: #000000 !important;
-                     font-weight: bold !important;
-                     border-top: 1.5px solid #000000 !important;
-                     border-bottom: 4px double #000000 !important;
-                 }
+                 .report-table tr.grand-total-row td {
+                      background-color: #ffffff !important;
+                      color: #000000 !important;
+                      font-weight: bold !important;
+                      border-top: 1.5px solid #000000 !important;
+                      border-bottom: 4px double #000000 !important;
+                  }
                  
                  @page {
                      size: landscape;

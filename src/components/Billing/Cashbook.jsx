@@ -618,7 +618,7 @@ export default function Cashbook() {
                   style={{ height: "38px" }}
                   onClick={() => navigate("/Admin/customer-unallocated-report")}
                 >
-                  Unallocated Report
+                  Reciept Report
                 </button>
                 <div className="d-flex align-items-center searchManageFre">
                   <input

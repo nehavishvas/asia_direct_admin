@@ -138,6 +138,17 @@ const SalesByCustomerSummaryReport = () => {
     }, []);
 
     // Helpers
+    const getCurrencySymbol = (currencyCode) => {
+        if (!currencyCode) return "R";
+        const val = currencyCode.toString().trim().toLowerCase();
+        if (val === "usd") return "$";
+        if (val === "rand" || val === "zar" || val === "r") return "R";
+        if (val === "kwacha" || val === "mwk" || val === "k") return "K";
+        if (val === "euro" || val === "eur") return "€";
+        if (val === "inr") return "₹";
+        return currencyCode;
+    };
+
     const formatCurrency = (amount, currencySymbol = "R") => {
         const num = parseFloat(amount);
         if (isNaN(num)) return `${currencySymbol}0.00`;
@@ -345,14 +356,13 @@ const SalesByCustomerSummaryReport = () => {
                                     <table className="report-table">
                                         <thead>
                                             <tr className="header-top-row">
-                                                <th colSpan="3" className="text-start align-bottom pb-1" style={{ width: "70%" }}>Name</th>
+                                                <th colSpan="2" className="text-start align-bottom pb-1" style={{ width: "70%" }}>Name</th>
                                                 <th rowSpan="2" className="text-end align-bottom pb-2" style={{ width: "12%" }}>Qty</th>
                                                 <th rowSpan="2" className="text-end align-bottom pb-2" style={{ width: "18%" }}>Total Selling</th>
                                             </tr>
                                             <tr className="header-bottom-row">
                                                 <th className="text-start pt-1 pb-2" style={{ width: "12%" }}>Date</th>
                                                 <th className="text-start pt-1 pb-2" style={{ width: "15%" }}>Reference</th>
-                                                <th className="text-start pt-1 pb-2" style={{ width: "43%" }}>Description</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -362,7 +372,7 @@ const SalesByCustomerSummaryReport = () => {
                                                         <React.Fragment key={customerIndex}>
                                                             {/* Customer Header Row */}
                                                             <tr className="customer-name-row">
-                                                                <td colSpan="5" className="text-start">
+                                                                <td colSpan="4" className="text-start">
                                                                     {customerGroup.customer || "Unknown Customer"}
                                                                 </td>
                                                             </tr>
@@ -376,54 +386,49 @@ const SalesByCustomerSummaryReport = () => {
                                                                         <td className="text-start">
                                                                             {invoice.reference || "-"}
                                                                         </td>
-                                                                        <td className="text-start">
-                                                                            {/* Description is always blank in summary */}
-                                                                        </td>
                                                                         <td className="text-end">
                                                                             {parseFloat(invoice.qty || 0).toFixed(4)}
                                                                         </td>
                                                                         <td className="text-end">
-                                                                            {formatCurrency(invoice.total_selling, "R")}
+                                                                            {formatCurrency(invoice.total_selling, getCurrencySymbol(invoice.final_base_currency || invoice.currency))}
                                                                         </td>
                                                                     </tr>
                                                                 ))
                                                             ) : (
                                                                 <tr>
-                                                                    <td colSpan="5" className="text-center text-muted py-2">
+                                                                    <td colSpan="4" className="text-center text-muted py-2">
                                                                         No sales records for this customer.
                                                                     </td>
                                                                 </tr>
                                                             )}
                                                             {/* Customer Sub-total */}
                                                             <tr className="customer-total-row">
-                                                                <td colSpan="3" className="text-start ps-3">Total for Customer:  {customerGroup.customer}</td>
+                                                                <td colSpan="2" className="text-start ps-3">Total for Customer:  {customerGroup.customer}</td>
                                                                 <td className="text-end">{(parseFloat(customerGroup.customer_total_qty) || 0).toFixed(4)}</td>
-                                                                <td className="text-end">{formatCurrency(customerGroup.customer_total_selling, "R")}</td>
+                                                                <td className="text-end">{formatCurrency(customerGroup.customer_total_selling, getCurrencySymbol(customerGroup.final_base_currency || customerGroup.invoices?.[0]?.final_base_currency || customerGroup.invoices?.[0]?.currency))}</td>
                                                             </tr>
                                                             {/* Spacer Row between customers */}
                                                             <tr className="spacer-row" style={{ height: "20px" }}>
-                                                                <td colSpan="5"></td>
+                                                                <td colSpan="4"></td>
                                                             </tr>
                                                         </React.Fragment>
                                                     );
                                                 })
                                             ) : (
                                                 <tr>
-                                                    <td colSpan="5" className="text-center text-muted py-4">
+                                                    <td colSpan="4" className="text-center text-muted py-4">
                                                         No data available for the selected filters.
                                                     </td>
                                                 </tr>
                                             )}
-                                        </tbody>
-                                        {reportData.length > 0 && summaryData && (
-                                            <tfoot>
+                                            {reportData.length > 0 && summaryData && (
                                                 <tr className="grand-total-row">
-                                                    <td colSpan="3" className="text-start ps-3">Grand Total:</td>
+                                                    <td colSpan="2" className="text-start ps-3">Grand Total:</td>
                                                     <td className="text-end">{(parseFloat(summaryData.grand_total_qty) || 0).toFixed(4)}</td>
-                                                    <td className="text-end">{formatCurrency(summaryData.grand_total_selling, "R")}</td>
+                                                    <td className="text-end">{formatCurrency(summaryData.grand_total_selling, getCurrencySymbol(summaryData.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.invoices?.[0]?.final_base_currency || reportData?.[0]?.invoices?.[0]?.currency))}</td>
                                                 </tr>
-                                            </tfoot>
-                                        )}
+                                            )}
+                                        </tbody>
                                     </table>
                                 </div>
                             </>
@@ -493,11 +498,12 @@ const SalesByCustomerSummaryReport = () => {
                      padding-bottom: 6px;
                      border-bottom: 1.5px solid #000000 !important;
                  }
-                 .report-table tfoot tr.grand-total-row td {
+                 .report-table tr.grand-total-row td {
                      font-weight: bold;
                      padding-top: 6px;
                      padding-bottom: 6px;
                      border-bottom: 4px double #000000 !important;
+                     border-top: 1.5px solid #000000 !important;
                  }
                  
                  @page {

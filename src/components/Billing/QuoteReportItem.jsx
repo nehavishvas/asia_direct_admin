@@ -402,17 +402,7 @@ const QuoteReportItem = () => {
                                                                     </td>
                                                                 </tr>
                                                             )}
-                                                            {/* Group totals */}
-                                                            {group.totals && (
-                                                                <tr className="table-light fw-bold" style={{ borderBottom: "2px solid #ccc" }}>
-                                                                    <td colSpan="5" className="text-start ps-3">Total {groupTitle}:</td>
-                                                                    <td className="text-end">{parseFloat(group.totals.qty || 0).toFixed(4)}</td>
-                                                                    <td className="text-end">{formatCurrency(group.totals.total_cost, "R")}</td>
-                                                                    <td className="text-end">{formatCurrency(group.totals.total_selling, "R")}</td>
-                                                                    <td className="text-end">{formatCurrency(group.totals.gp_amount, "R")}</td>
-                                                                    <td className="text-end">{parseFloat(group.totals.gp_percent || 0).toFixed(2)}%</td>
-                                                                </tr>
-                                                            )}
+
                                                         </React.Fragment>
                                                     );
                                                 })
@@ -424,18 +414,6 @@ const QuoteReportItem = () => {
                                                 </tr>
                                             )}
                                         </tbody>
-                                        {reportData.length > 0 && grandTotal && (
-                                            <tfoot className="fw-bold bg-white text-dark" style={{ borderTop: "2px solid #000" }}>
-                                                <tr>
-                                                    <td colSpan="5" className="text-start ps-3 bg-white text-dark">Grand Total:</td>
-                                                    <td className="text-end bg-white text-dark">{parseFloat(grandTotal.qty || 0).toFixed(4)}</td>
-                                                    <td className="text-end bg-white text-dark">{formatCurrency(grandTotal.total_cost, "R")}</td>
-                                                    <td className="text-end bg-white text-dark">{formatCurrency(grandTotal.total_selling, "R")}</td>
-                                                    <td className="text-end bg-white text-dark">{formatCurrency(grandTotal.gp_amount, "R")}</td>
-                                                    <td className="text-end bg-white text-dark">{parseFloat(grandTotal.gp_percent || 0).toFixed(2)}%</td>
-                                                </tr>
-                                            </tfoot>
-                                        )}
                                     </table>
                                 </div>
                             </>

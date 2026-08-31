@@ -34,7 +34,7 @@ const CustomerUnallocatedReport = () => {
     const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
     const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
     const [categoryTo, setCategoryTo] = useState(location.state?.categoryTo || "");
-    // const [status, setStatus] = useState("ACTIVE");
+    const [reportType, setReportType] = useState(location.state?.reportType || "UNALLOCATED");
 
     const [reportData, setReportData] = useState([]);
     const [loader, setLoader] = useState(false);
@@ -54,7 +54,8 @@ const CustomerUnallocatedReport = () => {
         optCustomerFrom = customerFrom,
         optCustomerTo = customerTo,
         optCategoryFrom = categoryFrom,
-        optCategoryTo = categoryTo
+        optCategoryTo = categoryTo,
+        optReportType = reportType
     ) => {
         if (e) e.preventDefault();
         setLoader(true);
@@ -67,11 +68,11 @@ const CustomerUnallocatedReport = () => {
                 customer_to: optCustomerTo || null,
                 category_from: optCategoryFrom || null,
                 category_to: optCategoryTo || null,
-                // status: status || "ACTIVE"
+                report_type: optReportType
             };
 
             const response = await axios.post(
-                `${process.env.REACT_APP_BASE_URL}getCustomerUnallocatedReceiptsReport`,
+                `${process.env.REACT_APP_BASE_URL}getCustomerReceiptsReport`,
                 payload
             );
 
@@ -99,24 +100,21 @@ const CustomerUnallocatedReport = () => {
         setCustomerTo("");
         setCategoryFrom("");
         setCategoryTo("");
-        // setStatus("ACTIVE");
-        fetchReportData(null, start, end, "", "", "", "");
+        setReportType("UNALLOCATED");
+        fetchReportData(null, start, end, "", "", "", "", "UNALLOCATED");
     };
 
     const handlePrint = () => {
         window.print();
     };
 
-    const formatCurrencyValue = (val, customerName = "") => {
+    const formatCurrencyValue = (val) => {
         const num = parseFloat(val);
-        if (isNaN(num)) return "R 0.00";
-        const nameLower = String(customerName || "").toLowerCase();
-        const isUsd = nameLower.includes("(usd)") || nameLower.includes("usd");
-        const symbol = isUsd ? "$" : "R";
-        return `${symbol} ${num.toLocaleString("en-US", {
+        if (isNaN(num)) return "0.00";
+        return num.toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
-        })}`;
+        });
     };
 
     const formatDateString = (dateVal) => {
@@ -160,7 +158,7 @@ const CustomerUnallocatedReport = () => {
                     <div className="card shadow-sm border-0 mb-4 bg-light">
                         <div className="card-body">
                             <form onSubmit={fetchReportData} className="row g-2 justify-content-center align-items-end">
-                                <div className="col-lg-4 col-md-4 col-sm-6">
+                                <div className="col-lg-3 col-md-4 col-sm-6">
                                     <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Date Range</label>
                                     <div className="d-flex gap-1">
                                         <input
@@ -178,7 +176,7 @@ const CustomerUnallocatedReport = () => {
                                     </div>
                                 </div>
 
-                                <div className="col-lg-3 col-md-4 col-sm-6">
+                                <div className="col-lg-2 col-md-4 col-sm-6">
                                     <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Customer</label>
                                     <div className="d-flex gap-1">
                                         <select
@@ -208,7 +206,7 @@ const CustomerUnallocatedReport = () => {
                                     </div>
                                 </div>
 
-                                <div className="col-lg-3 col-md-4 col-sm-6">
+                                <div className="col-lg-2 col-md-4 col-sm-6">
                                     <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Category</label>
                                     <div className="d-flex gap-1">
                                         <select
@@ -232,6 +230,18 @@ const CustomerUnallocatedReport = () => {
                                             <option value="Zimbabwe">Zimbabwe</option>
                                         </select>
                                     </div>
+                                </div>
+
+                                <div className="col-lg-3 col-md-4 col-sm-6">
+                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Report Type</label>
+                                    <select
+                                        className="form-select form-select-sm"
+                                        value={reportType}
+                                        onChange={(e) => setReportType(e.target.value)}
+                                    >
+                                        <option value="UNALLOCATED">Unallocated</option>
+                                        <option value="ALLOCATED">Allocated</option>
+                                    </select>
                                 </div>
 
                                 <div className="col-lg-2 col-md-4 col-sm-6 d-flex gap-2">
@@ -260,10 +270,10 @@ const CustomerUnallocatedReport = () => {
                                 </div>
                             ) : reportData.length > 0 ? (
                                 <>
-                                    {/* Report Header */}
-                                    <div className="report-header mb-4 text-start">
-                                        <h4 className="report-title mb-1 fw-bold text-dark">Customer Unallocated Receipts Report</h4>
-                                        <h6 className="report-subtitle mb-4 fw-bold text-secondary">Asia Direct Africa</h6>
+                                     {/* Report Header */}
+                                     <div className="report-header mb-4 text-start">
+                                         <h4 className="report-title mb-1 fw-bold text-dark">Customer {reportType === "ALLOCATED" ? "Allocated" : "Unallocated"} Receipts Report</h4>
+                                         <h6 className="report-subtitle mb-4 fw-bold text-secondary">Asia Direct Africa</h6>
 
                                         <div className="report-meta-info mt-3">
                                             <div className="row">
@@ -306,7 +316,7 @@ const CustomerUnallocatedReport = () => {
                                                     <th className="text-start">Reference</th>
                                                     <th className="text-start">Description</th>
                                                     <th className="text-end">Receipt</th>
-                                                    <th className="text-end">Unallocated</th>
+                                                    <th className="text-end">{reportType === "ALLOCATED" ? "Allocated" : "Unallocated"}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -356,7 +366,7 @@ const CustomerUnallocatedReport = () => {
                                 </>
                             ) : (
                                 <div className="text-center py-5">
-                                    <p className="text-muted mb-0">No unallocated receipts found for the selected filters.</p>
+                                    <p className="text-muted mb-0">No {reportType === "ALLOCATED" ? "allocated" : "unallocated"} receipts found for the selected filters.</p>
                                 </div>
                             )}
                         </div>

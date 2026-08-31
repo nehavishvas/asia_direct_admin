@@ -176,8 +176,18 @@ const CustomerQuotesReport = () => {
     // Helper to format currency values
     const formatCurrency = (amount, currency = "ZAR") => {
         const num = parseFloat(amount);
-        if (isNaN(num)) return "R 0.00";
-        const symbol = currency === "USD" ? "$" : (currency === "ZAR" ? "R" : currency);
+        const getCurrencySymbol = (curr) => {
+            if (!curr) return "R";
+            const val = curr.toString().trim().toLowerCase();
+            if (val === "usd") return "$";
+            if (val === "rand" || val === "zar" || val === "r") return "R";
+            if (val === "kwacha" || val === "mwk" || val === "k") return "K";
+            if (val === "euro" || val === "eur") return "€";
+            if (val === "inr") return "₹";
+            return curr;
+        };
+        const symbol = getCurrencySymbol(currency);
+        if (isNaN(num)) return `${symbol} 0.00`;
         return `${symbol} ${num.toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2

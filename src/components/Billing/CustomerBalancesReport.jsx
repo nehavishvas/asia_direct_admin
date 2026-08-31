@@ -19,7 +19,7 @@ const CustomerBalancesReport = () => {
         return `${y}-${m}-${day}`;
     };
 
-    const [runDate, setRunDate] = useState(location.state?.runDate || "");
+    const [runDate, setRunDate] = useState(location.state?.runDate || getTodayDateString());
     const [customerFrom, setCustomerFrom] = useState(location.state?.customerFrom || "");
     const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
     const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
@@ -81,24 +81,40 @@ const CustomerBalancesReport = () => {
     };
 
     const handleReset = () => {
-        setRunDate("");
+        const today = getTodayDateString();
+        setRunDate(today);
         setCustomerFrom("");
         setCustomerTo("");
         setCategoryFrom("");
         setCategoryTo("");
-        fetchReportData(null, "", "", "", "", "");
+        fetchReportData(null, today, "", "", "", "");
     };
 
     const handlePrint = () => {
         window.print();
     };
 
-    const formatCurrencyValue = (val, customerName = "") => {
+    const getCurrencySymbol = (currencyOrCustomer) => {
+        if (!currencyOrCustomer) return "R";
+        const val = currencyOrCustomer.toString().trim().toLowerCase();
+        if (val === "usd") return "$";
+        if (val === "rand" || val === "zar" || val === "r") return "R";
+        if (val === "kwacha" || val === "mwk" || val === "k") return "K";
+        if (val === "euro" || val === "eur") return "€";
+        if (val === "inr") return "₹";
+        
+        // Fallback: check if customer name string contains currency indicators
+        if (val.includes("usd")) return "$";
+        if (val.includes("rand") || val.includes("zar")) return "R";
+        if (val.includes("kwacha") || val.includes("mwk")) return "K";
+        
+        return currencyOrCustomer.length <= 3 ? currencyOrCustomer : "R";
+    };
+
+    const formatCurrencyValue = (val, currencyOrCustomer = "ZAR") => {
         const num = parseFloat(val);
-        if (isNaN(num)) return "R 0.00";
-        const nameLower = String(customerName || "").toLowerCase();
-        const isUsd = nameLower.includes("(usd)") || nameLower.includes("usd");
-        const symbol = isUsd ? "$" : "R";
+        const symbol = getCurrencySymbol(currencyOrCustomer);
+        if (isNaN(num)) return `${symbol} 0.00`;
         return `${symbol} ${num.toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
@@ -274,28 +290,16 @@ const CustomerBalancesReport = () => {
                                                 {reportData.map((item, index) => (
                                                     <tr key={index}>
                                                         <td className="text-start">{item.customer || "Cash Client"}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.days120, item.customer)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.days90, item.customer)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.days60, item.customer)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.days30, item.customer)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.current, item.customer)}</td>
-                                                        <td className="text-end fw-semibold">{formatCurrencyValue(item.total_due, item.customer)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(item.days120, item.final_base_currency || item.customer)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(item.days90, item.final_base_currency || item.customer)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(item.days60, item.final_base_currency || item.customer)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(item.days30, item.final_base_currency || item.customer)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(item.current, item.final_base_currency || item.customer)}</td>
+                                                        <td className="text-end fw-semibold">{formatCurrencyValue(item.total_due, item.final_base_currency || item.customer)}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
-                                            {summary && (
-                                                <tfoot className="table-light fw-bold" style={{ borderTop: "2px solid #ccc" }}>
-                                                    <tr>
-                                                        <td className="text-start">Total</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.days120)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.days90)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.days60)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.days30)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.current)}</td>
-                                                        <td className="text-end text-primary">{formatCurrencyValue(summary.total_due)}</td>
-                                                    </tr>
-                                                </tfoot>
-                                            )}
+
                                         </table>
                                     </div>
                                 </>

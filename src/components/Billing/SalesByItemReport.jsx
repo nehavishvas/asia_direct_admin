@@ -147,8 +147,20 @@ const SalesByItemReport = () => {
     }, []);
 
     // Helpers
-    const formatCurrency = (amount, currencySymbol = "R") => {
+    const getCurrencySymbol = (currencyCode) => {
+        if (!currencyCode) return "R";
+        const val = currencyCode.toString().trim().toLowerCase();
+        if (val === "usd") return "$";
+        if (val === "rand" || val === "zar" || val === "r") return "R";
+        if (val === "kwacha" || val === "mwk" || val === "k") return "K";
+        if (val === "euro" || val === "eur") return "€";
+        if (val === "inr") return "₹";
+        return currencyCode;
+    };
+
+    const formatCurrency = (amount, currencyCode = "ZAR") => {
         const num = parseFloat(amount);
+        const currencySymbol = getCurrencySymbol(currencyCode);
         if (isNaN(num)) return `${currencySymbol}0.00`;
         const isNegative = num < 0;
         const absVal = Math.abs(num).toLocaleString("en-US", {
@@ -446,13 +458,13 @@ const SalesByItemReport = () => {
                                                                                 {parseFloat(row.qty || 0).toFixed(4)}
                                                                             </td>
                                                                             <td className="text-end">
-                                                                                {formatCurrency(row.total_cost, "R")}
+                                                                                {formatCurrency(row.total_cost, row.final_base_currency)}
                                                                             </td>
                                                                             <td className="text-end">
-                                                                                {formatCurrency(row.total_selling, "R")}
+                                                                                {formatCurrency(row.total_selling, row.final_base_currency)}
                                                                             </td>
                                                                             <td className="text-end">
-                                                                                {formatCurrency(row.gp_amount, "R")}
+                                                                                {formatCurrency(row.gp_amount, row.final_base_currency)}
                                                                             </td>
                                                                             <td className="text-end">
                                                                                 {parseFloat(row.gp_percent || 0).toFixed(2)}%
@@ -466,15 +478,7 @@ const SalesByItemReport = () => {
                                                                         </td>
                                                                     </tr>
                                                                 )}
-                                                                {/* Item Sub-total */}
-                                                                <tr className="customer-total-row">
-                                                                    <td colSpan="3" className="text-start ps-3">Total {itemGroup.item_name}:</td>
-                                                                    <td className="text-end">{(parseFloat(totalInfo.qty) || 0).toFixed(4)}</td>
-                                                                    <td className="text-end">{formatCurrency(totalInfo.total_cost, "R")}</td>
-                                                                    <td className="text-end">{formatCurrency(totalInfo.total_selling, "R")}</td>
-                                                                    <td className="text-end">{formatCurrency(totalInfo.gp_amount, "R")}</td>
-                                                                    <td className="text-end">{parseFloat(totalInfo.gp_percent || 0).toFixed(2)}%</td>
-                                                                </tr>
+
                                                                 {/* Spacer Row between items */}
                                                                 <tr className="spacer-row" style={{ height: "20px" }}>
                                                                     <td colSpan="8"></td>
@@ -489,19 +493,8 @@ const SalesByItemReport = () => {
                                                         </td>
                                                     </tr>
                                                 )}
+
                                             </tbody>
-                                            {reportData.length > 0 && grandTotal && (
-                                                <tfoot>
-                                                    <tr className="grand-total-row">
-                                                        <td colSpan="3" className="text-start ps-3">Grand Total:</td>
-                                                        <td className="text-end">{(parseFloat(grandTotal.qty) || 0).toFixed(4)}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.total_cost, "R")}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.total_selling, "R")}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.gp_amount, "R")}</td>
-                                                        <td className="text-end">{parseFloat(grandTotal.gp_percent || 0).toFixed(2)}%</td>
-                                                    </tr>
-                                                </tfoot>
-                                            )}
                                         </table>
                                     ) : (
                                         <table className="report-table">
@@ -523,9 +516,9 @@ const SalesByItemReport = () => {
                                                             <tr key={itemIndex} className="invoice-item-row">
                                                                 <td className="text-start py-2">{itemGroup.item_name || "Unnamed Item"}</td>
                                                                 <td className="text-end py-2">{(parseFloat(totalInfo.qty) || 0).toFixed(4)}</td>
-                                                                <td className="text-end py-2">{formatCurrency(totalInfo.total_cost, "R")}</td>
-                                                                <td className="text-end py-2">{formatCurrency(totalInfo.total_selling, "R")}</td>
-                                                                <td className="text-end py-2">{formatCurrency(totalInfo.gp_amount, "R")}</td>
+                                                                <td className="text-end py-2">{formatCurrency(totalInfo.total_cost, totalInfo.final_base_currency || itemGroup.final_base_currency || itemGroup.rows?.[0]?.final_base_currency)}</td>
+                                                                <td className="text-end py-2">{formatCurrency(totalInfo.total_selling, totalInfo.final_base_currency || itemGroup.final_base_currency || itemGroup.rows?.[0]?.final_base_currency)}</td>
+                                                                <td className="text-end py-2">{formatCurrency(totalInfo.gp_amount, totalInfo.final_base_currency || itemGroup.final_base_currency || itemGroup.rows?.[0]?.final_base_currency)}</td>
                                                                 <td className="text-end py-2">{parseFloat(totalInfo.gp_percent || 0).toFixed(2)}%</td>
                                                             </tr>
                                                         );
@@ -537,19 +530,8 @@ const SalesByItemReport = () => {
                                                         </td>
                                                     </tr>
                                                 )}
+
                                             </tbody>
-                                            {reportData.length > 0 && grandTotal && (
-                                                <tfoot>
-                                                    <tr className="grand-total-row">
-                                                        <td className="text-start py-2">Grand Total:</td>
-                                                        <td className="text-end">{(parseFloat(grandTotal.qty) || 0).toFixed(4)}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.total_cost, "R")}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.total_selling, "R")}</td>
-                                                        <td className="text-end">{formatCurrency(grandTotal.gp_amount, "R")}</td>
-                                                        <td className="text-end">{parseFloat(grandTotal.gp_percent || 0).toFixed(2)}%</td>
-                                                    </tr>
-                                                </tfoot>
-                                            )}
                                         </table>
                                     )}
                                 </div>
@@ -620,11 +602,12 @@ const SalesByItemReport = () => {
                      padding-bottom: 6px;
                      border-bottom: 1.5px solid #000000 !important;
                  }
-                 .report-table tfoot tr.grand-total-row td {
+                 .report-table tr.grand-total-row td {
                      font-weight: bold;
                      padding-top: 6px;
                      padding-bottom: 6px;
                      border-bottom: 4px double #000000 !important;
+                     border-top: 1.5px solid #000000 !important;
                  }
                  
                  @page {

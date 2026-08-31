@@ -140,11 +140,13 @@ const SalesByCustomerReport = () => {
     // Helpers
     const getCurrencySymbol = (currencyCode) => {
         if (!currencyCode) return "R";
-        const code = String(currencyCode).toUpperCase();
-        if (code === "USD") return "$";
-        if (code === "EUR" || code === "EURO") return "€";
-        if (code === "GBP") return "£";
-        return "R";
+        const val = currencyCode.toString().trim().toLowerCase();
+        if (val === "usd") return "$";
+        if (val === "rand" || val === "zar" || val === "r") return "R";
+        if (val === "kwacha" || val === "mwk" || val === "k") return "K";
+        if (val === "euro" || val === "eur") return "€";
+        if (val === "inr") return "₹";
+        return currencyCode;
     };
 
     const formatCurrency = (amount, currencySymbol = "R") => {
@@ -448,7 +450,7 @@ const SalesByCustomerReport = () => {
                                                                 {/* Customer Invoices & Items */}
                                                                 {customerGroup.invoices && customerGroup.invoices.length > 0 ? (
                                                                     customerGroup.invoices.map((invoice) => {
-                                                                        const currencySymbol = getCurrencySymbol(invoice.currency);
+                                                                        const currencySymbol = getCurrencySymbol(invoice.final_base_currency || invoice.currency);
                                                                         
                                                                         // Calculate totals for this invoice
                                                                         let invoiceQtyTotal = 0;
@@ -513,12 +515,7 @@ const SalesByCustomerReport = () => {
                                                                         </td>
                                                                     </tr>
                                                                 )}
-                                                                {/* Customer Sub-total */}
-                                                                <tr className="customer-total-row">
-                                                                    <td colSpan="3" className="text-start ps-3">Total {customerGroup.customer}:</td>
-                                                                    <td className="text-end total-val">{customerTotals.qty > 0 ? customerTotals.qty.toFixed(4) : ""}</td>
-                                                                    <td className="text-end total-val">{formatCurrency(customerTotals.selling, "R")}</td>
-                                                                </tr>
+
                                                                 {/* Spacer Row between customers */}
                                                                 <tr className="spacer-row" style={{ height: "20px" }}>
                                                                     <td colSpan="5"></td>
@@ -533,16 +530,8 @@ const SalesByCustomerReport = () => {
                                                         </td>
                                                     </tr>
                                                 )}
+
                                             </tbody>
-                                            {reportData.length > 0 && (
-                                                <tfoot>
-                                                    <tr className="grand-total-row">
-                                                        <td colSpan="3" className="text-start ps-3">Grand Total:</td>
-                                                        <td className="text-end double-total-val">{grandTotals.totalQty.toFixed(4)}</td>
-                                                        <td className="text-end double-total-val">{formatCurrency(grandTotals.totalSelling, "R")}</td>
-                                                    </tr>
-                                                </tfoot>
-                                            )}
                                         </table>
                                     ) : (
                                         <table className="report-table">
@@ -561,7 +550,7 @@ const SalesByCustomerReport = () => {
                                                             <tr key={customerIndex} className="invoice-item-row">
                                                                 <td className="text-start py-2">{customerGroup.customer || "Unknown Customer"}</td>
                                                                 <td className="text-end py-2">{customerTotals.total_invoices}</td>
-                                                                <td className="text-end py-2">{formatCurrency(customerTotals.selling, "R")}</td>
+                                                                <td className="text-end py-2">{formatCurrency(customerTotals.selling, getCurrencySymbol(customerGroup.final_base_currency || customerGroup.invoices?.[0]?.final_base_currency || customerGroup.invoices?.[0]?.currency))}</td>
                                                             </tr>
                                                         );
                                                     })
@@ -572,16 +561,8 @@ const SalesByCustomerReport = () => {
                                                         </td>
                                                     </tr>
                                                 )}
+
                                             </tbody>
-                                            {reportData.length > 0 && (
-                                                <tfoot>
-                                                    <tr className="grand-total-row">
-                                                        <td className="text-start py-2">Grand Total:</td>
-                                                        <td className="text-end double-total-val">{grandTotals.total_invoices}</td>
-                                                        <td className="text-end double-total-val">{formatCurrency(grandTotals.totalSelling, "R")}</td>
-                                                    </tr>
-                                                </tfoot>
-                                            )}
                                         </table>
                                     )}
                                 </div>
@@ -658,15 +639,16 @@ const SalesByCustomerReport = () => {
                      padding-bottom: 6px;
                      border-bottom: 1.5px solid #000000 !important;
                  }
-                 .report-table tfoot tr.grand-total-row td {
-                     font-weight: bold;
-                     padding-top: 6px;
-                     padding-bottom: 6px;
-                     border-bottom: 4px double #000000 !important;
-                 }
-                 .report-table tfoot tr.grand-total-row td.double-total-val {
-                     border-top: none !important;
-                 }
+                  .report-table tr.grand-total-row td {
+                      font-weight: bold;
+                      padding-top: 6px;
+                      padding-bottom: 6px;
+                      border-bottom: 4px double #000000 !important;
+                      border-top: 1.5px solid #000000 !important;
+                  }
+                  .report-table tr.grand-total-row td.double-total-val {
+                      border-top: 1.5px solid #000000 !important;
+                  }
                  
                  @page {
                      size: landscape;

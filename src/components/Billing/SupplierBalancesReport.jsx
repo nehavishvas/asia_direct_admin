@@ -23,7 +23,7 @@ const SupplierBalancesReport = () => {
         return `${y}-${m}-${day}`;
     };
 
-    const [runDate, setRunDate] = useState(location.state?.runDate || "");
+    const [runDate, setRunDate] = useState(location.state?.runDate || getTodayDateString());
     const [supplierFrom, setSupplierFrom] = useState(location.state?.supplierFrom || "");
     const [supplierTo, setSupplierTo] = useState(location.state?.supplierTo || "");
     const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
@@ -118,7 +118,7 @@ const SupplierBalancesReport = () => {
     };
 
     const handleReset = () => {
-        setRunDate("");
+        setRunDate(getTodayDateString());
         setSupplierFrom("");
         setSupplierTo("");
         setCategoryFrom("");
@@ -136,13 +136,28 @@ const SupplierBalancesReport = () => {
         window.print();
     };
 
-    const formatCurrencyValue = (val, supplierName = "") => {
+    const getCurrencySymbol = (currencyOrSupplier) => {
+        if (!currencyOrSupplier) return "R";
+        const val = currencyOrSupplier.toString().trim().toLowerCase();
+        if (val === "usd") return "$";
+        if (val === "rand" || val === "zar" || val === "r") return "R";
+        if (val === "kwacha" || val === "mwk" || val === "k") return "K";
+        if (val === "euro" || val === "eur") return "€";
+        if (val === "inr") return "₹";
+        
+        // Fallback: check if supplier name string contains currency indicators
+        if (val.includes("usd")) return "$";
+        if (val.includes("rand") || val.includes("zar")) return "R";
+        if (val.includes("kwacha") || val.includes("mwk")) return "K";
+        
+        return currencyOrSupplier.length <= 3 ? currencyOrSupplier : "R";
+    };
+
+    const formatCurrencyValue = (val, currencyOrSupplier = "ZAR") => {
         const num = parseFloat(val);
-        if (isNaN(num)) return "R 0.00";
-        const nameLower = String(supplierName || "").toLowerCase();
-        const isUsd = nameLower.includes("(usd)") || nameLower.includes("usd");
-        const symbol = isUsd ? "$ " : "R ";
-        return `${symbol}${num.toLocaleString("en-US", {
+        const symbol = getCurrencySymbol(currencyOrSupplier);
+        if (isNaN(num)) return `${symbol} 0.00`;
+        return `${symbol} ${num.toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         })}`;
@@ -395,28 +410,26 @@ const SupplierBalancesReport = () => {
                                                 {reportData.map((item, index) => (
                                                     <tr key={index}>
                                                         <td className="text-start">{item.supplier_name || "Unknown Supplier"}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.days_120, item.supplier_name)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.days_90, item.supplier_name)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.days_60, item.supplier_name)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.days_30, item.supplier_name)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.current, item.supplier_name)}</td>
-                                                        <td className="text-end fw-semibold">{formatCurrencyValue(item.total_due, item.supplier_name)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(item.days_120, item.final_base_currency || item.supplier_name)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(item.days_90, item.final_base_currency || item.supplier_name)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(item.days_60, item.final_base_currency || item.supplier_name)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(item.days_30, item.final_base_currency || item.supplier_name)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(item.current, item.final_base_currency || item.supplier_name)}</td>
+                                                        <td className="text-end fw-semibold">{formatCurrencyValue(item.total_due, item.final_base_currency || item.supplier_name)}</td>
                                                     </tr>
                                                 ))}
-                                            </tbody>
-                                            {summary && (
-                                                <tfoot className="fw-bold bg-white text-dark">
-                                                    <tr>
+                                                {summary && (
+                                                    <tr className="grand-total-row">
                                                         <td className="text-start">Total</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.days_120)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.days_90)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.days_60)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.days_30)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.current)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.total_due)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(summary.days_120, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(summary.days_90, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(summary.days_60, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(summary.days_30, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(summary.current, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
+                                                        <td className="text-end">{formatCurrencyValue(summary.total_due, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
                                                     </tr>
-                                                </tfoot>
-                                            )}
+                                                )}
+                                            </tbody>
                                         </table>
                                     </div>
                                 </>
@@ -464,11 +477,7 @@ const SupplierBalancesReport = () => {
                      -webkit-print-color-adjust: exact !important;
                      print-color-adjust: exact !important;
                  }
-                 .report-table tfoot {
-                     background-color: #ffffff !important;
-                     color: #000000 !important;
-                 }
-                 .report-table tfoot tr td {
+                 .report-table tr.grand-total-row td {
                      background-color: #ffffff !important;
                      color: #000000 !important;
                      font-weight: bold !important;
