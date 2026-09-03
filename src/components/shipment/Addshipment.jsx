@@ -63,7 +63,6 @@ export default function Addshipment() {
       // For saving data (you can send to API)
     const handleSave = () => {
       console.log("Uploaded Documents:", selectedDocs);
-    
       // To see filenames instead of [object Object]
       selectedDocs.forEach(doc => {
         console.log("Doc Type:", doc);
@@ -71,7 +70,6 @@ export default function Addshipment() {
           console.log("File:", file.name, "| Size:", file.size, "bytes");
         });
       });
-    
       handleClose();
     };
   
@@ -355,7 +353,7 @@ const handleclickprintdate = async () => {
                       <option>Select...</option>
                       <option>Sea</option>
                       <option>Air</option>
-                      <option>Land</option>
+                      <option>Road</option>
                     </select>
                   </div>
                   <div className="col-lg-6">

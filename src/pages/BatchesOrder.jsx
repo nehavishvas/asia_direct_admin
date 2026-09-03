@@ -525,7 +525,9 @@ export default function BatchesOrder() {
                         console.log(item);
                         return (
                           <TableRow key={index} className="border-bottom">
-                            <TableCell>{item.freight_number === null ? item.order_number : item.freight_number}</TableCell>
+                            <TableCell>
+                              {[item.freight_number, item.order_number].filter(Boolean).join(' / ') || '-'}
+                            </TableCell>
                             <TableCell>{item.client_Name}</TableCell>
                             <TableCell>{item.no_of_packages}</TableCell>
                             <TableCell>{item.freight}</TableCell>

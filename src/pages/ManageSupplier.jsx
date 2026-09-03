@@ -68,7 +68,7 @@ export default function ManageSupplier() {
       const checkPost = {
         staff_id: userid,
         user_type: usertype,
-        route_url: "/Admin/manage-suppliers",
+        route_url: "/Admin/manage-supplier",
       };
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}CheckPermission`,

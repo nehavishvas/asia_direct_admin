@@ -11,7 +11,9 @@ export default function Cashbook() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [clients, setClients] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [ordersPerRow, setOrdersPerRow] = useState({});
+  const [supplierInvoicesPerRow, setSupplierInvoicesPerRow] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [quer, setQuer] = useState({
@@ -64,6 +66,7 @@ export default function Cashbook() {
         setHasPermission(true);
         getCashbookList(currentPage);
         getClients();
+        getSuppliers();
       } else {
         setHasPermission(false);
         toast.error("You don't have permission to access this page");
@@ -86,15 +89,37 @@ export default function Cashbook() {
     }
   }, [currentPage, hasPermission]);
 
+  const mapCashbookRow = (row) => {
+    let allocation_type = "Customer";
+    if (row.allocation_type) {
+      allocation_type =
+        String(row.allocation_type).toLowerCase() === "supplier"
+          ? "Supplier"
+          : "Customer";
+    } else if (row.supplier_id && !row.customer_id) {
+      allocation_type = "Supplier";
+    }
+    return {
+      ...row,
+      allocation_type,
+      supplier_id: row.supplier_id || null,
+      supplier_invoice_id: row.supplier_invoice_id || null,
+      customer_id: row.customer_id || null,
+      order_id: row.order_id || null,
+    };
+  };
+
   const getCashbookList = async (page) => {
     try {
       setLoader(true);
       const response = await axios.get(
         `${process.env.REACT_APP_BASE_URL}GetCashbookList?page=${page}`
       );
-      setData(response.data.data);
+      const rows = (response.data.data || []).map(mapCashbookRow);
+      setData(rows);
       setTotalPages(response.data.pagination.totalPages);
-      fetchOrdersForCustomers(response.data.data);
+      fetchOrdersForCustomers(rows);
+      fetchInvoicesForSuppliers(rows);
     } catch (error) {
       toast.error(error?.response?.data?.message || "Failed to fetch cashbook list");
     } finally {
@@ -113,10 +138,21 @@ export default function Cashbook() {
     }
   };
 
-  const fetchOrdersForCustomers = async (data) => {
+  const getSuppliers = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}supplier-list`
+      );
+      setSuppliers(response.data.data || []);
+    } catch (error) {
+      console.error("Error fetching suppliers:", error.message);
+    }
+  };
+
+  const fetchOrdersForCustomers = async (dataList) => {
     const orders = {};
     await Promise.all(
-      data.map(async (row) => {
+      dataList.map(async (row) => {
         if (row.customer_id) {
           try {
             const response = await axios.get(
@@ -131,50 +167,185 @@ export default function Cashbook() {
     );
     setOrdersPerRow(orders);
   };
-  const handleDropdownChange = async (value, rowId, field) => {
-    setData((prevData) =>
-      prevData.map((row) =>
-        row.id === rowId ? { ...row, [field]: value } : row
-      )
+
+  const fetchInvoicesForSuppliers = async (dataList) => {
+    const invoices = {};
+    await Promise.all(
+      dataList.map(async (row) => {
+        if (row.supplier_id) {
+          try {
+            const response = await axios.get(
+              `${process.env.REACT_APP_BASE_URL || "http://192.168.1.42:8080/api/"}getSupplierAllInvoice?supplier_id=${row.supplier_id}`
+            );
+            invoices[row.id] = response.data.data || [];
+          } catch (error) {
+            invoices[row.id] = [];
+          }
+        }
+      })
     );
+    setSupplierInvoicesPerRow((prev) => ({ ...prev, ...invoices }));
+  };
+
+  const handleDropdownChange = async (value, rowId, field) => {
     if (field === "customer_id") {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}OrderInvoiceList?client_id=${value}`
-        );
+      const selectedCustId = value ? value : null;
+      setData((prevData) =>
+        prevData.map((row) =>
+          row.id === rowId
+            ? {
+                ...row,
+                customer_id: selectedCustId,
+                order_id: null,
+                supplier_id: null,
+                supplier_invoice_id: null,
+                allocation_type: "Customer",
+              }
+            : row
+        )
+      );
+      setSupplierInvoicesPerRow((prev) => ({
+        ...prev,
+        [rowId]: [],
+      }));
+
+      if (selectedCustId) {
+        try {
+          const response = await axios.get(
+            `${process.env.REACT_APP_BASE_URL || "http://192.168.1.42:8080/api/"}OrderInvoiceList?client_id=${selectedCustId}`
+          );
+          setOrdersPerRow((prev) => ({
+            ...prev,
+            [rowId]: response.data.data || [],
+          }));
+        } catch (error) {
+          toast.error("Failed to fetch orders.");
+        }
+      } else {
         setOrdersPerRow((prev) => ({
           ...prev,
-          [rowId]: response.data.data || [],
+          [rowId]: [],
         }));
-      } catch (error) {
-        toast.error("Failed to fetch orders.");
       }
       return;
     }
+
+    if (field === "supplier_id") {
+      const selectedSuppId = value ? value : null;
+      setData((prevData) =>
+        prevData.map((row) =>
+          row.id === rowId
+            ? {
+                ...row,
+                supplier_id: selectedSuppId,
+                supplier_invoice_id: null,
+                customer_id: null,
+                order_id: null,
+                allocation_type: selectedSuppId ? "Supplier" : "Customer",
+              }
+            : row
+        )
+      );
+      setOrdersPerRow((prev) => ({
+        ...prev,
+        [rowId]: [],
+      }));
+
+      if (selectedSuppId) {
+        try {
+          const response = await axios.get(
+            `${process.env.REACT_APP_BASE_URL || "http://192.168.1.42:8080/api/"}getSupplierAllInvoice?supplier_id=${selectedSuppId}`
+          );
+          setSupplierInvoicesPerRow((prev) => ({
+            ...prev,
+            [rowId]: response.data.data || [],
+          }));
+        } catch (error) {
+          toast.error("Failed to fetch supplier invoices.");
+        }
+      } else {
+        setSupplierInvoicesPerRow((prev) => ({
+          ...prev,
+          [rowId]: [],
+        }));
+      }
+      return;
+    }
+
     if (field === "order_ID") {
-      const updatedRow = data.find((row) => row.id === rowId);
-      if (!updatedRow) return;
+      const selectedOrderId = value ? value : null;
+      setData((prevData) =>
+        prevData.map((row) =>
+          row.id === rowId ? { ...row, order_id: selectedOrderId } : row
+        )
+      );
+
+      const currentRow = data.find((row) => row.id === rowId);
+      if (!currentRow) return;
+
       const payload = {
         cashbook_id: rowId,
-        customer_id: updatedRow.customer_id,
-        order_id: value,
-        allocated: updatedRow.allocated,
-        receipt: updatedRow.receipt,
+        customer_id: currentRow.customer_id || null,
+        supplier_id: null,
+        order_id: selectedOrderId,
+        supplier_invoice_id: null,
+        allocation_type: "Customer",
+        receipt: currentRow.receipt,
       };
+
       try {
         const response = await axios.post(
-          `${process.env.REACT_APP_BASE_URL}ADDcashbook`,
+          `${process.env.REACT_APP_BASE_URL || "http://192.168.1.42:8080/api/"}ADDcashbook`,
           payload
         );
         if (response.data.success) {
           getCashbookList(currentPage);
           toast.success("Updated successfully!");
         } else {
-          toast.error("Something went wrong");
+          toast.error(response.data.message || "Something went wrong");
         }
       } catch (error) {
         toast.error("Failed to update row.");
       }
+      return;
+    }
+
+    if (field === "supplier_invoice_id") {
+      const selectedInvoiceId = value ? value : null;
+      setData((prevData) =>
+        prevData.map((row) =>
+          row.id === rowId ? { ...row, supplier_invoice_id: selectedInvoiceId } : row
+        )
+      );
+
+      const currentRow = data.find((row) => row.id === rowId);
+      if (!currentRow) return;
+
+      const payload = {
+        cashbook_id: rowId,
+        customer_id: null,
+        supplier_id: currentRow.supplier_id || null,
+        order_id: null,
+        supplier_invoice_id: selectedInvoiceId,
+        allocation_type: "Supplier",
+        receipt: currentRow.receipt,
+      };
+
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_BASE_URL || "http://192.168.1.42:8080/api/"}ADDcashbook`,
+          payload
+        );
+        if (response.data.success) {
+          getCashbookList(currentPage);
+          toast.success("Updated successfully!");
+        } else {
+          toast.error(response.data.message || "Something went wrong");
+        }
+      } catch (error) {
+        toast.error("Failed to update row.");
+      }
+      return;
     }
   };
   const filteredData = data.filter(
@@ -210,9 +381,11 @@ export default function Cashbook() {
           `${process.env.REACT_APP_BASE_URL}GetCashbookList?search=${quer.search}`
         );
         setQuer({ search: "" });
-        setData(response.data.data);
+        const rows = (response.data.data || []).map(mapCashbookRow);
+        setData(rows);
         setTotalPages(response.data.pagination.totalPages);
-        fetchOrdersForCustomers(response.data.data);
+        fetchOrdersForCustomers(rows);
+        fetchInvoicesForSuppliers(rows);
       } else {
         toast.error("Access Denied");
       }
@@ -647,6 +820,7 @@ export default function Cashbook() {
                       <th>Receipt</th>
                       <th>Payment</th>
                       <th>Customer</th>
+                      <th>Supplier</th>
                       <th>Shipment Ref</th>
                       <th>Allocated</th>
                       <th>Invoice (POP)</th>
@@ -666,6 +840,7 @@ export default function Cashbook() {
                           <td>{item.payment}</td>
                           <td>
                             <select
+                              disabled={Boolean(item.supplier_id)}
                               onChange={(e) =>
                                 handleDropdownChange(
                                   e.target.value,
@@ -685,27 +860,76 @@ export default function Cashbook() {
                           </td>
                           <td>
                             <select
+                              disabled={Boolean(item.customer_id)}
                               onChange={(e) =>
                                 handleDropdownChange(
                                   e.target.value,
                                   item.id,
-                                  "order_ID"
+                                  "supplier_id"
                                 )
                               }
-                              value={item.order_id || ""}
+                              value={item.supplier_id || ""}
                             >
                               <option value="">Select...</option>
-                              {ordersPerRow[item.id]?.map((order) => (
-                                <option
-                                  key={order.order_ID}
-                                  value={order.order_ID}
-                                >
-                                  {order.order_number}
+                              {suppliers.map((s) => (
+                                <option key={s.id} value={s.id}>
+                                  {s.name}
                                 </option>
                               ))}
                             </select>
                           </td>
-                          <td>{item.order_id ? "YES" : ""}</td>
+                          <td>
+                            {item.allocation_type === "Supplier" || (!item.customer_id && item.supplier_id) ? (
+                              <select
+                                disabled={!item.supplier_id}
+                                onChange={(e) =>
+                                  handleDropdownChange(
+                                    e.target.value,
+                                    item.id,
+                                    "supplier_invoice_id"
+                                  )
+                                }
+                                value={item.supplier_invoice_id || ""}
+                              >
+                                <option value="">Select...</option>
+                                {supplierInvoicesPerRow[item.id]?.map((inv) => {
+                                  const invoiceId = inv.supplier_invoice_id !== undefined ? inv.supplier_invoice_id : inv.id;
+                                  const refNo = inv.reference_no || inv.supplier_invoice_no || invoiceId;
+                                  return (
+                                    <option
+                                      key={invoiceId}
+                                      value={invoiceId}
+                                    >
+                                      {refNo}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+                            ) : (
+                              <select
+                                disabled={!item.customer_id}
+                                onChange={(e) =>
+                                  handleDropdownChange(
+                                    e.target.value,
+                                    item.id,
+                                    "order_ID"
+                                  )
+                                }
+                                value={item.order_id || ""}
+                              >
+                                <option value="">Select...</option>
+                                {ordersPerRow[item.id]?.map((order) => (
+                                  <option
+                                    key={order.order_ID}
+                                    value={order.order_ID}
+                                  >
+                                    {order.order_number}
+                                  </option>
+                                ))}
+                              </select>
+                            )}
+                          </td>
+                          <td>{item.order_id || item.supplier_invoice_id ? "YES" : ""}</td>
                           <td className="text-center">
                             {item.freight_pop_docs && item.freight_pop_docs.filter((doc) => doc.document_name === "POP (AD)").length > 0 ? (
                               item.freight_pop_docs
@@ -828,7 +1052,7 @@ export default function Cashbook() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="10" className="text-center">
+                        <td colSpan="11" className="text-center">
                           No data available.
                         </td>
                       </tr>

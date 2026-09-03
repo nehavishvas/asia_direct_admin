@@ -35,7 +35,7 @@ export default function Excel() {
       const checkPost = {
         staff_id: userid,
         user_type: usertype,
-        route_url: "/Admin/upload-excel",
+        route_url: "/Admin/oploadfile",
       };
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}CheckPermission`,

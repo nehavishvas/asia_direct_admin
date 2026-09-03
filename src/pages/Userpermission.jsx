@@ -389,6 +389,7 @@ const UserPermission = ({ staffId }) => {
     }
   };
 
+
   const handleclicknav = () => {
     navigate("/Admin/manage-staff");
     // window.history.back();
