@@ -1814,7 +1814,7 @@ export default function UserFreight() {
                                               </div>
                                               <div className="col-md-6 col-sm-6 text-md-end text-start">
                                                 <button
-                                                  className="redBtn"
+                                                  className="uploadBtn"
                                                   onClick={handleShow}
                                                 >
                                                   Upload Documents

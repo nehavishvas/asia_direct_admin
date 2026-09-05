@@ -376,7 +376,7 @@ const ManageCustomer = () => {
     console.log("item", item);
     navigate("/Admin/QuotationInFreight", { state: { data: item } });
   };
-    const handlekey = (e) => {
+  const handlekey = (e) => {
     if (e.charCode < 44 || e.charCode > 57) {
       e.preventDefault();
     }
@@ -715,9 +715,8 @@ const ManageCustomer = () => {
                               <td>
                                 {item.status == 1 ? (
                                   <label
-                                    className={`switch round ${
-                                      isChecked ? "checked" : ""
-                                    }`}
+                                    className={`switch round ${isChecked ? "checked" : ""
+                                      }`}
                                   >
                                     <input
                                       type="checkbox"
@@ -733,9 +732,8 @@ const ManageCustomer = () => {
                                   </label>
                                 ) : (
                                   <label
-                                    className={`switch round ${
-                                      isChecked ? "checked" : ""
-                                    }`}
+                                    className={`switch round ${isChecked ? "checked" : ""
+                                      }`}
                                   >
                                     <input
                                       type="checkbox"
@@ -865,84 +863,84 @@ const ManageCustomer = () => {
                                                   className="form-control"
                                                 ></input>
                                               </div>
-                                              <div className="col-6 d-flex">
+                                              <div className="col-6 d-flex gap-2">
                                                 <div className="col-md-4 mb-3">
-                                                <label>Country Code</label>
-                                                <select
-                                                  name="country_code"
-                                                  onChange={submitInputdata}
-                                                  value={inputData.country_code}
-                                                  className="form-control"
-                                                >
-                                                  <option>Select...</option>
-                                                  {updatedata &&
-                                                    updatedata.length > 0 &&
-                                                    updatedata.map(
-                                                      (item, index) => {
-                                                        return (
-                                                          <>
-                                                            <option
-                                                              key={index}
-                                                              value={item.id}
-                                                            >
-                                                              +{item.phonecode} {item.shortname}
-                                                            </option>
-                                                          </>
-                                                        );
-                                                      }
-                                                    )}
-                                                </select>
-                                              </div>
-                                              <div className="col-md-8 mb-3">
-                                                <label>Cellphone</label>
-                                                <input
-                                                  type="text"
-                                                  name="cellphone"
-                                                  onChange={submitInputdata}
-                                                  value={inputData.cellphone}
-                                                  onKeyPress={handlepress}
-                                                  className="form-control"
-                                                ></input>
-                                              </div>
+                                                  <label>Country Code</label>
+                                                  <select
+                                                    name="country_code"
+                                                    onChange={submitInputdata}
+                                                    value={inputData.country_code}
+                                                    className="form-control"
+                                                  >
+                                                    <option>Select...</option>
+                                                    {updatedata &&
+                                                      updatedata.length > 0 &&
+                                                      updatedata.map(
+                                                        (item, index) => {
+                                                          return (
+                                                            <>
+                                                              <option
+                                                                key={index}
+                                                                value={item.id}
+                                                              >
+                                                                +{item.phonecode} {item.shortname}
+                                                              </option>
+                                                            </>
+                                                          );
+                                                        }
+                                                      )}
+                                                  </select>
                                                 </div>
-                                               <div className="col-6 d-flex">
+                                                <div className="col-md-8 mb-3">
+                                                  <label>Cellphone</label>
+                                                  <input
+                                                    type="text"
+                                                    name="cellphone"
+                                                    onChange={submitInputdata}
+                                                    value={inputData.cellphone}
+                                                    onKeyPress={handlepress}
+                                                    className="form-control"
+                                                  ></input>
+                                                </div>
+                                              </div>
+                                              <div className="col-6 d-flex gap-2">
                                                 <div className="col-md-4 mb-3">
-                                                <label>Country Code</label>
-                                                <select
-                                                  name="country_code"
-                                                  onChange={submitInputdata}
-                                                  value={inputData.country_code}
-                                                  className="form-control"
-                                                >
-                                                  <option>Select...</option>
-                                                  {updatedata &&
-                                                    updatedata.length > 0 &&
-                                                    updatedata.map(
-                                                      (item, index) => {
-                                                        return (
-                                                          <>
-                                                            <option
-                                                              key={index}
-                                                              value={item.id}
-                                                            >
-                                                              +{item.phonecode} {item.shortname}
-                                                            </option>
-                                                          </>
-                                                        );
-                                                      }
-                                                    )}
-                                                </select>
-                                              </div>
-                                              <div className="col-md-8 mb-3">
-                                                <label>Telephone</label>
-                                                <input
-                                                  type="text"
-                                                  name="telephone"
-                                                  onChange={submitInputdata}
-                                                  value={inputData.telephone}
-                                                  className="form-control"
-                                                ></input>
-                                              </div>
+                                                  <label>Country Code</label>
+                                                  <select
+                                                    name="country_code"
+                                                    onChange={submitInputdata}
+                                                    value={inputData.country_code}
+                                                    className="form-control"
+                                                  >
+                                                    <option>Select...</option>
+                                                    {updatedata &&
+                                                      updatedata.length > 0 &&
+                                                      updatedata.map(
+                                                        (item, index) => {
+                                                          return (
+                                                            <>
+                                                              <option
+                                                                key={index}
+                                                                value={item.id}
+                                                              >
+                                                                +{item.phonecode} {item.shortname}
+                                                              </option>
+                                                            </>
+                                                          );
+                                                        }
+                                                      )}
+                                                  </select>
+                                                </div>
+                                                <div className="col-md-8 mb-3">
+                                                  <label>Telephone</label>
+                                                  <input
+                                                    type="text"
+                                                    name="telephone"
+                                                    onChange={submitInputdata}
+                                                    value={inputData.telephone}
+                                                    className="form-control"
+                                                  ></input>
+                                                </div>
                                               </div>
                                               <div className="col-md-6 mb-3">
                                                 <label>Address 1</label>
@@ -1198,38 +1196,38 @@ const ManageCustomer = () => {
                           <p className="text-danger mb-0">{error.email}</p>
                         </div>
                       </div>
-                      
+
                       <div className="row my-3">
-                        <div className="d-flex col-md-6">
-                            <div className="col-4">
-                          <label className="mb-3">Country Code</label>
-                          <select
-                            name="country_code"
-                            onChange={handlechange}
-                            className="form-control"
-                          >
-                            <option>Select...</option>
-                            {updatedata &&
-                              updatedata.length > 0 &&
-                              updatedata.map((item) => (
-                                <option key={item.id} value={item.phonecode}>
-                                  +{item.phonecode} {item.shortname}
-                                </option>
-                              ))}
-                          </select>
-                            </div>
-                            <div className="col-8">
-                               <label>Cellphone</label>
-                          <input
-                            type="text"
-                            name="cellphone"
-                            onChange={handlechange}
-                             onKeyPress={handlekey}
-                            placeholder="Cellphone"
-                            className="w-100 border form-control p-2 rounded"
-                          />
-                        </div>
-                         
+                        <div className="d-flex gap-2 col-md-6">
+                          <div className="col-4">
+                            <label className="mb-3">Country Code</label>
+                            <select
+                              name="country_code"
+                              onChange={handlechange}
+                              className="form-control"
+                            >
+                              <option>Select...</option>
+                              {updatedata &&
+                                updatedata.length > 0 &&
+                                updatedata.map((item) => (
+                                  <option key={item.id} value={item.phonecode}>
+                                    +{item.phonecode} {item.shortname}
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
+                          <div className="col-8">
+                            <label>Cellphone</label>
+                            <input
+                              type="text"
+                              name="cellphone"
+                              onChange={handlechange}
+                              onKeyPress={handlekey}
+                              placeholder="Cellphone"
+                              className="w-100 border form-control p-2 rounded"
+                            />
+                          </div>
+
                           {/* <input
                             type="text"
                             name="cellphone"
@@ -1239,48 +1237,48 @@ const ManageCustomer = () => {
                           /> */}
                           <p className="text-danger mb-0">{error.cellphone}</p>
                         </div>
-                            <div className="col-6 d-flex ">
- <div className="col-4">
-                          <label className="mb-3">Country Code</label>
-                          <select
-                            name="country_code"
-                           
-                           onChange={handlechange}
-                            
-                            className="form-control"
-                          >
-                            <option>Select...</option>
-                            {updatedata &&
-                              updatedata.length > 0 &&
-                              updatedata.map((item) => (
-                                <option key={item.id} value={item.phonecode}>
-                                  +{item.phonecode} {item.shortname}
-                                </option>
-                              ))}
-                          </select>
-                            </div>
-                        <div className="col-md-8">
+                        <div className="col-6 d-flex gap-2">
+                          <div className="col-4">
+                            <label className="mb-3">Country Code</label>
+                            <select
+                              name="country_code"
 
-                          <label>Telephone</label>
-                          <input
-                            type="text"
-                            name="telephone"
-                            onChange={handlechange}
-                             onKeyPress={handlekey}
-                            placeholder="Telephone"
-                            className="w-100 border p-2 rounded"
-                          />
-                          {/* <input
+                              onChange={handlechange}
+
+                              className="form-control"
+                            >
+                              <option>Select...</option>
+                              {updatedata &&
+                                updatedata.length > 0 &&
+                                updatedata.map((item) => (
+                                  <option key={item.id} value={item.phonecode}>
+                                    +{item.phonecode} {item.shortname}
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
+                          <div className="col-md-8">
+
+                            <label>Telephone</label>
+                            <input
+                              type="text"
+                              name="telephone"
+                              onChange={handlechange}
+                              onKeyPress={handlekey}
+                              placeholder="Telephone"
+                              className="w-100 border p-2 rounded"
+                            />
+                            {/* <input
                             type="text"
                             name="telephone"
                             value={inputData.telephone}
                             onChange={submitInputdata}
                             className="w-100 border p-2 rounded"
                           /> */}
-                          <p className="text-danger mb-0">{error.telephone}</p>
+                            <p className="text-danger mb-0">{error.telephone}</p>
+                          </div>
                         </div>
-                            </div>
-                        
+
                       </div>
                       <div className="row my-3">
                         <div className="col-md-6">
@@ -1331,13 +1329,13 @@ const ManageCustomer = () => {
                           />
                         </div>
                       </div>
-<div className="row my-3">
+                      <div className="row my-3">
                         <div className="col-md-6">
                           <label>Country</label>
                           <select
                             name="country"
                             value={data.country}
-                           onChange={handlechange}
+                            onChange={handlechange}
                             className="form-control"
                           >
                             <option>Select...</option>
@@ -1468,7 +1466,7 @@ const ManageCustomer = () => {
                   </button>
                 </Box>
               </Modal>
-              
+
             </div>
           </div>
         </div>

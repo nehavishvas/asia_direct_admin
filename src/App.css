@@ -1090,7 +1090,7 @@ p.text-primary {
   background: var(--blue) !important;
   color: white;
   padding: 13px;
-  border-radius: 12px 12px 0px 0px;
+  border-radius: 8px 8px 0px 0px;
 }
 
 .MuiModal-backdrop .MuiBox-root {
@@ -6001,7 +6001,7 @@ td {
 }
 
 .modal-content {
-  border-radius: 12px;
+  border-radius: 8px;
 }
 
 .updateFreList span,
@@ -6556,10 +6556,34 @@ h4 {
   font-weight: 600;
 }
 
+button.uploadBtn,
+.updateLoading button.uploadBtn,
+.manageFreight button.uploadBtn,
+.updateLoading .uploadBtn,
+.manageFreight .uploadBtn,
 .uploadBtn {
-  background-color: #fff !important;
-  color: var(--blue);
-  border: 1px dotted var(--gray);
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--blue) !important;
+  border: 1px dotted var(--gray) !important;
+  padding: 8px 20px !important;
+  border-radius: 5px;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  cursor: pointer;
+}
+
+button.uploadBtn:hover,
+.updateLoading button.uploadBtn:hover,
+.manageFreight button.uploadBtn:hover,
+.updateLoading .uploadBtn:hover,
+.manageFreight .uploadBtn:hover,
+.uploadBtn:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--blue) !important;
+  border: 1px dotted var(--gray) !important;
 }
 
 .searchManageFre input {

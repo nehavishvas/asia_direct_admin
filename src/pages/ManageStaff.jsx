@@ -673,487 +673,489 @@ export default function ManageStaff() {
           <div className="container-fluid">
             <div>
               <div>
-              <div className="row manageFreight">
-                <div className="col-12">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <div className="">
-                      <h4 className="freight_hd">Add Staff</h4>
-                    </div>
-                    <div className="d-flex justify-content-end align-items-center">
-                      <div className="searchManageFre">
-                        <input
-                          className="px-2 py-1 rounded "
-                          type="text"
-                          placeholder="Search"
-                          value={searchQuery}
-                          onChange={handleSearch}
-                        ></input>
+                <div className="row manageFreight">
+                  <div className="col-12">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="">
+                        <h4 className="freight_hd">Add Staff</h4>
                       </div>
-                      <div className="ms-2">
-                        <button type="button" onClick={openModal}>
-                          Add
-                        </button>
-                      </div>
-                      <div className="ms-2">
-                        <button type="button" onClick={handleclickKPI}>
-                          Leave Request
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {isModalOpen && (
-                <div className="custom-modal">
-                  <div className="custom-modal-content">
-                    <div className="custom-modal-header">
-                      <h5 className="custom-modal-title">Add Staff</h5>
-                      <button
-                        type="button"
-                        className="btn-close"
-                        onClick={closeModal}
-                      >
-                        <CloseIcon />
-                      </button>
-                    </div>
-                    <div className="custom-modal-body">
-                      <div className="row d-flex">
-                        <div className="mb-3 col-6">
-                          <label
-                            htmlFor="exampleFormControlInput1"
-                            className="form-label mb-2 md_staff"
-                          >
-                            Email address
-                          </label>
-                          <div className="col-12">
-                            <input
-                              type="email"
-                              className="form-control"
-                              id="exampleFormControlInput1"
-                              placeholder="name@example.com"
-                              onChange={handlechange}
-                              name="staff_email"
-                            />
-                            <p className="text-danger">{error.staff_email}</p>
-                          </div>
-                        </div>
-                        <div className="mb-3 col-6">
-                          <label
-                            htmlFor="inputText"
-                            className="form-label mb-2 md_staff"
-                          >
-                            Full Name
-                          </label>
-                          <div className="col-sm-12">
-                            <input
-                              type="text"
-                              onChange={handlechange}
-                              name="staff_name"
-                              className="form-control"
-                              id="inputText"
-                              placeholder="Enter your Name"
-                            />
-                            <p className="text-danger">{error.staff_name}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="mb-3 col-6">
-                          <label>Country</label>
-                          <select
-                            name="country"
-                            id="country"
-                            onChange={handlechange}
-                            className="w-100 border p-2 rounded form-control"
-                          >
-                            <option>Select...</option>
-                            {updatedata &&
-                              updatedata.length > 0 &&
-                              updatedata.map((item, index) => {
-                                return (
-                                  <>
-                                    <option key={item.id} value={item.id}>
-                                      {item.name}
-                                    </option>
-                                  </>
-                                );
-                              })}
-                          </select>
-                          <p className="text-danger">{error.country}</p>
-                        </div>
-                        <div className="mb-3 col-6 position-relative">
-                          <label className="mb-1">Select Country Data</label>
-
-                          {/* Dropdown button */}
-                          <div
-                            className="form-control d-flex justify-content-between align-items-center"
-                            onClick={toggleDropdown}
-                            style={{ cursor: "pointer" }}
-                          >
-                            <span>
-                              {selectedCountries.length > 0
-                                ? `${selectedCountries.length} selected`
-                                : "Select countries"}
-                            </span>
-                            <span>▾</span>
-                          </div>
-                          <p className="text-danger">{error.access_country}</p>
-
-                          {/* Dropdown menu */}
-                          {open && (
-                            <div
-                              className="border rounded mt-1 p-2 bg-white position-absolute w-100"
-                              style={{ zIndex: 1000 }}
-                            >
-                              {countries.map((country) => (
-                                <div key={country.id} className="form-check">
-                                  <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    value={country.id}
-                                    checked={selectedCountries.includes(
-                                      country.id,
-                                    )}
-                                    onChange={handleCheckboxChange}
-                                  />
-                                  <label className="form-check-label">
-                                    {country.name}
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="col-12 d-flex">
-                        <div className="mb-3 col-md-4">
-                          <label>Phone Code</label>
-                          <select
-                            name="country_code"
-                            id="country"
-                            onChange={handlechange}
-                            className="w-100 border p-2 rounded form-control"
-                          >
-                            <option>Select...</option>
-                            {updatedata &&
-                              updatedata.length > 0 &&
-                              updatedata.map((item, index) => {
-                                return (
-                                  <>
-                                    <option
-                                      key={item.id}
-                                      value={item.phonecode}
-                                    >
-                                      +{item.phonecode} {item.shortname}
-                                    </option>
-                                  </>
-                                );
-                              })}
-                          </select>
-                          <p className="text-danger">{error.country_code}</p>
-                        </div>
-                        <div className="mb-3 col-md-8">
-                          <label>Phone Number</label>
+                      <div className="d-flex justify-content-end align-items-center">
+                        <div className="searchManageFre">
                           <input
-                            name="phone_no"
-                            id="country"
-                            onChange={handlechange}
-                            className="w-100 border p-2 rounded form-control"
-                          />
-                          <p className="text-danger">{error.phone_no}</p>
+                            className="px-2 py-1 rounded "
+                            type="text"
+                            placeholder="Search"
+                            value={searchQuery}
+                            onChange={handleSearch}
+                          ></input>
+                        </div>
+                        <div className="ms-2">
+                          <button type="button" onClick={openModal}>
+                            Add
+                          </button>
+                        </div>
+                        <div className="ms-2">
+                          <button type="button" onClick={handleclickKPI}>
+                            Leave Request
+                          </button>
                         </div>
                       </div>
-                      <div className="row">
-                        <div className="mb-3 col-6">
-                          <label
-                            htmlFor="inputText"
-                            className="form-label mb-2 md_staff"
-                          >
-                            Assign Roles
-                          </label>
-                          <FormControl style={{ width: "100%" }}>
-                            <Select
-                              id="demo-multiple-checkbox"
-                              multiple
-                              value={selectedRoles}
-                              onChange={handleRoleChange}
-                              input={<OutlinedInput />}
-                              renderValue={(selected) =>
-                                selected
-                                  .map(
-                                    (role) =>
-                                      roleOptions.find(
-                                        (option) => option.value === role,
-                                      )?.label,
-                                  )
-                                  .join(", ")
-                              }
-                              MenuProps={MenuProps}
-                              className="country_sel"
-                              placeholder="Assign Roles"
-                            >
-                              <MenuItem value="all">
-                                <Checkbox
-                                  checked={isAllSelected}
-                                  indeterminate={
-                                    selectedRoles.length > 0 &&
-                                    selectedRoles.length < roleOptions.length
-                                  }
-                                />
-                                <ListItemText primary="Select All" />
-                              </MenuItem>
-                              {roleOptions.map((option) => (
-                                <MenuItem
-                                  key={option.value}
-                                  value={option.value}
-                                >
-                                  <Checkbox
-                                    checked={selectedRoles.includes(
-                                      option.value,
-                                    )}
-                                  />
-                                  <ListItemText primary={option.label} />
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </div>
-                        <div className="col-6">
-                          <label
-                            htmlFor="inputPassword"
-                            className="form-label mb-2 md_staff"
-                          >
-                            New Password
-                          </label>
-                          <div className="col-sm-12">
-                            <input
-                              type="password"
-                              className="form-control"
-                              name="new_password"
-                              onChange={handlechange}
-                              id="inputPassword"
-                              placeholder="password"
-                            />
-                            <p className="text-danger mb-0">
-                              {error.new_password}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="custom-modal-footer">
-                      <button
-                        type="button"
-                        className="btn text-white"
-                        onClick={handleclick}
-                        style={{ backgroundColor: "#1b2245" }}
-                      >
-                        Add Member
-                      </button>
                     </div>
                   </div>
                 </div>
-              )}
-              {loader ? (
-                <div className="loader-container">
-                  <div className="loader"></div>
-                  <p className="loader-text">
-                    Updating... This may take some time
-                  </p>
-                </div>
-              ) : (
-                <div className="table-responsive mt-3">
-                  <table className="table table-striped tableICon">
-                    <thead>
-                      <tr>
-                        <th scope="col">Sr.No.</th>
-                        <th scope="col">Full Name</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Country</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">View</th>
-                        <th scope="col">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody style={{ border: "none" }}>
-                      {data &&
-                        data.length > 0 &&
-                        data.map((item, index) => {
-                          return (
-                            <tr className="border-bottom" key={index}>
-                              <td>{startIndex + index + 1}</td>
-                              <td>{item.full_name}</td>
-                              <td>{item.email}</td>
-                              <td>{item?.country_name}</td>
-                              <td>
-                                {item.status === 1 ? (
-                                  <label
-                                    className={`switch round ${isChecked ? "checked" : ""
-                                      }`}
-                                  >
+                {isModalOpen && (
+                  <div className="custom-modal">
+                    <div className="custom-modal-content">
+                      <div className="custom-modal-header">
+                        <h5 className="custom-modal-title">Add Staff</h5>
+                        <button
+                          type="button"
+                          className="btn-close"
+                          onClick={closeModal}
+                        >
+                          <CloseIcon />
+                        </button>
+                      </div>
+                      <div className="custom-modal-body">
+                        <div className="row d-flex">
+                          <div className="mb-3 col-6">
+                            <label
+                              htmlFor="exampleFormControlInput1"
+                              className="form-label mb-2 md_staff"
+                            >
+                              Email address
+                            </label>
+                            <div className="col-12">
+                              <input
+                                type="email"
+                                className="form-control"
+                                id="exampleFormControlInput1"
+                                placeholder="name@example.com"
+                                onChange={handlechange}
+                                name="staff_email"
+                              />
+                              <p className="text-danger">{error.staff_email}</p>
+                            </div>
+                          </div>
+                          <div className="mb-3 col-6">
+                            <label
+                              htmlFor="inputText"
+                              className="form-label mb-2 md_staff"
+                            >
+                              Full Name
+                            </label>
+                            <div className="col-sm-12">
+                              <input
+                                type="text"
+                                onChange={handlechange}
+                                name="staff_name"
+                                className="form-control"
+                                id="inputText"
+                                placeholder="Enter your Name"
+                              />
+                              <p className="text-danger">{error.staff_name}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="row">
+                          <div className="mb-3 col-6">
+                            <label>Country</label>
+                            <select
+                              name="country"
+                              id="country"
+                              onChange={handlechange}
+                              className="form-select"
+                            >
+                              <option>Select...</option>
+                              {updatedata &&
+                                updatedata.length > 0 &&
+                                updatedata.map((item, index) => {
+                                  return (
+                                    <>
+                                      <option key={item.id} value={item.id}>
+                                        {item.name}
+                                      </option>
+                                    </>
+                                  );
+                                })}
+                            </select>
+                            <p className="text-danger">{error.country}</p>
+                          </div>
+                          <div className="mb-3 col-6 position-relative">
+                            <label className="mb-1">Select Country Data</label>
+
+                            {/* Dropdown button */}
+                            <div
+                              className="form-select d-flex justify-content-between align-items-center"
+                              onClick={toggleDropdown}
+                              style={{ cursor: "pointer", fontSize: "13px" }}
+                            >
+                              <span>
+                                {selectedCountries.length > 0
+                                  ? `${selectedCountries.length} selected`
+                                  : "Select countries"}
+                              </span>
+
+                            </div>
+                            <p className="text-danger">{error.access_country}</p>
+
+                            {/* Dropdown menu */}
+                            {open && (
+                              <div
+                                className="border rounded mt-1 p-2 bg-white position-absolute w-100"
+                                style={{ zIndex: 1000 }}
+                              >
+                                {countries.map((country) => (
+                                  <div key={country.id} className="form-check">
                                     <input
+                                      className="form-check-input"
                                       type="checkbox"
-                                      checked={!isChecked}
-                                      onClick={() => {
-                                        handlelcicckac(item.id);
-                                      }}
-                                      onChange={() => {
-                                        handleToggle(item.id);
-                                      }}
+                                      value={country.id}
+                                      checked={selectedCountries.includes(
+                                        country.id,
+                                      )}
+                                      onChange={handleCheckboxChange}
                                     />
-                                    <span className="slider round"></span>
-                                  </label>
-                                ) : (
-                                  <label
-                                    className={`switch round ${isChecked ? "checked" : ""
-                                      }`}
+                                    <label className="form-check-label">
+                                      {country.name}
+                                    </label>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="row">
+
+
+                          <div className="mb-3 col-md-4">
+                            <label>Phone Code</label>
+                            <select
+                              name="country_code"
+                              id="country"
+                              onChange={handlechange}
+                              className=" form-select"
+                            >
+                              <option>Select...</option>
+                              {updatedata &&
+                                updatedata.length > 0 &&
+                                updatedata.map((item, index) => {
+                                  return (
+                                    <>
+                                      <option
+                                        key={item.id}
+                                        value={item.phonecode}
+                                      >
+                                        +{item.phonecode} {item.shortname}
+                                      </option>
+                                    </>
+                                  );
+                                })}
+                            </select>
+                            <p className="text-danger">{error.country_code}</p>
+                          </div>
+                          <div className="mb-3 col-md-8">
+                            <label>Phone Number</label>
+                            <input
+                              name="phone_no"
+                              id="country"
+                              onChange={handlechange}
+                              className="form-control"
+                            />
+                            <p className="text-danger">{error.phone_no}</p>
+                          </div>
+
+                        </div>
+                        <div className="row">
+                          <div className="mb-3 col-6">
+                            <label
+                              htmlFor="inputText"
+                              className="form-label mb-2 md_staff"
+                            >
+                              Assign Roles
+                            </label>
+                            <FormControl style={{ width: "100%" }}>
+                              <Select
+                                id="demo-multiple-checkbox"
+                                multiple
+                                value={selectedRoles}
+                                onChange={handleRoleChange}
+                                input={<OutlinedInput />}
+                                renderValue={(selected) =>
+                                  selected
+                                    .map(
+                                      (role) =>
+                                        roleOptions.find(
+                                          (option) => option.value === role,
+                                        )?.label,
+                                    )
+                                    .join(", ")
+                                }
+                                MenuProps={MenuProps}
+                                className="country_sel"
+                                placeholder="Assign Roles"
+                              >
+                                <MenuItem value="all">
+                                  <Checkbox
+                                    checked={isAllSelected}
+                                    indeterminate={
+                                      selectedRoles.length > 0 &&
+                                      selectedRoles.length < roleOptions.length
+                                    }
+                                  />
+                                  <ListItemText primary="Select All" />
+                                </MenuItem>
+                                {roleOptions.map((option) => (
+                                  <MenuItem
+                                    key={option.value}
+                                    value={option.value}
                                   >
-                                    <input
-                                      type="checkbox"
-                                      checked={isChecked}
-                                      onClick={() => {
-                                        handlelcicckac(item.id);
-                                      }}
-                                      onChange={() => {
-                                        handleToggle(item.id);
-                                      }}
+                                    <Checkbox
+                                      checked={selectedRoles.includes(
+                                        option.value,
+                                      )}
                                     />
-                                    <span className="slider round"></span>
-                                  </label>
-                                )}
-                              </td>
-                              <td>
-                                <fa
-                                  className="fa fa-eye"
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => {
-                                    handleclicknavigate(item);
-                                  }}
-                                ></fa>
-                              </td>
-                              <td>
-                                <div className="action_btn1 d-flex align-items-center">
-                                  {/* <CgPerformance    style={{
+                                    <ListItemText primary={option.label} />
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                          </div>
+                          <div className="col-6">
+                            <label
+                              htmlFor="inputPassword"
+                              className="form-label mb-2 md_staff"
+                            >
+                              New Password
+                            </label>
+                            <div className="col-sm-12">
+                              <input
+                                type="password"
+                                className="form-control"
+                                name="new_password"
+                                onChange={handlechange}
+                                id="inputPassword"
+                                placeholder="password"
+                              />
+                              <p className="text-danger mb-0">
+                                {error.new_password}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="custom-modal-footer">
+                        <button
+                          type="button"
+                          className="blueBtn"
+                          onClick={handleclick}
+
+                        >
+                          Add Member
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {loader ? (
+                  <div className="loader-container">
+                    <div className="loader"></div>
+                    <p className="loader-text">
+                      Updating... This may take some time
+                    </p>
+                  </div>
+                ) : (
+                  <div className="table-responsive mt-3">
+                    <table className="table table-striped tableICon">
+                      <thead>
+                        <tr>
+                          <th scope="col">Sr.No.</th>
+                          <th scope="col">Full Name</th>
+                          <th scope="col">Email</th>
+                          <th scope="col">Country</th>
+                          <th scope="col">Status</th>
+                          <th scope="col">View</th>
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody style={{ border: "none" }}>
+                        {data &&
+                          data.length > 0 &&
+                          data.map((item, index) => {
+                            return (
+                              <tr className="border-bottom" key={index}>
+                                <td>{startIndex + index + 1}</td>
+                                <td>{item.full_name}</td>
+                                <td>{item.email}</td>
+                                <td>{item?.country_name}</td>
+                                <td>
+                                  {item.status === 1 ? (
+                                    <label
+                                      className={`switch round ${isChecked ? "checked" : ""
+                                        }`}
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={!isChecked}
+                                        onClick={() => {
+                                          handlelcicckac(item.id);
+                                        }}
+                                        onChange={() => {
+                                          handleToggle(item.id);
+                                        }}
+                                      />
+                                      <span className="slider round"></span>
+                                    </label>
+                                  ) : (
+                                    <label
+                                      className={`switch round ${isChecked ? "checked" : ""
+                                        }`}
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onClick={() => {
+                                          handlelcicckac(item.id);
+                                        }}
+                                        onChange={() => {
+                                          handleToggle(item.id);
+                                        }}
+                                      />
+                                      <span className="slider round"></span>
+                                    </label>
+                                  )}
+                                </td>
+                                <td>
+                                  <fa
+                                    className="fa fa-eye"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => {
+                                      handleclicknavigate(item);
+                                    }}
+                                  ></fa>
+                                </td>
+                                <td>
+                                  <div className="action_btn1 d-flex align-items-center">
+                                    {/* <CgPerformance    style={{
                                         color: "rgb(27 34 69)",
                                         marginRight: "10px",
                                         width: "20px",
                                         height: "15px",
                                         cursor: "pointer",
                                       }}   onClick={()=>{handleclickKPI(item)}}    /> */}
-                                  <FaEdit
-                                    onClick={() => {
-                                      openModal2(item.id);
-                                    }}
-                                    style={{
-                                      color: "rgb(27 34 69)",
-                                      marginRight: "10px",
-                                      width: "20px",
-                                      height: "15px",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                  <div className="action_btn1 me-2">
-                                    <AiFillMessage
-                                      style={{ cursor: "pointer" }}
-                                      className="text-success"
+                                    <FaEdit
                                       onClick={() => {
-                                        querryinQuote(item);
+                                        openModal2(item.id);
+                                      }}
+                                      style={{
+                                        color: "rgb(27 34 69)",
+                                        marginRight: "10px",
+                                        width: "20px",
+                                        height: "15px",
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                    <div className="action_btn1 me-2">
+                                      <AiFillMessage
+                                        style={{ cursor: "pointer" }}
+                                        className="text-success"
+                                        onClick={() => {
+                                          querryinQuote(item);
+                                        }}
+                                      />
+                                    </div>
+                                    <AiFillDelete
+                                      className="text-danger"
+                                      style={{ cursor: "pointer" }}
+                                      onClick={() => {
+                                        handledelete(item.id);
                                       }}
                                     />
                                   </div>
-                                  <AiFillDelete
-                                    className="text-danger"
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() => {
-                                      handledelete(item.id);
-                                    }}
-                                  />
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                    </tbody>
-                  </table>
-                  <div className="text-center d-flex justify-content-end align-items-center">
-                    <button
-                      disabled={currentPage === 1}
-                      className="bg_page"
-                      onClick={() => handlePageChange(currentPage - 1)}
-                    >
-                      {" "}
-                      <i className="fi fi-rr-angle-small-left page_icon"></i>
-                    </button>
-                    <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
-                    <button
-                      disabled={currentPage === totalPages}
-                      className="bg_page"
-                      onClick={() => handlePageChange(currentPage + 1)}
-                    >
-                      <i className="fi fi-rr-angle-small-right page_icon"></i>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-            <Modal
-              open={isModalOpen2}
-              onClose={closeModal2}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                }}
-              >
-                <div className="modal-header">
-                  <h2 id="modal-modal-title">Edit Staff</h2>
-                  <button className="btn btn-close" onClick={closeModal2}>
-                    <CloseIcon />
-                  </button>
-                </div>
-                <div className="newModalGap">
-                  <div className="row">
-                    <div className="col-6">
-                      <label
-                        htmlFor="exampleFormControlInput1"
-                        className="ware_label"
+                                </td>
+                              </tr>
+                            );
+                          })}
+                      </tbody>
+                    </table>
+                    <div className="text-center d-flex justify-content-end align-items-center">
+                      <button
+                        disabled={currentPage === 1}
+                        className="bg_page"
+                        onClick={() => handlePageChange(currentPage - 1)}
                       >
-                        Email address
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control mb-3"
-                        value={inputdata?.staff_email}
-                        id="exampleFormControlInput1"
-                        placeholder="name@example.com"
-                        onChange={handleupdateapi}
-                        name="staff_email"
-                      />
-                    </div>
-
-                    <div className="col-6">
-                      <label htmlFor="inputText" className="ware_label">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        onChange={handleupdateapi}
-                        name="staff_name"
-                        value={inputdata?.staff_name}
-                        className="form-control mb-3"
-                        id="inputText"
-                        placeholder="Enter your Name"
-                      />
+                        {" "}
+                        <i className="fi fi-rr-angle-small-left page_icon"></i>
+                      </button>
+                      <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
+                      <button
+                        disabled={currentPage === totalPages}
+                        className="bg_page"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                      >
+                        <i className="fi fi-rr-angle-small-right page_icon"></i>
+                      </button>
                     </div>
                   </div>
+                )}
+              </div>
+              <Modal
+                open={isModalOpen2}
+                onClose={closeModal2}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                  }}
+                >
+                  <div className="modal-header">
+                    <h2 id="modal-modal-title">Edit Staff</h2>
+                    <button className="btn btn-close" onClick={closeModal2}>
+                      <CloseIcon />
+                    </button>
+                  </div>
+                  <div className="newModalGap">
+                    <div className="row">
+                      <div className="col-6">
+                        <label
+                          htmlFor="exampleFormControlInput1"
+                          className="ware_label"
+                        >
+                          Email address
+                        </label>
+                        <input
+                          type="email"
+                          className="form-control mb-3"
+                          value={inputdata?.staff_email}
+                          id="exampleFormControlInput1"
+                          placeholder="name@example.com"
+                          onChange={handleupdateapi}
+                          name="staff_email"
+                        />
+                      </div>
 
-                  {/* <div className="mb-3">
+                      <div className="col-6">
+                        <label htmlFor="inputText" className="ware_label">
+                          Full Name
+                        </label>
+                        <input
+                          type="text"
+                          onChange={handleupdateapi}
+                          name="staff_name"
+                          value={inputdata?.staff_name}
+                          className="form-control mb-3"
+                          id="inputText"
+                          placeholder="Enter your Name"
+                        />
+                      </div>
+                    </div>
+
+                    {/* <div className="mb-3">
                       <label
                         htmlFor="country"
                         className="form-label mb-2 md_staff"
@@ -1176,170 +1178,170 @@ export default function ManageStaff() {
                         <p className="text-danger">{error.country}</p>
                       </div>
                     </div> */}
-                  <div className="d-flex col-12">
-                    <div className="mb-3 col-md-4">
-                      <label>Country Code</label>
-                      <input
-                        name="country_code"
-                        id="country"
-                        value={inputdata?.country_code}
-                        className="form-control"
-                        onChange={handleupdateapi}
-                      />
-                    </div>
-                    <div className="col-8">
-                      <div className="col-12">
-                        <label htmlFor="inputText" className="ware_label">
-                          Phone Number
-                        </label>
+                    <div className="row">
+                      <div className="mb-3 col-md-4">
+                        <label>Country Code</label>
                         <input
-                          type="text"
+                          name="country_code"
+                          id="country"
+                          value={inputdata?.country_code}
+                          className="form-control"
                           onChange={handleupdateapi}
-                          name="phone_no"
-                          value={inputdata?.phone_no}
-                          className="form-control mb-3"
-                          id="inputText"
-                          placeholder="98745658"
                         />
                       </div>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="mb-3 col-md-6">
-                      <label>Country</label>
-                      <select
-                        name="country"
-                        id="country"
-                        value={inputdata?.country}
-                        className="form-control"
-                        onChange={handleupdateapi}
-                      >
-                        <option>Select...</option>
-                        {updatedata &&
-                          updatedata.length > 0 &&
-                          updatedata.map((item, index) => {
-                            return (
-                              <>
-                                <option key={item.id} value={item.id}>{item.name}</option>
-                              </>
-                            );
-                          })}
-                      </select>
-                    </div>
-                    <div className="col-6">
-                      <label htmlFor="multipleSelect" className="ware_label">
-                        Assign Roles
-                      </label>
-                      <br />
-                      <FormControl className="w-100">
-                        <Select
-                          multiple
-                          value={selectedRoles}
-                          onChange={handleRoleChange}
-                          input={<OutlinedInput />} // Removed label from OutlinedInput
-                          renderValue={(selected) =>
-                            selected
-                              .map(
-                                (role) =>
-                                  roleOptions.find(
-                                    (option) => option.value === role,
-                                  )?.label,
-                              )
-                              .join(", ")
-                          }
-                          MenuProps={MenuProps}
-                          className="country_sel"
-                        >
-                          {roleOptions.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                              <Checkbox
-                                checked={
-                                  selectedRoles.indexOf(option.value) > -1
-                                }
-                              />
-                              <ListItemText primary={option.label} />
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      {error.roles && (
-                        <p className="text-danger mb-0">{error.roles}</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-6">
-                      <label htmlFor="inputPassword" className="ware_label">
-                        New Password
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control mb-3"
-                        name="new_password"
-                        onChange={handleupdateapi}
-                        id="inputPassword"
-                        placeholder="password"
-                      />
-                      <p className="text-danger mb-0">{error.new_password}</p>
-                    </div>
-                    <div className="mb-3 col-6 position-relative">
-                      <label className="mb-1">Select Country Data</label>
-
-                      {/* Dropdown button */}
-                      <div
-                        className="form-control d-flex justify-content-between align-items-center"
-                        onClick={toggleDropdown}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <span>
-                          {selectedCountries.length > 0
-                            ? `${selectedCountries.length} selected`
-                            : "Select countries"}
-                        </span>
-                        <span>▾</span>
-                      </div>
-
-                      {/* Dropdown menu */}
-                      {open && (
-                        <div
-                          className="border rounded mt-1 p-2 bg-white position-absolute w-100"
-                          style={{ zIndex: 1000 }}
-                        >
-                          {countries.map((country) => (
-                            <div key={country.id} className="form-check">
-                              <input
-                                className="form-check-input"
-                                type="checkbox"
-                                value={country.id}
-                                checked={selectedCountries.includes(
-                                  country.id,
-                                )}
-                                onChange={handleCheckboxChange}
-                              />
-                              <label className="form-check-label">
-                                {country.name}
-                              </label>
-                            </div>
-                          ))}
+                      <div className="col-md-8">
+                        <div className="">
+                          <label htmlFor="inputText" className="ware_label">
+                            Phone Number
+                          </label>
+                          <input
+                            type="text"
+                            onChange={handleupdateapi}
+                            name="phone_no"
+                            value={inputdata?.phone_no}
+                            className="form-control mb-3"
+                            id="inputText"
+                            placeholder="98745658"
+                          />
                         </div>
-                      )}
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="mb-3 col-md-6">
+                        <label>Country</label>
+                        <select
+                          name="country"
+                          id="country"
+                          value={inputdata?.country}
+                          className="form-select"
+                          onChange={handleupdateapi}
+                        >
+                          <option>Select...</option>
+                          {updatedata &&
+                            updatedata.length > 0 &&
+                            updatedata.map((item, index) => {
+                              return (
+                                <>
+                                  <option key={item.id} value={item.id}>{item.name}</option>
+                                </>
+                              );
+                            })}
+                        </select>
+                      </div>
+                      <div className="col-6">
+                        <label htmlFor="multipleSelect" className="ware_label">
+                          Assign Roles
+                        </label>
+                        <br />
+                        <FormControl className="w-100">
+                          <Select
+                            multiple
+                            value={selectedRoles}
+                            onChange={handleRoleChange}
+                            input={<OutlinedInput />} // Removed label from OutlinedInput
+                            renderValue={(selected) =>
+                              selected
+                                .map(
+                                  (role) =>
+                                    roleOptions.find(
+                                      (option) => option.value === role,
+                                    )?.label,
+                                )
+                                .join(", ")
+                            }
+                            MenuProps={MenuProps}
+                            className="country_sel"
+                          >
+                            {roleOptions.map((option) => (
+                              <MenuItem key={option.value} value={option.value}>
+                                <Checkbox
+                                  checked={
+                                    selectedRoles.indexOf(option.value) > -1
+                                  }
+                                />
+                                <ListItemText primary={option.label} />
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        {error.roles && (
+                          <p className="text-danger mb-0">{error.roles}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-6">
+                        <label htmlFor="inputPassword" className="ware_label">
+                          New Password
+                        </label>
+                        <input
+                          type="password"
+                          className="form-control mb-3"
+                          name="new_password"
+                          onChange={handleupdateapi}
+                          id="inputPassword"
+                          placeholder="password"
+                        />
+                        <p className="text-danger mb-0">{error.new_password}</p>
+                      </div>
+                      <div className="mb-3 col-6 position-relative">
+                        <label className="mb-1">Select Country Data</label>
+
+                        {/* Dropdown button */}
+                        <div
+                          className="form-control d-flex justify-content-between align-items-center"
+                          onClick={toggleDropdown}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <span>
+                            {selectedCountries.length > 0
+                              ? `${selectedCountries.length} selected`
+                              : "Select countries"}
+                          </span>
+                          <span>▾</span>
+                        </div>
+
+                        {/* Dropdown menu */}
+                        {open && (
+                          <div
+                            className="border rounded mt-1 p-2 bg-white position-absolute w-100"
+                            style={{ zIndex: 1000 }}
+                          >
+                            {countries.map((country) => (
+                              <div key={country.id} className="form-check">
+                                <input
+                                  className="form-check-input"
+                                  type="checkbox"
+                                  value={country.id}
+                                  checked={selectedCountries.includes(
+                                    country.id,
+                                  )}
+                                  onChange={handleCheckboxChange}
+                                />
+                                <label className="form-check-label">
+                                  {country.name}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-center mt-2 unsetLt">
+                      <Button
+                        variant="contained"
+                        className="submit_btn"
+                        onClick={postData1234}
+                      >
+                        Submit
+                      </Button>
                     </div>
                   </div>
-                  <div className="text-center mt-2 unsetLt">
-                    <Button
-                      variant="contained"
-                      className="submit_btn"
-                      onClick={postData1234}
-                    >
-                      Submit
-                    </Button>
-                  </div>
-                </div>
-              </Box>
-            </Modal>
+                </Box>
+              </Modal>
+            </div>
           </div>
         </div>
-      </div>
       )}
     </>
   );

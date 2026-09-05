@@ -1027,7 +1027,7 @@ export default function CustomebyUserap() {
                     <span class="line"></span>
                   </div>
                   <div className="col-md-6 col-sm-6 text-start text-sm-end mt-3 mt-sm-0">
-                    <button className="blueBtn" onClick={handleShow}>
+                    <button className="uploadBtn" onClick={handleShow}>
                       Upload Documents
                     </button>
 

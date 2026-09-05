@@ -2446,7 +2446,7 @@ export default function Managefreight() {
                                                   </div>
                                                   <div className="col-md-6 text-end">
                                                     <button
-                                                      className="blueBtn"
+                                                      className="uploadBtn"
                                                       onClick={handleShow}
                                                     >
                                                       Upload Documents

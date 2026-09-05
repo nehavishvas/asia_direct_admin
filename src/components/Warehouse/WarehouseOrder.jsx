@@ -3042,7 +3042,7 @@ export default function WarehouseOrder() {
                                 <div className="col-sm-6">
                                   <div className="text-end">
                                     <button
-                                      className="redBtn"
+                                      className="uploadBtn"
                                       onClick={handleShow}
                                     >
                                       Upload Documents

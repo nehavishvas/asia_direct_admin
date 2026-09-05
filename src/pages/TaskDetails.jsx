@@ -5,7 +5,7 @@
 // //     const { id } = useParams();
 // //   return (
 // //     <div>
-      
+
 // //     </div>
 // //   )
 // // }
@@ -87,7 +87,7 @@ export default function TaskDetails() {
     <div className="container mt-4">
       <div className="d-flex align-items-center mb-3">
         <ArrowBack style={{ cursor: "pointer", marginRight: "10px" }} onClick={() => navigate(-1)} />
-        <h3 className="mb-0">Task Comments</h3>
+        <h3 className="mb-0 freight_hd">Task Comments</h3>
       </div>
 
       <div className="table-responsive">

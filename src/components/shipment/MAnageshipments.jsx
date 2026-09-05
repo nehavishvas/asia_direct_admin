@@ -1513,12 +1513,12 @@ export default function MAnageshipments() {
                         <span class="line"></span>
                       </div>
                       <div className="col-3">
-                        <Button
-                          className="btn  btn-primary"
+                        <button
+                          className="uploadBtn"
                           onClick={handleShow}
                         >
                           Upload Documents
-                        </Button>
+                        </button>
                         {show1 ? (
                           <Modal
                             open={show1}

@@ -1326,7 +1326,7 @@ const ManageCollectionDelivery = () => {
                                 <div className="modal-content">
                                     <div className="modal-header">
                                         <h5 className="modal-title">Assign Supplier</h5>
-                                        <button type="button" className="btn btn-close" onClick={() => setModalOpen(false)}><CloseIcon /></button>
+                                        <button type="button" className="border-0 bg-transparent p-0 d-flex align-items-center justify-content-center" onClick={() => setModalOpen(false)} style={{ outline: 'none', cursor: 'pointer', color: '#fff' }}><CloseIcon style={{ color: '#fff', fontSize: '24px' }} /></button>
                                     </div>
                                     <div className="modal-body">
                                         <div className="mb-3">
@@ -1358,7 +1358,7 @@ const ManageCollectionDelivery = () => {
                                 <div className="modal-content">
                                     <div className="modal-header">
                                         <h5 className="modal-title">Complete Collection</h5>
-                                        <button type="button" className="btn btn-close" onClick={() => setCompleteModalOpen(false)}><CloseIcon /></button>
+                                        <button type="button" className="border-0 bg-transparent p-0 d-flex align-items-center justify-content-center" onClick={() => setCompleteModalOpen(false)} style={{ outline: 'none', cursor: 'pointer', color: '#fff' }}><CloseIcon style={{ color: '#fff', fontSize: '24px' }} /></button>
                                     </div>
                                     <div className="modal-body">
                                         <div className="mb-3">
@@ -1437,13 +1437,13 @@ const ManageCollectionDelivery = () => {
                                 <div className="modal-content" style={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
                                     <div className="modal-header" style={{ background: '#1d2044', color: '#fff' }}>
                                         <h5 className="modal-title fw-bold">Edit Collection / Delivery Details</h5>
-                                        <button type="button" className="btn btn-close btn-close-white" onClick={() => setEditModalOpen(false)} style={{ filter: 'invert(1)' }}><CloseIcon /></button>
+                                        <button type="button" className="border-0 bg-transparent p-0 d-flex align-items-center justify-content-center" onClick={() => setEditModalOpen(false)} style={{ outline: 'none', cursor: 'pointer', color: '#fff' }}><CloseIcon style={{ color: '#fff', fontSize: '24px' }} /></button>
                                     </div>
                                     <div className="modal-body p-4" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
                                         <div className="row g-3 text-dark">
                                             {/* SECTION 1: GENERAL INFO */}
                                             <div className="col-12 border-bottom pb-2 mb-2">
-                                                <h6 className="fw-bold text-primary mb-0">General Information</h6>
+                                                <h6 className="fw-bold   mb-0">General Information</h6>
                                             </div>
                                             <div className="col-md-6">
                                                 <label className="form-label fw-semibold">Customer Ref</label>
@@ -1456,7 +1456,7 @@ const ManageCollectionDelivery = () => {
 
                                             {/* SECTION 2: SUPPLIER INFO */}
                                             <div className="col-12 border-bottom pb-2 mb-2 mt-4">
-                                                <h6 className="fw-bold text-primary mb-0">Supplier & Pickup Information</h6>
+                                                <h6 className="fw-bold   mb-0">Supplier & Pickup Information</h6>
                                             </div>
                                             <div className="col-md-4">
                                                 <label className="form-label fw-semibold">Supplier Name</label>
@@ -1477,7 +1477,7 @@ const ManageCollectionDelivery = () => {
 
                                             {/* SECTION 3: WAREHOUSE & PACKAGE DETAILS */}
                                             <div className="col-12 border-bottom pb-2 mb-2 mt-4">
-                                                <h6 className="fw-bold text-primary mb-0">Warehouse & Package Details</h6>
+                                                <h6 className="fw-bold   mb-0">Warehouse & Package Details</h6>
                                             </div>
                                             <div className="col-md-3">
                                                 <label className="form-label fw-semibold">Create New Warehouse Order</label>
@@ -1525,7 +1525,7 @@ const ManageCollectionDelivery = () => {
 
                                             {/* SECTION 4: HAZARDOUS & COSTS */}
                                             <div className="col-12 border-bottom pb-2 mb-2 mt-4">
-                                                <h6 className="fw-bold text-primary mb-0">Hazardous Status & Costing Information</h6>
+                                                <h6 className="fw-bold   mb-0">Hazardous Status & Costing Information</h6>
                                             </div>
                                             <div className="col-md-3">
                                                 <label className="form-label fw-semibold">Hazardous</label>
@@ -1557,7 +1557,7 @@ const ManageCollectionDelivery = () => {
 
                                             {/* SECTION 5: ATTACHMENTS */}
                                             <div className="col-12 border-bottom pb-2 mb-2 mt-4">
-                                                <h6 className="fw-bold text-primary mb-0">Attachments</h6>
+                                                <h6 className="fw-bold   mb-0">Attachments</h6>
                                             </div>
                                             <div className="col-md-6">
                                                 <label className="form-label fw-semibold">Box Marking Attachment</label>
@@ -1578,7 +1578,7 @@ const ManageCollectionDelivery = () => {
                                         </div>
                                     </div>
                                     <div className="modal-footer" style={{ borderTop: '1px solid #dee2e6' }}>
-                                        <button type="button" className="btn btn-secondary px-4" onClick={() => setEditModalOpen(false)}>Cancel</button>
+                                        <button type="button" className="redBtn" onClick={() => setEditModalOpen(false)}>Cancel</button>
                                         <button type="button" className="btn btn-primary px-4" onClick={submitEditForm} style={{ background: '#1d2044', borderColor: '#1d2044' }}>Save Changes</button>
                                     </div>
                                 </div>
@@ -1592,7 +1592,7 @@ const ManageCollectionDelivery = () => {
                                 <div className="modal-content text-dark" style={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 30px rgba(0,0,0,0.3)' }}>
                                     <div className="modal-header" style={{ background: '#1d2044', color: '#fff', borderTopLeftRadius: '12px', borderTopRightRadius: '12px' }}>
                                         <h5 className="modal-title fw-bold">Collection & Delivery Details</h5>
-                                        <button type="button" className="btn btn-close btn-close-white" onClick={() => setViewModalOpen(false)} style={{}}><CloseIcon /></button>
+                                        <button type="button" className="border-0 bg-transparent p-0 d-flex align-items-center justify-content-center" onClick={() => setViewModalOpen(false)} style={{ outline: 'none', cursor: 'pointer', color: '#fff' }}><CloseIcon style={{ color: '#fff', fontSize: '24px' }} /></button>
                                     </div>
                                     <div className="modal-body p-4" style={{ maxHeight: '75vh', overflowY: 'auto' }}>
                                         <div className="formDetails p-0">

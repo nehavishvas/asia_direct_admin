@@ -945,9 +945,9 @@ export default function ClearanceOrder() {
                 <span class="line"></span>
               </div>
               <div className="col-3">
-                <Button className="btn  btn-primary" onClick={handleShow}>
+                <button className="uploadBtn" onClick={handleShow}>
                   Upload Documents
-                </Button>
+                </button>
 
                 {
                   show1 ? <Modal
