@@ -38,6 +38,8 @@ import OrderDetailspage from "./pages/OrderDetailspage";
 import Letterofauthority from "./pages/Letterofauthority";
 import Billofladding from "./pages/Billofladding";
 import WarehouseOrder from "./components/Warehouse/WarehouseOrder";
+import WarehouseDaysOutstandingReport from "./components/Warehouse/WarehouseDaysOutstandingReport";
+import SupplierWarehouseDaysOutstandingReport from "./components/Warehouse/SupplierWarehouseDaysOutstandingReport";
 import Batchdetails from "./pages/Batchdetails";
 import { MyContext1 } from "./Context/MyContext";
 import Freightbyuserdetail from "./pages/Freightbyuserdetail";
@@ -158,7 +160,7 @@ const Uniovwersalpage = lazy(() => import("./components/Uniovwersalpage"));
 export default function App() {
   const [text, setText] = useState("");
   const [permission, setPermission] = useState("");
-  console.log("03-09-26", "16:15");
+  console.log("04-09-26", "11:05");
 
   useEffect(() => {
     const handleDropdownClick = (event) => {
@@ -274,9 +276,17 @@ export default function App() {
                   element={<WarehouseOrder />}
                 />
                 <Route
+                  path="/Admin/warehouse-days-outstanding-report"
+                  element={<WarehouseDaysOutstandingReport />}
+                />
+                <Route
                   index
                   path="/Admin/SupplierWarehouse"
                   element={<SupplierWarehouse />}
+                />
+                <Route
+                  path="/Admin/supplier-warehouse-days-outstanding-report"
+                  element={<SupplierWarehouseDaysOutstandingReport />}
                 />
                 <Route
                   index

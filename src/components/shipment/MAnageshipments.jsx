@@ -11,7 +11,7 @@ import {
   Modal,
   Select,
 } from "@mui/material";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaFileExcel } from "react-icons/fa";
 import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -22,6 +22,24 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import Swal from "sweetalert2";
 
 const pageSize = 10;
+
+const getDate30DaysAgo = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 30);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
+const getTodayDateString = () => {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
 export default function MAnageshipments() {
   const userid = JSON.parse(localStorage.getItem("data123"))?.id;
   const usertype = JSON.parse(localStorage.getItem("data123"))?.user_type;
@@ -49,6 +67,10 @@ export default function MAnageshipments() {
   const [loader, setLoader] = useState(true);
   const navigate = useNavigate();
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [openExportModal, setOpenExportModal] = useState(false);
+  const [exportStartDate, setExportStartDate] = useState(getDate30DaysAgo());
+  const [exportEndDate, setExportEndDate] = useState(getTodayDateString());
+  const [exportLoader, setExportLoader] = useState(false);
   const [date, setDate] = useState("");
   const [comment, setComment] = useState("");
   const [show1, setShow1] = useState(false);
@@ -151,6 +173,60 @@ export default function MAnageshipments() {
   const handlePageChange = (page) => {
     setCurrentPage(page);
     getwarehouse(page, searchQuery, activeTab);
+  };
+
+  const handleExportExcel = async () => {
+    if (exportStartDate && exportEndDate && exportStartDate > exportEndDate) {
+      toast.error("Start Date cannot be after End Date.");
+      return;
+    }
+
+    try {
+      setExportLoader(true);
+      const payload = {
+        search: searchQuery || "",
+        type: activeTab || "active",
+        start_date: exportStartDate || "",
+        end_date: exportEndDate || "",
+        format: "excel",
+      };
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}exportShipmentReport`,
+        payload,
+        {
+          responseType: "blob",
+        }
+      );
+
+      let filename = `Shipments_Report_${Date.now()}.xlsx`;
+      const contentDisposition = response.headers["content-disposition"];
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (match && match[1]) {
+          filename = match[1].replace(/['"]/g, "").trim();
+        }
+      }
+
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+
+      toast.success("Excel report downloaded successfully!");
+      setOpenExportModal(false);
+    } catch (error) {
+      console.error("Export Error:", error);
+      toast.error("Failed to download Excel report.");
+    } finally {
+      setExportLoader(false);
+    }
   };
 
   const openModal1 = async () => {
@@ -677,6 +753,20 @@ export default function MAnageshipments() {
                         setSearchQuery(e.target.value);
                       }}
                     />
+                    <button
+                      className="ms-2 d-inline-flex align-items-center gap-1"
+                      onClick={() => {
+                        if (!exportStartDate || !exportEndDate) {
+                          setExportStartDate(getDate30DaysAgo());
+                          setExportEndDate(getTodayDateString());
+                        }
+                        setOpenExportModal(true);
+                      }}
+                      title="Export Excel Report"
+                    >
+                      <FaFileExcel style={{ color: "#28a745" }} />
+                      Export Excel
+                    </button>
                     <button className="ms-2" onClick={openModal1}>
                       Add Shipment
                     </button>
@@ -999,6 +1089,127 @@ export default function MAnageshipments() {
                     >
                       Update Status
                     </Button>
+                  </div>
+                </Box>
+              </Modal>
+              {/* Export Shipment Report Modal */}
+              <Modal
+                open={openExportModal}
+                onClose={() => !exportLoader && setOpenExportModal(false)}
+              >
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    width: 440,
+                    maxWidth: "95vw",
+                    bgcolor: "background.paper",
+                    boxShadow: 24,
+                    borderRadius: "8px",
+                    p: 4,
+                  }}
+                >
+                  <div className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <h5 className="m-0 fw-bold d-flex align-items-center gap-2" style={{ color: "#1b2245" }}>
+                      <FaFileExcel style={{ color: "#28a745", fontSize: "1.3rem" }} />
+                      Export Shipment Report
+                    </h5>
+                    <div
+                      style={{ cursor: exportLoader ? "not-allowed" : "pointer" }}
+                      onClick={() => !exportLoader && setOpenExportModal(false)}
+                    >
+                      <ClearIcon style={{ color: "red", background: "#eeee", borderRadius: "50%" }} />
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <label className="form-label font-weight-bold small text-muted mb-0">
+                        Date Range (Default: Last 30 Days)
+                      </label>
+                      <div className="d-flex gap-2 align-items-center">
+                        <button
+                          type="button"
+                          className="btn btn-link btn-sm text-decoration-none p-0"
+                          style={{ fontSize: "12px" }}
+                          onClick={() => {
+                            setExportStartDate(getDate30DaysAgo());
+                            setExportEndDate(getTodayDateString());
+                          }}
+                        >
+                          Last 30 Days
+                        </button>
+                        <span className="text-muted" style={{ fontSize: "12px" }}>|</span>
+                        <button
+                          type="button"
+                          className="btn btn-link btn-sm text-decoration-none p-0 text-danger"
+                          style={{ fontSize: "12px" }}
+                          onClick={() => {
+                            setExportStartDate("");
+                            setExportEndDate("");
+                          }}
+                        >
+                          Clear
+                        </button>
+                      </div>
+                    </div>
+                    <div className="row g-2">
+                      <div className="col-6">
+                        <label className="form-label small fw-bold">Start Date</label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          value={exportStartDate}
+                          onChange={(e) => setExportStartDate(e.target.value)}
+                        />
+                      </div>
+                      <div className="col-6">
+                        <label className="form-label small fw-bold">End Date</label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          value={exportEndDate}
+                          onChange={(e) => setExportEndDate(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="alert alert-light border p-2 mb-3 small text-muted">
+                    <div>
+                      <strong>Shipment Type:</strong>{" "}
+                      <span className="badge bg-primary">
+                        {activeTab === "active" ? "Active Shipments" : "Customs Released"}
+                      </span>
+                    </div>
+                    {searchQuery && (
+                      <div className="mt-1">
+                        <strong>Search Filter:</strong> "{searchQuery}"
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="d-flex justify-content-end gap-2 mt-4">
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm px-3"
+                      onClick={() => setOpenExportModal(false)}
+                      disabled={exportLoader}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-success btn-sm px-3 d-inline-flex align-items-center gap-1"
+                      onClick={handleExportExcel}
+                      disabled={exportLoader}
+                      style={{ backgroundColor: "#198754", borderColor: "#198754" }}
+                    >
+                      <FaFileExcel />
+                      {exportLoader ? "Downloading..." : "Download Excel"}
+                    </button>
                   </div>
                 </Box>
               </Modal>

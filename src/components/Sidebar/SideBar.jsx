@@ -181,6 +181,11 @@ const routes = [
             name: "Supplier Invoice",
             icon: <ShoppingCartOutlinedIcon />,
           },
+          {
+            path: "/Admin/customer-balance-report",
+            name: "Customer Balance",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
         ],
       },
     ],

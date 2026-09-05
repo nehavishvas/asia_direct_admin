@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PrintIcon from "@mui/icons-material/Print";
 
-const CustomerBalancesReport = () => {
+const WarehouseDaysOutstandingReport = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
@@ -14,7 +14,7 @@ const CustomerBalancesReport = () => {
     const usertype = userdata?.user_type;
     const [hasPermission, setHasPermission] = useState(null);
 
-    // Default to today's date (YYYY-MM-DD)
+    // Default to today's date
     const getTodayDateString = () => {
         const d = new Date();
         const y = d.getFullYear();
@@ -24,15 +24,31 @@ const CustomerBalancesReport = () => {
     };
 
     // Filter states
-    const [runAtDate, setRunAtDate] = useState(location.state?.runAtDate || location.state?.runDate || getTodayDateString());
+    const [runAtDate, setRunAtDate] = useState(location.state?.runAtDate || getTodayDateString());
     const [customerFrom, setCustomerFrom] = useState(location.state?.customerFrom || "");
     const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
+    const [origin, setOrigin] = useState(location.state?.origin || "");
+    const [destination, setDestination] = useState(location.state?.destination || "");
 
+    const [countries, setCountries] = useState([]);
     const [reportData, setReportData] = useState([]);
+    const [totals, setTotals] = useState(null);
     const [loader, setLoader] = useState(false);
     const [searched, setSearched] = useState(false);
 
     const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
+
+    // Fetch countries for origin and destination dropdowns
+    const fetchCountries = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}GetCountries`);
+            if (response.data && response.data.data) {
+                setCountries(response.data.data);
+            }
+        } catch (error) {
+            console.error("Error fetching countries:", error);
+        }
+    };
 
     const checkPermission = async () => {
         try {
@@ -43,7 +59,7 @@ const CustomerBalancesReport = () => {
             }
             const postdata = {
                 staff_id: userid,
-                route_url: "/Admin/customer-balance-report",
+                route_url: "/GetWarehouseOrders",
                 user_type: usertype,
             };
             const response = await axios.post(
@@ -66,16 +82,19 @@ const CustomerBalancesReport = () => {
     };
 
     useEffect(() => {
+        fetchCountries();
         checkPermission();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Fetch report data
+    // Fetch report data from API
     const fetchReportData = async (
         e,
         optRunAtDate = runAtDate,
         optCustomerFrom = customerFrom,
-        optCustomerTo = customerTo
+        optCustomerTo = customerTo,
+        optOrigin = origin,
+        optDestination = destination
     ) => {
         if (e) e.preventDefault();
         setLoader(true);
@@ -85,24 +104,28 @@ const CustomerBalancesReport = () => {
                 run_at_date: optRunAtDate || getTodayDateString(),
                 customer_from: optCustomerFrom ? optCustomerFrom : null,
                 customer_to: optCustomerTo ? optCustomerTo : null,
-                style: "summary",
+                origin: optOrigin ? optOrigin : null,
+                destination: optDestination ? optDestination : null,
             };
 
             const response = await axios.post(
-                `${process.env.REACT_APP_BASE_URL}getCustomerBalancesDaysOutstandingReport`,
+                `${process.env.REACT_APP_BASE_URL}getWarehouseDaysOutstandingReport`,
                 payload
             );
 
             if (response.data && response.data.success) {
                 setReportData(response.data.data || []);
+                setTotals(response.data.totals || null);
             } else {
                 setReportData([]);
+                setTotals(null);
                 toast.error(response.data?.message || "No data found");
             }
         } catch (error) {
-            console.error("Error fetching customer balances days outstanding report:", error);
+            console.error("Error fetching warehouse days outstanding report:", error);
             toast.error(error.response?.data?.message || "Failed to fetch report data");
             setReportData([]);
+            setTotals(null);
         } finally {
             setLoader(false);
         }
@@ -113,37 +136,19 @@ const CustomerBalancesReport = () => {
         setRunAtDate(today);
         setCustomerFrom("");
         setCustomerTo("");
-        fetchReportData(null, today, "", "");
+        setOrigin("");
+        setDestination("");
+        fetchReportData(null, today, "", "", "", "");
     };
 
     const handlePrint = () => {
         window.print();
     };
 
-    const getCurrencySymbol = (currencyOrCustomer) => {
-        if (!currencyOrCustomer) return "R";
-        const val = currencyOrCustomer.toString().trim().toLowerCase();
-        if (val === "usd" || val === "$") return "$";
-        if (val === "rand" || val === "zar" || val === "r") return "R";
-        if (val === "kwacha" || val === "mwk" || val === "k") return "K";
-        if (val === "euro" || val === "eur" || val === "€") return "€";
-        if (val === "inr" || val === "₹") return "₹";
-
-        if (val.includes("usd")) return "$";
-        if (val.includes("rand") || val.includes("zar")) return "R";
-        if (val.includes("kwacha") || val.includes("mwk")) return "K";
-
-        return currencyOrCustomer.length <= 3 ? currencyOrCustomer : "R";
-    };
-
-    const formatCurrencyValue = (val, currencyOrCustomer = "ZAR") => {
+    const formatNumber = (val) => {
         const num = parseFloat(val);
-        const symbol = getCurrencySymbol(currencyOrCustomer);
-        if (isNaN(num)) return `${symbol} 0.00`;
-        return `${symbol} ${num.toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        })}`;
+        if (isNaN(num)) return "0";
+        return num.toLocaleString("en-US");
     };
 
     const formatDateString = (dateVal) => {
@@ -154,6 +159,12 @@ const CustomerBalancesReport = () => {
         const mm = String(date.getMonth() + 1).padStart(2, "0");
         const yyyy = date.getFullYear();
         return `${dd}/${mm}/${yyyy}`;
+    };
+
+    const getCountryName = (countryIdOrName) => {
+        if (!countryIdOrName || countryIdOrName === "All") return "All Countries";
+        const found = countries.find((c) => String(c.id) === String(countryIdOrName));
+        return found ? found.name : countryIdOrName;
     };
 
     const getCustomerFilterText = () => {
@@ -174,7 +185,7 @@ const CustomerBalancesReport = () => {
                     <div className="container-fluid no-print">
                         <div className="row manageFreight">
                             <div className="col-12">
-                                <h4 className="freight_hd">Customer Balances Days Outstanding Report</h4>
+                                <h4 className="freight_hd">Warehouse Days Outstanding Report</h4>
                                 <div className="line"></div>
                             </div>
                         </div>
@@ -193,7 +204,7 @@ const CustomerBalancesReport = () => {
                                     <ArrowBackIcon /> Back
                                 </button>
                                 <h4 className="freight_hd mb-0 ms-2" style={{ fontSize: "1.25rem" }}>
-                                    Customer Balances - Days Outstanding Report
+                                    Warehouse Days Outstanding Report
                                 </h4>
                             </div>
                             <div className="d-flex align-items-center gap-2">
@@ -213,7 +224,7 @@ const CustomerBalancesReport = () => {
                             <div className="card-body">
                                 <form onSubmit={fetchReportData} className="row g-2 justify-content-center align-items-end">
                                     {/* Run At Date */}
-                                    <div className="col-lg-3 col-md-4 col-sm-6">
+                                    <div className="col-lg-2 col-md-4 col-sm-6">
                                         <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>
                                             Run At Date
                                         </label>
@@ -226,7 +237,7 @@ const CustomerBalancesReport = () => {
                                     </div>
 
                                     {/* Customer Range */}
-                                    <div className="col-lg-5 col-md-5 col-sm-6">
+                                    <div className="col-lg-3 col-md-4 col-sm-6">
                                         <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>
                                             Customer
                                         </label>
@@ -258,8 +269,48 @@ const CustomerBalancesReport = () => {
                                         </div>
                                     </div>
 
-                                    {/* Action Buttons */}
-                                    <div className="col-lg-3 col-md-3 col-sm-6 d-flex align-items-center gap-2">
+                                    {/* Country of Origin */}
+                                    <div className="col-lg-2 col-md-4 col-sm-6">
+                                        <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>
+                                            Country of Origin
+                                        </label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={origin}
+                                            onChange={(e) => setOrigin(e.target.value)}
+                                        >
+                                            <option value="">All Countries</option>
+                                            {countries &&
+                                                countries.map((item) => (
+                                                    <option key={item.id} value={item.id}>
+                                                        {item.name}
+                                                    </option>
+                                                ))}
+                                        </select>
+                                    </div>
+
+                                    {/* Delivery to Country */}
+                                    <div className="col-lg-2 col-md-4 col-sm-6">
+                                        <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>
+                                            Delivery to Country
+                                        </label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={destination}
+                                            onChange={(e) => setDestination(e.target.value)}
+                                        >
+                                            <option value="">All Countries</option>
+                                            {countries &&
+                                                countries.map((item) => (
+                                                    <option key={item.id} value={item.id}>
+                                                        {item.name}
+                                                    </option>
+                                                ))}
+                                        </select>
+                                    </div>
+
+                                    {/* Buttons */}
+                                    <div className="col-lg-3 col-md-4 col-sm-6 d-flex align-items-center gap-2">
                                         <button type="submit" className="btn btn-primary blueBtn btn-sm w-50">
                                             View
                                         </button>
@@ -288,7 +339,7 @@ const CustomerBalancesReport = () => {
                                         {/* Report Header */}
                                         <div className="report-header mb-4 text-start">
                                             <h4 className="report-title mb-1 fw-bold text-dark">
-                                                Customer Balances - Days Outstanding Report
+                                                Warehouse Days Outstanding Report
                                             </h4>
                                             <h6 className="report-subtitle mb-4 fw-bold text-secondary">
                                                 Asia Direct Africa
@@ -303,6 +354,18 @@ const CustomerBalancesReport = () => {
                                                             </span>
                                                             <span className="text-secondary">{getCustomerFilterText()}</span>
                                                         </div>
+                                                        <div className="d-flex mb-1">
+                                                            <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>
+                                                                Origin:
+                                                            </span>
+                                                            <span className="text-secondary">{getCountryName(origin)}</span>
+                                                        </div>
+                                                        <div className="d-flex mb-1">
+                                                            <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>
+                                                                Destination:
+                                                            </span>
+                                                            <span className="text-secondary">{getCountryName(destination)}</span>
+                                                        </div>
                                                     </div>
                                                     <div className="col-md-6">
                                                         <div className="d-flex mb-1">
@@ -316,50 +379,47 @@ const CustomerBalancesReport = () => {
                                             </div>
                                         </div>
 
-                                        {/* Report Table with Dark Navy Header */}
+                                        {/* Report Table with Dark Blue Header */}
                                         <div className="table-responsive mt-4">
                                             <table className="table report-table">
                                                 <thead>
                                                     <tr>
-                                                        <th className="text-start">Customer</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>120+ Days</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>90 Days</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>60 Days</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>30 Days</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>Current</th>
-                                                        <th className="text-end" style={{ width: "130px" }}>Total Due</th>
+                                                        <th className="text-center" style={{ width: "90px" }}>Client ID</th>
+                                                        <th className="text-start">Customer Name</th>
+                                                        <th className="text-end" style={{ width: "110px" }}>Total Orders</th>
+                                                        <th className="text-end" style={{ width: "100px" }}>120+ Days</th>
+                                                        <th className="text-end" style={{ width: "100px" }}>90 Days</th>
+                                                        <th className="text-end" style={{ width: "100px" }}>60 Days</th>
+                                                        <th className="text-end" style={{ width: "100px" }}>30 Days</th>
+                                                        <th className="text-end" style={{ width: "100px" }}>Current</th>
+                                                        <th className="text-end" style={{ width: "120px" }}>Total Stored</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {reportData.map((item, index) => {
-                                                        const custName = (item.customer_name || item.customer || item.name || item.client_name || "").trim() || "Cash Client";
-                                                        const curr = item.final_base_currency || item.currency || item.base_currency || custName;
-                                                        const days120Val = item.days_120 ?? item.days120 ?? 0;
-                                                        const days90Val = item.days_90 ?? item.days90 ?? 0;
-                                                        const days60Val = item.days_60 ?? item.days60 ?? 0;
-                                                        const days30Val = item.days_30 ?? item.days30 ?? 0;
-                                                        const currentVal = item.current ?? 0;
-                                                        const totalDueVal = item.total_due ?? item.total ?? item.total_amount ?? 0;
-
-                                                        return (
-                                                            <tr key={index}>
-                                                                <td className="text-start">{custName}</td>
-                                                                <td className="text-end">{formatCurrencyValue(days120Val, curr)}</td>
-                                                                <td className="text-end">{formatCurrencyValue(days90Val, curr)}</td>
-                                                                <td className="text-end">{formatCurrencyValue(days60Val, curr)}</td>
-                                                                <td className="text-end">{formatCurrencyValue(days30Val, curr)}</td>
-                                                                <td className="text-end">{formatCurrencyValue(currentVal, curr)}</td>
-                                                                <td className="text-end fw-semibold">{formatCurrencyValue(totalDueVal, curr)}</td>
-                                                            </tr>
-                                                        );
-                                                    })}
+                                                    {reportData.map((item, index) => (
+                                                        <tr key={index}>
+                                                            <td className="text-center">{item.client_id ?? "-"}</td>
+                                                            <td className="text-start">
+                                                                {(item.customer_name || "").trim() || "Unknown Customer"}
+                                                            </td>
+                                                            <td className="text-end">{formatNumber(item.total_orders)}</td>
+                                                            <td className="text-end">{formatNumber(item.days_120)}</td>
+                                                            <td className="text-end">{formatNumber(item.days_90)}</td>
+                                                            <td className="text-end">{formatNumber(item.days_60)}</td>
+                                                            <td className="text-end">{formatNumber(item.days_30)}</td>
+                                                            <td className="text-end">{formatNumber(item.current)}</td>
+                                                            <td className="text-end fw-bold">{formatNumber(item.total_stored)}</td>
+                                                        </tr>
+                                                    ))}
                                                 </tbody>
                                             </table>
                                         </div>
                                     </>
                                 ) : (
                                     <div className="text-center py-5">
-                                        <p className="text-muted mb-0">No outstanding customer balances found for the selected filters.</p>
+                                        <p className="text-muted mb-0">
+                                            No warehouse outstanding records found for the selected filters.
+                                        </p>
                                     </div>
                                 )}
                             </div>
@@ -407,7 +467,7 @@ const CustomerBalancesReport = () => {
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
                 }
-                .report-table tbody td, .report-table tfoot td {
+                .report-table tbody td {
                     border: 1px solid #000000 !important;
                     padding: 8px 12px !important;
                     font-size: 12px;
@@ -415,6 +475,14 @@ const CustomerBalancesReport = () => {
                 }
                 .report-table tbody tr:hover td {
                     background-color: #f8f9fa;
+                }
+                .report-table tr.grand-total-row td {
+                    background-color: #ffffff !important;
+                    color: #000000 !important;
+                    font-weight: bold !important;
+                    border-top: 2px solid #000000 !important;
+                    border-bottom: 3px double #000000 !important;
+                    padding: 10px 12px !important;
                 }
                 
                 @page {
@@ -488,7 +556,7 @@ const CustomerBalancesReport = () => {
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
                     }
-                    .report-table tbody td, .report-table tfoot td {
+                    .report-table tbody td {
                         border: 1px solid #000000 !important;
                         padding: 5px 8px !important;
                         font-size: 11px !important;
@@ -503,4 +571,4 @@ const CustomerBalancesReport = () => {
     );
 };
 
-export default CustomerBalancesReport;
+export default WarehouseDaysOutstandingReport;

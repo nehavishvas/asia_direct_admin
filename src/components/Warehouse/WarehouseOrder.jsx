@@ -1349,6 +1349,23 @@ export default function WarehouseOrder() {
                         Filter
                       </Button>
                     </div>
+                    <div>
+                      <Button
+                        variant="contained"
+                        onClick={() => navigate("/Admin/warehouse-days-outstanding-report")}
+                        style={{
+                          height: "38px",
+                          backgroundColor: "#1b2245",
+                          color: "#fff",
+                          textTransform: "none",
+                          fontSize: "14px",
+                          borderRadius: "4px",
+                          whiteSpace: "nowrap"
+                        }}
+                      >
+                        Days Outstanding Report
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>

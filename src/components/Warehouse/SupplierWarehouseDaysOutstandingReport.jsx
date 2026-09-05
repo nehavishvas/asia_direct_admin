@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PrintIcon from "@mui/icons-material/Print";
 
-const CustomerBalancesReport = () => {
+const SupplierWarehouseDaysOutstandingReport = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
@@ -14,7 +14,7 @@ const CustomerBalancesReport = () => {
     const usertype = userdata?.user_type;
     const [hasPermission, setHasPermission] = useState(null);
 
-    // Default to today's date (YYYY-MM-DD)
+    // Default to today's date
     const getTodayDateString = () => {
         const d = new Date();
         const y = d.getFullYear();
@@ -24,15 +24,26 @@ const CustomerBalancesReport = () => {
     };
 
     // Filter states
-    const [runAtDate, setRunAtDate] = useState(location.state?.runAtDate || location.state?.runDate || getTodayDateString());
-    const [customerFrom, setCustomerFrom] = useState(location.state?.customerFrom || "");
-    const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
+    const [runAtDate, setRunAtDate] = useState(location.state?.runAtDate || getTodayDateString());
+    const [supplierFrom, setSupplierFrom] = useState(location.state?.supplierFrom || "");
+    const [supplierTo, setSupplierTo] = useState(location.state?.supplierTo || "");
 
+    const [suppliers, setSuppliers] = useState([]);
     const [reportData, setReportData] = useState([]);
     const [loader, setLoader] = useState(false);
     const [searched, setSearched] = useState(false);
 
-    const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
+    // Fetch suppliers list
+    const fetchSuppliers = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}supplier-list`);
+            if (response.data && response.data.data) {
+                setSuppliers(response.data.data);
+            }
+        } catch (error) {
+            console.error("Error fetching suppliers:", error);
+        }
+    };
 
     const checkPermission = async () => {
         try {
@@ -43,7 +54,7 @@ const CustomerBalancesReport = () => {
             }
             const postdata = {
                 staff_id: userid,
-                route_url: "/Admin/customer-balance-report",
+                route_url: "/GetSupplierCreatedWarehouseOrders",
                 user_type: usertype,
             };
             const response = await axios.post(
@@ -66,16 +77,17 @@ const CustomerBalancesReport = () => {
     };
 
     useEffect(() => {
+        fetchSuppliers();
         checkPermission();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Fetch report data
+    // Fetch report data from API
     const fetchReportData = async (
         e,
         optRunAtDate = runAtDate,
-        optCustomerFrom = customerFrom,
-        optCustomerTo = customerTo
+        optSupplierFrom = supplierFrom,
+        optSupplierTo = supplierTo
     ) => {
         if (e) e.preventDefault();
         setLoader(true);
@@ -83,13 +95,12 @@ const CustomerBalancesReport = () => {
         try {
             const payload = {
                 run_at_date: optRunAtDate || getTodayDateString(),
-                customer_from: optCustomerFrom ? optCustomerFrom : null,
-                customer_to: optCustomerTo ? optCustomerTo : null,
-                style: "summary",
+                supplier_from: optSupplierFrom ? optSupplierFrom : null,
+                supplier_to: optSupplierTo ? optSupplierTo : null,
             };
 
             const response = await axios.post(
-                `${process.env.REACT_APP_BASE_URL}getCustomerBalancesDaysOutstandingReport`,
+                `${process.env.REACT_APP_BASE_URL}getSupplierWarehouseDaysOutstandingReport`,
                 payload
             );
 
@@ -100,7 +111,7 @@ const CustomerBalancesReport = () => {
                 toast.error(response.data?.message || "No data found");
             }
         } catch (error) {
-            console.error("Error fetching customer balances days outstanding report:", error);
+            console.error("Error fetching supplier warehouse days outstanding report:", error);
             toast.error(error.response?.data?.message || "Failed to fetch report data");
             setReportData([]);
         } finally {
@@ -111,8 +122,8 @@ const CustomerBalancesReport = () => {
     const handleReset = () => {
         const today = getTodayDateString();
         setRunAtDate(today);
-        setCustomerFrom("");
-        setCustomerTo("");
+        setSupplierFrom("");
+        setSupplierTo("");
         fetchReportData(null, today, "", "");
     };
 
@@ -120,30 +131,10 @@ const CustomerBalancesReport = () => {
         window.print();
     };
 
-    const getCurrencySymbol = (currencyOrCustomer) => {
-        if (!currencyOrCustomer) return "R";
-        const val = currencyOrCustomer.toString().trim().toLowerCase();
-        if (val === "usd" || val === "$") return "$";
-        if (val === "rand" || val === "zar" || val === "r") return "R";
-        if (val === "kwacha" || val === "mwk" || val === "k") return "K";
-        if (val === "euro" || val === "eur" || val === "€") return "€";
-        if (val === "inr" || val === "₹") return "₹";
-
-        if (val.includes("usd")) return "$";
-        if (val.includes("rand") || val.includes("zar")) return "R";
-        if (val.includes("kwacha") || val.includes("mwk")) return "K";
-
-        return currencyOrCustomer.length <= 3 ? currencyOrCustomer : "R";
-    };
-
-    const formatCurrencyValue = (val, currencyOrCustomer = "ZAR") => {
+    const formatNumber = (val) => {
         const num = parseFloat(val);
-        const symbol = getCurrencySymbol(currencyOrCustomer);
-        if (isNaN(num)) return `${symbol} 0.00`;
-        return `${symbol} ${num.toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        })}`;
+        if (isNaN(num)) return "0";
+        return num.toLocaleString("en-US");
     };
 
     const formatDateString = (dateVal) => {
@@ -156,10 +147,10 @@ const CustomerBalancesReport = () => {
         return `${dd}/${mm}/${yyyy}`;
     };
 
-    const getCustomerFilterText = () => {
-        if (!customerFrom && !customerTo) return "All Customers";
-        if (customerFrom === customerTo) return customerFrom;
-        return `${customerFrom || "A"} to ${customerTo || "Z"}`;
+    const getSupplierFilterText = () => {
+        if (!supplierFrom && !supplierTo) return "All Suppliers";
+        if (supplierFrom === supplierTo) return supplierFrom;
+        return `${supplierFrom || "Start"} to ${supplierTo || "End"}`;
     };
 
     return (
@@ -174,7 +165,7 @@ const CustomerBalancesReport = () => {
                     <div className="container-fluid no-print">
                         <div className="row manageFreight">
                             <div className="col-12">
-                                <h4 className="freight_hd">Customer Balances Days Outstanding Report</h4>
+                                <h4 className="freight_hd">Supplier Warehouse Days Outstanding Report</h4>
                                 <div className="line"></div>
                             </div>
                         </div>
@@ -193,7 +184,7 @@ const CustomerBalancesReport = () => {
                                     <ArrowBackIcon /> Back
                                 </button>
                                 <h4 className="freight_hd mb-0 ms-2" style={{ fontSize: "1.25rem" }}>
-                                    Customer Balances - Days Outstanding Report
+                                    Supplier Warehouse Days Outstanding Report
                                 </h4>
                             </div>
                             <div className="d-flex align-items-center gap-2">
@@ -225,40 +216,42 @@ const CustomerBalancesReport = () => {
                                         />
                                     </div>
 
-                                    {/* Customer Range */}
-                                    <div className="col-lg-5 col-md-5 col-sm-6">
+                                    {/* Supplier Range */}
+                                    <div className="col-lg-6 col-md-5 col-sm-6">
                                         <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>
-                                            Customer
+                                            Supplier
                                         </label>
                                         <div className="d-flex gap-1">
                                             <select
                                                 className="form-select form-select-sm"
-                                                value={customerFrom}
-                                                onChange={(e) => setCustomerFrom(e.target.value)}
+                                                value={supplierFrom}
+                                                onChange={(e) => setSupplierFrom(e.target.value)}
                                             >
                                                 <option value="">(From)</option>
-                                                {alphabet.map((letter) => (
-                                                    <option key={letter} value={letter}>
-                                                        {letter}
-                                                    </option>
-                                                ))}
+                                                {suppliers &&
+                                                    suppliers.map((item) => (
+                                                        <option key={item.id} value={item.name}>
+                                                            {item.name}
+                                                        </option>
+                                                    ))}
                                             </select>
                                             <select
                                                 className="form-select form-select-sm"
-                                                value={customerTo}
-                                                onChange={(e) => setCustomerTo(e.target.value)}
+                                                value={supplierTo}
+                                                onChange={(e) => setSupplierTo(e.target.value)}
                                             >
                                                 <option value="">(To)</option>
-                                                {alphabet.map((letter) => (
-                                                    <option key={letter} value={letter}>
-                                                        {letter}
-                                                    </option>
-                                                ))}
+                                                {suppliers &&
+                                                    suppliers.map((item) => (
+                                                        <option key={item.id} value={item.name}>
+                                                            {item.name}
+                                                        </option>
+                                                    ))}
                                             </select>
                                         </div>
                                     </div>
 
-                                    {/* Action Buttons */}
+                                    {/* Buttons */}
                                     <div className="col-lg-3 col-md-3 col-sm-6 d-flex align-items-center gap-2">
                                         <button type="submit" className="btn btn-primary blueBtn btn-sm w-50">
                                             View
@@ -288,7 +281,7 @@ const CustomerBalancesReport = () => {
                                         {/* Report Header */}
                                         <div className="report-header mb-4 text-start">
                                             <h4 className="report-title mb-1 fw-bold text-dark">
-                                                Customer Balances - Days Outstanding Report
+                                                Supplier Warehouse Days Outstanding Report
                                             </h4>
                                             <h6 className="report-subtitle mb-4 fw-bold text-secondary">
                                                 Asia Direct Africa
@@ -299,9 +292,9 @@ const CustomerBalancesReport = () => {
                                                     <div className="col-md-6">
                                                         <div className="d-flex mb-1">
                                                             <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>
-                                                                Customer:
+                                                                Supplier:
                                                             </span>
-                                                            <span className="text-secondary">{getCustomerFilterText()}</span>
+                                                            <span className="text-secondary">{getSupplierFilterText()}</span>
                                                         </div>
                                                     </div>
                                                     <div className="col-md-6">
@@ -316,50 +309,45 @@ const CustomerBalancesReport = () => {
                                             </div>
                                         </div>
 
-                                        {/* Report Table with Dark Navy Header */}
+                                        {/* Report Table with Dark Blue Header */}
                                         <div className="table-responsive mt-4">
                                             <table className="table report-table">
                                                 <thead>
                                                     <tr>
-                                                        <th className="text-start">Customer</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>120+ Days</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>90 Days</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>60 Days</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>30 Days</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>Current</th>
-                                                        <th className="text-end" style={{ width: "130px" }}>Total Due</th>
+                                                        <th className="text-start">Supplier</th>
+                                                        <th className="text-end" style={{ width: "110px" }}>Total Orders</th>
+                                                        <th className="text-end" style={{ width: "110px" }}>120+ Days</th>
+                                                        <th className="text-end" style={{ width: "110px" }}>90 Days</th>
+                                                        <th className="text-end" style={{ width: "110px" }}>60 Days</th>
+                                                        <th className="text-end" style={{ width: "110px" }}>30 Days</th>
+                                                        <th className="text-end" style={{ width: "110px" }}>Current</th>
+                                                        <th className="text-end" style={{ width: "130px" }}>Total Stored</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {reportData.map((item, index) => {
-                                                        const custName = (item.customer_name || item.customer || item.name || item.client_name || "").trim() || "Cash Client";
-                                                        const curr = item.final_base_currency || item.currency || item.base_currency || custName;
-                                                        const days120Val = item.days_120 ?? item.days120 ?? 0;
-                                                        const days90Val = item.days_90 ?? item.days90 ?? 0;
-                                                        const days60Val = item.days_60 ?? item.days60 ?? 0;
-                                                        const days30Val = item.days_30 ?? item.days30 ?? 0;
-                                                        const currentVal = item.current ?? 0;
-                                                        const totalDueVal = item.total_due ?? item.total ?? item.total_amount ?? 0;
-
-                                                        return (
-                                                            <tr key={index}>
-                                                                <td className="text-start">{custName}</td>
-                                                                <td className="text-end">{formatCurrencyValue(days120Val, curr)}</td>
-                                                                <td className="text-end">{formatCurrencyValue(days90Val, curr)}</td>
-                                                                <td className="text-end">{formatCurrencyValue(days60Val, curr)}</td>
-                                                                <td className="text-end">{formatCurrencyValue(days30Val, curr)}</td>
-                                                                <td className="text-end">{formatCurrencyValue(currentVal, curr)}</td>
-                                                                <td className="text-end fw-semibold">{formatCurrencyValue(totalDueVal, curr)}</td>
-                                                            </tr>
-                                                        );
-                                                    })}
+                                                    {reportData.map((item, index) => (
+                                                        <tr key={index}>
+                                                            <td className="text-start">
+                                                                {(item.supplier_name || item.name || "").trim() || "Unknown Supplier"}
+                                                            </td>
+                                                            <td className="text-end">{formatNumber(item.total_orders ?? 0)}</td>
+                                                            <td className="text-end">{formatNumber(item.days_120 ?? item.days120 ?? 0)}</td>
+                                                            <td className="text-end">{formatNumber(item.days_90 ?? item.days90 ?? 0)}</td>
+                                                            <td className="text-end">{formatNumber(item.days_60 ?? item.days60 ?? 0)}</td>
+                                                            <td className="text-end">{formatNumber(item.days_30 ?? item.days30 ?? 0)}</td>
+                                                            <td className="text-end">{formatNumber(item.current ?? 0)}</td>
+                                                            <td className="text-end fw-bold">{formatNumber(item.total_stored ?? item.total_orders ?? 0)}</td>
+                                                        </tr>
+                                                    ))}
                                                 </tbody>
                                             </table>
                                         </div>
                                     </>
                                 ) : (
                                     <div className="text-center py-5">
-                                        <p className="text-muted mb-0">No outstanding customer balances found for the selected filters.</p>
+                                        <p className="text-muted mb-0">
+                                            No supplier warehouse outstanding records found for the selected filters.
+                                        </p>
                                     </div>
                                 )}
                             </div>
@@ -407,7 +395,7 @@ const CustomerBalancesReport = () => {
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
                 }
-                .report-table tbody td, .report-table tfoot td {
+                .report-table tbody td {
                     border: 1px solid #000000 !important;
                     padding: 8px 12px !important;
                     font-size: 12px;
@@ -488,7 +476,7 @@ const CustomerBalancesReport = () => {
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
                     }
-                    .report-table tbody td, .report-table tfoot td {
+                    .report-table tbody td {
                         border: 1px solid #000000 !important;
                         padding: 5px 8px !important;
                         font-size: 11px !important;
@@ -503,4 +491,4 @@ const CustomerBalancesReport = () => {
     );
 };
 
-export default CustomerBalancesReport;
+export default SupplierWarehouseDaysOutstandingReport;

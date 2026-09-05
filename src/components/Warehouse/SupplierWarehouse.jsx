@@ -898,6 +898,21 @@ export default function SupplierWarehouse() {
                   >
                     Filter
                   </button>
+                  <button
+                    onClick={() => navigate("/Admin/supplier-warehouse-days-outstanding-report")}
+                    className="blueBtn"
+                    style={{
+                      height: "38px",
+                      backgroundColor: "#1b2245",
+                      color: "#fff",
+                      textTransform: "none",
+                      fontSize: "14px",
+                      borderRadius: "4px",
+                      whiteSpace: "nowrap"
+                    }}
+                  >
+                    Days Outstanding Report
+                  </button>
                 </div>
               </div>
             </div>
