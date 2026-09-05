@@ -786,8 +786,8 @@ export default function CustomebyUserap() {
             width: {
               xs: "95%",
               sm: "80%",
-              md: "60%",
-              lg: "40%",
+              md: "70%",
+              lg: "50%",
             },
 
           }}
@@ -2087,7 +2087,7 @@ export default function CustomebyUserap() {
                   <i class="fi fi-rr-angle-small-right page_icon"></i>
                 </button>
               </div>
-              
+
             </div>
           </div>
           <Modal

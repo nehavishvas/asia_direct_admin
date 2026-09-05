@@ -847,7 +847,7 @@ export default function UserFreight() {
     navigate("/Admin/shipping-estimate", { state: { data: alldata, fromPage: "/Admin/freight" } });
   };
 
-    const hanldeclicknavi2 = async (freight_id) => {
+  const hanldeclicknavi2 = async (freight_id) => {
     console.log(freight_id);
     JSON.stringify(localStorage.setItem("freightid", freight_id));
     const alldata = data.filter((item) => item.freight_id === freight_id);
@@ -941,7 +941,7 @@ export default function UserFreight() {
                     ></input>
                   </div>
                   <button
-                    className="dropdown-toggle"
+                    className="dropdown-toggle removeIcon"
                     onClick={handleclickopenmodal}
                   >
                     Filter
@@ -2270,7 +2270,7 @@ export default function UserFreight() {
               )}
             </div>
           </div>
-          
+
         </div>
         <Modal
           open={openModal1}

@@ -120,7 +120,7 @@ const CustomClearaceOrder = () => {
       setSelectedImage(file);
     }
   };
-  
+
   const datagetuseirID = JSON.parse(localStorage.getItem("data123"));
   const handleclick = () => {
     if (!data.freight || data.freight.trim() === "") {
@@ -1167,7 +1167,7 @@ const CustomClearaceOrder = () => {
           </div>
         </Box>
       </Modal>
-      
+
       <div>
         <div
           className={`modal fade ${showModal ? "show " : ""}`}
@@ -1809,7 +1809,7 @@ const CustomClearaceOrder = () => {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-secondary close"
+                  className="redBtn close"
                   onClick={handleModalClose}
                 >
                   Close

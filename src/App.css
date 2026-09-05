@@ -3679,15 +3679,7 @@ div:where(.swal2-container) button:where(.swal2-styled).swal2-cancel {
   border-radius: unset !important;
 }
 
-.ship_btn {
-  padding: 5px 20px;
-  border: 0px;
-  border-radius: 5px;
-  color: white;
-  background-color: var(--blue);
-  font-size: 14px;
-  font-weight: 500;
-}
+
 
 .ship_btn1 {
   padding: 5px 20px;
@@ -5000,7 +4992,8 @@ button.bg_page {
 button.btn.btn-secondary,
 .privacy_btn,
 .updateLoading button,
-.link_btn {
+.link_btn,
+.ship_btn {
   background-color: #1b2245 !important;
   color: #fff;
   border: unset;
@@ -6596,4 +6589,8 @@ h4 {
   background-color: var(--maroon);
   color: #fff;
   border: 1px solid var(--maroon);
+}
+
+.removeIcon::after {
+  content: unset !important;
 }

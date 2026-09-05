@@ -267,7 +267,7 @@ const Query = () => {
                   <div className="d-flex gap-2 flex-wrap align-items-center searchManageFre">
 
                     <input
-                      className="py-1 rounded ps-1"
+                      className="rounded"
                       type="text"
                       placeholder="Search by name"
                       value={searchQuery}
@@ -286,7 +286,7 @@ const Query = () => {
               </div>
 
             </div>
-            <div className="row manageFreight">
+            <div className="row manageFreight mt-4">
               <div className="col-md-12">
                 {loader ? (
                   <div className="loader-container">
