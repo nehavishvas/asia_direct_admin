@@ -1479,7 +1479,7 @@ const Addfright = () => {
                           <span class="line"></span>
                         </div>
                         <div className="col-md-6 text-end">
-                          <button className="blueBtn" variant="primary" onClick={handleShow}>
+                          <button className="uploadBtn" variant="primary" onClick={handleShow}>
                             Upload Documents
                           </button>
                         </div>
