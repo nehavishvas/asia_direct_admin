@@ -52,6 +52,11 @@ const Notification = () => {
         setHasPermission(false);
         return;
       }
+      if (Number(usertype) === 1) {
+        setHasPermission(true);
+        setUseAdminApi(true);
+        return;
+      }
       const postdata = {
         staff_id: userid,
         route_url: "/Admin/notifications",
@@ -334,7 +339,7 @@ const Notification = () => {
                 />
 
               </div>
-              {useAdminApi && Number(usertype) !== 2 && (
+              {useAdminApi && (
                 <div>
                   <button
                     data-bs-toggle="modal"
@@ -543,7 +548,7 @@ const Notification = () => {
                   <th>Message</th>
                   <th>Date</th>
                   <th>Documents</th>
-                  {useAdminApi && Number(usertype) !== 2 && <th>Action</th>}
+                  {useAdminApi && <th>Action</th>}
                 </tr>
               </thead>
               <tbody>
@@ -578,7 +583,7 @@ const Notification = () => {
                             </a>
                           ))}
                       </td>
-                      {useAdminApi && Number(usertype) !== 2 && (
+                      {useAdminApi && (
                         <td>
                           <AiFillDelete
                             className="text-danger"

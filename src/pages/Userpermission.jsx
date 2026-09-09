@@ -143,7 +143,7 @@ const sortAndGroupPermissions = (data) => {
   // 4. Account
   const accountChildren = [];
   addNode(accountChildren, pullNodeByAliases(["accounts", "quotes", "invoices", "invoicerecon", "sagecustomerinvoices", "cashbook", "supplierinvoice", "manageinvoices"]), "Accounts");
-  addNode(accountChildren, pullNodeByAliases(["reports", "quoteitemsummary", "salesbycustomer", "salesbycustomersummary", "salesbyitem", "salesbysalesrep", "supplierbalance"]), "Reports");
+  addNode(accountChildren, pullNodeByAliases(["reports", "quoteitemsummary", "salesbycustomer", "salesbycustomersummary", "salesbyitem", "salesbysalesrep", "supplierbalance", "freightreport", "freightordersreport", "shipmentsreport", "freight-report", "freight-orders-report", "shipments-report"]), "Reports");
 
   if (accountChildren.length > 0) {
     finalTree.push({

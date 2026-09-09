@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { AiFillDelete, AiFillMessage } from "react-icons/ai";
 import { toast } from "react-toastify";
-import { FaEdit, FaFileExcel } from "react-icons/fa";
+import { FaEdit, FaFileExcel, FaFilePdf } from "react-icons/fa";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -1324,6 +1324,26 @@ export default function Managefreight() {
                       Export Excel
                     </button>
                   </div>
+                  {/* <div>
+                    <button
+                      type="button"
+                      className="d-inline-flex align-items-center gap-1"
+                      onClick={() => {
+                        navigate("/Admin/freight-report", {
+                          state: {
+                            startDate: getDate30DaysAgo(),
+                            endDate: getTodayDateString(),
+                            search: searchQuery,
+                          }
+                        });
+                      }}
+                      title="View Freight PDF Report"
+                      style={{ backgroundColor: "#1b2245", color: "#fff" }}
+                    >
+                      <FaFilePdf style={{ color: "#ff4d4f" }} />
+                      PDF Report
+                    </button>
+                  </div> */}
                   <div>
                     <button
                       type="button"

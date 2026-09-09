@@ -11,7 +11,7 @@ import {
   Modal,
   Select,
 } from "@mui/material";
-import { FaEdit, FaFileExcel } from "react-icons/fa";
+import { FaEdit, FaFileExcel, FaFilePdf } from "react-icons/fa";
 import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -767,6 +767,23 @@ export default function MAnageshipments() {
                       <FaFileExcel style={{ color: "#28a745" }} />
                       Export Excel
                     </button>
+                    {/* <button
+                      className="ms-2 d-inline-flex align-items-center gap-1"
+                      onClick={() => {
+                        navigate("/Admin/shipments-report", {
+                          state: {
+                            startDate: getDate30DaysAgo(),
+                            endDate: getTodayDateString(),
+                            search: searchQuery,
+                          }
+                        });
+                      }}
+                      title="View Shipments PDF Report"
+                      style={{ backgroundColor: "#1b2245", color: "#fff" }}
+                    >
+                      <FaFilePdf style={{ color: "#ff4d4f" }} />
+                      PDF Report
+                    </button> */}
                     <button className="ms-2" onClick={openModal1}>
                       Add Shipment
                     </button>

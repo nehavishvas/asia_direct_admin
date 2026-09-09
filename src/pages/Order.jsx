@@ -1348,6 +1348,26 @@ export default function Order() {
                         </div>
                       </div>
                     </div>
+                    {/* <div>
+                      <button
+                        type="button"
+                        className="d-inline-flex align-items-center gap-1"
+                        onClick={() => {
+                          navigate("/Admin/freight-orders-report", {
+                            state: {
+                              startDate: getDate30DaysAgo(),
+                              endDate: getTodayDateString(),
+                              search: searchQuery,
+                            }
+                          });
+                        }}
+                        title="View Freight Orders PDF Report"
+                        style={{ backgroundColor: "#1b2245", color: "#fff" }}
+                      >
+                        <PictureAsPdfIcon style={{ color: "#ff4d4f", fontSize: "1.1rem" }} />
+                        PDF Report
+                      </button>
+                    </div> */}
                   </div>
                 </div>
                 <div className="mt-4">

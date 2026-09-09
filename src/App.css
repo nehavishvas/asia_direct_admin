@@ -5059,10 +5059,16 @@ button.btn.btn-secondary,
   }
 }
 
-table,
-tr,
-td {
-  page-break-inside: avoid !important;
+@media print {
+  table {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+  tr,
+  td {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
 }
 
 .select_supplier {

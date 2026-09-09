@@ -128,6 +128,9 @@ import SupplierInvoicesReport from "./components/Billing/SupplierInvoicesReport"
 import CustomerInvoicesReport from "./components/Billing/CustomerInvoicesReport";
 import CustomerBalancesReport from "./components/Billing/CustomerBalancesReport";
 import CustomerUnallocatedReport from "./components/Billing/CustomerUnallocatedReport";
+import FreightReport from "./components/Billing/FreightReport";
+import FreightOrdersReport from "./components/Billing/FreightOrdersReport";
+import ShipmentsReport from "./components/Billing/ShipmentsReport";
 import AddNewFreightQuoteInvoice from "./components/Billing/AddNewFreightQuoteInvoice";
 import EditNewFreightQuoteInvoice from "./components/Billing/EditNewFreightQuoteInvoice";
 import ViewNewFreightQuoteInvoice from "./components/Billing/ViewNewFreightQuoteInvoice";
@@ -160,7 +163,7 @@ const Uniovwersalpage = lazy(() => import("./components/Uniovwersalpage"));
 export default function App() {
   const [text, setText] = useState("");
   const [permission, setPermission] = useState("");
-  console.log("04-09-26", "11:05");
+  console.log("08-09-26", "17:38");
 
   useEffect(() => {
     const handleDropdownClick = (event) => {
@@ -222,6 +225,9 @@ export default function App() {
                 <Route path="/Admin/customer-invoices-report" element={<CustomerInvoicesReport />} />
                 <Route path="/Admin/customer-balance-report" element={<CustomerBalancesReport />} />
                 <Route path="/Admin/customer-unallocated-report" element={<CustomerUnallocatedReport />} />
+                <Route path="/Admin/freight-report" element={<FreightReport />} />
+                <Route path="/Admin/freight-orders-report" element={<FreightOrdersReport />} />
+                <Route path="/Admin/shipments-report" element={<ShipmentsReport />} />
                 <Route path="/Admin/editquotesinvoice" element={<EditQuotesInvoice />} />
                 <Route path="/Admin/viewquotesinvoice" element={<ViewQuotesInvoice />} />
                 <Route path="/Admin/addnewfreightquoteinvoice" element={<AddNewFreightQuoteInvoice />} />

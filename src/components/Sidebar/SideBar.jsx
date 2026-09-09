@@ -186,6 +186,21 @@ const routes = [
             name: "Customer Balance",
             icon: <ShoppingCartOutlinedIcon />,
           },
+          {
+            path: "/Admin/freight-report",
+            name: "Freight by Admin Reports",
+            icon: <FlightOutlinedIcon />,
+          },
+          {
+            path: "/Admin/freight-orders-report",
+            name: "Freight Orders Reports",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+          {
+            path: "/Admin/shipments-report",
+            name: "Shipment Reports",
+            icon: <LocalShippingOutlinedIcon />,
+          },
         ],
       },
     ],
