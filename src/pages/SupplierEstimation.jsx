@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
+import { FiEye, FiMessageSquare } from "react-icons/fi";
 
 export default function SupplierEstimation() {
   const [data, setData] = useState([]);
@@ -84,20 +85,22 @@ export default function SupplierEstimation() {
                       <td>{item?.phone_no}</td>
                       <td>{item?.country_name}</td>
                       <td>
-                        <i
-                          className="fa fa-eye "
-                          onClick={() => {
-                            handleclicknanvi(item);
-                          }}
-                          style={{ cursor: "pointer" }}
-                        ></i>
-                        <i
-                          className="fa fa-comment "
-                          onClick={() => {
-                            querryinQChat(item);
-                          }}
-                          style={{ cursor: "pointer" }}
-                        ></i>
+                        <div className="d-flex align-items-center">
+                          <FiEye
+                            className="action-icon-view"
+                            onClick={() => {
+                              handleclicknanvi(item);
+                            }}
+                          />
+                          <FiMessageSquare
+                            className="action-icon"
+                            onClick={() => {
+                              querryinQChat(item);
+                            }}
+                            style={{ cursor: "pointer", color: "#1b2245" }}
+                            title="Chat"
+                          />
+                        </div>
                       </td>
                     </tr>
                   );

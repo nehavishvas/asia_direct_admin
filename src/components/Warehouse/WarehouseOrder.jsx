@@ -1,11 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { FaEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useNavigate } from "react-router-dom";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { FiEdit, FiTrash2, FiEye, FiCheckSquare, FiPrinter } from "react-icons/fi";
 import {
   Modal,
   Box,
@@ -1370,56 +1368,52 @@ export default function WarehouseOrder() {
                 </div>
               </div>
             </div>
-            <ul className="nav nav-tabs mb-3 mt-3">
-              <li className="nav-item" style={{ cursor: "pointer" }}>
-                <a
-                  className={`nav-link ${activeTab === 'In Store' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                  onClick={() => {
-                    setActiveTab('In Store');
-                    setCurrentPage(1);
-                    fetchWarehouseOrders(1, 'In Store', searchQuery, advancedFilters, itemsPerPage, sortOrder);
-                  }}
-                >
-                  In - store ({counts.inStore})
-                </a>
-              </li>
-              <li className="nav-item" style={{ cursor: "pointer" }}>
-                <a
-                  className={`nav-link ${activeTab === 'Batch Assigned' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                  onClick={() => {
-                    setActiveTab('Batch Assigned');
-                    setCurrentPage(1);
-                    fetchWarehouseOrders(1, 'Batch Assigned', searchQuery, advancedFilters, itemsPerPage, sortOrder);
-                  }}
-                >
-                  Batch Assigned ({counts.batchAssigned})
-                </a>
-              </li>
-              <li className="nav-item" style={{ cursor: "pointer" }}>
-                <a
-                  className={`nav-link ${activeTab === 'Batch not Assigned' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                  onClick={() => {
-                    setActiveTab('Batch not Assigned');
-                    setCurrentPage(1);
-                    fetchWarehouseOrders(1, 'Batch not Assigned', searchQuery, advancedFilters, itemsPerPage, sortOrder);
-                  }}
-                >
-                  Batch not Assigned ({counts.batchNotAssigned})
-                </a>
-              </li>
-              <li className="nav-item" style={{ cursor: "pointer" }}>
-                <a
-                  className={`nav-link ${activeTab === 'Out' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                  onClick={() => {
-                    setActiveTab('Out');
-                    setCurrentPage(1);
-                    fetchWarehouseOrders(1, 'Out', searchQuery, advancedFilters, itemsPerPage, sortOrder);
-                  }}
-                >
-                  Out ({counts.out})
-                </a>
-              </li>
-            </ul>
+            <div className="unified-tabs-container mb-3 mt-3">
+              <button
+                type="button"
+                className={`unified-tab-btn ${activeTab === 'In Store' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('In Store');
+                  setCurrentPage(1);
+                  fetchWarehouseOrders(1, 'In Store', searchQuery, advancedFilters, itemsPerPage, sortOrder);
+                }}
+              >
+                In - store ({counts.inStore})
+              </button>
+              <button
+                type="button"
+                className={`unified-tab-btn ${activeTab === 'Batch Assigned' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('Batch Assigned');
+                  setCurrentPage(1);
+                  fetchWarehouseOrders(1, 'Batch Assigned', searchQuery, advancedFilters, itemsPerPage, sortOrder);
+                }}
+              >
+                Batch Assigned ({counts.batchAssigned})
+              </button>
+              <button
+                type="button"
+                className={`unified-tab-btn ${activeTab === 'Batch not Assigned' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('Batch not Assigned');
+                  setCurrentPage(1);
+                  fetchWarehouseOrders(1, 'Batch not Assigned', searchQuery, advancedFilters, itemsPerPage, sortOrder);
+                }}
+              >
+                Batch not Assigned ({counts.batchNotAssigned})
+              </button>
+              <button
+                type="button"
+                className={`unified-tab-btn ${activeTab === 'Out' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('Out');
+                  setCurrentPage(1);
+                  fetchWarehouseOrders(1, 'Out', searchQuery, advancedFilters, itemsPerPage, sortOrder);
+                }}
+              >
+                Out ({counts.out})
+              </button>
+            </div>
             {loader ? (
               <div class="loader-container">
                 <div class="loader"></div>
@@ -1596,70 +1590,72 @@ export default function WarehouseOrder() {
                                                   )}
                                                 </div>
                                               </div>
-                                              <div className="col-md-6 text-end">
-                                                <i
-                                                  className="fa fa-tasks me-2 mt-2"
-                                                  onClick={isReadOnly ? null : () => {
-                                                    console.log("Clicked Item Details:", item);
-                                                    handleEditClickAssign(
-                                                      item.freight_id || item.freight_ID || item.id,
-                                                      item.order_id,
-                                                    );
-                                                  }}
-                                                  style={{
-                                                    color: "#1d2044",
-                                                    cursor: isReadOnly ? "not-allowed" : "pointer",
-                                                    opacity: isReadOnly ? 0.4 : 1,
-                                                    pointerEvents: isReadOnly ? "none" : "auto",
-                                                  }}
-                                                />
-                                                <FaEdit
-                                                  onClick={isReadOnly ? null : () =>
-                                                    handleEditClick(
-                                                      item.freight_id,
-                                                      item.warehouse_assign_order_id,
-                                                      item.order_id,
-                                                    )
-                                                  }
-                                                  style={{
-                                                    color: "#1d2044",
-                                                    cursor: isReadOnly ? "not-allowed" : "pointer",
-                                                    opacity: isReadOnly ? 0.4 : 1,
-                                                    pointerEvents: isReadOnly ? "none" : "auto",
-                                                  }}
-                                                />
-                                                <DeleteIcon
-                                                  onClick={isReadOnly ? null : () =>
-                                                    handleEditClick12(
-                                                      item.warehouse_assign_order_id,
-                                                      item.order_id,
-                                                      item.freight_id,
-                                                    )
-                                                  }
-                                                  style={{
-                                                    color: "#1d2044",
-                                                    cursor: isReadOnly ? "not-allowed" : "pointer",
-                                                    opacity: isReadOnly ? 0.4 : 1,
-                                                    pointerEvents: isReadOnly ? "none" : "auto",
-                                                  }}
-                                                />
-                                                <VisibilityIcon
-                                                  onClick={() =>
-                                                    handleclicknavi(item)
-                                                  }
-                                                  style={{
-                                                    color: "rgb(27 34 69)",
-                                                    cursor: "pointer",
-                                                    width: "20px",
-                                                  }}
-                                                />
-                                                <PictureAsPdfIcon
-                                                  style={{ cursor: "pointer" }}
-                                                  onClick={() => {
-                                                    handlePdfPrint(item);
-                                                  }}
-                                                />
-                                              </div>{" "}
+                                              <div className="col-md-6 d-inline-flex justify-content-end align-items-center action-icons-group">
+                                                 <FiCheckSquare
+                                                   className="action-icon"
+                                                   onClick={isReadOnly ? null : () => {
+                                                     console.log("Clicked Item Details:", item);
+                                                     handleEditClickAssign(
+                                                       item.freight_id || item.freight_ID || item.id,
+                                                       item.order_id,
+                                                     );
+                                                   }}
+                                                   style={{
+                                                     color: "#1b2245",
+                                                     cursor: isReadOnly ? "not-allowed" : "pointer",
+                                                     opacity: isReadOnly ? 0.4 : 1,
+                                                     pointerEvents: isReadOnly ? "none" : "auto",
+                                                   }}
+                                                   title="Assign Order"
+                                                 />
+                                                 <FiEdit
+                                                   className="action-icon-edit"
+                                                   onClick={isReadOnly ? null : () =>
+                                                     handleEditClick(
+                                                       item.freight_id,
+                                                       item.warehouse_assign_order_id,
+                                                       item.order_id,
+                                                     )
+                                                   }
+                                                   style={{
+                                                     cursor: isReadOnly ? "not-allowed" : "pointer",
+                                                     opacity: isReadOnly ? 0.4 : 1,
+                                                     pointerEvents: isReadOnly ? "none" : "auto",
+                                                   }}
+                                                 />
+                                                 <FiTrash2
+                                                   className="action-icon-delete"
+                                                   onClick={isReadOnly ? null : () =>
+                                                     handleEditClick12(
+                                                       item.warehouse_assign_order_id,
+                                                       item.order_id,
+                                                       item.freight_id,
+                                                     )
+                                                   }
+                                                   style={{
+                                                     cursor: isReadOnly ? "not-allowed" : "pointer",
+                                                     opacity: isReadOnly ? 0.4 : 1,
+                                                     pointerEvents: isReadOnly ? "none" : "auto",
+                                                   }}
+                                                 />
+                                                 <FiEye
+                                                   className="action-icon-view"
+                                                   onClick={() =>
+                                                     handleclicknavi(item)
+                                                   }
+                                                 />
+                                                 <FiPrinter
+                                                   className="action-icon"
+                                                   style={{
+                                                     cursor: "pointer",
+                                                     color: "#1b2245",
+                                                   }}
+                                                   onClick={() => {
+                                                     handlePdfPrint(item);
+                                                   }}
+                                                   title="Print PDF"
+                                                 />
+                                               </div>{" "}
                                             </div>
                                           </div>
                                         </td>

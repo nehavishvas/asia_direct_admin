@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Modal, Box } from "@mui/material";
-import { BsThreeDotsVertical, BsTrash, BsPlus } from "react-icons/bs";
+import { BsThreeDotsVertical, BsPlus } from "react-icons/bs";
+import { FiTrash2 } from "react-icons/fi";
 import Swal from "sweetalert2";
 
 const pageSize = 10;
@@ -1271,7 +1272,7 @@ export default function Cashbook() {
                                   onClick={() => handleDeleteIndividualSplit(split.split_id)}
                                   title="Delete Split"
                                 >
-                                  <BsTrash style={{ fontSize: "1.1rem" }} />
+                                  <FiTrash2 style={{ fontSize: "1.1rem" }} />
                                 </button>
                               </td>
                             </tr>
@@ -1390,7 +1391,7 @@ export default function Cashbook() {
                                 onClick={() => handleRemoveSplitRow(index)}
                                 disabled={splitRows.length === 1}
                               >
-                                <BsTrash />
+                                <FiTrash2 />
                               </button>
                             </div>
                           </div>

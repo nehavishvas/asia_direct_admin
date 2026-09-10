@@ -1,12 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { FaEdit } from "react-icons/fa";
-import { AiFillDelete, AiFillMessage } from "react-icons/ai";
+import { FiEdit, FiTrash2, FiEye, FiMessageSquare } from "react-icons/fi";
+import { AiFillMessage } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Box, Button, Modal, TextField } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 const pageSize = 10;
@@ -750,56 +749,50 @@ const ManageCustomer = () => {
                                 )}
                               </td>
                               <td>
-                                <VisibilityIcon
+                                <FiEye
+                                  className="action-icon-view"
                                   onClick={() => {
                                     handleclickdata(item.id);
-                                  }}
-                                  style={{
-                                    color: "rgb(27 34 69)",
-                                    cursor: "pointer",
                                   }}
                                 />
                               </td>
                               <td>
                                 <div className="d-flex align-items-center">
-                                  <div className="action_btn1">
-                                    <AiFillDelete
-                                      className="text-danger"
-                                      onClick={() => {
-                                        handledelete(item.id);
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="action_btn1 ms-2">
-                                    <AiFillMessage
-                                      style={{ cursor: "pointer" }}
-                                      className="text-success"
-                                      onClick={() => {
-                                        querryinQuote(item);
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="ms-2">
-                                    <button
-                                      type="button"
-                                      className=" border-0"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#staticBackdrop"
-                                      onClick={() => {
-                                        editDataAll(item.id);
-                                      }}
-                                    >
-                                      <FaEdit style={{ color: "#1b2245" }} />
-                                    </button>
-                                    <div
-                                      className="modal fade modalManageFreight"
-                                      id="staticBackdrop"
-                                      data-bs-backdrop="static"
-                                      data-bs-keyboard="false"
-                                      tabIndex={-1}
-                                      aria-labelledby="staticBackdropLabel"
-                                      aria-hidden="true"
-                                    >
+                                  <FiTrash2
+                                    className="action-icon-delete"
+                                    style={{ color: "#be191d", cursor: "pointer" }}
+                                    onClick={() => {
+                                      handledelete(item.id);
+                                    }}
+                                  />
+                                  <FiMessageSquare
+                                    style={{ cursor: "pointer", color: "#28a745" }}
+                                    className="action-icon"
+                                    onClick={() => {
+                                      querryinQuote(item);
+                                    }}
+                                    title="Message"
+                                  />
+                                  <button
+                                    type="button"
+                                    className="border-0 bg-transparent p-0 d-inline-flex align-items-center"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#staticBackdrop"
+                                    onClick={() => {
+                                      editDataAll(item.id);
+                                    }}
+                                  >
+                                    <FiEdit className="action-icon-edit" />
+                                  </button>
+                                  <div
+                                    className="modal fade modalManageFreight"
+                                    id="staticBackdrop"
+                                    data-bs-backdrop="static"
+                                    data-bs-keyboard="false"
+                                    tabIndex={-1}
+                                    aria-labelledby="staticBackdropLabel"
+                                    aria-hidden="true"
+                                  >
                                       <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
                                         <div className="modal-content">
                                           <div className="modal-header">
@@ -1080,17 +1073,16 @@ const ManageCustomer = () => {
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-                                  <div className="ms-2">
                                     <a
                                       href="https://chat.whatsapp.com/C1SiwQek53B434FSz4BjQo"
                                       target="_blank"
+                                      rel="noreferrer"
+                                      className="d-inline-flex align-items-center"
                                     >
-                                      <WhatsAppIcon className="text-success" />
+                                      <WhatsAppIcon className="text-success action-icon" />
                                     </a>
                                   </div>
-                                </div>
-                              </td>
+                                </td>
                             </tr>
                           </>
                         );
@@ -1475,3 +1467,4 @@ const ManageCustomer = () => {
   );
 };
 export default ManageCustomer;
+

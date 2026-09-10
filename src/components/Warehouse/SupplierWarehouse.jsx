@@ -1,15 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { FaEdit } from "react-icons/fa";
+import { FiEdit, FiEye } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { createFilterOptions } from "@mui/material/Autocomplete";
 import "react-toastify/dist/ReactToastify.css";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useNavigate } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import DriveFileMoveIcon from "@mui/icons-material/DriveFileMove";
-import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Modal,
   Box,
@@ -917,48 +915,43 @@ export default function SupplierWarehouse() {
               </div>
             </div>
           </div>
-          <ul className="nav nav-tabs mb-3 mt-3">
-            <li className="nav-item" style={{ cursor: "pointer" }}>
-              <a
-                className={`nav-link ${tab === 'all' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                onClick={() => handleTabChange('all')}
-              >
-                All
-              </a>
-            </li>
-            <li className="nav-item" style={{ cursor: "pointer" }}>
-              <a
-                className={`nav-link ${tab === 'pending' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                onClick={() => handleTabChange('pending')}
-              >
-                Pending
-              </a>
-            </li>
-            <li className="nav-item" style={{ cursor: "pointer" }}>
-              <a
-                className={`nav-link ${tab === 'assigned' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                onClick={() => handleTabChange('assigned')}
-              >
-                Assigned
-              </a>
-            </li>
-            <li className="nav-item" style={{ cursor: "pointer" }}>
-              <a
-                className={`nav-link ${tab === 'instore' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                onClick={() => handleTabChange('instore')}
-              >
-                In - store
-              </a>
-            </li>
-            <li className="nav-item" style={{ cursor: "pointer" }}>
-              <a
-                className={`nav-link ${tab === 'out' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                onClick={() => handleTabChange('out')}
-              >
-                Out
-              </a>
-            </li>
-          </ul>
+          <div className="unified-tabs-container mb-3 mt-3">
+            <button
+              type="button"
+              className={`unified-tab-btn ${tab === 'all' ? 'active' : ''}`}
+              onClick={() => handleTabChange('all')}
+            >
+              All
+            </button>
+            <button
+              type="button"
+              className={`unified-tab-btn ${tab === 'pending' ? 'active' : ''}`}
+              onClick={() => handleTabChange('pending')}
+            >
+              Pending
+            </button>
+            <button
+              type="button"
+              className={`unified-tab-btn ${tab === 'assigned' ? 'active' : ''}`}
+              onClick={() => handleTabChange('assigned')}
+            >
+              Assigned
+            </button>
+            <button
+              type="button"
+              className={`unified-tab-btn ${tab === 'instore' ? 'active' : ''}`}
+              onClick={() => handleTabChange('instore')}
+            >
+              In - store
+            </button>
+            <button
+              type="button"
+              className={`unified-tab-btn ${tab === 'out' ? 'active' : ''}`}
+              onClick={() => handleTabChange('out')}
+            >
+              Out
+            </button>
+          </div>
           {loader ? (
             <div class="loader-container">
               <div class="loader"></div>
@@ -1155,20 +1148,17 @@ export default function SupplierWarehouse() {
                                               ""
                                             )}
                                             {item.move_to_adminWarhouse ===
-                                              0 ? (
-                                              <FaEdit
-                                                onClick={() =>
-                                                  handleEditClick(item.id)
-                                                }
-                                                style={{
-                                                  color: "#1d2044",
-                                                  cursor: "pointer",
-                                                }}
-                                              />
-                                            ) : (
-                                              ""
-                                            )}
-                                            {/* <DeleteIcon
+                                                0 ? (
+                                                <FiEdit
+                                                  className="action-icon-edit"
+                                                  onClick={() =>
+                                                    handleEditClick(item.id)
+                                                  }
+                                                />
+                                              ) : (
+                                                ""
+                                              )}
+                                            {/* <FiTrash2
                                               onClick={() =>
                                                 handleEditClick12(
                                                   item.warehouse_assign_order_id,
@@ -1181,15 +1171,11 @@ export default function SupplierWarehouse() {
                                                 cursor: "pointer",
                                               }}
                                             /> */}
-                                            <VisibilityIcon
+                                            <FiEye
+                                              className="action-icon-view"
                                               onClick={() =>
                                                 handleclicknavi(item)
                                               }
-                                              style={{
-                                                color: "rgb(27 34 69)",
-                                                cursor: "pointer",
-                                                width: "20px",
-                                              }}
                                             />
                                             {/* <PictureAsPdfIcon
                                               style={{ cursor: "pointer" }}

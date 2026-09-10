@@ -1928,16 +1928,12 @@ export default function USerEstimateQuote() {
             <div className="row">
               <div className="col-12 mb-3">
                 <div className="d-flex justify-content-between align-items-center">
-                  <div className="d-flex">
-                    <div>
-                      <ArrowBackIcon
-                        onClick={handleclicknav}
-                        style={{ cursor: "pointer" }}
-                      />
-                    </div>
-                    <div>
-                      <h4 className="freight_hd mt-0 ms-3">Supplier Form</h4>
-                    </div>
+                  <div className="d-flex align-items-center gap-3">
+                    <ArrowBackIcon
+                      onClick={handleclicknav}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <h4 className="freight_hd mb-0">Supplier Form</h4>
                   </div>
                   <div>
                     <button onClick={andlemodaloen} className="blueBtn me-2">

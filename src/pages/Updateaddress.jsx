@@ -118,17 +118,13 @@ export default function UpdateAddress() {
         <div className="container-fluid">
           <div className="row  manageFreight">
             <div className="col-12">
-              <div className="d-flex">
-                <div>
-                  <ArrowBackIcon
-                    onClick={handleclicknav}
-                    className="text-dark"
-                    style={{ cursor: "pointer" }}
-                  />
-                </div>
-                <div>
-                  <h4 className="freight_hd ms-3 mt-0">Update Loading Detail's</h4>
-                </div>
+              <div className="d-flex align-items-center gap-3">
+                <ArrowBackIcon
+                  onClick={handleclicknav}
+                  className="text-dark"
+                  style={{ cursor: "pointer" }}
+                />
+                <h4 className="freight_hd mb-0">Update Loading Detail's</h4>
               </div>
             </div>
           </div>

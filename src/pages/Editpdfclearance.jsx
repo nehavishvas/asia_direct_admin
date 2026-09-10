@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -409,17 +410,13 @@ export default function Editpdfclearance() {
         <div className="row  manageFreight">
           <div className="col-md-12">
             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-              <div className="d-flex gap-3">
-                <div>
-                  <ArrowBackIcon
-                    onClick={handleclicknav}
-                    className="text-dark"
-                    style={{ cursor: "pointer" }}
-                  />
-                </div>
-                <div>
-                  <h4 className="freight_hd mt-0">Estimate</h4>
-                </div>
+              <div className="d-flex align-items-center gap-3">
+                <ArrowBackIcon
+                  onClick={handleclicknav}
+                  className="text-dark"
+                  style={{ cursor: "pointer" }}
+                />
+                <h4 className="freight_hd mb-0">Estimate</h4>
               </div>
               <div className="d-flex gap-2">
                 <div>
@@ -480,20 +477,20 @@ export default function Editpdfclearance() {
                           {showIcons && (
                             <td>
                               <div className="editIcon">
-                                <i
+                                <FiEdit
                                   type="button"
-                                  className="fa fa-pencil"
+                                  style={{ cursor: "pointer", marginRight: "10px" }}
                                   onClick={() => {
                                     Rowdataclick(row);
                                   }}
-                                ></i>
-                                <i
-                                  className="fa fa-trash"
+                                />
+                                <FiTrash2
+                                  style={{ cursor: "pointer" }}
+                                  className="text-danger"
                                   onClick={() => {
                                     handleclickrow(row.id);
                                   }}
-                                  aria-hidden="true"
-                                ></i>
+                                />
                               </div>
                             </td>
                           )}

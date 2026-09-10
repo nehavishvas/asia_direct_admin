@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 
 export default function Clearenceorderdetailspage() {
@@ -74,17 +74,12 @@ export default function Clearenceorderdetailspage() {
         <div className="formDetails">
           <div className="row">
             <div className="col-lg-12">
-              <div className="d-flex">
-                <div>
-                  <ArrowBackIcon
-                    onClick={handleclicknav}
-                    style={{ cursor: "pointer" }}
-                  />
-                </div>
-
-                <div>
-                  <h4 className="det_hd ms-3">Clearance Details</h4>
-                </div>
+              <div className="d-flex align-items-center gap-3">
+                <ArrowBackIcon
+                  onClick={handleclicknav}
+                  style={{ cursor: "pointer" }}
+                />
+                <h4 className="det_hd mb-0">Clearance Details</h4>
               </div>
             </div>
           </div>
@@ -475,7 +470,7 @@ export default function Clearenceorderdetailspage() {
                                 >
                                   View Document
                                 </a>
-                                <DeleteIcon
+                                <FiTrash2
                                   onClick={() => {
                                     deleteapi(item.id);
                                   }}
@@ -499,7 +494,7 @@ export default function Clearenceorderdetailspage() {
                             >
                               View Document
                             </a>
-                            <DeleteIcon
+                            <FiTrash2
                               onClick={() => {
                                 deleteapi(item.id);
                               }}
@@ -523,7 +518,7 @@ export default function Clearenceorderdetailspage() {
                             >
                               View Document
                             </a>
-                            <DeleteIcon
+                            <FiTrash2
                               onClick={() => {
                                 deleteapi(item.id);
                               }}
@@ -547,7 +542,7 @@ export default function Clearenceorderdetailspage() {
                             >
                               View Document
                             </a>
-                            <DeleteIcon
+                            <FiTrash2
                               onClick={() => {
                                 deleteapi(item.id);
                               }}
@@ -603,7 +598,7 @@ export default function Clearenceorderdetailspage() {
                             >
                               View Document
                             </a>
-                            <DeleteIcon
+                            <FiTrash2
                               onClick={() => deleteapi(item.id)}
                               className="text-danger ms-2"
                               style={{ cursor: "pointer" }}

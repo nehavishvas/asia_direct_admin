@@ -23,7 +23,10 @@ const handleback =() =>{
               <div className="row manageFreight">
                 <div className="col-md-12">
                   <div className='d-flex justify-content-between align-items-center'>
-                    <h4 className="freight_hd"><ArrowBackIcon onClick={handleback} style={{cursor:"pointer"}} />Estimate</h4>
+                    <div className="d-flex align-items-center gap-3">
+                      <ArrowBackIcon onClick={handleback} style={{ cursor: "pointer" }} />
+                      <h4 className="freight_hd mb-0">Estimate</h4>
+                    </div>
                     <MdDownloadForOffline className="fs-2 " onClick={() => toPDF()} style={{ color: "#1b2245" }} />
                   </div>
                 </div>

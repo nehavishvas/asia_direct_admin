@@ -7,11 +7,10 @@ import Select from "@mui/material/Select";
 import axios from "axios";
 import Checkbox from "@mui/material/Checkbox";
 import React, { useEffect, useState } from "react";
-import { AiFillDelete } from "react-icons/ai";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { Box, Button, Modal } from "@mui/material";
-import { FaEdit } from "react-icons/fa";
 const pageSize = 10;
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -327,7 +326,7 @@ export default function ManageRoles() {
                                
                                 <td>
                                   <div className="action_btn1 d-flex align-items-center">
-                                    <FaEdit
+                                    <FiEdit
                                       onClick={() => {
                                         openModal2(item.id);
                                       }}
@@ -339,7 +338,7 @@ export default function ManageRoles() {
                                         cursor: "pointer",
                                       }}
                                     />
-                                    <AiFillDelete
+                                    <FiTrash2
                                       className="text-danger"
                                       style={{ cursor: "pointer" }}
                                       onClick={() => {

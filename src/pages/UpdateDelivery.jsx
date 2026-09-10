@@ -145,21 +145,15 @@ export default function UpdateDelivery() {
         <div className="container-fluid">
           <div className="row   manageFreight">
             <div className="col-12">
-              <div className="d-flex ">
-                <div className="d-flex">
-                  <div>
-                    <ArrowBackIcon
-                      onClick={handleclicknav}
-                      className="text-dark"
-                      style={{ cursor: "pointer" }}
-                    />
-                  </div>
-                  <div>
-                    <h4 className="freight_hd mt-0 ms-3">
-                      Update Delivery Detail's
-                    </h4>
-                  </div>
-                </div>
+              <div className="d-flex align-items-center gap-3">
+                <ArrowBackIcon
+                  onClick={handleclicknav}
+                  className="text-dark"
+                  style={{ cursor: "pointer" }}
+                />
+                <h4 className="freight_hd mb-0">
+                  Update Delivery Detail's
+                </h4>
               </div>
             </div>
           </div>

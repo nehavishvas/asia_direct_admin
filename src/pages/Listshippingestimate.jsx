@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import { FiEye } from "react-icons/fi";
 const pageSize = 5;
 export default function Listshippingestimate() {
   const navigate = useNavigate();
@@ -159,15 +159,10 @@ export default function Listshippingestimate() {
                                           </a>
                                           <div className="dropdown-menu">
                                             <a className="dropdown-item det_page">
-                                              <VisibilityIcon
+                                              <FiEye
+                                                className="action-icon-view me-2"
                                                 onClick={() => {
                                                   handleclickurl(item.id);
-                                                }}
-                                                style={{
-                                                  color: "rgb(27 34 69)",
-                                                  cursor: "pointer",
-                                                  marginRight: "10px",
-                                                  width: "20px",
                                                 }}
                                               />
                                               View

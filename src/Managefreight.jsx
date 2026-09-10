@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { AiFillDelete, AiFillMessage } from "react-icons/ai";
+import { AiFillMessage } from "react-icons/ai";
 import { toast } from "react-toastify";
-import { FaEdit, FaFileExcel, FaFilePdf } from "react-icons/fa";
+import { FaFileExcel, FaFilePdf } from "react-icons/fa";
+import { FiEdit, FiTrash2, FiEye } from "react-icons/fi";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -18,7 +19,6 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import Swal from "sweetalert2";
 import SupportAgentSharpIcon from "@mui/icons-material/SupportAgentSharp";
@@ -1448,13 +1448,8 @@ export default function Managefreight() {
                                                     );
                                                   }}
                                                 >
-                                                  <VisibilityIcon
-                                                    style={{
-                                                      color: "rgb(27 34 69)",
-                                                      cursor: "pointer",
-                                                      marginRight: "10px",
-                                                      width: "20px",
-                                                    }}
+                                                  <FiEye
+                                                    className="action-icon-view me-2"
                                                   />
                                                   View
                                                 </a>
@@ -1488,13 +1483,8 @@ export default function Managefreight() {
                                                     );
                                                   }}
                                                 >
-                                                  <FaEdit
-                                                    style={{
-                                                      color: "rgb(27 34 69)",
-                                                      marginRight: "10px",
-                                                      width: "20px",
-                                                      height: "15px",
-                                                    }}
+                                                  <FiEdit
+                                                    className="action-icon-edit me-2"
                                                   />
                                                   Edit
                                                 </a>
@@ -1507,12 +1497,8 @@ export default function Managefreight() {
                                                     );
                                                   }}
                                                 >
-                                                  <AiFillDelete
-                                                    className="text-danger"
-                                                    style={{
-                                                      marginRight: "10px",
-                                                      width: "20px",
-                                                    }}
+                                                  <FiTrash2
+                                                    className="action-icon-delete me-2"
                                                   />{" "}
                                                   Delete
                                                 </a>

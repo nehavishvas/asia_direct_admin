@@ -3,11 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { toast } from "react-toastify";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import { FiEdit, FiTrash2, FiEye } from "react-icons/fi";
 import CloseIcon from "@mui/icons-material/Close";
-import { FaEdit } from "react-icons/fa";
 import { Box, Modal, Button, Typography, IconButton } from "@mui/material";
 export default function WarehouseDetails() {
   const location = useLocation();
@@ -237,19 +235,15 @@ export default function WarehouseDetails() {
         <div className="formDetails">
           <div className="row">
             <div className="col-lg-12">
-              <div className="d-flex">
-                <div>
-                  <ArrowBackIcon
-                    onClick={handleclicknav}
-                    className="text-dark"
-                    style={{ cursor: "pointer" }}
-                  />
-                </div>
-                <div>
-                  <h4 className="det_hd text-start ms-3">
-                    Warehouse Full Details
-                  </h4>
-                </div>
+              <div className="d-flex align-items-center gap-3">
+                <ArrowBackIcon
+                  onClick={handleclicknav}
+                  className="text-dark"
+                  style={{ cursor: "pointer" }}
+                />
+                <h4 className="det_hd text-start mb-0">
+                  Warehouse Full Details
+                </h4>
               </div>
             </div>
           </div>
@@ -401,9 +395,9 @@ export default function WarehouseDetails() {
                               }
                             />
 
-                            <DeleteIcon
+                            <FiTrash2
                               onClick={() => deleteapi(item.id)}
-                              className="delete-icon"
+                              className="delete-icon action-icon-delete"
                             />
                           </div>
                         </div>
@@ -472,34 +466,26 @@ export default function WarehouseDetails() {
                           <td>{item.dimension}</td>
                           <td>{item.weight}</td>
                           <td>
-                            {item?.id ? (
-                              <VisibilityIcon
-                                onClick={() => handleEditClickview(item.id)}
-                                style={{ color: "#1d2044", cursor: "pointer" }}
-                                className="me-1"
-                              />
-                            ) : (
-                              ""
-                            )}
-                            {item?.id ? (
-                              <FaEdit
-                                onClick={() => handleEditClick(item.id)}
-                                style={{ color: "#1d2044", cursor: "pointer" }}
-                                className="me-1"
-
-                              />
-                            ) : (
-                              ""
-                            )}
-                            {item?.id ? (
-                              <DeleteIcon
-                                onClick={() => handleEditClick12(item.id)}
-                                style={{ fill: "#be191d", cursor: "pointer" }}
-                              />
-                            ) : (
-                              ""
-                            )}
-
+                            <div className="d-flex align-items-center">
+                              {item?.id ? (
+                                <FiEye
+                                  onClick={() => handleEditClickview(item.id)}
+                                  className="action-icon-view"
+                                />
+                              ) : null}
+                              {item?.id ? (
+                                <FiEdit
+                                  onClick={() => handleEditClick(item.id)}
+                                  className="action-icon-edit"
+                                />
+                              ) : null}
+                              {item?.id ? (
+                                <FiTrash2
+                                  onClick={() => handleEditClick12(item.id)}
+                                  className="action-icon-delete"
+                                />
+                              ) : null}
+                            </div>
                           </td>
                         </tr>
                       </>

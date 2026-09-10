@@ -274,7 +274,7 @@ try {
                                                   cursor: "pointer",
                                                 }}
                                               />
-                                              <FaEdit
+                                              <FiEdit
                                                 onClick={() => {
                                                   openModal2(item.order_id);
                                                 }}
@@ -286,7 +286,7 @@ try {
                                                   cursor: "pointer",
                                                 }}
                                               />
-                                              <AiFillDelete
+                                              <FiTrash2
                                                 onClick={() => {
                                                   deletewarehouse(item.id);
                                                 }}

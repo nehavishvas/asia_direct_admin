@@ -1,11 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { FaEdit } from "react-icons/fa";
+import { FiEdit, FiTrash2, FiEye } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CalculateIcon from "@mui/icons-material/Calculate";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import { AiFillDelete } from "react-icons/ai";
 import { MdDriveFileMoveOutline } from "react-icons/md";
 import CloseIcon from "@mui/icons-material/Close";
 import {
@@ -884,13 +882,8 @@ const CustomClearaceOrder = () => {
                                                 handleclicknavidata(item.id)
                                               }
                                             >
-                                              <VisibilityIcon
-                                                style={{
-                                                  color: "rgb(27 34 69)",
-                                                  cursor: "pointer",
-                                                  marginRight: "10px",
-                                                  width: "20px",
-                                                }}
+                                              <FiEye
+                                                className="action-icon-view me-2"
                                               />
                                               View Quotation
                                             </a>
@@ -900,13 +893,8 @@ const CustomClearaceOrder = () => {
                                                 handleclick1212(item.id)
                                               }
                                             >
-                                              <VisibilityIcon
-                                                style={{
-                                                  color: "rgb(27 34 69)",
-                                                  cursor: "pointer",
-                                                  marginRight: "10px",
-                                                  width: "20px",
-                                                }}
+                                              <FiEye
+                                                className="action-icon-view me-2"
                                               />
                                               View Details
                                             </a>
@@ -916,14 +904,8 @@ const CustomClearaceOrder = () => {
                                                 handlelcickdelete(item.id)
                                               }
                                             >
-                                              <AiFillDelete
-                                                className="text-danger"
-                                                style={{
-                                                  marginRight: "10px",
-                                                  width: "20px",
-                                                  cursor: "pointer",
-                                                  height: "20px",
-                                                }}
+                                              <FiTrash2
+                                                className="action-icon-delete me-2"
                                               />
                                               Delete
                                             </a>
@@ -934,13 +916,7 @@ const CustomClearaceOrder = () => {
                                               }
                                             >
                                               <CopyAll
-                                                className="text-danger"
-                                                style={{
-                                                  marginRight: "10px",
-                                                  width: "20px",
-                                                  cursor: "pointer",
-                                                  height: "20px",
-                                                }}
+                                                className="action-icon-copy me-2"
                                               />
                                               Attach Quotation
                                             </a>
@@ -951,13 +927,7 @@ const CustomClearaceOrder = () => {
                                               }
                                             >
                                               <AssignmentTurnedIn
-                                                className="text-danger"
-                                                style={{
-                                                  marginRight: "10px",
-                                                  width: "20px",
-                                                  cursor: "pointer",
-                                                  height: "20px",
-                                                }}
+                                                className="action-icon-assign me-2"
                                               />
                                               Assign Clearance
                                             </a>
@@ -968,13 +938,8 @@ const CustomClearaceOrder = () => {
                                               }
                                             >
                                               <div className="action_btn">
-                                                <FaEdit
-                                                  style={{
-                                                    color: "rgb(11, 65, 112)",
-                                                    marginRight: "10px",
-                                                    width: "20px",
-                                                    height: "15px",
-                                                  }}
+                                                <FiEdit
+                                                  className="action-icon-edit me-2"
                                                 />
                                                 Edit
                                               </div>

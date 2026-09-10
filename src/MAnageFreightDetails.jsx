@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { ToastContainer } from "react-bootstrap";
 import axios from "axios";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 
@@ -447,7 +447,7 @@ export default function MAnageFreightDetails() {
                             >
                               View Document
                             </a>
-                            <DeleteIcon
+                            <FiTrash2
                               onClick={() => deleteapi(item.id)}
                               className="text-danger ms-2"
                               style={{ cursor: "pointer" }}

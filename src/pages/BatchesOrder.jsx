@@ -13,11 +13,10 @@ import {
   Box,
   Button,
 } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
-import { Delete } from "@mui/icons-material";
+import { FiTrash2, FiEye } from "react-icons/fi";
 import Swal from "sweetalert2";
 
 export default function BatchesOrder() {
@@ -535,15 +534,16 @@ export default function BatchesOrder() {
                             <TableCell>{item.dimensions}</TableCell>
                             <TableCell>{item.package_type}</TableCell>
                             <TableCell>
-                              <VisibilityIcon
-                                onClick={() => handleclcick(item)}
-                                style={{
-                                  color: "rgb(27 34 69)",
-                                  cursor: "pointer",
-                                  width: "20px",
-                                }}
-                              />
-                              <Delete className='ms-2' style={{ cursor: "pointer" }} onClick={() => handleclcickrevert(item)} />
+                              <div className="d-flex align-items-center">
+                                <FiEye
+                                  className="action-icon-view"
+                                  onClick={() => handleclcick(item)}
+                                />
+                                <FiTrash2
+                                  className="action-icon-delete"
+                                  onClick={() => handleclcickrevert(item)}
+                                />
+                              </div>
                             </TableCell>
                           </TableRow>
                         );

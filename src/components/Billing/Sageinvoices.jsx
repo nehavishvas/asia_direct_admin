@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Box, Button, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { AiFillDelete } from "react-icons/ai";
+import { FiTrash2 } from "react-icons/fi";
 import Swal from "sweetalert2";
 
 const pageSize = 10;
@@ -284,12 +284,9 @@ export default function Sageinvoices() {
                   </button>
                 </div>
               </div>
-              <div className="d-flex gap-2 mb-4 flex-wrap taskManagerTab">
+              <div className="unified-tabs-container">
                 <button
-                  className={`btn ${activeTab === "general"
-                    ? "btn-primary"
-                    : "btn-outline-primary"
-                    }`}
+                  className={`unified-tab-btn ${activeTab === "general" ? "active" : ""}`}
                   onClick={() => {
                     setActiveTab("general");
                     setCurrentPage(1);
@@ -298,10 +295,7 @@ export default function Sageinvoices() {
                   All
                 </button>
                 <button
-                  className={`btn ${activeTab === "South Africa"
-                    ? "btn-primary"
-                    : "btn-outline-primary"
-                    }`}
+                  className={`unified-tab-btn ${activeTab === "South Africa" ? "active" : ""}`}
                   onClick={() => {
                     setActiveTab("South Africa");
                     setCurrentPage(1);
@@ -310,10 +304,7 @@ export default function Sageinvoices() {
                   South Africa
                 </button>
                 <button
-                  className={`btn ${activeTab === "Zimbabwe"
-                    ? "btn-primary"
-                    : "btn-outline-primary"
-                    }`}
+                  className={`unified-tab-btn ${activeTab === "Zimbabwe" ? "active" : ""}`}
                   onClick={() => {
                     setActiveTab("Zimbabwe");
                     setCurrentPage(1);
@@ -322,10 +313,7 @@ export default function Sageinvoices() {
                   Zimbabwe
                 </button>
                 <button
-                  className={`btn ${activeTab === "Zambia"
-                    ? "btn-primary"
-                    : "btn-outline-primary"
-                    }`}
+                  className={`unified-tab-btn ${activeTab === "Zambia" ? "active" : ""}`}
                   onClick={() => {
                     setActiveTab("Zambia");
                     setCurrentPage(1);
@@ -391,16 +379,10 @@ export default function Sageinvoices() {
                             </td>
 
                             <td>
-                              <AiFillDelete
+                              <FiTrash2
+                                className="action-icon-delete"
                                 onClick={() => {
                                   deletewarehouse(item.id);
-                                }}
-                                style={{
-                                  color: "rgb(212, 69, 25)",
-                                  marginRight: "10px",
-                                  width: "20px",
-                                  height: "15px",
-                                  cursor: "pointer",
                                 }}
                               />
                             </td>

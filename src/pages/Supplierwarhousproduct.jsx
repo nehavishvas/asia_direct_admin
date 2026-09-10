@@ -3,8 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { toast } from "react-toastify";
-import { FaEdit } from "react-icons/fa";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import Swal from "sweetalert2";
 import { Box, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -189,20 +188,15 @@ export default function Supplierwarhousproduct() {
         <div className="formDetails">
           <div className="row">
             <div className="col-lg-12">
-              <div className="d-flex">
-                <div>
-                  <ArrowBackIcon
-
-                    onClick={handleclicknav}
-                    className="text-dark"
-                    style={{ cursor: "pointer" }}
-                  />
-                </div>
-                <div>
-                  <h4 className="det_hd text-start ms-3">
-                    Warehouse Full Details
-                  </h4>
-                </div>
+              <div className="d-flex align-items-center gap-3">
+                <ArrowBackIcon
+                  onClick={handleclicknav}
+                  className="text-dark"
+                  style={{ cursor: "pointer" }}
+                />
+                <h4 className="det_hd text-start mb-0">
+                  Warehouse Full Details
+                </h4>
               </div>
             </div>
           </div>
@@ -405,9 +399,9 @@ export default function Supplierwarhousproduct() {
                             </div>
 
                             {/* ✅ DELETE */}
-                            <DeleteIcon
+                            <FiTrash2
                               onClick={() => deleteapi(item.id)}
-                              className="text-danger mt-1"
+                              className="text-danger action-icon-delete mt-1"
                               style={{ cursor: "pointer", fontSize: "18px" }}
                             />
                           </div>
@@ -465,7 +459,7 @@ export default function Supplierwarhousproduct() {
                         <td>{item.weight}</td>
                         <td>
                           {index !== 0 && ( // 👈 yaha condition lagayi
-                            <FaEdit
+                            <FiEdit
                               onClick={() => handleEditClick(item.id)}
                               style={{ color: "#1d2044", cursor: "pointer" }}
                             />

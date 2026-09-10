@@ -1866,16 +1866,12 @@ export default function Supplierestimationview() {
               <div className="row mb-3">
                 <div className="col-12">
                   <div className="d-flex justify-content-between align-items-center">
-                    <div className="d-flex">
-                      <div>
-                        <ArrowBackIcon
-                          onClick={handleclicknav}
-                          style={{ cursor: "pointer" }}
-                        />
-                      </div>
-                      <div>
-                        <h4 className="freight_hd mt-0 ms-3">Supplier Estimate Form</h4>
-                      </div>
+                    <div className="d-flex align-items-center gap-3">
+                      <ArrowBackIcon
+                        onClick={handleclicknav}
+                        style={{ cursor: "pointer" }}
+                      />
+                      <h4 className="freight_hd mb-0">Supplier Estimate Form</h4>
                     </div>
                     {/* <MdDownloadForOffline
                       onClick={() => downloadPDF()}

@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import { toast } from "react-toastify";
 import { Box, Button, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { FiTrash2, FiEye, FiCalendar } from "react-icons/fi";
 import Swal from "sweetalert2";
 const pageSize = 10;
 const toDateKey = (date) => {
@@ -831,26 +832,27 @@ Status: ${leave.status === 1
                             </td>
                             <td>{item.admin_remark}</td>
                             <td style={{ whiteSpace: "nowrap" }}>
-                              <i
-                                className="fa fa-eye mx-1"
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleViewLeave(item.leave_id)}
-                                title="View Leave Details"
-                              ></i>
-                              <i
-                                className="fa fa-calendar mx-1"
-                                style={{
-                                  cursor: "pointer",
-                                }}
-                                onClick={() => addToGoogleCalendar(item)}
-                                title="Add to Google Calendar"
-                              ></i>
-                              <i
-                                className="fa fa-trash mx-1 text-danger"
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleDeleteLeave(item.leave_id)}
-                                title="Delete Leave Request"
-                              ></i>
+                              <div className="d-flex align-items-center">
+                                <FiEye
+                                  className="action-icon-view"
+                                  onClick={() => handleViewLeave(item.leave_id)}
+                                  title="View Leave Details"
+                                />
+                                <FiCalendar
+                                  className="action-icon"
+                                  style={{
+                                    cursor: "pointer",
+                                    color: "#1b2245",
+                                  }}
+                                  onClick={() => addToGoogleCalendar(item)}
+                                  title="Add to Google Calendar"
+                                />
+                                <FiTrash2
+                                  className="action-icon-delete"
+                                  onClick={() => handleDeleteLeave(item.leave_id)}
+                                  title="Delete Leave Request"
+                                />
+                              </div>
                             </td>
                           </tr>
                         ))

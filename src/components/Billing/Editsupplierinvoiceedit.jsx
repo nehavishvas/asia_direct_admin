@@ -7,6 +7,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import logo from "../../Assests/logo.png";
 import html2pdf from "html2pdf.js";
 import { exportEstimatePdf } from "../../utils/pdfExportUtils";
+import { FiTrash2 } from "react-icons/fi";
 
 const getVatPercent = (vatTyp) => {
   if (!vatTyp) return 0;
@@ -1096,8 +1097,8 @@ export default function Editsupplierinvoiceedit() {
               />
             </td>
             <td>
-              <i
-                className="fa fa-trash text-danger"
+              <FiTrash2
+                className="text-danger"
                 style={{ cursor: "pointer" }}
                 onClick={() => deleteRow(setter, row.id)}
               />

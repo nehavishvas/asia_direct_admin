@@ -19,8 +19,7 @@ import {
   OutlinedInput,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { FaEdit } from "react-icons/fa";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
@@ -569,15 +568,18 @@ export default function CountryOfOrigin({ countryID = null }) {
                               .join(", ")}
                           </TableCell>
                           <TableCell>
-                            <FaEdit
-                              className="fs-6"
-                              style={{ color: "rgb(27 34 69)" }}
-                              onClick={() => handleUpdate(item)}
-                            />
-                            <DeleteIcon
-                              className="fs-5 text-danger ms-2"
-                              onClick={() => handledelete(item)}
-                            />
+                            <div className="d-flex align-items-center">
+                              <FiEdit
+                                className="action-icon-edit"
+                                style={{ color: "#1b2245", cursor: "pointer" }}
+                                onClick={() => handleUpdate(item)}
+                              />
+                              <FiTrash2
+                                className="action-icon-delete"
+                                style={{ color: "#be191d", cursor: "pointer" }}
+                                onClick={() => handledelete(item)}
+                              />
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import {
   Modal,
@@ -128,15 +128,13 @@ export default function Shipmentdeailspage() {
               <div className="container">
                 <div className="client_details">
                   <div className="d-flex justify-content-between">
-                    <div className="d-flex gap-3">
-                      <div>
-                        <ArrowBackIcon
-                          style={{ cursor: "pointer" }}
-                          onClick={handleclick}
-                          className=""
-                        />
-                      </div>
-                      <h4 className="det_hd mb-0 ">Shipment Details</h4>
+                    <div className="d-flex align-items-center gap-3">
+                      <ArrowBackIcon
+                        style={{ cursor: "pointer" }}
+                        onClick={handleclick}
+                        className=""
+                      />
+                      <h4 className="det_hd mb-0">Shipment Details</h4>
                     </div>
                     <div>
                       <button
@@ -322,7 +320,7 @@ export default function Shipmentdeailspage() {
                                       >
                                         View Document
                                       </a>
-                                      <DeleteIcon
+                                      <FiTrash2
                                         onClick={() => deleteapi(item.id)}
                                         className="text-danger ms-2"
                                         style={{ cursor: "pointer" }}

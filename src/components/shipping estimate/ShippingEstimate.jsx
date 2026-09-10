@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { MdDownloadForOffline } from "react-icons/md";
+import { FiTrash2 } from "react-icons/fi";
 import { usePDF } from "react-to-pdf";
 import logo from "../../Assests/logo.png";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -721,8 +722,8 @@ export default function ShippingEstimate() {
           />
         </td>
         <td>
-          <i
-            className="fa fa-trash text-danger"
+          <FiTrash2
+            className="text-danger"
             style={{ cursor: "pointer" }}
             onClick={() => deleteRow(setter, row.id)}
           />

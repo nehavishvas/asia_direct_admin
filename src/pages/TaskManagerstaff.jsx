@@ -1,8 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import AddIcon from "@mui/icons-material/Add";
-import Swal from "sweetalert2";
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import { FiEye, FiPlus } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 export default function TaskManagerstaff() {
   const user = JSON.parse(localStorage.getItem("data123"));
@@ -115,16 +113,19 @@ const handleAddComment = async () => {
                   {/* <td>{item.country_name}</td> */}
                   <td>{item.created_at.split("T")[0]}</td>
                   <td>
-                   <AddIcon
-  className="text-danger"
-  style={{ cursor: "pointer" }}
-  onClick={() => handleOpenModal(item.task_id)}
-/>
-                   <RemoveRedEyeIcon
-  className="text-danger"
-  style={{ cursor: "pointer" }}
-  onClick={() => handleOpenModalnavigate(item.task_id)}
-/>
+                    <div className="d-flex align-items-center">
+                      <FiPlus
+                        className="action-icon"
+                        style={{ cursor: "pointer", color: "#be191d" }}
+                        onClick={() => handleOpenModal(item.task_id)}
+                        title="Add"
+                      />
+                      <FiEye
+                        className="action-icon-view"
+                        onClick={() => handleOpenModalnavigate(item.task_id)}
+                        title="View"
+                      />
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -462,7 +462,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { ToastContainer } from "react-bootstrap";
 import axios from "axios";
-import DeleteIcon from '@mui/icons-material/Delete';
+import { FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 export default function MAnageFreightDetails() {
   const infolocation = useLocation();
@@ -513,13 +513,12 @@ export default function MAnageFreightDetails() {
         <div className="formDetails">
           <div className="row">
             <div className="col-lg-12 px-0">
-              <div className="d-flex">
-                <div style={{ cursor: "pointer", }}>
-                  <ArrowBackIcon onClick={handleclick} />
-                </div>
-                <div>
-                  <h4 className="det_hd ms-3">Clearance Order Details</h4>
-                </div>
+              <div className="d-flex align-items-center gap-3">
+                <ArrowBackIcon
+                  onClick={handleclick}
+                  style={{ cursor: "pointer" }}
+                />
+                <h4 className="det_hd mb-0">Clearance Order Details</h4>
               </div>
             </div>
           </div>
@@ -931,7 +930,7 @@ export default function MAnageFreightDetails() {
                             >
                               View Document
                             </a>
-                            <DeleteIcon onClick={()=>{deleteapi(item.id)}} className="text-danger" style={{cursor:"pointer"}} />
+                            <FiTrash2 onClick={()=>{deleteapi(item.id)}} className="text-danger" style={{cursor:"pointer"}} />
                           </>
                         );
                       })}
@@ -950,7 +949,7 @@ export default function MAnageFreightDetails() {
                             >
                               View Document
                             </a>
-                             <DeleteIcon onClick={()=>{deleteapi(item.id)}} className="text-danger" style={{cursor:"pointer"}} />
+                             <FiTrash2 onClick={()=>{deleteapi(item.id)}} className="text-danger" style={{cursor:"pointer"}} />
                           </>
                         );
                       })}
@@ -968,7 +967,7 @@ export default function MAnageFreightDetails() {
                             >
                               View Document
                             </a>
-                             <DeleteIcon onClick={()=>{deleteapi(item.id)}} className="text-danger" style={{cursor:"pointer"}} />
+                             <FiTrash2 onClick={()=>{deleteapi(item.id)}} className="text-danger" style={{cursor:"pointer"}} />
                           </>
                         );
                       })}
@@ -986,7 +985,7 @@ export default function MAnageFreightDetails() {
                             >
                               View Document
                             </a>
-                             <DeleteIcon onClick={()=>{deleteapi(item.id)}} className="text-danger" style={{cursor:"pointer"}} />
+                             <FiTrash2 onClick={()=>{deleteapi(item.id)}} className="text-danger" style={{cursor:"pointer"}} />
                           </>
                         );
                       })}
@@ -1027,10 +1026,9 @@ export default function MAnageFreightDetails() {
                             >
                               View Document
                             </a>
-                            <DeleteIcon
+                            <FiTrash2
                               onClick={() => deleteapi(item.id)}
-                              className="text-danger ms-2"
-                              style={{ cursor: "pointer", height: "18px", width: "18px" }}
+                              className="action-icon-delete"
                             />
                           </div>
                         ))}

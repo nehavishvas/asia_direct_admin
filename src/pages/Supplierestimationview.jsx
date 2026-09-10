@@ -7,6 +7,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
 import { RiFolderUserFill } from "react-icons/ri";
 import { MdArrowOutward } from "react-icons/md";
+import { FiTrash2 } from "react-icons/fi";
 import { exportEstimatePdf } from "../utils/pdfExportUtils";
 
 const getVatPercent = (vatTyp) => {
@@ -949,12 +950,12 @@ export default function Supplierestimationview() {
                 <div className="row">
                   <div className="col-12">
                     <div className="d-flex justify-content-between align-items-center mb-4">
-                      <div className="d-flex align-items-center">
+                      <div className="d-flex align-items-center gap-3">
                         <ArrowBackIcon
                           onClick={handleclicknav}
                           style={{ cursor: "pointer" }}
                         />
-                        <h4 className="freight_hd mb-0 ms-3">Supplier Estimate Form</h4>
+                        <h4 className="freight_hd mb-0">Supplier Estimate Form</h4>
                         <span className="badge bg-secondary ms-3 px-3 py-2 fs-6">
                           Supplier: {getdata?.name}
                         </span>
@@ -1966,8 +1967,8 @@ export default function Supplierestimationview() {
                               />
                             </td>
                             <td>
-                              <i
-                                className="fa fa-trash text-danger"
+                              <FiTrash2
+                                className="text-danger"
                                 style={{ cursor: "pointer" }}
                                 onClick={() => deleteRow(setOriginRows, row.id)}
                               />
@@ -2193,8 +2194,8 @@ export default function Supplierestimationview() {
                               />
                             </td>
                             <td>
-                              <i
-                                className="fa fa-trash text-danger"
+                              <FiTrash2
+                                className="text-danger"
                                 style={{ cursor: "pointer" }}
                                 onClick={() => deleteRow(setFreightRows, row.id)}
                               />
@@ -2420,8 +2421,8 @@ export default function Supplierestimationview() {
                               />
                             </td>
                             <td>
-                              <i
-                                className="fa fa-trash text-danger"
+                              <FiTrash2
+                                className="text-danger"
                                 style={{ cursor: "pointer" }}
                                 onClick={() => deleteRow(setTransitRows, row.id)}
                               />
@@ -2647,8 +2648,8 @@ export default function Supplierestimationview() {
                               />
                             </td>
                             <td>
-                              <i
-                                className="fa fa-trash text-danger"
+                              <FiTrash2
+                                className="text-danger"
                                 style={{ cursor: "pointer" }}
                                 onClick={() => deleteRow(setDestinationRows, row.id)}
                               />
@@ -2874,8 +2875,8 @@ export default function Supplierestimationview() {
                               />
                             </td>
                             <td>
-                              <i
-                                className="fa fa-trash text-danger"
+                              <FiTrash2
+                                className="text-danger"
                                 style={{ cursor: "pointer" }}
                                 onClick={() => deleteRow(setAdminRows, row.id)}
                               />
@@ -3101,8 +3102,8 @@ export default function Supplierestimationview() {
                               />
                             </td>
                             <td>
-                              <i
-                                className="fa fa-trash text-danger"
+                              <FiTrash2
+                                className="text-danger"
                                 style={{ cursor: "pointer" }}
                                 onClick={() => deleteRow(setCustomsRows, row.id)}
                               />

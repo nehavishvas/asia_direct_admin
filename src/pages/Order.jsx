@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import ReplayIcon from "@mui/icons-material/Replay";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import { FiEye } from "react-icons/fi";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import DownloadingIcon from "@mui/icons-material/Downloading";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
@@ -1461,7 +1461,7 @@ export default function Order() {
                                                           handledeliveryEye(item?.id);
                                                         }}
                                                       >
-                                                        <RemoveRedEyeIcon /> View
+                                                        <FiEye className="action-icon-view me-2" /> View
                                                         Details
                                                       </li>
                                                     }

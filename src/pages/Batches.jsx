@@ -14,9 +14,8 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { FiTrash2, FiEye } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import RoomIcon from "@mui/icons-material/Room";
 import CloseIcon from "@mui/icons-material/Close";
@@ -593,30 +592,26 @@ export default function Batches() {
                   </div>
                 </div>
               </div>
-              <ul className="nav nav-tabs mb-3">
-                <li className="nav-item" style={{ cursor: "pointer" }}>
-                  <a
-                    className={`nav-link ${activeTab === 'shift' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                    onClick={() => {
-                      setActiveTab('shift');
-                      setCurrentPage(1);
-                    }}
-                  >
-                    Shipped
-                  </a>
-                </li>
-                <li className="nav-item" style={{ cursor: "pointer" }}>
-                  <a
-                    className={`nav-link ${activeTab === 'unshift' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                    onClick={() => {
-                      setActiveTab('unshift');
-                      setCurrentPage(1);
-                    }}
-                  >
-                    Unshipped
-                  </a>
-                </li>
-              </ul>
+              <div className="unified-tabs-container">
+                <button
+                  className={`unified-tab-btn ${activeTab === 'shift' ? 'active' : ''}`}
+                  onClick={() => {
+                    setActiveTab('shift');
+                    setCurrentPage(1);
+                  }}
+                >
+                  Shipped
+                </button>
+                <button
+                  className={`unified-tab-btn ${activeTab === 'unshift' ? 'active' : ''}`}
+                  onClick={() => {
+                    setActiveTab('unshift');
+                    setCurrentPage(1);
+                  }}
+                >
+                  Unshipped
+                </button>
+              </div>
               <div className="table-responsive mt-4">
                 {loader ? (
                   <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
@@ -774,7 +769,7 @@ export default function Batches() {
                       if (!isDisabled) handleclickdelete(item?.id);
                     }}
                   >
-                    <DeleteIcon /> Delete Batch
+                    <FiTrash2 className="me-1" /> Delete Batch
                   </li>
 
                 </ul>
@@ -803,7 +798,7 @@ export default function Batches() {
                                           style={{ cursor: "pointer", fontSize: "15px" }}
                                           onClick={() => handleclickid(item.id)}
                                         >
-                                          <RemoveRedEyeIcon /> View Details
+                                          <FiEye className="action-icon-view me-1" /> View Details
                                         </li>
 
                                         <li
@@ -854,7 +849,7 @@ export default function Batches() {
                                               style={{ cursor: "pointer", fontSize: "15px" }}
                                               onClick={() => handleclickdelete(item?.id)}
                                             >
-                                              <DeleteIcon /> Delete Batch
+                                              <FiTrash2 className="action-icon-delete me-1" /> Delete Batch
                                             </li>
                                           </>
                                         )}

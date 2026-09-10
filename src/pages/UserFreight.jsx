@@ -1,11 +1,10 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { AiFillDelete, AiOutlineUsergroupAdd } from "react-icons/ai";
+import { AiOutlineUsergroupAdd } from "react-icons/ai";
+import { FiEdit, FiTrash2, FiEye } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import FormControl from "@mui/material/FormControl";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import { FaEdit } from "react-icons/fa";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CalculateIcon from "@mui/icons-material/Calculate";
@@ -1074,13 +1073,8 @@ export default function UserFreight() {
                                                   handleclick(item.freight_id);
                                                 }}
                                               >
-                                                <VisibilityIcon
-                                                  style={{
-                                                    color: "rgb(27 34 69)",
-                                                    cursor: "pointer",
-                                                    marginRight: "10px",
-                                                    width: "20px",
-                                                  }}
+                                                <FiEye
+                                                  className="action-icon-view me-2"
                                                 />
                                                 View
                                               </a>
@@ -1154,13 +1148,8 @@ export default function UserFreight() {
                                                   handledelete(item.id);
                                                 }}
                                               >
-                                                <AiFillDelete
-                                                  className="text-danger"
-                                                  style={{
-                                                    marginRight: "10px",
-                                                    cursor: "pointer",
-                                                    width: "20px",
-                                                  }}
+                                                <FiTrash2
+                                                  className="action-icon-delete me-2"
                                                 />
                                                 Delete
                                               </a>
@@ -1193,14 +1182,8 @@ export default function UserFreight() {
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#staticBackdrop"
                                                   >
-                                                    <FaEdit
-                                                      style={{
-                                                        color:
-                                                          "rgb(11, 65, 112)",
-                                                        marginRight: "10px",
-                                                        width: "20px",
-                                                        height: "15px",
-                                                      }}
+                                                    <FiEdit
+                                                      className="action-icon-edit me-2"
                                                     />
                                                     Edit
                                                   </div>

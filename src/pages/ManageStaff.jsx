@@ -6,11 +6,11 @@ import Select from "@mui/material/Select";
 import axios from "axios";
 import Checkbox from "@mui/material/Checkbox";
 import React, { useEffect, useState } from "react";
-import { AiFillDelete, AiFillMessage } from "react-icons/ai";
+import { AiFillMessage } from "react-icons/ai";
+import { FiEdit, FiTrash2, FiEye, FiMessageSquare } from "react-icons/fi";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { Box, Button, Modal } from "@mui/material";
-import { FaEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 const ITEM_HEIGHT = 48;
@@ -1025,52 +1025,37 @@ export default function ManageStaff() {
                                     </label>
                                   )}
                                 </td>
+                                 <td>
+                                   <FiEye
+                                     className="action-icon-view"
+                                     onClick={() => {
+                                       handleclicknavigate(item);
+                                     }}
+                                   />
+                                 </td>
                                 <td>
-                                  <fa
-                                    className="fa fa-eye"
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() => {
-                                      handleclicknavigate(item);
-                                    }}
-                                  ></fa>
-                                </td>
-                                <td>
-                                  <div className="action_btn1 d-flex align-items-center">
-                                    {/* <CgPerformance    style={{
-                                        color: "rgb(27 34 69)",
-                                        marginRight: "10px",
-                                        width: "20px",
-                                        height: "15px",
-                                        cursor: "pointer",
-                                      }}   onClick={()=>{handleclickKPI(item)}}    /> */}
-                                    <FaEdit
+                                  <div className="d-flex align-items-center">
+                                    <FiEdit
+                                      className="action-icon-edit"
                                       onClick={() => {
                                         openModal2(item.id);
                                       }}
-                                      style={{
-                                        color: "rgb(27 34 69)",
-                                        marginRight: "10px",
-                                        width: "20px",
-                                        height: "15px",
-                                        cursor: "pointer",
-                                      }}
                                     />
-                                    <div className="action_btn1 me-2">
-                                      <AiFillMessage
-                                        style={{ cursor: "pointer" }}
-                                        className="text-success"
-                                        onClick={() => {
-                                          querryinQuote(item);
-                                        }}
-                                      />
-                                    </div>
-                                    <AiFillDelete
-                                      className="text-danger"
-                                      style={{ cursor: "pointer" }}
+                                    <FiMessageSquare
+                                      style={{ cursor: "pointer", color: "#28a745" }}
+                                      className="action-icon"
                                       onClick={() => {
-                                        handledelete(item.id);
+                                        querryinQuote(item);
                                       }}
+                                      title="Message"
                                     />
+                                     <FiTrash2
+                                       className="action-icon-delete"
+                                       style={{ color: "#be191d", cursor: "pointer" }}
+                                       onClick={() => {
+                                         handledelete(item.id);
+                                       }}
+                                     />
                                   </div>
                                 </td>
                               </tr>

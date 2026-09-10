@@ -36,21 +36,15 @@ export default function MAnagecustomerDetails() {
         <div className="container-fluid">
           <div className="row manageFreight">
             <div className="col-12">
-              <div className="d-flex ">
-                <div className="d-flex">
-                  <div className="arroeCenter"> 
-                    <ArrowBackIcon
-                      onClick={handleclicknav}
-                      className="text-dark"
-                      style={{ cursor: "pointer" }}
-                    />
-                  </div>
-                  <div>
-                    <h4 className="freight_hd ms-3">
-                      Customer Profile Details
-                    </h4>
-                  </div>
-                </div>
+              <div className="d-flex align-items-center gap-3">
+                <ArrowBackIcon
+                  onClick={handleclicknav}
+                  className="text-dark"
+                  style={{ cursor: "pointer" }}
+                />
+                <h4 className="freight_hd mb-0">
+                  Customer Profile Details
+                </h4>
               </div>
             </div>
           </div>
@@ -167,7 +161,7 @@ export default function MAnagecustomerDetails() {
                       console.log(item);
                       return (
                         <tr key={index}>
-                          <th scope="row">{index + 1}</th>
+                          <td scope="row">{index + 1}</td>
                           <td className="text-dark">{item?.client_name}</td>
                           <td>{item?.client_ref}</td>
                           <td>{item?.country_id}</td>

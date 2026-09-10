@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { FaEdit, FaEye } from "react-icons/fa";
+import { FiEdit, FiEye } from "react-icons/fi";
 import CloseIcon from "@mui/icons-material/Close";
 
 const pageSize = 10;
@@ -403,22 +403,14 @@ export default function CompanyAddresses() {
                               .join(", ") || "-"}
                           </td>
                           <td>
-                            <div className="d-flex gap-1">
-                              <FaEye
+                            <div className="d-flex align-items-center">
+                              <FiEye
                                 onClick={() => openEditModal(item.id, true)}
-                                style={{
-                                  color: "#1b2245",
-                                  marginRight: "10px",
-                                  cursor: "pointer",
-                                }}
+                                className="action-icon-view"
                               />
-                              <FaEdit
+                              <FiEdit
                                 onClick={() => openEditModal(item.id, false)}
-                                style={{
-                                  color: "#1b2245",
-                                  marginRight: "10px",
-                                  cursor: "pointer",
-                                }}
+                                className="action-icon-edit"
                               />
                             </div>
                           </td>

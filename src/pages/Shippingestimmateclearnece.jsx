@@ -62,18 +62,13 @@ const handleclicknav =() =>{
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-lg-12 px-0">
-                        <div className="d-flex">
-                            <div>
+                        <div className="d-flex align-items-center gap-3">
                             <ArrowBackIcon
-                          onClick={handleclicknav}
-                          className="text-dark"
-                          style={{ cursor: "pointer" }}
-                        />
-                            </div>
-                            <div>
-
-                            <h4  className="det_hd">Shipping Estimate Clearance</h4>
-                            </div>
+                                onClick={handleclicknav}
+                                className="text-dark"
+                                style={{ cursor: "pointer" }}
+                            />
+                            <h4 className="det_hd mb-0">Shipping Estimate Clearance</h4>
                         </div>
                     </div>
                 </div>

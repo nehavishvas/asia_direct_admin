@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import Topbar from "../Topbar";
 import Navbar from "../homepage/Navbar";
 import Footer from "../homepage/Footer";
@@ -395,8 +396,8 @@ export default function Customclearence() {
                                         ></button>
                                         <ul class="dropdown-menu cusTomTable">
                                           <div className="btnManageFreight ">
-                                            <i
-                                              className="fa fa-trash"
+                                            <FiTrash2
+                                              style={{ cursor: "pointer" }}
                                               onClick={() => {
                                                 handledelete(item.id);
                                               }}
@@ -432,15 +433,15 @@ export default function Customclearence() {
                                                 );
                                               }}
                                             />
-                                            <i
+                                            <FiEdit
                                               type="button"
-                                              className="fa fa-edit"
+                                              style={{ cursor: "pointer" }}
                                               data-bs-toggle="modal"
                                               data-bs-target="#exampleModal"
                                               onClick={() => {
                                                 handleidvali(item.id);
                                               }}
-                                            ></i>
+                                            />
                                           </div>
                                         </ul>
                                       </div>

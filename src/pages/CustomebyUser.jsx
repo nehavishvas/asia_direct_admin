@@ -1,7 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import { AiFillDelete } from "react-icons/ai";
+import { FiTrash2, FiEdit, FiEye } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import AddAlertIcon from "@mui/icons-material/AddAlert";
@@ -25,7 +24,6 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import { FaEdit } from "react-icons/fa";
 import CloseIcon from "@mui/icons-material/Close";
 import { AssignmentTurnedIn } from "@mui/icons-material";
 import Swal from "sweetalert2";
@@ -1675,13 +1673,8 @@ export default function CustomebyUserap() {
                                                   handleclicknva(item.id);
                                                 }}
                                               >
-                                                <VisibilityIcon
-                                                  style={{
-                                                    color: "rgb(27 34 69)",
-                                                    marginRight: "10px",
-                                                    width: "20px",
-                                                    cursor: "pointer",
-                                                  }}
+                                                <FiEye
+                                                  className="action-icon-view me-2"
                                                 />
                                                 View
                                               </a>
@@ -1707,13 +1700,8 @@ export default function CustomebyUserap() {
                                                 }
                                               >
                                                 <div className="action_btn">
-                                                  <FaEdit
-                                                    style={{
-                                                      color: "rgb(11, 65, 112)",
-                                                      marginRight: "10px",
-                                                      width: "20px",
-                                                      height: "15px",
-                                                    }}
+                                                  <FiEdit
+                                                    className="action-icon-edit me-2"
                                                   />
                                                   Edit
                                                 </div>
@@ -1725,14 +1713,8 @@ export default function CustomebyUserap() {
                                                   handlelcickdelete(item.id);
                                                 }}
                                               >
-                                                <AiFillDelete
-                                                  className="text-danger"
-                                                  style={{
-                                                    marginRight: "10px",
-                                                    width: "20px",
-                                                    fontSize: "20px",
-                                                    cursor: "pointer",
-                                                  }}
+                                                <FiTrash2
+                                                  className="action-icon-delete me-2"
                                                 />
                                                 Delete
                                               </a>

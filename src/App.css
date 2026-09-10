@@ -3537,7 +3537,7 @@ p.fright_no.mx-2.fs-6 {
 
 .tableICon i {
   font-size: 15px;
-  width: 20px;
+  width: 15px;
   display: inline-block;
 }
 
@@ -4175,12 +4175,12 @@ rgb(131, 131, 131) .css-1hw9j7s {
 /* 2dec */
 
 .link.active {
-  color: #ff0e14;
+  color: var(--red) !important;
   /* Highlight active link */
 }
 
 a.link.active svg {
-  fill: #ff0e14 !important;
+  fill: var(--red) !important;
 }
 
 .notiHead {
@@ -4448,8 +4448,84 @@ button.btn-close i {
   font-size: 15px;
 }
 
+/* ==========================================================================
+   UNIFIED BACK ARROW & HEADING SYSTEM
+   Standardizes vertical alignment, flex display, and gap across all pages
+   ========================================================================== */
 .arroeCenter {
-  align-self: end;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: center !important;
+}
+
+/* Global back arrow icon styling */
+svg[data-testid="ArrowBackIcon"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  color: #1b2245;
+  transition: transform 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+svg[data-testid="ArrowBackIcon"]:hover {
+  color: #be191d;
+  transform: translateX(-2px);
+}
+
+/* Ensure any back button or back arrow inside a flex container has exact gap and centered alignment */
+.d-flex:has(> svg[data-testid="ArrowBackIcon"]),
+.d-flex:has(> div > svg[data-testid="ArrowBackIcon"]),
+.d-flex:has(> .arroeCenter),
+.d-flex:has(> * > svg[data-testid="ArrowBackIcon"]) {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+/* Ensure headings next to back arrow have no stray margins that disrupt the gap */
+.d-flex:has(svg[data-testid="ArrowBackIcon"]) > h1,
+.d-flex:has(svg[data-testid="ArrowBackIcon"]) > h2,
+.d-flex:has(svg[data-testid="ArrowBackIcon"]) > h3,
+.d-flex:has(svg[data-testid="ArrowBackIcon"]) > h4,
+.d-flex:has(svg[data-testid="ArrowBackIcon"]) > h5,
+.d-flex:has(svg[data-testid="ArrowBackIcon"]) > h6,
+.d-flex:has(svg[data-testid="ArrowBackIcon"]) > div > h1,
+.d-flex:has(svg[data-testid="ArrowBackIcon"]) > div > h2,
+.d-flex:has(svg[data-testid="ArrowBackIcon"]) > div > h3,
+.d-flex:has(svg[data-testid="ArrowBackIcon"]) > div > h4,
+.d-flex:has(svg[data-testid="ArrowBackIcon"]) > div > h5,
+.d-flex:has(svg[data-testid="ArrowBackIcon"]) > div > h6,
+.d-flex:has(.arroeCenter) h4,
+.d-flex:has(.arroeCenter) h3 {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
+  line-height: normal !important;
+}
+
+/* Back arrow placed directly inside a heading element */
+h1 > svg[data-testid="ArrowBackIcon"],
+h2 > svg[data-testid="ArrowBackIcon"],
+h3 > svg[data-testid="ArrowBackIcon"],
+h4 > svg[data-testid="ArrowBackIcon"],
+h5 > svg[data-testid="ArrowBackIcon"],
+h6 > svg[data-testid="ArrowBackIcon"],
+.freight_hd > svg[data-testid="ArrowBackIcon"],
+.det_hd > svg[data-testid="ArrowBackIcon"] {
+  margin-right: 12px !important;
+  vertical-align: middle !important;
+  cursor: pointer !important;
+}
+
+/* Back button in reports */
+button:has(> svg[data-testid="ArrowBackIcon"]) {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
 }
 
 .css-1rj35w9 {
@@ -4987,34 +5063,107 @@ button.bg_page {
 }
 
 
-.manageFreight button,
+/* ==========================================================================
+   UNIFIED BUTTON SYSTEM (Standard Action Buttons & Cancel Buttons)
+   ========================================================================== */
+
+/* 1. Universal Base Styling: exact uniformity in size, padding, border-radius & typography */
 .blueBtn,
-button.btn.btn-secondary,
+.redBtn,
+.cancelBtn,
+.cancel_btn,
+.btn-cancel,
+.btn-primary,
+button.btn-primary,
+.modal-footer .btn-primary,
+.modal-footer .btn-secondary,
+.modal .btn-secondary,
+.modal-dialog .btn-secondary,
 .privacy_btn,
 .updateLoading button,
 .link_btn,
-.ship_btn {
-  background-color: #1b2245 !important;
-  color: #fff;
-  border: unset;
+.ship_btn,
+.manageFreight button:not(.redBtn):not(.cancelBtn):not(.cancel_btn):not(.action-icon):not(.btn-close):not(.bg_page) {
   padding: 8px 20px !important;
-  border-radius: 5px;
+  border-radius: 5px !important;
   font-size: 13px !important;
   font-weight: 600 !important;
   text-transform: none !important;
-
+  border: none !important;
+  outline: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  line-height: 1.4 !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.15s ease !important;
 }
 
-.redBtn {
-  background-color: var(--maroon) !important;
-  color: #fff;
-  border: unset;
-  padding: 8px 20px !important;
-  border-radius: 5px;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  text-transform: none !important;
+/* 2. CANCEL BUTTONS (RED - Brand Maroon #be191d) */
+.redBtn,
+.cancelBtn,
+.cancel_btn,
+.btn-cancel,
+.btn-danger,
+button.redBtn,
+button.cancelBtn,
+button.cancel_btn,
+.modal-footer .btn-secondary,
+.modal .btn-secondary,
+.modal-dialog .btn-secondary {
+  background-color: var(--maroon, #be191d) !important;
+  color: #ffffff !important;
+  border: unset !important;
+}
 
+.redBtn:hover,
+.cancelBtn:hover,
+.cancel_btn:hover,
+.btn-cancel:hover,
+.btn-danger:hover,
+button.redBtn:hover,
+button.cancelBtn:hover,
+button.cancel_btn:hover,
+.modal-footer .btn-secondary:hover,
+.modal .btn-secondary:hover,
+.modal-dialog .btn-secondary:hover {
+  background-color: #9e1417 !important;
+  color: #ffffff !important;
+  opacity: 0.92 !important;
+}
+
+/* 3. PRIMARY & ACTION BUTTONS LIKE .blueBtn (NAVY #1b2245) */
+.blueBtn,
+.btn-primary,
+button.btn-primary,
+.modal-footer .btn-primary,
+.modal .btn-primary,
+.privacy_btn,
+.updateLoading button,
+.link_btn,
+.ship_btn,
+.manageFreight button:not(.redBtn):not(.cancelBtn):not(.cancel_btn):not(.btn-secondary):not(.action-icon):not(.btn-close):not(.bg_page) {
+  background-color: #1b2245 !important;
+  color: #ffffff !important;
+  border: unset !important;
+}
+
+.blueBtn:hover,
+.btn-primary:hover,
+button.btn-primary:hover,
+.modal-footer .btn-primary:hover,
+.modal .btn-primary:hover,
+.privacy_btn:hover,
+.updateLoading button:hover,
+.link_btn:hover,
+.ship_btn:hover,
+.manageFreight button:not(.redBtn):not(.cancelBtn):not(.cancel_btn):not(.btn-secondary):not(.action-icon):not(.btn-close):not(.bg_page):hover {
+  background-color: #252e5d !important;
+  color: #ffffff !important;
+  opacity: 0.92 !important;
 }
 
 .cost-table thead {
@@ -5064,6 +5213,7 @@ button.btn.btn-secondary,
     page-break-inside: auto !important;
     break-inside: auto !important;
   }
+
   tr,
   td {
     page-break-inside: avoid !important;
@@ -6594,7 +6744,7 @@ button.uploadBtn:hover,
 
 .searchManageFre input {
   border: 1px solid var(--blue);
-  padding: 7px 10px !important;
+  padding: 8px 10px !important;
   height: 100%;
 }
 
@@ -6623,4 +6773,336 @@ button.uploadBtn:hover,
 
 .removeIcon::after {
   content: unset !important;
+}
+
+/* ==========================================================================
+   UNIFIED ACTION ICONS (Edit, Delete, View/Eye)
+   ========================================================================== */
+.action-icon,
+.action-icon-edit,
+.action-icon-delete,
+.action-icon-view {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  min-height: 18px !important;
+  font-size: 18px !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  box-sizing: content-box !important;
+  transition: transform 0.18s ease, opacity 0.18s ease, color 0.18s ease !important;
+}
+
+.action-icon-edit,
+svg.action-icon-edit,
+.tableICon svg.action-icon-edit,
+table svg.action-icon-edit,
+td svg.action-icon-edit,
+td .action-icon-edit {
+  color: #1b2245 !important;
+  stroke: #1b2245 !important;
+  /* Brand navy */
+}
+
+.action-icon-edit:hover,
+svg.action-icon-edit:hover {
+  transform: scale(1.15) !important;
+  opacity: 0.82 !important;
+}
+
+.action-icon-delete,
+svg.action-icon-delete,
+.tableICon svg.action-icon-delete,
+table svg.action-icon-delete,
+td svg.action-icon-delete,
+td .action-icon-delete,
+.delete-icon,
+svg.delete-icon,
+.text-danger svg,
+svg.text-danger,
+.tableICon .text-danger,
+i.fa-trash,
+i.fa-trash-alt {
+  color: #be191d !important;
+  stroke: #be191d !important;
+  /* Asia Direct brand maroon/red */
+}
+
+.action-icon-delete:hover,
+svg.action-icon-delete:hover,
+.delete-icon:hover {
+  transform: scale(1.15) !important;
+  opacity: 0.82 !important;
+}
+
+.action-icon-view,
+svg.action-icon-view,
+.tableICon svg.action-icon-view,
+table svg.action-icon-view,
+td svg.action-icon-view,
+td .action-icon-view {
+  color: #1b2245 !important;
+  stroke: #1b2245 !important;
+  /* Brand navy */
+}
+
+.action-icon-view:hover,
+svg.action-icon-view:hover {
+  transform: scale(1.15) !important;
+  opacity: 0.82 !important;
+}
+
+/* Maintain uniform spacing between action icons in tables using flexbox gap - NO left/right margins */
+.action-icons-group .action-icon,
+.action-icons-group .action-icon-edit,
+.action-icons-group .action-icon-delete,
+.action-icons-group .action-icon-view,
+.action-icons-group svg,
+.action-icons-group i,
+.action-icons-group button,
+td .action-icons-group .action-icon,
+td .action-icons-group .action-icon-edit,
+td .action-icons-group .action-icon-delete,
+td .action-icons-group .action-icon-view,
+td .action-icons-group svg,
+td .action-icons-group i,
+td .action-icons-group button,
+.tableICon td .action-icons-group .action-icon,
+.tableICon td .action-icons-group .action-icon-edit,
+.tableICon td .action-icons-group .action-icon-delete,
+.tableICon td .action-icons-group .action-icon-view,
+.tableICon td .action-icons-group svg,
+.tableICon td .action-icons-group i,
+.tableICon td .action-icons-group button,
+td .d-flex:not(.dropdown-menu):not(.dropdown-item)>.action-icon,
+td .d-flex:not(.dropdown-menu):not(.dropdown-item)>.action-icon-edit,
+td .d-flex:not(.dropdown-menu):not(.dropdown-item)>.action-icon-delete,
+td .d-flex:not(.dropdown-menu):not(.dropdown-item)>.action-icon-view,
+td .d-flex:not(.dropdown-menu):not(.dropdown-item)>svg:not(.dropdown-item svg),
+td .d-flex:not(.dropdown-menu):not(.dropdown-item)>i:not(.dropdown-item i),
+td .d-flex:not(.dropdown-menu):not(.dropdown-item)>button:not(.dropdown-item) {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Unified flex container for action icons across all pages */
+.tableICon td .d-flex:not(.dropdown-menu),
+td .d-flex.align-items-center:not(.dropdown-menu),
+td .d-flex:not(.dropdown-menu),
+.action-icons-group,
+td .action-icons-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  /* Uniform gap everywhere without margins */
+}
+
+.action-icons-group button,
+td .action-icons-group button,
+.tableICon td .action-icons-group button,
+td .d-flex:not(.dropdown-menu)>button:not(.dropdown-item) {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  line-height: 1 !important;
+}
+
+/* Restore proper dropdown menu and item spacing across all tables and invoices */
+.dropdown-menu,
+.tableICon .dropdown-menu,
+td .dropdown-menu {
+  padding: 0.5rem 0 !important;
+}
+
+.dropdown-item,
+.tableICon .dropdown-item,
+td .dropdown-item,
+button.dropdown-item,
+a.dropdown-item {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  padding: 0.45rem 1.25rem !important;
+  clear: both !important;
+  font-weight: 400 !important;
+  text-align: inherit !important;
+  white-space: nowrap !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  line-height: 1.5 !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+}
+
+.dropdown-item:hover,
+button.dropdown-item:hover,
+a.dropdown-item:hover {
+  background-color: #f8f9fa !important;
+}
+
+/* Inside dropdown menus where icons accompany text, preserve space before the text label */
+.dropdown-menu svg,
+.dropdown-menu i,
+.dropdown-item svg,
+.dropdown-item i,
+.tableICon td .dropdown-menu svg,
+.tableICon td .dropdown-menu i,
+.tableICon td .dropdown-item svg,
+.tableICon td .dropdown-item i,
+.tableICon td .dropdown-item .action-icon,
+.tableICon td .dropdown-item .action-icon-edit,
+.tableICon td .dropdown-item .action-icon-delete,
+.tableICon td .dropdown-item .action-icon-view,
+td .dropdown-menu svg,
+td .dropdown-menu i,
+td .dropdown-item svg,
+td .dropdown-item i,
+td .dropdown-item .action-icon,
+td .dropdown-item .action-icon-edit,
+td .dropdown-item .action-icon-delete,
+td .dropdown-item .action-icon-view,
+.dropdown-item .action-icon,
+.dropdown-item .action-icon-edit,
+.dropdown-item .action-icon-delete,
+.dropdown-item .action-icon-view {
+  margin-right: 10px !important;
+  margin-left: 0 !important;
+  vertical-align: middle !important;
+  flex-shrink: 0 !important;
+}
+
+/* Ensure no inline, table, or inherited styles distort or shrink action icons */
+.tableICon svg.action-icon,
+.tableICon svg.action-icon-edit,
+.tableICon svg.action-icon-delete,
+.tableICon svg.action-icon-view,
+table svg.action-icon,
+table svg.action-icon-edit,
+table svg.action-icon-delete,
+table svg.action-icon-view,
+.action-icon,
+.action-icon-edit,
+.action-icon-delete,
+.action-icon-view {
+  width: 15px !important;
+  height: 15px !important;
+  min-width: 15px !important;
+  min-height: 15px !important;
+  font-size: 15px !important;
+}
+
+/* ==========================================================================
+   UNIFIED TAB BUTTON SYSTEM
+   ========================================================================== */
+.unified-tabs-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.unified-tab-btn {
+  padding: 6px 18px;
+  font-size: 13.5px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 1px solid #1b2245;
+  background-color: #ffffff;
+  color: #1b2245;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.unified-tab-btn:hover {
+  background-color: #f1f3f9;
+  color: #1b2245;
+  border-color: #1b2245;
+}
+
+.unified-tab-btn.active {
+  background-color: #1b2245 !important;
+  color: #ffffff !important;
+  border-color: #1b2245 !important;
+  box-shadow: 0 2px 6px rgba(27, 34, 69, 0.25);
+  font-weight: 600;
+}
+
+/* Also harmonize .taskManagerTab and .nav-tabs to match */
+.taskManagerTab {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.taskManagerTab button {
+  padding: 6px 18px !important;
+  border: 1px solid #1b2245 !important;
+  color: #1b2245 !important;
+  background-color: #ffffff !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.taskManagerTab .btn-primary,
+.taskManagerTab button.active {
+  background-color: #1b2245 !important;
+  color: #ffffff !important;
+  border-color: #1b2245 !important;
+  box-shadow: 0 2px 6px rgba(27, 34, 69, 0.25) !important;
+  font-weight: 600 !important;
+}
+
+.taskManagerTab button:hover {
+  background-color: #f1f3f9 !important;
+  color: #1b2245 !important;
+  border-color: #1b2245 !important;
+}
+
+.taskManagerTab .btn-primary:hover,
+.taskManagerTab button.active:hover {
+  background-color: #141a36 !important;
+  color: #ffffff !important;
+}
+
+/* Harmonize bootstrap nav-tabs */
+.nav-tabs {
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.nav-tabs .nav-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 18px;
+  transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #1b2245;
+  border-bottom: 2px solid #94a3b8;
+}
+
+.nav-tabs .nav-link.active {
+  color: #1b2245 !important;
+  font-weight: 600 !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid #1b2245 !important;
 }

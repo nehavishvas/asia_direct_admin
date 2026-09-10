@@ -1,8 +1,8 @@
-import { Close, Edit } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import { Box, Button, Modal } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { AiFillDelete } from "react-icons/ai";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 const pageSize = 10;
@@ -323,32 +323,28 @@ const Query = () => {
                                 <td>{item.query_number}</td>
 
                                 <td>
-                                  <div className="d-flex gap-2">
+                                  <div className="d-flex align-items-center">
                                     <div
+                                      style={{ cursor: "pointer" }}
                                       onClick={() => {
                                         handledit(item.id);
                                       }}
                                     >
-                                      <Edit
-                                        style={{
-                                          color: "rgb(27 34 69)",
-                                          width: "20px",
-                                          cursor: "pointer",
-                                        }}
+                                      <FiEdit
+                                        className="action-icon-edit"
+                                        style={{ color: "#1b2245", cursor: "pointer" }}
                                       />
                                     </div>
 
                                     <div
+                                      style={{ cursor: "pointer" }}
                                       onClick={() => {
                                         handledelete(item.id);
                                       }}
                                     >
-                                      <AiFillDelete
-                                        style={{
-                                          color: "rgb(27 34 69)",
-                                          width: "20px",
-                                          cursor: "pointer",
-                                        }}
+                                      <FiTrash2
+                                        className="action-icon-delete"
+                                        style={{ color: "#be191d", cursor: "pointer" }}
                                       />
                                     </div>
                                   </div>

@@ -500,7 +500,7 @@ import { Box, Button, Modal } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import AddCommentIcon from "@mui/icons-material/AddComment";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import { FiEye } from "react-icons/fi";
 import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -741,34 +741,25 @@ export default function Taskmanager() {
 
           {/* Tabs */}
           <div className="my-3 d-flex justify-content-between">
-            <div className="taskManagerTab">
-              <div>
-                <button
-                  className={`btn ${activeTab === "assigned" ? "btn-primary" : "btn-outline-primary"
-                    }`}
-                  onClick={() => setActiveTab("assigned")}
-                >
-                  Freight
-                </button>
-              </div>
-              <div>
-                <button
-                  className={`btn ${activeTab === "clearance" ? "btn-primary" : "btn-outline-primary"
-                    }`}
-                  onClick={() => setActiveTab("clearance")}
-                >
-                  Clearance
-                </button>
-              </div>
-              <div>
-                <button
-                  className={`btn  ${activeTab === "Custom" ? "btn-primary" : "btn-outline-primary"
-                    }`}
-                  onClick={() => setActiveTab("Custom")}
-                >
-                  Custom
-                </button>
-              </div>
+            <div className="unified-tabs-container">
+              <button
+                className={`unified-tab-btn ${activeTab === "assigned" ? "active" : ""}`}
+                onClick={() => setActiveTab("assigned")}
+              >
+                Freight
+              </button>
+              <button
+                className={`unified-tab-btn ${activeTab === "clearance" ? "active" : ""}`}
+                onClick={() => setActiveTab("clearance")}
+              >
+                Clearance
+              </button>
+              <button
+                className={`unified-tab-btn ${activeTab === "Custom" ? "active" : ""}`}
+                onClick={() => setActiveTab("Custom")}
+              >
+                Custom
+              </button>
             </div>
             <div>
               {activeTab === "Custom" && (
@@ -866,10 +857,10 @@ export default function Taskmanager() {
                           onClick={() => handleAddComment(item)}
                           titleAccess="Add Comment"
                         />
-                        <VisibilityIcon
-                          style={{ cursor: "pointer", }}
+                        <FiEye
+                          className="action-icon-view"
                           onClick={() => handleView(item)}
-                          titleAccess="View Details"
+                          title="View Details"
                         />
                       </div>
                     </td>

@@ -7,6 +7,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import logo from "../../Assests/logo.png";
 import { exportEstimatePdf } from "../../utils/pdfExportUtils";
+import { FiTrash2 } from "react-icons/fi";
 
 const cleanParseFloat = (val) => {
   if (val === null || val === undefined || val === "") return 0;
@@ -1163,8 +1164,8 @@ export default function AddQuotesInvoice() {
               />
             </td>
             <td>
-              <i
-                className="fa fa-trash text-danger"
+              <FiTrash2
+                className="text-danger"
                 style={{ cursor: "pointer" }}
                 onClick={() => deleteRow(setter, row.id)}
               />

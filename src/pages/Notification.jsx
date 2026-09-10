@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
-import { AiFillDelete } from "react-icons/ai";
+import { FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import Select from "react-select";
@@ -585,7 +585,7 @@ const Notification = () => {
                       </td>
                       {useAdminApi && (
                         <td>
-                          <AiFillDelete
+                          <FiTrash2
                             className="text-danger"
                             style={{ cursor: "pointer" }}
                             onClick={() => handledelete(item.id)}

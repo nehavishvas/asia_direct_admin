@@ -1,7 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { AiFillDelete } from "react-icons/ai";
-import { FaEdit } from "react-icons/fa";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Swal from "sweetalert2";
@@ -326,7 +325,7 @@ export default function SupplierSageInvoice() {
                         </div>
                       </td>
                       {/* <td>
-                        <AiFillDelete
+                        <FiTrash2
                           onClick={() => {
                             deletewarehouse(
                               item.supplier_invoice_id
@@ -341,7 +340,7 @@ export default function SupplierSageInvoice() {
                             cursor: "pointer",
                           }}
                         />
-                        <FaEdit
+                        <FiEdit
                           onClick={() => {
                             AutoEditde(item);
                           }}

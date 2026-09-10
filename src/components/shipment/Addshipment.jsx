@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Autocomplete, TextField, Box, FormControl } from "@mui/material";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { ToastContainer } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { FiTrash2 } from "react-icons/fi";
 import { Button, InputLabel, MenuItem, Modal, Select } from "@mui/material";
 
 export default function Addshipment() {
@@ -325,15 +324,16 @@ export default function Addshipment() {
   return (
     <div className="wpWrapper">
       <div className="container-fluid">
-        <div className=" ">
-          <h4 className="freight_hd">
-            <ArrowBackIcon
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate("/Admin/manage-shipment")}
-              className="me-2 fw-bold"
-            />
+        <div className="d-flex align-items-center gap-3 mb-3">
+          <ArrowBackIcon
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/Admin/manage-shipment")}
+            className="fw-bold"
+          />
+          <h4 className="freight_hd mb-0">
             Shipment Details / Form
           </h4>
+        </div>
           <div className="col-lg-12">
             <h4 className="mt-4">Vessel Detals</h4>
             <span className="line"></span>
@@ -794,7 +794,7 @@ export default function Addshipment() {
                       <td>{item.dimensions}</td>
                       <td>{item.nature_of_goods}</td>
                       <td>
-                        <DeleteIcon
+                        <FiTrash2
                           style={{ cursor: "pointer" }}
                           onClick={() => handleClick(item)}
                         />
@@ -838,7 +838,7 @@ export default function Addshipment() {
                     <td>{item.total_box}</td>
                     <td>{item.port_of_discharge}</td>
                     <td>
-                      <DeleteIcon
+                      <FiTrash2
                         style={{ cursor: "pointer" }}
                         onClick={() => {
                           handleClick(item);
@@ -858,7 +858,5 @@ export default function Addshipment() {
           </div>
         </div>
       </div>
-
-    </div>
   );
 }

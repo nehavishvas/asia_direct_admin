@@ -4,9 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import DeleteIcon from "@mui/icons-material/Delete";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import { FaEdit } from "react-icons/fa";
+import { FiEdit, FiEye, FiCheckSquare, FiPrinter } from "react-icons/fi";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import logo from './Assests/logo.png';
@@ -1101,24 +1099,20 @@ const ManageCollectionDelivery = () => {
                                 </div>
                             </div>
 
-                            <ul className="nav nav-tabs mb-3">
-                                <li className="nav-item" style={{ cursor: "pointer" }}>
-                                    <a
-                                        className={`nav-link ${activeTab === 'collection' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                                        onClick={() => { setActiveTab('collection'); setCurrentPage(1); }}
-                                    >
-                                        Collection
-                                    </a>
-                                </li>
-                                <li className="nav-item" style={{ cursor: "pointer" }}>
-                                    <a
-                                        className={`nav-link ${activeTab === 'delivery' ? 'active text-primary fw-bold' : 'text-secondary'}`}
-                                        onClick={() => { setActiveTab('delivery'); setCurrentPage(1); }}
-                                    >
-                                        Delivery
-                                    </a>
-                                </li>
-                            </ul>
+                            <div className="unified-tabs-container">
+                                <button
+                                    className={`unified-tab-btn ${activeTab === 'collection' ? 'active' : ''}`}
+                                    onClick={() => { setActiveTab('collection'); setCurrentPage(1); }}
+                                >
+                                    Collection
+                                </button>
+                                <button
+                                    className={`unified-tab-btn ${activeTab === 'delivery' ? 'active' : ''}`}
+                                    onClick={() => { setActiveTab('delivery'); setCurrentPage(1); }}
+                                >
+                                    Delivery
+                                </button>
+                            </div>
 
                             {/* ---------------- TABLE ---------------- */}
                             {loader ? (
@@ -1174,7 +1168,7 @@ const ManageCollectionDelivery = () => {
                                                                     <div className="col-md-3">
                                                                         {activeTab === 'collection' ? (
                                                                             <>
-                                                                                <div className="d-flex align-items-center">
+                                                                                <div className="d-flex align-items-center mb-1">
                                                                                     <span className="bold600 me-2">Status:</span>
                                                                                     {item.ready_for_collection?.toLowerCase() === "yes" ? (
                                                                                         <select
@@ -1191,29 +1185,33 @@ const ManageCollectionDelivery = () => {
                                                                                     )}
                                                                                 </div>
                                                                                 <div className="d-flex align-items-center">
-                                                                                    <i
-                                                                                        class="fa fa-tasks me-2 mt-2"
+                                                                                    <FiCheckSquare
+                                                                                        className="action-icon"
                                                                                         style={{
-                                                                                            color: "#1d2044",
+                                                                                            color: "#1b2245",
                                                                                             cursor: "pointer",
                                                                                         }}
                                                                                         onClick={() => handleTasksClick(item)}
+                                                                                        title="Tasks"
                                                                                     />
-                                                                                    <FaEdit
+                                                                                    <FiEdit
                                                                                         onClick={() => {
-                                                                                            console.log("FaEdit clicked under collection for item:", item);
                                                                                             handleEditClick(item);
                                                                                         }}
-                                                                                        style={{ cursor: "pointer", color: "#1d2044" }}
-                                                                                        className="me-2"
+                                                                                        className="action-icon-edit"
                                                                                     />
-                                                                                    <VisibilityIcon onClick={() => handleViewClick(item)} style={{ cursor: "pointer", color: "#1d2044" }} className="me-2" />
-                                                                                    <PictureAsPdfIcon onClick={() => handlePdfPrint(item)} style={{ cursor: "pointer", color: "#1d2044" }} />
+                                                                                    <FiEye onClick={() => handleViewClick(item)} className="action-icon-view" />
+                                                                                    <FiPrinter
+                                                                                        onClick={() => handlePdfPrint(item)}
+                                                                                        className="action-icon"
+                                                                                        style={{ cursor: "pointer", color: "#1b2245" }}
+                                                                                        title="Print PDF"
+                                                                                    />
                                                                                 </div>
                                                                             </>
                                                                         ) : (
                                                                             <>
-                                                                                <div className="d-flex align-items-center">
+                                                                                <div className="d-flex align-items-center mb-1">
                                                                                     <span className="bold600 me-2">Status:</span>
                                                                                     {item.require_for_delivery?.toLowerCase() === "yes" ? (
                                                                                         <select
@@ -1230,24 +1228,28 @@ const ManageCollectionDelivery = () => {
                                                                                     )}
                                                                                 </div>
                                                                                 <div className="d-flex align-items-center">
-                                                                                    <i
-                                                                                        className="fa fa-tasks me-2 mt-2"
+                                                                                    <FiCheckSquare
+                                                                                        className="action-icon"
                                                                                         style={{
-                                                                                            color: "#1d2044",
+                                                                                            color: "#1b2245",
                                                                                             cursor: "pointer",
                                                                                         }}
                                                                                         onClick={() => handleTasksClick(item)}
+                                                                                        title="Tasks"
                                                                                     />
-                                                                                    <FaEdit
+                                                                                    <FiEdit
                                                                                         onClick={() => {
-                                                                                            console.log("FaEdit clicked under delivery for item:", item);
                                                                                             handleEditClick(item);
                                                                                         }}
-                                                                                        style={{ cursor: "pointer", color: "#1d2044" }}
-                                                                                        className="me-2"
+                                                                                        className="action-icon-edit"
                                                                                     />
-                                                                                    <VisibilityIcon onClick={() => handleViewClick(item)} style={{ cursor: "pointer", color: "#1d2044" }} className="me-2" />
-                                                                                    <PictureAsPdfIcon onClick={() => handlePdfPrint(item)} style={{ cursor: "pointer", color: "#1d2044" }} />
+                                                                                    <FiEye onClick={() => handleViewClick(item)} className="action-icon-view" />
+                                                                                    <FiPrinter
+                                                                                        onClick={() => handlePdfPrint(item)}
+                                                                                        className="action-icon"
+                                                                                        style={{ cursor: "pointer", color: "#1b2245" }}
+                                                                                        title="Print PDF"
+                                                                                    />
                                                                                 </div>
                                                                             </>
                                                                         )}

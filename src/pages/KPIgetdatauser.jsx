@@ -36,11 +36,10 @@
 
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { AiFillDelete } from "react-icons/ai";
+import { FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { Box, Button, Modal } from "@mui/material";
-import { FaEdit } from "react-icons/fa";
 import CloseIcon from "@mui/icons-material/Close";
 import { useLocation } from "react-router-dom";
 const pageSize = 10;
@@ -293,9 +292,8 @@ const formdata={
                               cursor: "pointer",
                             }}
                           /> */}
-                          <AiFillDelete
-                            className="text-danger"
-                            style={{ cursor: "pointer" }}
+                          <FiTrash2
+                            className="action-icon-delete"
                             onClick={() => handledelete(item.id)}
                           />
                         </td>

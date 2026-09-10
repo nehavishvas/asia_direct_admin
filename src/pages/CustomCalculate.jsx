@@ -182,19 +182,13 @@ export default function CustomCalculate() {
       <div className="container-fluid">
         <div className="row  manageFreight">
           <div className="col-12">
-            <div className="d-flex ">
-              <div className="d-flex">
-                <div>
-                  <ArrowBackIcon
-                    onClick={handleclicknav}
-                    className="text-dark"
-                    style={{ cursor: "pointer" }}
-                  />
-                </div>
-                <div>
-                  <h4 className="freight_hd ms-3 mt-0">Estimate</h4>
-                </div>
-              </div>
+            <div className="d-flex align-items-center gap-3">
+              <ArrowBackIcon
+                onClick={handleclicknav}
+                className="text-dark"
+                style={{ cursor: "pointer" }}
+              />
+              <h4 className="freight_hd mb-0">Estimate</h4>
             </div>
           </div>
         </div>
@@ -277,14 +271,12 @@ export default function CustomCalculate() {
                       {/* {showIcons && (
                         <td>
                           <div className="editIcon">
-                            <i
+                            <FiEdit
                               type="button"
-                              className="fa fa-pencil"
                               data-bs-toggle="modal"
                               data-bs-target="#exampleModal"
-                              aria-hidden="true"
-                            ></i>
-                            <i className="fa fa-trash" aria-hidden="true"></i>
+                            />
+                            <FiTrash2 />
                           </div>
                         </td>
                       )} */}

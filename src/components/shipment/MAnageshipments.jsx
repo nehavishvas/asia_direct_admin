@@ -9,14 +9,12 @@ import {
   InputLabel,
   MenuItem,
   Modal,
-  Select,
+  Select
 } from "@mui/material";
-import { FaEdit, FaFileExcel, FaFilePdf } from "react-icons/fa";
-import { AiFillDelete } from "react-icons/ai";
+import { FaFileExcel, FaFilePdf } from "react-icons/fa";
+import { FiEdit, FiTrash2, FiEye } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import DeleteIcon from "@mui/icons-material/Delete";
 import ClearIcon from '@mui/icons-material/Clear';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Swal from "sweetalert2";
@@ -738,36 +736,36 @@ export default function MAnageshipments() {
     <>
       <div className="wpWrapper">
         <div className="container-fluid">
-            <div className="row  manageFreight">
-              <div className="col-12">
-                <div className="d-flex justify-content-between align-items-center">
-                  <h4 className="freight_hd">Shipments List</h4>
-                  <div className="d-flex searchManageFre">
-                    <input
-                      type="text"
-                      placeholder="Search shipment..."
-                      className="form-control"
-                      style={{ width: "250px" }}
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                      }}
-                    />
-                    <button
-                      className="ms-2 d-inline-flex align-items-center gap-1"
-                      onClick={() => {
-                        if (!exportStartDate || !exportEndDate) {
-                          setExportStartDate(getDate30DaysAgo());
-                          setExportEndDate(getTodayDateString());
-                        }
-                        setOpenExportModal(true);
-                      }}
-                      title="Export Excel Report"
-                    >
-                      <FaFileExcel style={{ color: "#28a745" }} />
-                      Export Excel
-                    </button>
-                    {/* <button
+          <div className="row  manageFreight">
+            <div className="col-12">
+              <div className="d-flex justify-content-between align-items-center">
+                <h4 className="freight_hd">Shipments List</h4>
+                <div className="d-flex searchManageFre">
+                  <input
+                    type="text"
+                    placeholder="Search shipment..."
+                    className="form-control"
+                    style={{ width: "250px" }}
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                    }}
+                  />
+                  <button
+                    className="ms-2 d-inline-flex align-items-center gap-1"
+                    onClick={() => {
+                      if (!exportStartDate || !exportEndDate) {
+                        setExportStartDate(getDate30DaysAgo());
+                        setExportEndDate(getTodayDateString());
+                      }
+                      setOpenExportModal(true);
+                    }}
+                    title="Export Excel Report"
+                  >
+                    <FaFileExcel style={{ color: "#28a745" }} />
+                    Export Excel
+                  </button>
+                  {/* <button
                       className="ms-2 d-inline-flex align-items-center gap-1"
                       onClick={() => {
                         navigate("/Admin/shipments-report", {
@@ -784,46 +782,40 @@ export default function MAnageshipments() {
                       <FaFilePdf style={{ color: "#ff4d4f" }} />
                       PDF Report
                     </button> */}
-                    <button className="ms-2" onClick={openModal1}>
-                      Add Shipment
-                    </button>
-                  </div>
+                  <button className="ms-2" onClick={openModal1}>
+                    Add Shipment
+                  </button>
                 </div>
               </div>
             </div>
-            <div className="d-flex mb-3">
-              <button
-                className={
-                  activeTab === "active"
-                    ? "btn btn-primary me-2"
-                    : "btn btn-light me-2"
-                }
-                onClick={() => {
-                  setActiveTab("active");
-                  setCurrentPage(1);
-                }}
-              >
-                Active Shipments
-              </button>
-              <button
-                className={
-                  activeTab === "released" ? "btn btn-primary" : "btn btn-light"
-                }
-                onClick={() => {
-                  setActiveTab("released");
-                  setCurrentPage(1);
-                }}
-              >
-                Customs Released
-              </button>
+          </div>
+          <div className="unified-tabs-container">
+            <button
+              className={`unified-tab-btn ${activeTab === "active" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("active");
+                setCurrentPage(1);
+              }}
+            >
+              Active Shipments
+            </button>
+            <button
+              className={`unified-tab-btn ${activeTab === "released" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("released");
+                setCurrentPage(1);
+              }}
+            >
+              Customs Released
+            </button>
+          </div>
+          {loader ? (
+            <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
+              <div className="loader"></div>
+              <p className="loader-text">Updating... This may take some time</p>
             </div>
-            {loader ? (
-              <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
-                <div className="loader"></div>
-                <p className="loader-text">Updating... This may take some time</p>
-              </div>
-            ) : (
-              <div className="mt-2">
+          ) : (
+            <div className="mt-2">
               <table className="table table-striped tableICon">
                 <tbody>
                   {data &&
@@ -913,14 +905,7 @@ export default function MAnageshipments() {
                                         handleclicknaciv(item.id);
                                       }}
                                     >
-                                      <VisibilityIcon
-                                        style={{
-                                          color: "rgb(27 34 69)",
-                                          marginRight: "10px",
-                                          width: "20px",
-                                          cursor: "pointer",
-                                        }}
-                                      />
+                                      <FiEye className="action-icon-view me-2" />
                                       View
                                     </dropdow>
                                   </li>
@@ -929,39 +914,35 @@ export default function MAnageshipments() {
                                       <p
                                         className="dropdown-item"
                                         onClick={() =>
-                                          handleOpenStatusModal(item)
+                                          handleopenstatus(
+                                            item.id,
+                                            item.status,
+                                            item.date,
+                                            item.comment
+                                          )
                                         }
                                       >
                                         <i
-                                          className="fa fa-refresh"
-                                          style={{
-                                            marginRight: "10px",
-                                            width: "20px",
-                                            cursor: "pointer",
-                                          }}
+                                          className="fa fa-refresh me-2"
+                                          aria-hidden="true"
                                         ></i>
-                                        Change Status
+                                        Update Status
                                       </p>
                                     </li>
                                   )}
                                   <li>
-                                    <dropdow
-                                      className="dropdown-item li_icon"
+                                    <p
+                                      className="dropdown-item"
                                       onClick={() => {
-                                        handleclickcopy(item.id);
+                                        DuplicateOrder(item.id);
                                       }}
                                     >
                                       <ContentCopyIcon
-                                        style={{
-                                          color: "rgb(27 34 69)",
-                                          marginRight: "10px",
-                                          fontSize: "20px",
-                                          width: "20px",
-                                          cursor: "pointer",
-                                        }}
+                                        className="action-icon-copy me-2"
+                                        style={{ fontSize: "20px" }}
                                       />
-                                      Copy
-                                    </dropdow>
+                                      Duplicate
+                                    </p>
                                   </li>
                                   <li>
                                     <delete
@@ -970,15 +951,7 @@ export default function MAnageshipments() {
                                         deletewarehouse(item.id);
                                       }}
                                     >
-                                      <AiFillDelete
-                                        className="text-danger"
-                                        style={{
-                                          marginRight: "10px",
-                                          width: "20px",
-                                          fontSize: "20px",
-                                          cursor: "pointer",
-                                        }}
-                                      />
+                                      <FiTrash2 className="action-icon-delete me-2" />
                                       Delete
                                     </delete>
                                   </li>
@@ -989,14 +962,7 @@ export default function MAnageshipments() {
                                         openModal2(item.id);
                                       }}
                                     >
-                                      <FaEdit
-                                        style={{
-                                          color: "rgb(27 34 69)",
-                                          marginRight: "10px",
-                                          width: "20px",
-                                          cursor: "pointer",
-                                        }}
-                                      />
+                                      <FiEdit className="action-icon-edit me-2" />
                                       Edit
                                     </p>
                                   </li>
@@ -1029,802 +995,797 @@ export default function MAnageshipments() {
             </div>
           )}
           <Modal open={statusModal} onClose={handleCloseStatusModal}>
-                <Box
-                  className="warehouse_modal123"
-                  sx={{
-                    position: "absolute",
-                    overflow: "scroll",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    height: 300,
-                    width: 400,
-                    bgcolor: "background.paper",
-                    boxShadow: 24,
-                    p: 4,
-                  }}
+            <Box
+              className="warehouse_modal123"
+              sx={{
+                position: "absolute",
+                overflow: "scroll",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                height: 300,
+                width: 400,
+                bgcolor: "background.paper",
+                boxShadow: 24,
+                p: 4,
+              }}
+            >
+              <div className="row">
+                <h5 className=" fw-bold fs-5 mb-3">
+                  <span style={{ color: "#1b2245" }}>
+                    Update Status for{" "}
+                  </span>
+                </h5>
+
+                <FormControl fullWidth sx={{ mt: 2 }}>
+                  <InputLabel>Status</InputLabel>
+
+                  <Select
+                    value={shipmentStatus}
+                    label="Status"
+                    onChange={(e) => setShipmentStatus(e.target.value)}
+                  >
+                    <MenuItem value="Goods at origin port">
+                      Goods at origin port
+                    </MenuItem>
+
+                    <MenuItem value="Goods are in transit">
+                      Goods are in transit
+                    </MenuItem>
+
+                    <MenuItem value="Arrived at destination port">
+                      Arrived at destination port
+                    </MenuItem>
+
+                    <MenuItem value="Customs clearing in progress">
+                      Customs clearing in progress
+                    </MenuItem>
+
+                    <MenuItem value="Customs Released">
+                      Customs Released
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth sx={{ mt: 2 }}>
+                  <input
+                    type="date"
+                    className="p-2"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                  />
+                </FormControl>
+                <FormControl fullWidth sx={{ mt: 2 }}>
+                  <InputLabel>Comment</InputLabel>
+                  <textarea
+                    type="text"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                  />
+                </FormControl>
+              </div>
+              <div className="text-end mt-4">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleUpdateStatus}
                 >
-                  <div className="row">
-                    <h5 className=" fw-bold fs-5 mb-3">
-                      <span style={{ color: "#1b2245" }}>
-                        Update Status for{" "}
-                      </span>
-                    </h5>
-
-                    <FormControl fullWidth sx={{ mt: 2 }}>
-                      <InputLabel>Status</InputLabel>
-
-                      <Select
-                        value={shipmentStatus}
-                        label="Status"
-                        onChange={(e) => setShipmentStatus(e.target.value)}
-                      >
-                        <MenuItem value="Goods at origin port">
-                          Goods at origin port
-                        </MenuItem>
-
-                        <MenuItem value="Goods are in transit">
-                          Goods are in transit
-                        </MenuItem>
-
-                        <MenuItem value="Arrived at destination port">
-                          Arrived at destination port
-                        </MenuItem>
-
-                        <MenuItem value="Customs clearing in progress">
-                          Customs clearing in progress
-                        </MenuItem>
-
-                        <MenuItem value="Customs Released">
-                          Customs Released
-                        </MenuItem>
-                      </Select>
-                    </FormControl>
-                    <FormControl fullWidth sx={{ mt: 2 }}>
-                      {/* <InputLabel>Date</InputLabel> */}
-                      <input
-                        type="date"
-                        className="p-2"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                      />
-                    </FormControl>
-                    <FormControl fullWidth sx={{ mt: 2 }}>
-                      <InputLabel>Comment</InputLabel>
-                      <textarea
-                        type="text"
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                      />
-                    </FormControl>
-                  </div>
-                  <div className="text-end mt-4">
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleUpdateStatus}
-                    >
-                      Update Status
-                    </Button>
-                  </div>
-                </Box>
-              </Modal>
-              {/* Export Shipment Report Modal */}
-              <Modal
-                open={openExportModal}
-                onClose={() => !exportLoader && setOpenExportModal(false)}
-              >
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    width: 440,
-                    maxWidth: "95vw",
-                    bgcolor: "background.paper",
-                    boxShadow: 24,
-                    borderRadius: "8px",
-                    p: 4,
-                  }}
+                  Update Status
+                </Button>
+              </div>
+            </Box>
+          </Modal>
+          <Modal
+            open={openExportModal}
+            onClose={() => !exportLoader && setOpenExportModal(false)}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 440,
+                maxWidth: "95vw",
+                bgcolor: "background.paper",
+                boxShadow: 24,
+                borderRadius: "8px",
+                p: 4,
+              }}
+            >
+              <div className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                <h5 className="m-0 fw-bold d-flex align-items-center gap-2" style={{ color: "#1b2245" }}>
+                  <FaFileExcel style={{ color: "#28a745", fontSize: "1.3rem" }} />
+                  Export Shipment Report
+                </h5>
+                <div
+                  style={{ cursor: exportLoader ? "not-allowed" : "pointer" }}
+                  onClick={() => !exportLoader && setOpenExportModal(false)}
                 >
-                  <div className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                    <h5 className="m-0 fw-bold d-flex align-items-center gap-2" style={{ color: "#1b2245" }}>
-                      <FaFileExcel style={{ color: "#28a745", fontSize: "1.3rem" }} />
-                      Export Shipment Report
-                    </h5>
-                    <div
-                      style={{ cursor: exportLoader ? "not-allowed" : "pointer" }}
-                      onClick={() => !exportLoader && setOpenExportModal(false)}
-                    >
-                      <ClearIcon style={{ color: "red", background: "#eeee", borderRadius: "50%" }} />
-                    </div>
-                  </div>
-
-                  <div className="mb-3">
-                    <div className="d-flex justify-content-between align-items-center mb-1">
-                      <label className="form-label font-weight-bold small text-muted mb-0">
-                        Date Range (Default: Last 30 Days)
-                      </label>
-                      <div className="d-flex gap-2 align-items-center">
-                        <button
-                          type="button"
-                          className="btn btn-link btn-sm text-decoration-none p-0"
-                          style={{ fontSize: "12px" }}
-                          onClick={() => {
-                            setExportStartDate(getDate30DaysAgo());
-                            setExportEndDate(getTodayDateString());
-                          }}
-                        >
-                          Last 30 Days
-                        </button>
-                        <span className="text-muted" style={{ fontSize: "12px" }}>|</span>
-                        <button
-                          type="button"
-                          className="btn btn-link btn-sm text-decoration-none p-0 text-danger"
-                          style={{ fontSize: "12px" }}
-                          onClick={() => {
-                            setExportStartDate("");
-                            setExportEndDate("");
-                          }}
-                        >
-                          Clear
-                        </button>
-                      </div>
-                    </div>
-                    <div className="row g-2">
-                      <div className="col-6">
-                        <label className="form-label small fw-bold">Start Date</label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          value={exportStartDate}
-                          onChange={(e) => setExportStartDate(e.target.value)}
-                        />
-                      </div>
-                      <div className="col-6">
-                        <label className="form-label small fw-bold">End Date</label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          value={exportEndDate}
-                          onChange={(e) => setExportEndDate(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="alert alert-light border p-2 mb-3 small text-muted">
-                    <div>
-                      <strong>Shipment Type:</strong>{" "}
-                      <span className="badge bg-primary">
-                        {activeTab === "active" ? "Active Shipments" : "Customs Released"}
-                      </span>
-                    </div>
-                    {searchQuery && (
-                      <div className="mt-1">
-                        <strong>Search Filter:</strong> "{searchQuery}"
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="d-flex justify-content-end gap-2 mt-4">
-                    <button
-                      type="button"
-                      className="btn btn-secondary btn-sm px-3"
-                      onClick={() => setOpenExportModal(false)}
-                      disabled={exportLoader}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-success btn-sm px-3 d-inline-flex align-items-center gap-1"
-                      onClick={handleExportExcel}
-                      disabled={exportLoader}
-                      style={{ backgroundColor: "#198754", borderColor: "#198754" }}
-                    >
-                      <FaFileExcel />
-                      {exportLoader ? "Downloading..." : "Download Excel"}
-                    </button>
-                  </div>
-                </Box>
-              </Modal>
-              <Modal
-                open={isModalOpen2}
-                onClose={closeModal2}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-              >
-                <Box
-                  className="warehouse_modal123"
-                  sx={{
-                    position: "absolute",
-                    overflow: "scroll",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    height: 600,
-                    width: 900,
-                    bgcolor: "background.paper",
-                    boxShadow: 24,
-                    p: 4,
-                  }}
-                >
-                  <div className="row">
-                    <div className="d-flex justify-content-between">
-                      <h5 className=" fw-bold fs-5 mb-3">
-                        Update Shipment Detail / Form
-                      </h5>
-                      <div style={{ cursor: "pointer" }}>
-                        <ClearIcon onClick={closeModal2} style={{color:"red", background:"#eeee"}} />
-                      </div>
-                    </div>
-
-                    <div className="col-3">
-                      <label className="ware_label">Waybill</label>
-                      <input
-                        type="text"
-                        placeholder="Waybill"
-                        value={inputdata.waybill || ""}
-                        onChange={handleFileChange1}
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                        name="waybill"
-                      />
-                    </div>
-                    <div className="col-3">
-                      <label className="ware_label">Freight</label>
-                      <select
-                        type="text"
-                        name="freight"
-                        value={inputdata.freight}
-                        placeholder="freight"
-                        onChange={handleFileChange1}
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                      >
-                        <option>Select...</option>
-                        <option value="Sea">Sea</option>
-                        <option value="Air">Air</option>
-                        <option value="Road">Road</option>
-                      </select>
-                    </div>
-                    <div className="col-3">
-                      <label className="ware_label">Vessel</label>
-                      <input
-                        type="text"
-                        onChange={handleFileChange1}
-                        value={inputdata.vessel}
-                        name="vessel"
-                        placeholder="vessel"
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                      />
-                    </div>
-                    <div className="col-3">
-                      <label className="ware_label">Carrier</label>
-                      <input
-                        type="text"
-                        onChange={handleFileChange1}
-                        value={inputdata.carrier}
-                        name="carrier"
-                        placeholder="carrier"
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                      />
-                    </div>
-                  </div>
-                  <div className="row"></div>
-                  <div className="row">
-                    <div className="col-3">
-                      <label className="ware_label">Date of Dispatch</label>
-                      <input
-                        type="date"
-                        onChange={handleFileChange1}
-                        name="date_of_dispatch"
-                        placeholder="date_of_dispatch"
-                        value={formatteddispatch}
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                      />
-                    </div>
-                    <div className="col-3">
-                      <label className="ware_label">ETD</label>
-                      <input
-                        type="date"
-                        onChange={handleFileChange1}
-                        name="ETD"
-                        placeholder="ETD"
-                        value={formattedETD}
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                      />
-                    </div>
-                    <div className="col-3">
-                      <label className="ware_label">ETA</label>
-                      <input
-                        type="date"
-                        onChange={handleFileChange1}
-                        placeholder="ATD"
-                        value={formattedATD}
-                        name="ATD"
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                      />
-                    </div>
-                    <div className="col-3">
-                      <label className="ware_label">Origin Agent</label>
-                      <select
-                        className="form-control mb-3 py-2"
-                        onChange={handleFileChange1}
-                        name="origin_agent"
-                        value={inputdata.origin_agent}
-                      >
-                        <option>Select...</option>
-                        <option value="Asia Direct">Asia Direct</option>
-                        <option value="Shenzhen Nimbus Shipping">
-                          Shenzhen Nimbus Shipping
-                        </option>
-                        <option value="Shenzhen Portline">
-                          Shenzhen Portline
-                        </option>
-                        <option value="OBD Logistics">OBD Logistics</option>
-                      </select>
-                    </div>
-                    <div className="col-3">
-                      <label className="ware_label">Seal Number </label>
-                      <input
-                        type="text"
-                        onChange={handleFileChange1}
-                        value={inputdata.seal}
-                        name="seal"
-                        placeholder="seal"
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                      />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-3">
-                      <label className="ware_label">Port of Loading</label>
-                      <input
-                        type="text"
-                        onChange={handleFileChange1}
-                        value={inputdata.port_of_loading}
-                        name="port_of_loading"
-                        placeholder="port_of_loading"
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                      />
-                    </div>
-                    <div className="col-3">
-                      <label className="ware_label">Port of Discharge</label>
-                      <input
-                        type="text"
-                        onChange={handleFileChange1}
-                        value={inputdata.port_of_discharge}
-                        name="port_of_discharge"
-                        placeholder="port_of_discharge"
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                      />
-                    </div>
-                    <div className="col-3">
-                      <label className="ware_label">Destination Agent</label>
-                      <select
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                        name="destination_agent"
-                        onChange={handleFileChange1}
-                        value={inputdata.destination_agent}
-                      >
-                        <option>Select...</option>
-                        <option value="DHL">DHL</option>
-                        <option value="Fedex">Fedex</option>
-                        <option value="SACO CFR">SACO CFR</option>
-                        <option value="Contra Consolidations">
-                          Contra Consolidations
-                        </option>
-                        <option value="Afristar">Afristar</option>
-                        <option value="Asia Direct - Africa">
-                          Asia Direct - Africa
-                        </option>
-                      </select>
-                    </div>
-                    <div className="col-3">
-                      <label className="ware_label">Load</label>
-                      <input
-                        type="text"
-                        onChange={handleFileChange1}
-                        value={inputdata.load}
-                        name="load"
-                        placeholder="load"
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                      />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-3">
-                      <label className="ware_label">Release Type</label>
-                      <input
-                        type="text"
-                        onChange={handleFileChange1}
-                        value={inputdata.release_type}
-                        name="release_type"
-                        placeholder="Release Type"
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                      />
-                    </div>
-                    <div className="col-3">
-                      <label className="ware_label">Container number </label>
-                      <input
-                        type="text"
-                        onChange={handleFileChange1}
-                        value={inputdata.container}
-                        name="container"
-                        placeholder="container"
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                      />
-                    </div>
-                    <div className="col-3">
-                      <label className="ware_label">Status</label>
-                      <select
-                        onChange={handleFileChange1}
-                        name="status"
-                        value={inputdata?.status}
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                      >
-                        <option>Select</option>
-                        <option value="Goods at origin port">
-                          Goods at origin port
-                        </option>
-                        <option value="Goods are in transit">
-                          Goods are in transit
-                        </option>
-                        <option value="Arrived at destination port">
-                          Arrived at destination port
-                        </option>
-                        <option value="Customs clearing in progress">
-                          Customs clearing in progress
-                        </option>
-                        <option value="Customs Released">
-                          Customs Released
-                        </option>
-                      </select>
-                    </div>
-                    <div className="col-3">
-                      <label className="ware_label">Destination Country</label>
-                      <select
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                        name="des_country_id"
-                        value={inputdata?.des_country_id}
-                        onChange={handleFileChange1}
-                      >
-                        <option>Select...</option>
-                        {countries.map((item, index) => {
-                          return (
-                            <>
-                              <option key={index} value={item.id}>
-                                {item.name}
-                              </option>
-                            </>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-3">
-                      <label className="ware_label">Country of Origin</label>
-                      <select
-                        className="mb-3 border ps-2 py-2 rounded w-100"
-                        name="origin_country_id"
-                        value={inputdata?.origin_country_id}
-                        onChange={handleFileChange1}
-                      >
-                        <option>Select...</option>
-                        {countries.map((item, index) => {
-                          return (
-                            <>
-                              <option key={index} value={item.id}>
-                                {item.name}
-                              </option>
-                            </>
-                          );
-                        })}
-                      </select>
-                    </div>
-                    <div className="row mb-3 mt-4">
-                      <div className="col-9 mt-3">
-                        <h4 className="freight_hd">Document Section</h4>
-                        <span class="line"></span>
-                      </div>
-                      <div className="col-3">
-                        <button
-                          className="uploadBtn"
-                          onClick={handleShow}
-                        >
-                          Upload Documents
-                        </button>
-                        {show1 ? (
-                          <Modal
-                            open={show1}
-                            onClose={handleClose}
-                            slotProps={{
-                              backdrop: {
-                                sx: { backgroundColor: "rgba(0,0,0,0.2)" },
-                              },
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                p: 3,
-                                bgcolor: "background.paper",
-                                borderRadius: 2,
-                                width: 500,
-                                mx: "auto",
-                                mt: 10,
-                              }}
-                            >
-                              <h2>Upload Documents</h2>
-                              <FormControl fullWidth sx={{ mt: 2 }}>
-                                <InputLabel id="doc-select-label">
-                                  Select Document Type
-                                </InputLabel>
-                                <Select
-                                  labelId="doc-select-label"
-                                  onChange={handleSelect}
-                                >
-                                  {docOptions.map((option) => (
-                                    <MenuItem key={option.id} value={option.id}>
-                                      {option.label}
-                                    </MenuItem>
-                                  ))}
-                                </Select>
-                              </FormControl>
-                              <div className="mt-3">
-                                {selectedDocs.map((doc, index) => (
-                                  <div key={index} className="mb-3">
-                                    <label className="fw-bold">
-                                      {doc.name}
-                                    </label>
-                                    <input
-                                      type="file"
-                                      className="form-control"
-                                      multiple
-                                      accept="image/*,application/pdf"
-                                      onChange={(e) =>
-                                        handleFileChangefil(e, doc.name)
-                                      }
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "flex-end",
-                                  gap: 2,
-                                  mt: 3,
-                                }}
-                              >
-                                <Button onClick={handleClose}>Cancel</Button>
-                                <Button
-                                  variant="contained"
-                                  color="success"
-                                  onClick={handleSave}
-                                >
-                                  Save Documents
-                                </Button>
-                              </Box>
-                            </Box>
-                          </Modal>
-                        ) : (
-                          ""
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <h5 className="my-3">Assign Shipment</h5>
-                    <div className="d-flex justify-content-between">
-                      <div className="col-4">
-                        <p>Assign Shipment</p>
-                        <select
-                          type="text"
-                          placeholder="warehouse name"
-                          onChange={handleFileChange12}
-                          className="mb-3 border ps-2 py-3 rounded w-100"
-                          name="assign_shipment"
-                          value={data1.assign_shipment}
-                        >
-                          <option>Select...</option>
-                          <option value="1">Freight / order</option>
-                          <option value="2">Groupage / Batch</option>
-                          <option value="3">Clearance Order</option>
-                        </select>
-                      </div>
-                      {data1.assign_shipment === "1" ? (
-                        <div className="col-4">
-                          <label className="ware_label">Freight</label>
-                          <select
-                            onChange={handleFileChange12}
-                            name="assign_shipment_id"
-                            className="mb-3 border ps-2 py-3 rounded w-100"
-                            value={data1.assign_shipment_id}
-                          >
-                            <option>Select...</option>
-                            {freight1 &&
-                              freight1.length > 0 &&
-                              freight1.map((item, index) => {
-                                console.log(item);
-                                return (
-                                  <>
-                                    <option key={index} value={item.order_id}>
-                                      {item.freight_number} /{" "}
-                                      {item.order_number}
-                                    </option>
-                                  </>
-                                );
-                              })}
-                          </select>
-                        </div>
-                      ) : data1.assign_shipment === "2" ? (
-                        <div className="col-4">
-                          <div className="">
-                            <label className="ware_label">Batch</label>
-                            <select
-                              onChange={handleFileChange12}
-                              name="assign_shipment_id"
-                              className="mb-3 border ps-2 py-3 rounded w-100"
-                              value={data1.assign_shipment_id}
-                            >
-                              <option>Select...</option>
-                              {options &&
-                                options.length > 0 &&
-                                options.map((item, index) => {
-                                  console.log(item);
-                                  return (
-                                    <>
-                                      <option key={index} value={item.batch_id}>
-                                        {item.batch_number}
-                                      </option>
-                                    </>
-                                  );
-                                })}
-                            </select>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="col-4">
-                          <div className="">
-                            <label className="ware_label">
-                              Clearance Order
-                            </label>
-                            <select
-                              onChange={handleFileChange12}
-                              name="clearance_id"
-                              className="mb-3 border ps-2 py-3 rounded w-100"
-                              value={data1.clearance_id}
-                            >
-                              <option>Select...</option>
-                              {data1222 &&
-                                data1222.length > 0 &&
-                                data1222.map((item, index) => {
-                                  console.log(item);
-                                  return (
-                                    <>
-                                      <option key={index} value={item.id}>
-                                        {item.clearance_number}
-                                      </option>
-                                    </>
-                                  );
-                                })}
-                            </select>
-                          </div>
-                        </div>
-                      )}
-                      <div>
-                        <button
-                          className="mt-4 btn btn-secondary  px-4 py-2 rounded"
-                          onClick={addbuttonclick}
-                        >
-                          Add
-                        </button>
-                      </div>
-                    </div>
-                    <div className="mt-2">
-                      <table className="table mt-4 table-striped tableICon">
-                        <thead>
-                          <tr>
-                            <th>Sr.No.</th>
-                            <th>Freight / Order No.</th>
-                            <th>Client Name</th>
-                            <th>HAWB / Tracking</th>
-                            <th>Total Weight</th>
-                            <th>Total CBM</th>
-                            <th>Nature of Goods</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {tindexdata
-                            ?.filter((item) => !item?.clearance_number)
-                            .map((item, index) => (
-                              <tr key={item.shipment_details_id}>
-                                <td>{index + 1}</td>
-                                <td>
-                                  {item.freight_number} / {item.order_number}
-                                </td>
-                                <td>{item.client_name}</td>
-                                <td>{item.hawb}</td>
-                                <td>{item.weight}</td>
-                                <td>{item.dimensions}</td>
-                                <td>{item.nature_of_goods}</td>
-                                <td>
-                                  <DeleteIcon
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() => handleclickdelete(item)}
-                                  />
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-                      <table className="table mt-4 table-striped tableICon">
-                        <thead>
-                          <tr>
-                            <th>Sr.No.</th>
-                            <th>Clearance Number</th>
-                            <th>Client Name</th>
-                            <th>Clearing Status</th>
-                            <th>Weight</th>
-                            <th>Dimension</th>
-                            <th>Box</th>
-                            <th>Nature of Goods</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {tindexdClearance
-                            ?.filter((item) => item?.clearance_number)
-                            .map((item, index) => (
-                              <tr key={item.clearance_id}>
-                                <td>{index + 1}</td>
-                                <td>{item.clearance_number}</td>
-                                <td>{item.client_name}</td>
-                                <td>{item.clearing_status}</td>
-                                <td>{item.total_weight}</td>
-                                <td>{item.total_dimension}</td>
-                                <td>{item.total_box}</td>
-                                <td>{item.nature_of_goods}</td>
-                                <td>
-                                  <DeleteIcon
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() =>
-                                      handleclickdeleteClearence(item)
-                                    }
-                                  />
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  <div className="text-center mt-2">
-                    {tindexdata.length + tindexdClearance.length === 0 ? (
-                      <Button variant="contained" onClick={handlclickposterror}>
-                        Update Warehouse
-                      </Button>
-                    ) : (
-                      <Button variant="contained" onClick={apiupdatepost}>
-                        Update Warehouse
-                      </Button>
-                    )}
-                  </div>
-                </Box>
-              </Modal>
-              
-            <section className="tableMain">
-              <div className="container">
-                <div className="row table-responsive ">
-                  <table className="table-striped"></table>
+                  <ClearIcon style={{ color: "red", background: "#eeee", borderRadius: "50%" }} />
                 </div>
               </div>
-            </section>
-          </div>
+
+              <div className="mb-3">
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <label className="form-label font-weight-bold small text-muted mb-0">
+                    Date Range (Default: Last 30 Days)
+                  </label>
+                  <div className="d-flex gap-2 align-items-center">
+                    <button
+                      type="button"
+                      className="btn btn-link btn-sm text-decoration-none p-0"
+                      style={{ fontSize: "12px" }}
+                      onClick={() => {
+                        setExportStartDate(getDate30DaysAgo());
+                        setExportEndDate(getTodayDateString());
+                      }}
+                    >
+                      Last 30 Days
+                    </button>
+                    <span className="text-muted" style={{ fontSize: "12px" }}>|</span>
+                    <button
+                      type="button"
+                      className="btn btn-link btn-sm text-decoration-none p-0 text-danger"
+                      style={{ fontSize: "12px" }}
+                      onClick={() => {
+                        setExportStartDate("");
+                        setExportEndDate("");
+                      }}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+                <div className="row g-2">
+                  <div className="col-6">
+                    <label className="form-label small fw-bold">Start Date</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={exportStartDate}
+                      onChange={(e) => setExportStartDate(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-6">
+                    <label className="form-label small fw-bold">End Date</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={exportEndDate}
+                      onChange={(e) => setExportEndDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="alert alert-light border p-2 mb-3 small text-muted">
+                <div>
+                  <strong>Shipment Type:</strong>{" "}
+                  <span className="badge bg-primary">
+                    {activeTab === "active" ? "Active Shipments" : "Customs Released"}
+                  </span>
+                </div>
+                {searchQuery && (
+                  <div className="mt-1">
+                    <strong>Search Filter:</strong> "{searchQuery}"
+                  </div>
+                )}
+              </div>
+
+              <div className="d-flex justify-content-end gap-2 mt-4">
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm px-3"
+                  onClick={() => setOpenExportModal(false)}
+                  disabled={exportLoader}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-success btn-sm px-3 d-inline-flex align-items-center gap-1"
+                  onClick={handleExportExcel}
+                  disabled={exportLoader}
+                  style={{ backgroundColor: "#198754", borderColor: "#198754" }}
+                >
+                  <FaFileExcel />
+                  {exportLoader ? "Downloading..." : "Download Excel"}
+                </button>
+              </div>
+            </Box>
+          </Modal>
+          <Modal
+            open={isModalOpen2}
+            onClose={closeModal2}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box
+              className="warehouse_modal123"
+              sx={{
+                position: "absolute",
+                overflow: "scroll",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                height: 600,
+                width: 900,
+                bgcolor: "background.paper",
+                boxShadow: 24,
+                p: 4,
+              }}
+            >
+              <div className="row">
+                <div className="d-flex justify-content-between">
+                  <h5 className=" fw-bold fs-5 mb-3">
+                    Update Shipment Detail / Form
+                  </h5>
+                  <div style={{ cursor: "pointer" }}>
+                    <ClearIcon onClick={closeModal2} style={{ color: "red", background: "#eeee" }} />
+                  </div>
+                </div>
+
+                <div className="col-3">
+                  <label className="ware_label">Waybill</label>
+                  <input
+                    type="text"
+                    placeholder="Waybill"
+                    value={inputdata.waybill || ""}
+                    onChange={handleFileChange1}
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                    name="waybill"
+                  />
+                </div>
+                <div className="col-3">
+                  <label className="ware_label">Freight</label>
+                  <select
+                    type="text"
+                    name="freight"
+                    value={inputdata.freight}
+                    placeholder="freight"
+                    onChange={handleFileChange1}
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                  >
+                    <option>Select...</option>
+                    <option value="Sea">Sea</option>
+                    <option value="Air">Air</option>
+                    <option value="Road">Road</option>
+                  </select>
+                </div>
+                <div className="col-3">
+                  <label className="ware_label">Vessel</label>
+                  <input
+                    type="text"
+                    onChange={handleFileChange1}
+                    value={inputdata.vessel}
+                    name="vessel"
+                    placeholder="vessel"
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                  />
+                </div>
+                <div className="col-3">
+                  <label className="ware_label">Carrier</label>
+                  <input
+                    type="text"
+                    onChange={handleFileChange1}
+                    value={inputdata.carrier}
+                    name="carrier"
+                    placeholder="carrier"
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                  />
+                </div>
+              </div>
+              <div className="row"></div>
+              <div className="row">
+                <div className="col-3">
+                  <label className="ware_label">Date of Dispatch</label>
+                  <input
+                    type="date"
+                    onChange={handleFileChange1}
+                    name="date_of_dispatch"
+                    placeholder="date_of_dispatch"
+                    value={formatteddispatch}
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                  />
+                </div>
+                <div className="col-3">
+                  <label className="ware_label">ETD</label>
+                  <input
+                    type="date"
+                    onChange={handleFileChange1}
+                    name="ETD"
+                    placeholder="ETD"
+                    value={formattedETD}
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                  />
+                </div>
+                <div className="col-3">
+                  <label className="ware_label">ETA</label>
+                  <input
+                    type="date"
+                    onChange={handleFileChange1}
+                    placeholder="ATD"
+                    value={formattedATD}
+                    name="ATD"
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                  />
+                </div>
+                <div className="col-3">
+                  <label className="ware_label">Origin Agent</label>
+                  <select
+                    className="form-control mb-3 py-2"
+                    onChange={handleFileChange1}
+                    name="origin_agent"
+                    value={inputdata.origin_agent}
+                  >
+                    <option>Select...</option>
+                    <option value="Asia Direct">Asia Direct</option>
+                    <option value="Shenzhen Nimbus Shipping">
+                      Shenzhen Nimbus Shipping
+                    </option>
+                    <option value="Shenzhen Portline">
+                      Shenzhen Portline
+                    </option>
+                    <option value="OBD Logistics">OBD Logistics</option>
+                  </select>
+                </div>
+                <div className="col-3">
+                  <label className="ware_label">Seal Number </label>
+                  <input
+                    type="text"
+                    onChange={handleFileChange1}
+                    value={inputdata.seal}
+                    name="seal"
+                    placeholder="seal"
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                  />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-3">
+                  <label className="ware_label">Port of Loading</label>
+                  <input
+                    type="text"
+                    onChange={handleFileChange1}
+                    value={inputdata.port_of_loading}
+                    name="port_of_loading"
+                    placeholder="port_of_loading"
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                  />
+                </div>
+                <div className="col-3">
+                  <label className="ware_label">Port of Discharge</label>
+                  <input
+                    type="text"
+                    onChange={handleFileChange1}
+                    value={inputdata.port_of_discharge}
+                    name="port_of_discharge"
+                    placeholder="port_of_discharge"
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                  />
+                </div>
+                <div className="col-3">
+                  <label className="ware_label">Destination Agent</label>
+                  <select
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                    name="destination_agent"
+                    onChange={handleFileChange1}
+                    value={inputdata.destination_agent}
+                  >
+                    <option>Select...</option>
+                    <option value="DHL">DHL</option>
+                    <option value="Fedex">Fedex</option>
+                    <option value="SACO CFR">SACO CFR</option>
+                    <option value="Contra Consolidations">
+                      Contra Consolidations
+                    </option>
+                    <option value="Afristar">Afristar</option>
+                    <option value="Asia Direct - Africa">
+                      Asia Direct - Africa
+                    </option>
+                  </select>
+                </div>
+                <div className="col-3">
+                  <label className="ware_label">Load</label>
+                  <input
+                    type="text"
+                    onChange={handleFileChange1}
+                    value={inputdata.load}
+                    name="load"
+                    placeholder="load"
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                  />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-3">
+                  <label className="ware_label">Release Type</label>
+                  <input
+                    type="text"
+                    onChange={handleFileChange1}
+                    value={inputdata.release_type}
+                    name="release_type"
+                    placeholder="Release Type"
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                  />
+                </div>
+                <div className="col-3">
+                  <label className="ware_label">Container number </label>
+                  <input
+                    type="text"
+                    onChange={handleFileChange1}
+                    value={inputdata.container}
+                    name="container"
+                    placeholder="container"
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                  />
+                </div>
+                <div className="col-3">
+                  <label className="ware_label">Status</label>
+                  <select
+                    onChange={handleFileChange1}
+                    name="status"
+                    value={inputdata?.status}
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                  >
+                    <option>Select</option>
+                    <option value="Goods at origin port">
+                      Goods at origin port
+                    </option>
+                    <option value="Goods are in transit">
+                      Goods are in transit
+                    </option>
+                    <option value="Arrived at destination port">
+                      Arrived at destination port
+                    </option>
+                    <option value="Customs clearing in progress">
+                      Customs clearing in progress
+                    </option>
+                    <option value="Customs Released">
+                      Customs Released
+                    </option>
+                  </select>
+                </div>
+                <div className="col-3">
+                  <label className="ware_label">Destination Country</label>
+                  <select
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                    name="des_country_id"
+                    value={inputdata?.des_country_id}
+                    onChange={handleFileChange1}
+                  >
+                    <option>Select...</option>
+                    {countries.map((item, index) => {
+                      return (
+                        <>
+                          <option key={index} value={item.id}>
+                            {item.name}
+                          </option>
+                        </>
+                      );
+                    })}
+                  </select>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-3">
+                  <label className="ware_label">Country of Origin</label>
+                  <select
+                    className="mb-3 border ps-2 py-2 rounded w-100"
+                    name="origin_country_id"
+                    value={inputdata?.origin_country_id}
+                    onChange={handleFileChange1}
+                  >
+                    <option>Select...</option>
+                    {countries.map((item, index) => {
+                      return (
+                        <>
+                          <option key={index} value={item.id}>
+                            {item.name}
+                          </option>
+                        </>
+                      );
+                    })}
+                  </select>
+                </div>
+                <div className="row mb-3 mt-4">
+                  <div className="col-9 mt-3">
+                    <h4 className="freight_hd">Document Section</h4>
+                    <span class="line"></span>
+                  </div>
+                  <div className="col-3">
+                    <button
+                      className="uploadBtn"
+                      onClick={handleShow}
+                    >
+                      Upload Documents
+                    </button>
+                    {show1 ? (
+                      <Modal
+                        open={show1}
+                        onClose={handleClose}
+                        slotProps={{
+                          backdrop: {
+                            sx: { backgroundColor: "rgba(0,0,0,0.2)" },
+                          },
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            p: 3,
+                            bgcolor: "background.paper",
+                            borderRadius: 2,
+                            width: 500,
+                            mx: "auto",
+                            mt: 10,
+                          }}
+                        >
+                          <h2>Upload Documents</h2>
+                          <FormControl fullWidth sx={{ mt: 2 }}>
+                            <InputLabel id="doc-select-label">
+                              Select Document Type
+                            </InputLabel>
+                            <Select
+                              labelId="doc-select-label"
+                              onChange={handleSelect}
+                            >
+                              {docOptions.map((option) => (
+                                <MenuItem key={option.id} value={option.id}>
+                                  {option.label}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                          <div className="mt-3">
+                            {selectedDocs.map((doc, index) => (
+                              <div key={index} className="mb-3">
+                                <label className="fw-bold">
+                                  {doc.name}
+                                </label>
+                                <input
+                                  type="file"
+                                  className="form-control"
+                                  multiple
+                                  accept="image/*,application/pdf"
+                                  onChange={(e) =>
+                                    handleFileChangefil(e, doc.name)
+                                  }
+                                />
+                              </div>
+                            ))}
+                          </div>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                              gap: 2,
+                              mt: 3,
+                            }}
+                          >
+                            <Button onClick={handleClose}>Cancel</Button>
+                            <Button
+                              variant="contained"
+                              color="success"
+                              onClick={handleSave}
+                            >
+                              Save Documents
+                            </Button>
+                          </Box>
+                        </Box>
+                      </Modal>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="row">
+                <h5 className="my-3">Assign Shipment</h5>
+                <div className="d-flex justify-content-between">
+                  <div className="col-4">
+                    <p>Assign Shipment</p>
+                    <select
+                      type="text"
+                      placeholder="warehouse name"
+                      onChange={handleFileChange12}
+                      className="mb-3 border ps-2 py-3 rounded w-100"
+                      name="assign_shipment"
+                      value={data1.assign_shipment}
+                    >
+                      <option>Select...</option>
+                      <option value="1">Freight / order</option>
+                      <option value="2">Groupage / Batch</option>
+                      <option value="3">Clearance Order</option>
+                    </select>
+                  </div>
+                  {data1.assign_shipment === "1" ? (
+                    <div className="col-4">
+                      <label className="ware_label">Freight</label>
+                      <select
+                        onChange={handleFileChange12}
+                        name="assign_shipment_id"
+                        className="mb-3 border ps-2 py-3 rounded w-100"
+                        value={data1.assign_shipment_id}
+                      >
+                        <option>Select...</option>
+                        {freight1 &&
+                          freight1.length > 0 &&
+                          freight1.map((item, index) => {
+                            return (
+                              <>
+                                <option key={index} value={item.order_id}>
+                                  {item.freight_number} /{" "}
+                                  {item.order_number}
+                                </option>
+                              </>
+                            );
+                          })}
+                      </select>
+                    </div>
+                  ) : data1.assign_shipment === "2" ? (
+                    <div className="col-4">
+                      <div className="">
+                        <label className="ware_label">Batch</label>
+                        <select
+                          onChange={handleFileChange12}
+                          name="assign_shipment_id"
+                          className="mb-3 border ps-2 py-3 rounded w-100"
+                          value={data1.assign_shipment_id}
+                        >
+                          <option>Select...</option>
+                          {options &&
+                            options.length > 0 &&
+                            options.map((item, index) => {
+                              return (
+                                <>
+                                  <option key={index} value={item.batch_id}>
+                                    {item.batch_number}
+                                  </option>
+                                </>
+                              );
+                            })}
+                        </select>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="col-4">
+                      <div className="">
+                        <label className="ware_label">
+                          Clearance Order
+                        </label>
+                        <select
+                          onChange={handleFileChange12}
+                          name="clearance_id"
+                          className="mb-3 border ps-2 py-3 rounded w-100"
+                          value={data1.clearance_id}
+                        >
+                          <option>Select...</option>
+                          {data1222 &&
+                            data1222.length > 0 &&
+                            data1222.map((item, index) => {
+                              return (
+                                <>
+                                  <option key={index} value={item.id}>
+                                    {item.clearance_number}
+                                  </option>
+                                </>
+                              );
+                            })}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <button
+                      className="mt-4 btn btn-secondary  px-4 py-2 rounded"
+                      onClick={addbuttonclick}
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <table className="table mt-4 table-striped tableICon">
+                    <thead>
+                      <tr>
+                        <th>Sr.No.</th>
+                        <th>Freight / Order No.</th>
+                        <th>Client Name</th>
+                        <th>HAWB / Tracking</th>
+                        <th>Total Weight</th>
+                        <th>Total CBM</th>
+                        <th>Nature of Goods</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tindexdata
+                        ?.filter((item) => !item?.clearance_number)
+                        .map((item, index) => (
+                          <tr key={item.shipment_details_id}>
+                            <td>{index + 1}</td>
+                            <td>
+                              {item.freight_number} / {item.order_number}
+                            </td>
+                            <td>{item.client_name}</td>
+                            <td>{item.hawb}</td>
+                            <td>{item.weight}</td>
+                            <td>{item.dimensions}</td>
+                            <td>{item.nature_of_goods}</td>
+                            <td>
+                              <FiTrash2
+                                className="action-icon-delete"
+                                onClick={() => handleclickdelete(item)}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                  <table className="table mt-4 table-striped tableICon">
+                    <thead>
+                      <tr>
+                        <th>Sr.No.</th>
+                        <th>Clearance Number</th>
+                        <th>Client Name</th>
+                        <th>Clearing Status</th>
+                        <th>Weight</th>
+                        <th>Dimension</th>
+                        <th>Box</th>
+                        <th>Nature of Goods</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tindexdClearance
+                        ?.filter((item) => item?.clearance_number)
+                        .map((item, index) => (
+                          <tr key={item.clearance_id}>
+                            <td>{index + 1}</td>
+                            <td>{item.clearance_number}</td>
+                            <td>{item.client_name}</td>
+                            <td>{item.clearing_status}</td>
+                            <td>{item.total_weight}</td>
+                            <td>{item.total_dimension}</td>
+                            <td>{item.total_box}</td>
+                            <td>{item.nature_of_goods}</td>
+                            <td>
+                              <FiTrash2
+                                className="action-icon-delete"
+                                onClick={() =>
+                                  handleclickdeleteClearence(item)
+                                }
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="text-center mt-2">
+                {tindexdata.length + tindexdClearance.length === 0 ? (
+                  <Button variant="contained" onClick={handlclickposterror}>
+                    Update Warehouse
+                  </Button>
+                ) : (
+                  <Button variant="contained" onClick={apiupdatepost}>
+                    Update Warehouse
+                  </Button>
+                )}
+              </div>
+            </Box>
+          </Modal>
+
+          <section className="tableMain">
+            <div className="container">
+              <div className="row table-responsive ">
+                <table className="table-striped"></table>
+              </div>
+            </div>
+          </section>
         </div>
+      </div>
     </>
   );
 }

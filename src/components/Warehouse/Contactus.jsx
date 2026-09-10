@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AiFillDelete } from "react-icons/ai";
+import { FiTrash2 } from "react-icons/fi";
 const pageSize = 10;
 export default function Contactus() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -114,12 +114,9 @@ export default function Contactus() {
                               opacity: 0.5,
                             }}
                           /> */}
-                          <AiFillDelete
+                          <FiTrash2
+                            className="action-icon-delete"
                             onClick={() => deleteContact(item.id)}
-                            style={{
-                              color: "#be191d",
-                              cursor: "pointer",
-                            }}
                           />
                         </td>
                       </tr>

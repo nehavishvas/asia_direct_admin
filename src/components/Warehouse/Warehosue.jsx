@@ -3,8 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Box, Button, Modal } from "@mui/material";
-import { FaEdit } from "react-icons/fa";
-import { AiFillDelete } from "react-icons/ai";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 const pageSize = 10;
@@ -396,28 +395,23 @@ export default function Warehouse() {
                                 <td>{item.town}</td>
                                 <td>{item.warehouse_name}</td>
                                 <td>{item.warehouse_number}</td>
-                                <td style={{ display: "flex", alignItems: "center" }}>
-                                  <FaEdit
-                                    onClick={() => {
-                                      openModal2(item.warehouse_id);
-                                    }}
-                                    style={{
-                                      color: "rgb(27 34 69)",
-                                      marginRight: "10px",
-
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                  <AiFillDelete
-                                    onClick={() => {
-                                      deletewarehouse(item.warehouse_id);
-                                    }}
-                                    style={{
-
-                                      cursor: "pointer",
-                                    }}
-                                    className="text-danger"
-                                  />
+                                <td>
+                                  <div className="action-icons-group d-flex align-items-center">
+                                    <FiEdit
+                                      className="action-icon-edit"
+                                      style={{ color: "#1b2245", cursor: "pointer" }}
+                                      onClick={() => {
+                                        openModal2(item.warehouse_id);
+                                      }}
+                                    />
+                                    <FiTrash2
+                                      className="action-icon-delete"
+                                      style={{ color: "#be191d", cursor: "pointer" }}
+                                      onClick={() => {
+                                        deletewarehouse(item.warehouse_id);
+                                      }}
+                                    />
+                                  </div>
                                 </td>
                               </tr>
                             ))}

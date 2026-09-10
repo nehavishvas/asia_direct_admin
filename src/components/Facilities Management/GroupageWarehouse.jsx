@@ -1,10 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { AiFillDelete } from "react-icons/ai";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { Box, Button, Modal } from "@mui/material";
-import { FaEdit } from "react-icons/fa";
 import CloseIcon from "@mui/icons-material/Close";
 const pageSize = 10;
 
@@ -312,19 +311,16 @@ export default function GroupageWarehouse() {
                         <td>{item.address}</td>
                         <td>{item.country_name}</td>
                         <td>
-                          <FaEdit
-                            onClick={() => openModal2(item.id)}
-                            style={{
-                              color: "#1b2245",
-                              marginRight: "10px",
-                              cursor: "pointer",
-                            }}
-                          />
-                          <AiFillDelete
-                            className="text-danger"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => handledelete(item.id)}
-                          />
+                          <div className="d-flex align-items-center">
+                            <FiEdit
+                              className="action-icon-edit"
+                              onClick={() => openModal2(item.id)}
+                            />
+                            <FiTrash2
+                              className="action-icon-delete"
+                              onClick={() => handledelete(item.id)}
+                            />
+                          </div>
                         </td>
                       </tr>
                     ))}

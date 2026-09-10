@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
-import { AiFillDelete, AiFillEye } from "react-icons/ai";
+import { FiEye } from "react-icons/fi";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { Box, Button, Modal } from "@mui/material";
@@ -510,13 +510,12 @@ export default function Profilesection() {
                         <td>{item?.admin_remark}</td>
                         <td>{item?.status === 0 ? "Pending" : item.status === 1 ? "Approved" : "Rejected"}</td>
                         <td>
-                          <AiFillEye
-                            className="text-primary me-2"
-                            style={{ cursor: "pointer" }}
+                          <FiEye
+                            className="action-icon-view me-2"
                             onClick={() => handleViewLeave(item.leave_id || item.id)}
                             title="View Details"
                           />
-                          {/* <AiFillDelete
+                          {/* <FiTrash2
                             className="text-danger"
                             style={{ cursor: "pointer" }}
                             onClick={() => handledelete(item.id)}
