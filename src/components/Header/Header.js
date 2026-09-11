@@ -89,7 +89,7 @@ const Header = () => {
     localStorage.clear();
     navigate('/');
   };
-  const dataget = JSON.parse(localStorage.getItem("data123"))
+  const dataget = JSON.parse(localStorage.getItem("data123") || "{}");
   // pp
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
