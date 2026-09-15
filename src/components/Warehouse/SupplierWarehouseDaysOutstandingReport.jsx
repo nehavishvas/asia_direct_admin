@@ -27,6 +27,7 @@ const SupplierWarehouseDaysOutstandingReport = () => {
     const [runAtDate, setRunAtDate] = useState(location.state?.runAtDate || getTodayDateString());
     const [supplierFrom, setSupplierFrom] = useState(location.state?.supplierFrom || "");
     const [supplierTo, setSupplierTo] = useState(location.state?.supplierTo || "");
+    const [metric, setMetric] = useState(location.state?.metric || "packages");
 
     const [suppliers, setSuppliers] = useState([]);
     const [reportData, setReportData] = useState([]);
@@ -87,7 +88,8 @@ const SupplierWarehouseDaysOutstandingReport = () => {
         e,
         optRunAtDate = runAtDate,
         optSupplierFrom = supplierFrom,
-        optSupplierTo = supplierTo
+        optSupplierTo = supplierTo,
+        optMetric = metric
     ) => {
         if (e) e.preventDefault();
         setLoader(true);
@@ -97,6 +99,7 @@ const SupplierWarehouseDaysOutstandingReport = () => {
                 run_at_date: optRunAtDate || getTodayDateString(),
                 supplier_from: optSupplierFrom ? optSupplierFrom : null,
                 supplier_to: optSupplierTo ? optSupplierTo : null,
+                metric: optMetric || "count",
             };
 
             const response = await axios.post(
@@ -124,7 +127,8 @@ const SupplierWarehouseDaysOutstandingReport = () => {
         setRunAtDate(today);
         setSupplierFrom("");
         setSupplierTo("");
-        fetchReportData(null, today, "", "");
+        setMetric("count");
+        fetchReportData(null, today, "", "", "count");
     };
 
     const handlePrint = () => {
@@ -217,7 +221,7 @@ const SupplierWarehouseDaysOutstandingReport = () => {
                                     </div>
 
                                     {/* Supplier Range */}
-                                    <div className="col-lg-6 col-md-5 col-sm-6">
+                                    <div className="col-lg-5 col-md-4 col-sm-6">
                                         <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>
                                             Supplier
                                         </label>
@@ -251,8 +255,24 @@ const SupplierWarehouseDaysOutstandingReport = () => {
                                         </div>
                                     </div>
 
+                                    {/* Metric */}
+                                    <div className="col-lg-2 col-md-4 col-sm-6">
+                                        <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>
+                                            Metric
+                                        </label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={metric}
+                                            onChange={(e) => setMetric(e.target.value)}
+                                        >
+                                            <option value="count">Count</option>
+                                            <option value="packages">Packages</option>
+                                            <option value="cbm">CBM</option>
+                                        </select>
+                                    </div>
+
                                     {/* Buttons */}
-                                    <div className="col-lg-3 col-md-3 col-sm-6 d-flex align-items-center gap-2">
+                                    <div className="col-lg-2 col-md-4 col-sm-6 d-flex align-items-center gap-2">
                                         <button type="submit" className="btn btn-primary blueBtn btn-sm w-50">
                                             View
                                         </button>

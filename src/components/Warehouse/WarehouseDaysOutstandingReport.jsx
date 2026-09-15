@@ -29,6 +29,7 @@ const WarehouseDaysOutstandingReport = () => {
     const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
     const [origin, setOrigin] = useState(location.state?.origin || "");
     const [destination, setDestination] = useState(location.state?.destination || "");
+    const [metric, setMetric] = useState(location.state?.metric || "packages");
 
     const [countries, setCountries] = useState([]);
     const [reportData, setReportData] = useState([]);
@@ -94,7 +95,8 @@ const WarehouseDaysOutstandingReport = () => {
         optCustomerFrom = customerFrom,
         optCustomerTo = customerTo,
         optOrigin = origin,
-        optDestination = destination
+        optDestination = destination,
+        optMetric = metric
     ) => {
         if (e) e.preventDefault();
         setLoader(true);
@@ -106,6 +108,7 @@ const WarehouseDaysOutstandingReport = () => {
                 customer_to: optCustomerTo ? optCustomerTo : null,
                 origin: optOrigin ? optOrigin : null,
                 destination: optDestination ? optDestination : null,
+                metric: optMetric || "count",
             };
 
             const response = await axios.post(
@@ -138,7 +141,8 @@ const WarehouseDaysOutstandingReport = () => {
         setCustomerTo("");
         setOrigin("");
         setDestination("");
-        fetchReportData(null, today, "", "", "", "");
+        setMetric("count");
+        fetchReportData(null, today, "", "", "", "", "count");
     };
 
     const handlePrint = () => {
@@ -309,8 +313,24 @@ const WarehouseDaysOutstandingReport = () => {
                                         </select>
                                     </div>
 
+                                    {/* Metric */}
+                                    <div className="col-lg-2 col-md-4 col-sm-6">
+                                        <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>
+                                            Metric
+                                        </label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={metric}
+                                            onChange={(e) => setMetric(e.target.value)}
+                                        >
+                                            <option value="count">Count</option>
+                                            <option value="packages">Packages</option>
+                                            <option value="cbm">CBM</option>
+                                        </select>
+                                    </div>
+
                                     {/* Buttons */}
-                                    <div className="col-lg-3 col-md-4 col-sm-6 d-flex align-items-center gap-2">
+                                    <div className="col-lg-2 col-md-4 col-sm-6 d-flex align-items-center gap-2">
                                         <button type="submit" className="btn btn-primary blueBtn btn-sm w-50">
                                             View
                                         </button>
