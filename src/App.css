@@ -17,6 +17,7 @@
 
 .main-container {
   display: flex;
+  overflow-x: hidden;
 }
 
 main {
@@ -128,11 +129,19 @@ th {
   background: var(--blue);
   height: 100vh;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: hidden !important;
 }
 
 .sidebar::-webkit-scrollbar {
   width: 5px;
+}
+
+.sidebar::-webkit-scrollbar:horizontal,
+.sidebar::-webkit-scrollbar-track:horizontal,
+.sidebar::-webkit-scrollbar-thumb:horizontal {
+  display: none !important;
+  height: 0px !important;
+  width: 0px !important;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
@@ -214,16 +223,31 @@ th {
   margin: 15px 0;
   display: flex;
   flex-direction: column;
-  /* overflow-y: auto; */
+  overflow-y: auto;
+  overflow-x: hidden !important;
 }
 
 .routes::-webkit-scrollbar {
   width: 7px;
 }
 
+.routes::-webkit-scrollbar:horizontal,
+.routes::-webkit-scrollbar-thumb:horizontal,
+.routes::-webkit-scrollbar-track:horizontal {
+  display: none !important;
+  height: 0px !important;
+  width: 0px !important;
+}
+
 .routes::-webkit-scrollbar-thumb {
   background-color: #092e57 !important;
   border-radius: 10px;
+}
+
+.sub_routes,
+.nested-sub-routes,
+.nested-sub-route-container {
+  overflow-x: hidden !important;
 }
 
 .timeline {
@@ -260,12 +284,14 @@ th {
   border-radius: 8px;
   transition: all 0.3s ease;
   text-decoration: none;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .link:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
-  transform: translateX(4px);
+  padding-left: 14px;
 }
 
 .link.active {
@@ -280,6 +306,9 @@ th {
   font-weight: 500;
   margin-left: 10px;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .link_text1 {
@@ -287,6 +316,9 @@ th {
   font-size: 14px;
   font-weight: 400;
   margin-left: 10px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .menu {
@@ -6167,6 +6199,7 @@ button.btn-primary:hover,
     top: 0px;
     height: 100vh;
     overflow-y: auto;
+    overflow-x: hidden !important;
     z-index: 99;
   }
 

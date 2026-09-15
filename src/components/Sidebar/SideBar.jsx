@@ -265,9 +265,9 @@ const routes = [
         icon: <Groups2OutlinedIcon />,
       },
       {
-        path:"/Admin/company-address",
-        name:"Company Address",
-        icon: <PinDropIcon/>,
+        path: "/Admin/company-address",
+        name: "Company Address",
+        icon: <PinDropIcon />,
       }
     ],
   },
@@ -356,7 +356,7 @@ const SideBar = ({ children }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openSubDropdown, setOpenSubDropdown] = useState({});
-  const usertype = JSON.parse(localStorage.getItem("data123")).user_type;
+  const usertype = JSON.parse(localStorage.getItem("data123") || "{}")?.user_type;
   let filteredRoutes = routes.filter((route) => {
     if (route.path === "/Admin/TaskManagerstaff") {
       return usertype !== "1";
@@ -376,6 +376,10 @@ const SideBar = ({ children }) => {
   }, []);
   useEffect(() => {
     localStorage.setItem("sidebarOpen", isOpen);
+    if (!isOpen) {
+      setOpenDropdown(null);
+      setOpenSubDropdown({});
+    }
   }, [isOpen]);
   const toggle = () => setIsOpen(!isOpen);
   const showAnimation = {
@@ -399,7 +403,7 @@ const SideBar = ({ children }) => {
   };
   return (
     <div className="main-container sideBarpageMain">
-      <div>
+      <div style={{ overflow: "hidden" }}>
         <motion.div
           animate={{
             width: isOpen ? "250px" : "65px",
@@ -516,7 +520,7 @@ const SideBar = ({ children }) => {
                                 >
                                   <div className="icon ms-3">{subRoute.icon}</div>
                                   {isOpen && (
-                                    <div className="link_text1 d-flex justify-content-between align-items-center w-100 pe-3 ms-2">
+                                    <div className="link_text1 d-flex justify-content-between align-items-center flex-grow-1 pe-2 ms-2">
                                       <span style={{ fontSize: "14px" }}>{subRoute.name}</span>
                                       {isSubOpen ? <ExpandLessIcon style={{ fontSize: "16px" }} /> : <ExpandMoreIcon style={{ fontSize: "16px" }} />}
                                     </div>
@@ -533,7 +537,7 @@ const SideBar = ({ children }) => {
                                         }
                                         style={{ cursor: "pointer" }}
                                       >
-                                        <div className="icon ms-5">{nestedRoute.icon}</div>
+                                        <div className="icon ms-4">{nestedRoute.icon}</div>
                                         {isOpen && (
                                           <div className="link_text1 ms-2" style={{ fontSize: "13px" }}>{nestedRoute.name}</div>
                                         )}
@@ -597,7 +601,7 @@ const SideBar = ({ children }) => {
 
       <motion.div
         animate={{
-          width: isOpen ? "calc(100% - 250px)" : "100%",
+          width: isOpen ? "calc(100% - 250px)" : "calc(100% - 65px)",
           transition: {
             duration: 0.5,
             type: "spring",
