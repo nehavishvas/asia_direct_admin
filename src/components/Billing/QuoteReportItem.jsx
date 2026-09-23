@@ -44,10 +44,9 @@ const QuoteReportItem = () => {
     // Response states
     const [reportData, setReportData] = useState([]);
     const [grandTotal, setGrandTotal] = useState(null);
+    const [clientList, setClientList] = useState([]);
     const [loader, setLoader] = useState(false);
     const [searched, setSearched] = useState(false);
-
-    const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     const handleReset = () => {
         setStartDate(getDefaultStartDate());
@@ -63,6 +62,21 @@ const QuoteReportItem = () => {
 
     const handlePrint = () => {
         window.print();
+    };
+
+    const fetchClientList = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}clientlist`);
+            if (response.data && response.data.success) {
+                const list = response.data.data || [];
+                const sortedList = [...list]
+                    .filter((item) => item && item.client_name && item.client_name.trim() !== "")
+                    .sort((a, b) => (a.client_name || "").localeCompare(b.client_name || ""));
+                setClientList(sortedList);
+            }
+        } catch (error) {
+            console.error("Error fetching client list:", error);
+        }
     };
 
     // Fetch report data
@@ -132,6 +146,7 @@ const QuoteReportItem = () => {
 
     useEffect(() => {
         checkPermission();
+        fetchClientList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -168,8 +183,15 @@ const QuoteReportItem = () => {
 
     const getCustomerFilterText = () => {
         if (!customerFrom && !customerTo) return "All Customers";
-        if (customerFrom === customerTo) return customerFrom;
-        return `${customerFrom || "A"} to ${customerTo || "Z"}`;
+        const fromClient = clientList.find((c) => String(c.id) === String(customerFrom) || String(c.client_name) === String(customerFrom));
+        const toClient = clientList.find((c) => String(c.id) === String(customerTo) || String(c.client_name) === String(customerTo));
+        const fromName = fromClient ? (fromClient.client_name || fromClient.name) : customerFrom;
+        const toName = toClient ? (toClient.client_name || toClient.name) : customerTo;
+
+        if (customerFrom && customerTo && customerFrom === customerTo) {
+            return fromName;
+        }
+        return `${fromName || "Start"} to ${toName || "End"}`;
     };
 
     const getCategoryFilterText = () => {
@@ -248,11 +270,13 @@ const QuoteReportItem = () => {
                                             onChange={(e) => setCustomerFrom(e.target.value)}
                                         >
                                             <option value="">(From)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
-                                                </option>
-                                            ))}
+                                            {clientList &&
+                                                clientList.length > 0 &&
+                                                clientList.map((client, index) => (
+                                                    <option key={client.id || `from_${index}`} value={client.id}>
+                                                        {client.client_name}
+                                                    </option>
+                                                ))}
                                         </select>
                                         <select
                                             className="form-select form-select-sm"
@@ -260,11 +284,13 @@ const QuoteReportItem = () => {
                                             onChange={(e) => setCustomerTo(e.target.value)}
                                         >
                                             <option value="">(To)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
-                                                </option>
-                                            ))}
+                                            {clientList &&
+                                                clientList.length > 0 &&
+                                                clientList.map((client, index) => (
+                                                    <option key={client.id || `to_${index}`} value={client.id}>
+                                                        {client.client_name}
+                                                    </option>
+                                                ))}
                                         </select>
                                     </div>
                                 </div>
@@ -355,6 +381,7 @@ const QuoteReportItem = () => {
                                                 <th className="text-start">Date</th>
                                                 <th className="text-start">Reference</th>
                                                 <th className="text-start">Customer</th>
+                                                <th className="text-start">Country</th>
                                                 <th className="text-start">Expiry Date</th>
                                                 <th className="text-start">Status</th>
                                                 <th className="text-end">Qty</th>
@@ -372,7 +399,7 @@ const QuoteReportItem = () => {
                                                         <React.Fragment key={groupIndex}>
                                                             {/* Component Group Title */}
                                                             <tr className="table-secondary fw-bold text-dark text-start">
-                                                                <td colSpan="10" className="ps-3 bg-light text-dark fw-bold" style={{ fontSize: "14px", borderBottom: "2px solid #ddd" }}>
+                                                                <td colSpan="11" className="ps-3 bg-light text-dark fw-bold" style={{ fontSize: "14px", borderBottom: "2px solid #ddd" }}>
                                                                     {groupTitle}
                                                                 </td>
                                                             </tr>
@@ -385,6 +412,7 @@ const QuoteReportItem = () => {
                                                                             <td className="text-start">{formatDateString(rec.quote_date)}</td>
                                                                             <td className="text-start">{rec.reference_no || "-"}</td>
                                                                             <td className="text-start">{rec.customer || "-"}</td>
+                                                                            <td className="text-start">{rec.invoice_for_country || rec.country || "-"}</td>
                                                                             <td className="text-start">{formatDateString(rec.expiry_date)}</td>
                                                                             <td className="text-start">{rec.document_status || "-"}</td>
                                                                             <td className="text-end">{parseFloat(rec.qty || 0).toFixed(4)}</td>
@@ -397,7 +425,7 @@ const QuoteReportItem = () => {
                                                                 })
                                                             ) : (
                                                                 <tr>
-                                                                    <td colSpan="10" className="text-center text-muted py-2">
+                                                                    <td colSpan="11" className="text-center text-muted py-2">
                                                                         No records for this component.
                                                                     </td>
                                                                 </tr>
@@ -408,7 +436,7 @@ const QuoteReportItem = () => {
                                                 })
                                             ) : (
                                                 <tr>
-                                                    <td colSpan="10" className="text-center text-muted py-4">
+                                                    <td colSpan="11" className="text-center text-muted py-4">
                                                         No data available for the selected filters.
                                                     </td>
                                                 </tr>

@@ -3965,7 +3965,7 @@ div:where(.swal2-container) button:where(.swal2-styled).swal2-cancel {
   color: darkgrey !important;
 }
 
-rgb(131, 131, 131) .css-1hw9j7s {
+.css-1hw9j7s {
   background-color: #1b2245 !important;
 }
 
@@ -5179,6 +5179,7 @@ button.btn-primary,
   line-height: 1.4 !important;
   box-shadow: none !important;
   text-decoration: none !important;
+  background-color: #1b2245;
   transition:
     background-color 0.2s ease,
     opacity 0.2s ease,
@@ -7007,7 +7008,7 @@ td .dropdown-menu {
 td .dropdown-item,
 button.dropdown-item,
 a.dropdown-item {
-  display: flex !important;
+  /* display: flex !important; */
   align-items: center !important;
   width: 100% !important;
   padding: 0.45rem 1.25rem !important;

@@ -187,6 +187,11 @@ const routes = [
             icon: <ShoppingCartOutlinedIcon />,
           },
           {
+            path: "/Admin/customer-statement-report",
+            name: "Customer Statement",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+          {
             path: "/Admin/freight-report",
             name: "Freight by Admin Reports",
             icon: <FlightOutlinedIcon />,

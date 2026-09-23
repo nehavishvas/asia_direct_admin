@@ -27,12 +27,13 @@ const CustomerBalancesReport = () => {
     const [runAtDate, setRunAtDate] = useState(location.state?.runAtDate || location.state?.runDate || getTodayDateString());
     const [customerFrom, setCustomerFrom] = useState(location.state?.customerFrom || "");
     const [customerTo, setCustomerTo] = useState(location.state?.customerTo || "");
+    const [style, setStyle] = useState(location.state?.style || "summary"); // summary, detailed
+    const [appliedStyle, setAppliedStyle] = useState(location.state?.style || "summary");
 
     const [reportData, setReportData] = useState([]);
+    const [clientList, setClientList] = useState([]);
     const [loader, setLoader] = useState(false);
     const [searched, setSearched] = useState(false);
-
-    const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     const checkPermission = async () => {
         try {
@@ -65,8 +66,24 @@ const CustomerBalancesReport = () => {
         }
     };
 
+    const fetchClientList = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}clientlist`);
+            if (response.data && response.data.success) {
+                const list = response.data.data || [];
+                const sortedList = [...list]
+                    .filter((item) => item && item.client_name && item.client_name.trim() !== "")
+                    .sort((a, b) => (a.client_name || "").localeCompare(b.client_name || ""));
+                setClientList(sortedList);
+            }
+        } catch (error) {
+            console.error("Error fetching client list:", error);
+        }
+    };
+
     useEffect(() => {
         checkPermission();
+        fetchClientList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -75,7 +92,8 @@ const CustomerBalancesReport = () => {
         e,
         optRunAtDate = runAtDate,
         optCustomerFrom = customerFrom,
-        optCustomerTo = customerTo
+        optCustomerTo = customerTo,
+        optStyle = style
     ) => {
         if (e) e.preventDefault();
         setLoader(true);
@@ -85,7 +103,7 @@ const CustomerBalancesReport = () => {
                 run_at_date: optRunAtDate || getTodayDateString(),
                 customer_from: optCustomerFrom ? optCustomerFrom : null,
                 customer_to: optCustomerTo ? optCustomerTo : null,
-                style: "summary",
+                style: optStyle || "summary",
             };
 
             const response = await axios.post(
@@ -95,6 +113,7 @@ const CustomerBalancesReport = () => {
 
             if (response.data && response.data.success) {
                 setReportData(response.data.data || []);
+                setAppliedStyle(response.data.filters?.style || optStyle || "summary");
             } else {
                 setReportData([]);
                 toast.error(response.data?.message || "No data found");
@@ -108,12 +127,20 @@ const CustomerBalancesReport = () => {
         }
     };
 
+    const handleStyleChange = (e) => {
+        const selectedStyle = e.target.value;
+        setStyle(selectedStyle);
+        fetchReportData(null, runAtDate, customerFrom, customerTo, selectedStyle);
+    };
+
     const handleReset = () => {
         const today = getTodayDateString();
         setRunAtDate(today);
         setCustomerFrom("");
         setCustomerTo("");
-        fetchReportData(null, today, "", "");
+        setStyle("summary");
+        setAppliedStyle("summary");
+        fetchReportData(null, today, "", "", "summary");
     };
 
     const handlePrint = () => {
@@ -158,8 +185,15 @@ const CustomerBalancesReport = () => {
 
     const getCustomerFilterText = () => {
         if (!customerFrom && !customerTo) return "All Customers";
-        if (customerFrom === customerTo) return customerFrom;
-        return `${customerFrom || "A"} to ${customerTo || "Z"}`;
+        const fromClient = clientList.find((c) => String(c.id) === String(customerFrom) || String(c.client_name) === String(customerFrom));
+        const toClient = clientList.find((c) => String(c.id) === String(customerTo) || String(c.client_name) === String(customerTo));
+        const fromName = fromClient ? (fromClient.client_name || fromClient.name) : customerFrom;
+        const toName = toClient ? (toClient.client_name || toClient.name) : customerTo;
+
+        if (customerFrom && customerTo && customerFrom === customerTo) {
+            return fromName;
+        }
+        return `${fromName || "Start"} to ${toName || "End"}`;
     };
 
     return (
@@ -213,7 +247,7 @@ const CustomerBalancesReport = () => {
                             <div className="card-body">
                                 <form onSubmit={fetchReportData} className="row g-2 justify-content-center align-items-end">
                                     {/* Run At Date */}
-                                    <div className="col-lg-3 col-md-4 col-sm-6">
+                                    <div className="col-lg-3 col-md-3 col-sm-6">
                                         <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>
                                             Run At Date
                                         </label>
@@ -226,7 +260,7 @@ const CustomerBalancesReport = () => {
                                     </div>
 
                                     {/* Customer Range */}
-                                    <div className="col-lg-5 col-md-5 col-sm-6">
+                                    <div className="col-lg-4 col-md-4 col-sm-6">
                                         <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>
                                             Customer
                                         </label>
@@ -237,9 +271,9 @@ const CustomerBalancesReport = () => {
                                                 onChange={(e) => setCustomerFrom(e.target.value)}
                                             >
                                                 <option value="">(From)</option>
-                                                {alphabet.map((letter) => (
-                                                    <option key={letter} value={letter}>
-                                                        {letter}
+                                                {clientList.map((client, index) => (
+                                                    <option key={client.id || index} value={client.id}>
+                                                        {client.client_name}
                                                     </option>
                                                 ))}
                                             </select>
@@ -249,13 +283,28 @@ const CustomerBalancesReport = () => {
                                                 onChange={(e) => setCustomerTo(e.target.value)}
                                             >
                                                 <option value="">(To)</option>
-                                                {alphabet.map((letter) => (
-                                                    <option key={letter} value={letter}>
-                                                        {letter}
+                                                {clientList.map((client, index) => (
+                                                    <option key={client.id || index} value={client.id}>
+                                                        {client.client_name}
                                                     </option>
                                                 ))}
                                             </select>
                                         </div>
+                                    </div>
+
+                                    {/* Style Filter */}
+                                    <div className="col-lg-2 col-md-2 col-sm-6">
+                                        <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>
+                                            Style
+                                        </label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={style}
+                                            onChange={handleStyleChange}
+                                        >
+                                            <option value="summary">Summary</option>
+                                            <option value="detailed">Detailed</option>
+                                        </select>
                                     </div>
 
                                     {/* Action Buttons */}
@@ -303,6 +352,12 @@ const CustomerBalancesReport = () => {
                                                             </span>
                                                             <span className="text-secondary">{getCustomerFilterText()}</span>
                                                         </div>
+                                                        <div className="d-flex mb-1">
+                                                            <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>
+                                                                Style:
+                                                            </span>
+                                                            <span className="text-secondary text-capitalize">{appliedStyle}</span>
+                                                        </div>
                                                     </div>
                                                     <div className="col-md-6">
                                                         <div className="d-flex mb-1">
@@ -317,45 +372,216 @@ const CustomerBalancesReport = () => {
                                         </div>
 
                                         {/* Report Table with Dark Navy Header */}
-                                        <div className="table-responsive mt-4">
-                                            <table className="table report-table">
-                                                <thead>
-                                                    <tr>
-                                                        <th className="text-start">Customer</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>120+ Days</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>90 Days</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>60 Days</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>30 Days</th>
-                                                        <th className="text-end" style={{ width: "120px" }}>Current</th>
-                                                        <th className="text-end" style={{ width: "130px" }}>Total Due</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {reportData.map((item, index) => {
-                                                        const custName = (item.customer_name || item.customer || item.name || item.client_name || "").trim() || "Cash Client";
-                                                        const curr = item.final_base_currency || item.currency || item.base_currency || custName;
-                                                        const days120Val = item.days_120 ?? item.days120 ?? 0;
-                                                        const days90Val = item.days_90 ?? item.days90 ?? 0;
-                                                        const days60Val = item.days_60 ?? item.days60 ?? 0;
-                                                        const days30Val = item.days_30 ?? item.days30 ?? 0;
-                                                        const currentVal = item.current ?? 0;
-                                                        const totalDueVal = item.total_due ?? item.total ?? item.total_amount ?? 0;
+                                        {appliedStyle && appliedStyle.toString().toLowerCase() === "detailed" ? (
+                                            /* Detailed View */
+                                            <div className="table-responsive mt-4">
+                                                <table className="table report-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th className="text-start" style={{ width: "110px" }}>Date</th>
+                                                            <th className="text-start" style={{ width: "140px" }}>Document No.</th>
+                                                            <th className="text-start">Reference</th>
+                                                            <th className="text-end" style={{ width: "115px" }}>120+ Days</th>
+                                                            <th className="text-end" style={{ width: "115px" }}>90 Days</th>
+                                                            <th className="text-end" style={{ width: "115px" }}>60 Days</th>
+                                                            <th className="text-end" style={{ width: "115px" }}>30 Days</th>
+                                                            <th className="text-end" style={{ width: "115px" }}>Current</th>
+                                                            <th className="text-end" style={{ width: "125px" }}>Total Due</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {reportData.map((item, index) => {
+                                                            const custName = (item.customer_name || item.customer || item.name || item.client_name || "").trim() || "Cash Client";
+                                                            const curr = item.final_base_currency || item.currency || item.base_currency || custName;
+                                                            const days120Val = item.days_120 ?? item.days120 ?? 0;
+                                                            const days90Val = item.days_90 ?? item.days90 ?? 0;
+                                                            const days60Val = item.days_60 ?? item.days60 ?? 0;
+                                                            const days30Val = item.days_30 ?? item.days30 ?? 0;
+                                                            const currentVal = item.current ?? 0;
+                                                            const totalDueVal = item.total_due ?? item.total ?? item.total_amount ?? 0;
+                                                            const txList = item.transactions || item.items || [];
 
-                                                        return (
-                                                            <tr key={index}>
-                                                                <td className="text-start">{custName}</td>
-                                                                <td className="text-end">{formatCurrencyValue(days120Val, curr)}</td>
-                                                                <td className="text-end">{formatCurrencyValue(days90Val, curr)}</td>
-                                                                <td className="text-end">{formatCurrencyValue(days60Val, curr)}</td>
-                                                                <td className="text-end">{formatCurrencyValue(days30Val, curr)}</td>
-                                                                <td className="text-end">{formatCurrencyValue(currentVal, curr)}</td>
-                                                                <td className="text-end fw-semibold">{formatCurrencyValue(totalDueVal, curr)}</td>
+                                                            return (
+                                                                <React.Fragment key={item.customer_id || index}>
+                                                                    {/* Customer Header Row */}
+                                                                    <tr className="customer-name-row" style={{ backgroundColor: "#e9ecef" }}>
+                                                                        <td colSpan="9" className="text-start fw-bold" style={{ backgroundColor: "#e9ecef", fontSize: "13px" }}>
+                                                                            {custName}
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    {/* Transaction Rows */}
+                                                                    {txList.length > 0 ? (
+                                                                        txList.map((tx, txIndex) => (
+                                                                            <tr key={`${index}-${txIndex}`} className="invoice-item-row">
+                                                                                <td className="text-start">{tx.date || formatDateString(tx.raw_date)}</td>
+                                                                                <td className="text-start">{tx.document_no || "-"}</td>
+                                                                                <td className="text-start">{tx.reference || "-"}</td>
+                                                                                <td className="text-end">{formatCurrencyValue(tx.days_120 ?? tx.days120, curr)}</td>
+                                                                                <td className="text-end">{formatCurrencyValue(tx.days_90 ?? tx.days90, curr)}</td>
+                                                                                <td className="text-end">{formatCurrencyValue(tx.days_60 ?? tx.days60, curr)}</td>
+                                                                                <td className="text-end">{formatCurrencyValue(tx.days_30 ?? tx.days30, curr)}</td>
+                                                                                <td className="text-end">{formatCurrencyValue(tx.current, curr)}</td>
+                                                                                <td className="text-end fw-semibold">{formatCurrencyValue(tx.total_due ?? tx.total ?? tx.total_amount, curr)}</td>
+                                                                            </tr>
+                                                                        ))
+                                                                    ) : (
+                                                                        <tr>
+                                                                            <td colSpan="9" className="text-center text-muted py-2" style={{ fontStyle: "italic" }}>
+                                                                                No transaction records found for this customer.
+                                                                            </td>
+                                                                        </tr>
+                                                                    )}
+
+                                                                    {/* Customer Subtotal Row */}
+                                                                    <tr className="customer-total-row fw-bold" style={{ backgroundColor: "#f1f3f5" }}>
+                                                                        <td colSpan="3" className="text-start fw-bold ps-3">Total for {custName}</td>
+                                                                        <td className="text-end fw-bold">{formatCurrencyValue(days120Val, curr)}</td>
+                                                                        <td className="text-end fw-bold">{formatCurrencyValue(days90Val, curr)}</td>
+                                                                        <td className="text-end fw-bold">{formatCurrencyValue(days60Val, curr)}</td>
+                                                                        <td className="text-end fw-bold">{formatCurrencyValue(days30Val, curr)}</td>
+                                                                        <td className="text-end fw-bold">{formatCurrencyValue(currentVal, curr)}</td>
+                                                                        <td className="text-end fw-bold">{formatCurrencyValue(totalDueVal, curr)}</td>
+                                                                    </tr>
+
+                                                                    {/* Spacer */}
+                                                                    <tr className="spacer-row" style={{ height: "10px", border: "none" }}>
+                                                                        <td colSpan="9" style={{ border: "none", background: "transparent", padding: "3px" }}></td>
+                                                                    </tr>
+                                                                </React.Fragment>
+                                                            );
+                                                        })}
+                                                    </tbody>
+                                                    {reportData.length > 0 && (
+                                                        <tfoot className="fw-bold" style={{ borderTop: "2px solid #000" }}>
+                                                            <tr style={{ background: "#e2e6ea" }}>
+                                                                <td colSpan="3" className="text-start fw-bold ps-3">Grand Total</td>
+                                                                <td className="text-end fw-bold">
+                                                                    {formatCurrencyValue(
+                                                                        reportData.reduce((acc, i) => acc + (parseFloat(i.days_120 ?? i.days120) || 0), 0),
+                                                                        reportData[0]?.final_base_currency
+                                                                    )}
+                                                                </td>
+                                                                <td className="text-end fw-bold">
+                                                                    {formatCurrencyValue(
+                                                                        reportData.reduce((acc, i) => acc + (parseFloat(i.days_90 ?? i.days90) || 0), 0),
+                                                                        reportData[0]?.final_base_currency
+                                                                    )}
+                                                                </td>
+                                                                <td className="text-end fw-bold">
+                                                                    {formatCurrencyValue(
+                                                                        reportData.reduce((acc, i) => acc + (parseFloat(i.days_60 ?? i.days60) || 0), 0),
+                                                                        reportData[0]?.final_base_currency
+                                                                    )}
+                                                                </td>
+                                                                <td className="text-end fw-bold">
+                                                                    {formatCurrencyValue(
+                                                                        reportData.reduce((acc, i) => acc + (parseFloat(i.days_30 ?? i.days30) || 0), 0),
+                                                                        reportData[0]?.final_base_currency
+                                                                    )}
+                                                                </td>
+                                                                <td className="text-end fw-bold">
+                                                                    {formatCurrencyValue(
+                                                                        reportData.reduce((acc, i) => acc + (parseFloat(i.current) || 0), 0),
+                                                                        reportData[0]?.final_base_currency
+                                                                    )}
+                                                                </td>
+                                                                <td className="text-end fw-bold">
+                                                                    {formatCurrencyValue(
+                                                                        reportData.reduce((acc, i) => acc + (parseFloat(i.total_due ?? i.total ?? i.total_amount) || 0), 0),
+                                                                        reportData[0]?.final_base_currency
+                                                                    )}
+                                                                </td>
                                                             </tr>
-                                                        );
-                                                    })}
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                        </tfoot>
+                                                    )}
+                                                </table>
+                                            </div>
+                                        ) : (
+                                            /* Summary View */
+                                            <div className="table-responsive mt-4">
+                                                <table className="table report-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th className="text-start">Customer</th>
+                                                            <th className="text-end" style={{ width: "120px" }}>120+ Days</th>
+                                                            <th className="text-end" style={{ width: "120px" }}>90 Days</th>
+                                                            <th className="text-end" style={{ width: "120px" }}>60 Days</th>
+                                                            <th className="text-end" style={{ width: "120px" }}>30 Days</th>
+                                                            <th className="text-end" style={{ width: "120px" }}>Current</th>
+                                                            <th className="text-end" style={{ width: "130px" }}>Total Due</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {reportData.map((item, index) => {
+                                                            const custName = (item.customer_name || item.customer || item.name || item.client_name || "").trim() || "Cash Client";
+                                                            const curr = item.final_base_currency || item.currency || item.base_currency || custName;
+                                                            const days120Val = item.days_120 ?? item.days120 ?? 0;
+                                                            const days90Val = item.days_90 ?? item.days90 ?? 0;
+                                                            const days60Val = item.days_60 ?? item.days60 ?? 0;
+                                                            const days30Val = item.days_30 ?? item.days30 ?? 0;
+                                                            const currentVal = item.current ?? 0;
+                                                            const totalDueVal = item.total_due ?? item.total ?? item.total_amount ?? 0;
+
+                                                            return (
+                                                                <tr key={index}>
+                                                                    <td className="text-start">{custName}</td>
+                                                                    <td className="text-end">{formatCurrencyValue(days120Val, curr)}</td>
+                                                                    <td className="text-end">{formatCurrencyValue(days90Val, curr)}</td>
+                                                                    <td className="text-end">{formatCurrencyValue(days60Val, curr)}</td>
+                                                                    <td className="text-end">{formatCurrencyValue(days30Val, curr)}</td>
+                                                                    <td className="text-end">{formatCurrencyValue(currentVal, curr)}</td>
+                                                                    <td className="text-end fw-semibold">{formatCurrencyValue(totalDueVal, curr)}</td>
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody>
+                                                    {reportData.length > 0 && (
+                                                        <tfoot className="fw-bold" style={{ borderTop: "2px solid #000" }}>
+                                                            <tr style={{ background: "#f1f3f5" }}>
+                                                                <td className="text-start fw-bold">Total</td>
+                                                                <td className="text-end fw-bold">
+                                                                    {formatCurrencyValue(
+                                                                        reportData.reduce((acc, i) => acc + (parseFloat(i.days_120 ?? i.days120) || 0), 0),
+                                                                        reportData[0]?.final_base_currency
+                                                                    )}
+                                                                </td>
+                                                                <td className="text-end fw-bold">
+                                                                    {formatCurrencyValue(
+                                                                        reportData.reduce((acc, i) => acc + (parseFloat(i.days_90 ?? i.days90) || 0), 0),
+                                                                        reportData[0]?.final_base_currency
+                                                                    )}
+                                                                </td>
+                                                                <td className="text-end fw-bold">
+                                                                    {formatCurrencyValue(
+                                                                        reportData.reduce((acc, i) => acc + (parseFloat(i.days_60 ?? i.days60) || 0), 0),
+                                                                        reportData[0]?.final_base_currency
+                                                                    )}
+                                                                </td>
+                                                                <td className="text-end fw-bold">
+                                                                    {formatCurrencyValue(
+                                                                        reportData.reduce((acc, i) => acc + (parseFloat(i.days_30 ?? i.days30) || 0), 0),
+                                                                        reportData[0]?.final_base_currency
+                                                                    )}
+                                                                </td>
+                                                                <td className="text-end fw-bold">
+                                                                    {formatCurrencyValue(
+                                                                        reportData.reduce((acc, i) => acc + (parseFloat(i.current) || 0), 0),
+                                                                        reportData[0]?.final_base_currency
+                                                                    )}
+                                                                </td>
+                                                                <td className="text-end fw-bold">
+                                                                    {formatCurrencyValue(
+                                                                        reportData.reduce((acc, i) => acc + (parseFloat(i.total_due ?? i.total ?? i.total_amount) || 0), 0),
+                                                                        reportData[0]?.final_base_currency
+                                                                    )}
+                                                                </td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    )}
+                                                </table>
+                                            </div>
+                                        )}
                                     </>
                                 ) : (
                                     <div className="text-center py-5">
@@ -415,6 +641,29 @@ const CustomerBalancesReport = () => {
                 }
                 .report-table tbody tr:hover td {
                     background-color: #f8f9fa;
+                }
+                .report-table tbody tr.customer-name-row td {
+                    background-color: #e9ecef !important;
+                    font-weight: bold;
+                    font-size: 12.5px;
+                    padding: 8px 12px !important;
+                    border-top: 1.5px solid #1b2245 !important;
+                }
+                .report-table tbody tr.customer-total-row td {
+                    background-color: #f1f3f5 !important;
+                    font-weight: bold;
+                    padding: 7px 12px !important;
+                    border-top: 1px solid #1b2245 !important;
+                    border-bottom: 1.5px solid #1b2245 !important;
+                }
+                .report-table tbody tr.invoice-item-row td {
+                    padding: 6px 12px !important;
+                    font-size: 11.5px;
+                }
+                .report-table tbody tr.spacer-row td {
+                    border: none !important;
+                    background-color: transparent !important;
+                    padding: 0 !important;
                 }
                 
                 @page {
@@ -492,6 +741,31 @@ const CustomerBalancesReport = () => {
                         border: 1px solid #000000 !important;
                         padding: 5px 8px !important;
                         font-size: 11px !important;
+                    }
+                    .report-table tbody tr.customer-name-row td {
+                        background-color: #e9ecef !important;
+                        font-weight: bold;
+                        font-size: 11px !important;
+                        padding: 5px 8px !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
+                    .report-table tbody tr.customer-total-row td {
+                        background-color: #f1f3f5 !important;
+                        font-weight: bold;
+                        font-size: 10.5px !important;
+                        padding: 4px 8px !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
+                    .report-table tbody tr.invoice-item-row td {
+                        padding: 4px 8px !important;
+                        font-size: 10px !important;
+                    }
+                    .report-table tbody tr.spacer-row td {
+                        border: none !important;
+                        background-color: transparent !important;
+                        padding: 0 !important;
                     }
                     tr {
                         break-inside: avoid !important;

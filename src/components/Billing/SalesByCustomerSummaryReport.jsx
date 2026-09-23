@@ -44,10 +44,9 @@ const SalesByCustomerSummaryReport = () => {
     // Response states
     const [reportData, setReportData] = useState([]);
     const [summaryData, setSummaryData] = useState(null);
+    const [clientList, setClientList] = useState([]);
     const [loader, setLoader] = useState(false);
     const [searched, setSearched] = useState(false);
-
-    const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     const handleReset = () => {
         setStartDate(getDefaultStartDate());
@@ -64,6 +63,21 @@ const SalesByCustomerSummaryReport = () => {
 
     const handlePrint = () => {
         window.print();
+    };
+
+    const fetchClientList = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}clientlist`);
+            if (response.data && response.data.success) {
+                const list = response.data.data || [];
+                const sortedList = [...list]
+                    .filter((item) => item && item.client_name && item.client_name.trim() !== "")
+                    .sort((a, b) => (a.client_name || "").localeCompare(b.client_name || ""));
+                setClientList(sortedList);
+            }
+        } catch (error) {
+            console.error("Error fetching client list:", error);
+        }
     };
 
     // Fetch report data
@@ -134,6 +148,7 @@ const SalesByCustomerSummaryReport = () => {
 
     useEffect(() => {
         checkPermission();
+        fetchClientList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -172,8 +187,15 @@ const SalesByCustomerSummaryReport = () => {
 
     const getCustomerFilterText = () => {
         if (!customerFrom && !customerTo) return "All Customers";
-        if (customerFrom === customerTo) return customerFrom;
-        return `${customerFrom || "A"} to ${customerTo || "Z"}`;
+        const fromClient = clientList.find((c) => String(c.id) === String(customerFrom) || String(c.client_name) === String(customerFrom));
+        const toClient = clientList.find((c) => String(c.id) === String(customerTo) || String(c.client_name) === String(customerTo));
+        const fromName = fromClient ? (fromClient.client_name || fromClient.name) : customerFrom;
+        const toName = toClient ? (toClient.client_name || toClient.name) : customerTo;
+
+        if (customerFrom && customerTo && customerFrom === customerTo) {
+            return fromName;
+        }
+        return `${fromName || "Start"} to ${toName || "End"}`;
     };
 
     const getCategoryFilterText = () => {
@@ -252,11 +274,13 @@ const SalesByCustomerSummaryReport = () => {
                                             onChange={(e) => setCustomerFrom(e.target.value)}
                                         >
                                             <option value="">(From)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
-                                                </option>
-                                            ))}
+                                            {clientList &&
+                                                clientList.length > 0 &&
+                                                clientList.map((client, index) => (
+                                                    <option key={client.id || `from_${index}`} value={client.id}>
+                                                        {client.client_name}
+                                                    </option>
+                                                ))}
                                         </select>
                                         <select
                                             className="form-select form-select-sm"
@@ -264,11 +288,13 @@ const SalesByCustomerSummaryReport = () => {
                                             onChange={(e) => setCustomerTo(e.target.value)}
                                         >
                                             <option value="">(To)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
-                                                </option>
-                                            ))}
+                                            {clientList &&
+                                                clientList.length > 0 &&
+                                                clientList.map((client, index) => (
+                                                    <option key={client.id || `to_${index}`} value={client.id}>
+                                                        {client.client_name}
+                                                    </option>
+                                                ))}
                                         </select>
                                     </div>
                                 </div>
@@ -356,13 +382,14 @@ const SalesByCustomerSummaryReport = () => {
                                     <table className="report-table">
                                         <thead>
                                             <tr className="header-top-row">
-                                                <th colSpan="2" className="text-start align-bottom pb-1" style={{ width: "70%" }}>Name</th>
+                                                <th colSpan="3" className="text-start align-bottom pb-1" style={{ width: "70%" }}>Name</th>
                                                 <th rowSpan="2" className="text-end align-bottom pb-2" style={{ width: "12%" }}>Qty</th>
                                                 <th rowSpan="2" className="text-end align-bottom pb-2" style={{ width: "18%" }}>Total Selling</th>
                                             </tr>
                                             <tr className="header-bottom-row">
                                                 <th className="text-start pt-1 pb-2" style={{ width: "12%" }}>Date</th>
                                                 <th className="text-start pt-1 pb-2" style={{ width: "15%" }}>Reference</th>
+                                                <th className="text-start pt-1 pb-2" style={{ width: "43%" }}>Country</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -372,7 +399,7 @@ const SalesByCustomerSummaryReport = () => {
                                                         <React.Fragment key={customerIndex}>
                                                             {/* Customer Header Row */}
                                                             <tr className="customer-name-row">
-                                                                <td colSpan="4" className="text-start">
+                                                                <td colSpan="5" className="text-start">
                                                                     {customerGroup.customer || "Unknown Customer"}
                                                                 </td>
                                                             </tr>
@@ -386,6 +413,9 @@ const SalesByCustomerSummaryReport = () => {
                                                                         <td className="text-start">
                                                                             {invoice.reference || "-"}
                                                                         </td>
+                                                                        <td className="text-start">
+                                                                            {invoice.invoice_for_country || invoice.country || customerGroup.invoice_for_country || customerGroup.country || "-"}
+                                                                        </td>
                                                                         <td className="text-end">
                                                                             {parseFloat(invoice.qty || 0).toFixed(4)}
                                                                         </td>
@@ -396,34 +426,34 @@ const SalesByCustomerSummaryReport = () => {
                                                                 ))
                                                             ) : (
                                                                 <tr>
-                                                                    <td colSpan="4" className="text-center text-muted py-2">
+                                                                    <td colSpan="5" className="text-center text-muted py-2">
                                                                         No sales records for this customer.
                                                                     </td>
                                                                 </tr>
                                                             )}
                                                             {/* Customer Sub-total */}
                                                             <tr className="customer-total-row">
-                                                                <td colSpan="2" className="text-start ps-3">Total for Customer:  {customerGroup.customer}</td>
+                                                                <td colSpan="3" className="text-start ps-3">Total for Customer:  {customerGroup.customer}</td>
                                                                 <td className="text-end">{(parseFloat(customerGroup.customer_total_qty) || 0).toFixed(4)}</td>
                                                                 <td className="text-end">{formatCurrency(customerGroup.customer_total_selling, getCurrencySymbol(customerGroup.final_base_currency || customerGroup.invoices?.[0]?.final_base_currency || customerGroup.invoices?.[0]?.currency))}</td>
                                                             </tr>
                                                             {/* Spacer Row between customers */}
                                                             <tr className="spacer-row" style={{ height: "20px" }}>
-                                                                <td colSpan="4"></td>
+                                                                <td colSpan="5"></td>
                                                             </tr>
                                                         </React.Fragment>
                                                     );
                                                 })
                                             ) : (
                                                 <tr>
-                                                    <td colSpan="4" className="text-center text-muted py-4">
+                                                    <td colSpan="5" className="text-center text-muted py-4">
                                                         No data available for the selected filters.
                                                     </td>
                                                 </tr>
                                             )}
                                             {reportData.length > 0 && summaryData && (
                                                 <tr className="grand-total-row">
-                                                    <td colSpan="2" className="text-start ps-3">Grand Total:</td>
+                                                    <td colSpan="3" className="text-start ps-3">Grand Total:</td>
                                                     <td className="text-end">{(parseFloat(summaryData.grand_total_qty) || 0).toFixed(4)}</td>
                                                     <td className="text-end">{formatCurrency(summaryData.grand_total_selling, getCurrencySymbol(summaryData.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.invoices?.[0]?.final_base_currency || reportData?.[0]?.invoices?.[0]?.currency))}</td>
                                                 </tr>

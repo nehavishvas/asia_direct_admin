@@ -35,8 +35,8 @@ const SalesByItemReport = () => {
     // Filter States
     const [startDate, setStartDate] = useState(getDefaultStartDate());
     const [endDate, setEndDate] = useState(getDefaultEndDate());
-    const [itemFrom, setItemFrom] = useState("");
-    const [itemTo, setItemTo] = useState("");
+    const [customerFrom, setCustomerFrom] = useState("");
+    const [customerTo, setCustomerTo] = useState("");
     const [categoryFrom, setCategoryFrom] = useState("");
     const [categoryTo, setCategoryTo] = useState("");
     const [itemType, setItemType] = useState("Both"); // Both, Physical, Service
@@ -47,16 +47,15 @@ const SalesByItemReport = () => {
     // Response states
     const [reportData, setReportData] = useState([]);
     const [grandTotal, setGrandTotal] = useState(null);
+    const [clientList, setClientList] = useState([]);
     const [loader, setLoader] = useState(false);
     const [searched, setSearched] = useState(false);
-
-    const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     const handleReset = () => {
         setStartDate(getDefaultStartDate());
         setEndDate(getDefaultEndDate());
-        setItemFrom("");
-        setItemTo("");
+        setCustomerFrom("");
+        setCustomerTo("");
         setCategoryFrom("");
         setCategoryTo("");
         setItemType("Both");
@@ -72,6 +71,21 @@ const SalesByItemReport = () => {
         window.print();
     };
 
+    const fetchClientList = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}clientlist`);
+            if (response.data && response.data.success) {
+                const list = response.data.data || [];
+                const sortedList = [...list]
+                    .filter((item) => item && item.client_name && item.client_name.trim() !== "")
+                    .sort((a, b) => (a.client_name || "").localeCompare(b.client_name || ""));
+                setClientList(sortedList);
+            }
+        } catch (error) {
+            console.error("Error fetching client list:", error);
+        }
+    };
+
     // Fetch report data
     const fetchReportData = async (e) => {
         if (e) e.preventDefault();
@@ -81,8 +95,10 @@ const SalesByItemReport = () => {
             const payload = {
                 start_date: startDate || null,
                 end_date: endDate || null,
-                item_from: itemFrom || null,
-                item_to: itemTo || null,
+                customer_from: customerFrom || null,
+                customer_to: customerTo || null,
+                item_from: customerFrom || null,
+                item_to: customerTo || null,
                 category_from: categoryFrom || null,
                 category_to: categoryTo || null,
                 item_type: itemType,
@@ -143,6 +159,7 @@ const SalesByItemReport = () => {
 
     useEffect(() => {
         checkPermission();
+        fetchClientList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -180,10 +197,17 @@ const SalesByItemReport = () => {
         return `${dd}/${mm}/${yyyy}`;
     };
 
-    const getItemFilterText = () => {
-        if (!itemFrom && !itemTo) return "All Items";
-        if (itemFrom === itemTo) return itemFrom;
-        return `${itemFrom || "A"} to ${itemTo || "Z"}`;
+    const getCustomerFilterText = () => {
+        if (!customerFrom && !customerTo) return "All Customers";
+        const fromClient = clientList.find((c) => String(c.id) === String(customerFrom) || String(c.client_name) === String(customerFrom));
+        const toClient = clientList.find((c) => String(c.id) === String(customerTo) || String(c.client_name) === String(customerTo));
+        const fromName = fromClient ? (fromClient.client_name || fromClient.name) : customerFrom;
+        const toName = toClient ? (toClient.client_name || toClient.name) : customerTo;
+
+        if (customerFrom && customerTo && customerFrom === customerTo) {
+            return fromName;
+        }
+        return `${fromName || "Start"} to ${toName || "End"}`;
     };
 
     const getCategoryFilterText = () => {
@@ -234,125 +258,133 @@ const SalesByItemReport = () => {
                     {/* Filter Card */}
                     <div className="card shadow-sm border-0 mb-4 bg-light">
                         <div className="card-body">
-                            <form onSubmit={fetchReportData} className="row g-2 justify-content-center align-items-end">
-                                <div className="col-lg-4 col-md-4 col-sm-6">
-                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Date Range</label>
-                                    <div className="d-flex gap-1">
-                                        <input
-                                            type="date"
-                                            className="form-control form-control-sm"
-                                            value={startDate}
-                                            onChange={(e) => setStartDate(e.target.value)}
-                                        />
-                                        <input
-                                            type="date"
-                                            className="form-control form-control-sm"
-                                            value={endDate}
-                                            onChange={(e) => setEndDate(e.target.value)}
-                                        />
+                            <form onSubmit={fetchReportData}>
+                                <div className="row g-2 justify-content-center align-items-end mb-2">
+                                    <div className="col-lg-4 col-md-6 col-sm-12">
+                                        <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Date Range</label>
+                                        <div className="d-flex gap-1">
+                                            <input
+                                                type="date"
+                                                className="form-control form-control-sm w-50"
+                                                value={startDate}
+                                                onChange={(e) => setStartDate(e.target.value)}
+                                            />
+                                            <input
+                                                type="date"
+                                                className="form-control form-control-sm w-50"
+                                                value={endDate}
+                                                onChange={(e) => setEndDate(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="col-lg-4 col-md-6 col-sm-12">
+                                        <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Customer</label>
+                                        <div className="d-flex gap-1">
+                                            <select
+                                                className="form-select form-select-sm"
+                                                value={customerFrom}
+                                                onChange={(e) => setCustomerFrom(e.target.value)}
+                                            >
+                                                <option value="">(From)</option>
+                                                {clientList &&
+                                                    clientList.length > 0 &&
+                                                    clientList.map((client, index) => (
+                                                        <option key={client.id || `from_${index}`} value={client.id}>
+                                                            {client.client_name}
+                                                        </option>
+                                                    ))}
+                                            </select>
+                                            <select
+                                                className="form-select form-select-sm"
+                                                value={customerTo}
+                                                onChange={(e) => setCustomerTo(e.target.value)}
+                                            >
+                                                <option value="">(To)</option>
+                                                {clientList &&
+                                                    clientList.length > 0 &&
+                                                    clientList.map((client, index) => (
+                                                        <option key={client.id || `to_${index}`} value={client.id}>
+                                                            {client.client_name}
+                                                        </option>
+                                                    ))}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="col-lg-4 col-md-6 col-sm-12">
+                                        <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Category</label>
+                                        <div className="d-flex gap-1">
+                                            <select
+                                                className="form-select form-select-sm"
+                                                value={categoryFrom}
+                                                onChange={(e) => setCategoryFrom(e.target.value)}
+                                            >
+                                                <option value="">(From)</option>
+                                                <option value="South Africa">South Africa</option>
+                                                <option value="Zambia">Zambia</option>
+                                                <option value="Zimbabwe">Zimbabwe</option>
+                                            </select>
+                                            <select
+                                                className="form-select form-select-sm"
+                                                value={categoryTo}
+                                                onChange={(e) => setCategoryTo(e.target.value)}
+                                            >
+                                                <option value="">(To)</option>
+                                                <option value="South Africa">South Africa</option>
+                                                <option value="Zambia">Zambia</option>
+                                                <option value="Zimbabwe">Zimbabwe</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="col-lg-2 col-md-4 col-sm-6">
-                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Item</label>
-                                    <div className="d-flex gap-1">
+                                <div className="row g-2 justify-content-center align-items-end">
+                                    <div className="col-lg-3 col-md-3 col-sm-6">
+                                        <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Item Type</label>
                                         <select
                                             className="form-select form-select-sm"
-                                            value={itemFrom}
-                                            onChange={(e) => setItemFrom(e.target.value)}
+                                            value={itemType}
+                                            onChange={(e) => setItemType(e.target.value)}
                                         >
-                                            <option value="">(From)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <select
-                                            className="form-select form-select-sm"
-                                            value={itemTo}
-                                            onChange={(e) => setItemTo(e.target.value)}
-                                        >
-                                            <option value="">(To)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
-                                                </option>
-                                            ))}
+                                            <option value="Both">Both</option>
+                                            <option value="Physical">Physical</option>
+                                            <option value="Service">Service</option>
                                         </select>
                                     </div>
-                                </div>
 
-                                <div className="col-lg-2 col-md-4 col-sm-6">
-                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Category</label>
-                                    <div className="d-flex gap-1">
+                                    <div className="col-lg-3 col-md-3 col-sm-6">
+                                        <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Style</label>
                                         <select
                                             className="form-select form-select-sm"
-                                            value={categoryFrom}
-                                            onChange={(e) => setCategoryFrom(e.target.value)}
+                                            value={style}
+                                            onChange={(e) => setStyle(e.target.value)}
                                         >
-                                            <option value="">(From)</option>
-                                            <option value="South Africa">South Africa</option>
-                                            <option value="Zambia">Zambia</option>
-                                            <option value="Zimbabwe">Zimbabwe</option>
-                                        </select>
-                                        <select
-                                            className="form-select form-select-sm"
-                                            value={categoryTo}
-                                            onChange={(e) => setCategoryTo(e.target.value)}
-                                        >
-                                            <option value="">(To)</option>
-                                            <option value="South Africa">South Africa</option>
-                                            <option value="Zambia">Zambia</option>
-                                            <option value="Zimbabwe">Zimbabwe</option>
+                                            <option value="Detailed">Detailed</option>
+                                            <option value="Summary">Summary</option>
                                         </select>
                                     </div>
-                                </div>
 
-                                <div className="col-lg-1 col-md-2 col-sm-4">
-                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Item Type</label>
-                                    <select
-                                        className="form-select form-select-sm"
-                                        value={itemType}
-                                        onChange={(e) => setItemType(e.target.value)}
-                                    >
-                                        <option value="Both">Both</option>
-                                        <option value="Physical">Physical</option>
-                                        <option value="Service">Service</option>
-                                    </select>
-                                </div>
+                                    <div className="col-lg-3 col-md-3 col-sm-6">
+                                        <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Cost</label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={cost}
+                                            onChange={(e) => setCost(e.target.value)}
+                                        >
+                                            <option value="Average">Average</option>
+                                            <option value="Last">Last</option>
+                                        </select>
+                                    </div>
 
-                                <div className="col-lg-1 col-md-2 col-sm-4">
-                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Style</label>
-                                    <select
-                                        className="form-select form-select-sm"
-                                        value={style}
-                                        onChange={(e) => setStyle(e.target.value)}
-                                    >
-                                        <option value="Detailed">Detailed</option>
-                                        <option value="Summary">Summary</option>
-                                    </select>
-                                </div>
-
-                                <div className="col-lg-1 col-md-2 col-sm-4">
-                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Cost</label>
-                                    <select
-                                        className="form-select form-select-sm"
-                                        value={cost}
-                                        onChange={(e) => setCost(e.target.value)}
-                                    >
-                                        <option value="Average">Average</option>
-                                        <option value="Last">Last</option>
-                                    </select>
-                                </div>
-
-                                <div className="col-lg-2 col-md-4 col-sm-6 d-flex align-items-center justify-content-end gap-1">
-                                    <button type="submit" className="btn btn-primary blueBtn btn-sm">
-                                        View
-                                    </button>
-                                    <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleReset}>
-                                        Reset
-                                    </button>
+                                    <div className="col-lg-3 col-md-3 col-sm-6 d-flex gap-2">
+                                        <button type="submit" className="btn btn-primary blueBtn btn-sm w-50">
+                                            View
+                                        </button>
+                                        <button type="button" className="btn btn-outline-secondary btn-sm w-50" onClick={handleReset}>
+                                            Reset
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -380,8 +412,8 @@ const SalesByItemReport = () => {
                                         <div className="row">
                                             <div className="col-md-6">
                                                 <div className="d-flex mb-1">
-                                                    <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Item Range:</span>
-                                                    <span className="text-secondary">{getItemFilterText()}</span>
+                                                    <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Customer:</span>
+                                                    <span className="text-secondary">{getCustomerFilterText()}</span>
                                                 </div>
                                                 <div className="d-flex mb-1">
                                                     <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Category:</span>
@@ -416,7 +448,7 @@ const SalesByItemReport = () => {
                                         <table className="report-table">
                                             <thead>
                                                 <tr className="header-top-row">
-                                                    <th colSpan="3" className="text-start align-bottom pb-1" style={{ width: "50%" }}>Name</th>
+                                                    <th colSpan="4" className="text-start align-bottom pb-1" style={{ width: "45%" }}>Name</th>
                                                     <th rowSpan="2" className="text-end align-bottom pb-2" style={{ width: "8%" }}>Qty</th>
                                                     <th rowSpan="2" className="text-end align-bottom pb-2" style={{ width: "10%" }}>Cost</th>
                                                     <th rowSpan="2" className="text-end align-bottom pb-2" style={{ width: "11%" }}>Selling</th>
@@ -426,7 +458,8 @@ const SalesByItemReport = () => {
                                                 <tr className="header-bottom-row">
                                                     <th className="text-start pt-1 pb-2" style={{ width: "10%" }}>Date</th>
                                                     <th className="text-start pt-1 pb-2" style={{ width: "12%" }}>Document No</th>
-                                                    <th className="text-start pt-1 pb-2" style={{ width: "28%" }}>Customer</th>
+                                                    <th className="text-start pt-1 pb-2" style={{ width: "13%" }}>Customer</th>
+                                                    <th className="text-start pt-1 pb-2" style={{ width: "10%" }}>Country</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -437,7 +470,7 @@ const SalesByItemReport = () => {
                                                             <React.Fragment key={itemIndex}>
                                                                 {/* Item Header Row */}
                                                                 <tr className="customer-name-row">
-                                                                    <td colSpan="8" className="text-start">
+                                                                    <td colSpan="9" className="text-start">
                                                                         {itemGroup.item_name || "Unnamed Item"}
                                                                     </td>
                                                                 </tr>
@@ -453,6 +486,9 @@ const SalesByItemReport = () => {
                                                                             </td>
                                                                             <td className="text-start">
                                                                                 {row.customer || "-"}
+                                                                            </td>
+                                                                            <td className="text-start">
+                                                                                {row.invoice_for_country || row.country || "-"}
                                                                             </td>
                                                                             <td className="text-end">
                                                                                 {parseFloat(row.qty || 0).toFixed(4)}
@@ -473,7 +509,7 @@ const SalesByItemReport = () => {
                                                                     ))
                                                                 ) : (
                                                                     <tr>
-                                                                        <td colSpan="8" className="text-center text-muted py-2">
+                                                                        <td colSpan="9" className="text-center text-muted py-2">
                                                                             No sales records for this item.
                                                                         </td>
                                                                     </tr>
@@ -481,14 +517,14 @@ const SalesByItemReport = () => {
 
                                                                 {/* Spacer Row between items */}
                                                                 <tr className="spacer-row" style={{ height: "20px" }}>
-                                                                    <td colSpan="8"></td>
+                                                                    <td colSpan="9"></td>
                                                                 </tr>
                                                             </React.Fragment>
                                                         );
                                                     })
                                                 ) : (
                                                     <tr>
-                                                        <td colSpan="8" className="text-center text-muted py-4">
+                                                        <td colSpan="9" className="text-center text-muted py-4">
                                                             No data available for the selected filters.
                                                         </td>
                                                     </tr>
@@ -500,11 +536,12 @@ const SalesByItemReport = () => {
                                         <table className="report-table">
                                             <thead>
                                                 <tr className="header-top-row header-bottom-row">
-                                                    <th className="text-start py-2" style={{ width: "40%" }}>Item Name</th>
+                                                    <th className="text-start py-2" style={{ width: "30%" }}>Item Name</th>
+                                                    <th className="text-start py-2" style={{ width: "15%" }}>Country</th>
                                                     <th className="text-end py-2" style={{ width: "10%" }}>Total Qty</th>
-                                                    <th className="text-end py-2" style={{ width: "12%" }}>Total Cost</th>
-                                                    <th className="text-end py-2" style={{ width: "13%" }}>Total Sales</th>
-                                                    <th className="text-end py-2" style={{ width: "15%" }}>Total GP Amount</th>
+                                                    <th className="text-end py-2" style={{ width: "11%" }}>Total Cost</th>
+                                                    <th className="text-end py-2" style={{ width: "11%" }}>Total Sales</th>
+                                                    <th className="text-end py-2" style={{ width: "13%" }}>Total GP Amount</th>
                                                     <th className="text-end py-2" style={{ width: "10%" }}>GP %</th>
                                                 </tr>
                                             </thead>
@@ -512,9 +549,11 @@ const SalesByItemReport = () => {
                                                 {reportData.length > 0 ? (
                                                     reportData.map((itemGroup, itemIndex) => {
                                                         const totalInfo = itemGroup.total || {};
+                                                        const country = itemGroup.invoice_for_country || itemGroup.country || itemGroup.rows?.[0]?.invoice_for_country || itemGroup.rows?.[0]?.country || "-";
                                                         return (
                                                             <tr key={itemIndex} className="invoice-item-row">
                                                                 <td className="text-start py-2">{itemGroup.item_name || "Unnamed Item"}</td>
+                                                                <td className="text-start py-2">{country}</td>
                                                                 <td className="text-end py-2">{(parseFloat(totalInfo.qty) || 0).toFixed(4)}</td>
                                                                 <td className="text-end py-2">{formatCurrency(totalInfo.total_cost, totalInfo.final_base_currency || itemGroup.final_base_currency || itemGroup.rows?.[0]?.final_base_currency)}</td>
                                                                 <td className="text-end py-2">{formatCurrency(totalInfo.total_selling, totalInfo.final_base_currency || itemGroup.final_base_currency || itemGroup.rows?.[0]?.final_base_currency)}</td>
@@ -525,7 +564,7 @@ const SalesByItemReport = () => {
                                                     })
                                                 ) : (
                                                     <tr>
-                                                        <td colSpan="6" className="text-center text-muted py-4">
+                                                        <td colSpan="7" className="text-center text-muted py-4">
                                                             No data available for the selected filters.
                                                         </td>
                                                     </tr>

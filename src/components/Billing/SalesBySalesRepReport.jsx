@@ -43,10 +43,9 @@ const SalesBySalesRepReport = () => {
     // Response states
     const [reportData, setReportData] = useState([]);
     const [grandTotal, setGrandTotal] = useState(null);
+    const [staffList, setStaffList] = useState([]);
     const [loader, setLoader] = useState(false);
     const [searched, setSearched] = useState(false);
-
-    const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     const handleReset = () => {
         setStartDate(getDefaultStartDate());
@@ -62,6 +61,21 @@ const SalesBySalesRepReport = () => {
 
     const handlePrint = () => {
         window.print();
+    };
+
+    const fetchStaffList = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}staff-list`);
+            if (response.data && response.data.success) {
+                const list = response.data.data || [];
+                const sortedList = [...list]
+                    .filter((item) => item && (item.full_name || item.staff_name) && (item.full_name || item.staff_name).trim() !== "")
+                    .sort((a, b) => ((a.full_name || a.staff_name) || "").localeCompare((b.full_name || b.staff_name) || ""));
+                setStaffList(sortedList);
+            }
+        } catch (error) {
+            console.error("Error fetching staff list:", error);
+        }
     };
 
     // Fetch report data
@@ -131,6 +145,7 @@ const SalesBySalesRepReport = () => {
 
     useEffect(() => {
         checkPermission();
+        fetchStaffList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -169,8 +184,15 @@ const SalesBySalesRepReport = () => {
 
     const getSalesRepFilterText = () => {
         if (!salesRepFrom && !salesRepTo) return "All Sales Reps";
-        if (salesRepFrom === salesRepTo) return salesRepFrom;
-        return `${salesRepFrom || "A"} to ${salesRepTo || "Z"}`;
+        const fromStaff = staffList.find((s) => String(s.id) === String(salesRepFrom));
+        const toStaff = staffList.find((s) => String(s.id) === String(salesRepTo));
+        const fromName = fromStaff ? (fromStaff.full_name || fromStaff.staff_name) : salesRepFrom;
+        const toName = toStaff ? (toStaff.full_name || toStaff.staff_name) : salesRepTo;
+
+        if (salesRepFrom && salesRepTo && salesRepFrom === salesRepTo) {
+            return fromName;
+        }
+        return `${fromName || "Start"} to ${toName || "End"}`;
     };
 
     const getDateRangeText = () => {
@@ -243,11 +265,13 @@ const SalesBySalesRepReport = () => {
                                             onChange={(e) => setSalesRepFrom(e.target.value)}
                                         >
                                             <option value="">(From)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
-                                                </option>
-                                            ))}
+                                            {staffList &&
+                                                staffList.length > 0 &&
+                                                staffList.map((staff, index) => (
+                                                    <option key={staff.id || `from_${index}`} value={staff.id}>
+                                                        {staff.full_name || staff.staff_name}
+                                                    </option>
+                                                ))}
                                         </select>
                                         <select
                                             className="form-select form-select-sm"
@@ -255,11 +279,13 @@ const SalesBySalesRepReport = () => {
                                             onChange={(e) => setSalesRepTo(e.target.value)}
                                         >
                                             <option value="">(To)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
-                                                </option>
-                                            ))}
+                                            {staffList &&
+                                                staffList.length > 0 &&
+                                                staffList.map((staff, index) => (
+                                                    <option key={staff.id || `to_${index}`} value={staff.id}>
+                                                        {staff.full_name || staff.staff_name}
+                                                    </option>
+                                                ))}
                                         </select>
                                     </div>
                                 </div>

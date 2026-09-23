@@ -32,12 +32,11 @@ const WarehouseDaysOutstandingReport = () => {
     const [metric, setMetric] = useState(location.state?.metric || "packages");
 
     const [countries, setCountries] = useState([]);
+    const [clientList, setClientList] = useState([]);
     const [reportData, setReportData] = useState([]);
     const [totals, setTotals] = useState(null);
     const [loader, setLoader] = useState(false);
     const [searched, setSearched] = useState(false);
-
-    const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     // Fetch countries for origin and destination dropdowns
     const fetchCountries = async () => {
@@ -48,6 +47,22 @@ const WarehouseDaysOutstandingReport = () => {
             }
         } catch (error) {
             console.error("Error fetching countries:", error);
+        }
+    };
+
+    // Fetch client list for customer dropdowns
+    const fetchClientList = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}clientlist`);
+            if (response.data && response.data.success) {
+                const list = response.data.data || [];
+                const sortedList = [...list]
+                    .filter((item) => item && item.client_name && item.client_name.trim() !== "")
+                    .sort((a, b) => (a.client_name || "").localeCompare(b.client_name || ""));
+                setClientList(sortedList);
+            }
+        } catch (error) {
+            console.error("Error fetching client list:", error);
         }
     };
 
@@ -84,6 +99,7 @@ const WarehouseDaysOutstandingReport = () => {
 
     useEffect(() => {
         fetchCountries();
+        fetchClientList();
         checkPermission();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -173,8 +189,15 @@ const WarehouseDaysOutstandingReport = () => {
 
     const getCustomerFilterText = () => {
         if (!customerFrom && !customerTo) return "All Customers";
-        if (customerFrom === customerTo) return customerFrom;
-        return `${customerFrom || "A"} to ${customerTo || "Z"}`;
+        const fromClient = clientList.find((c) => String(c.id) === String(customerFrom) || String(c.client_name) === String(customerFrom));
+        const toClient = clientList.find((c) => String(c.id) === String(customerTo) || String(c.client_name) === String(customerTo));
+        const fromName = fromClient ? (fromClient.client_name || fromClient.name) : customerFrom;
+        const toName = toClient ? (toClient.client_name || toClient.name) : customerTo;
+
+        if (customerFrom && customerTo && customerFrom === customerTo) {
+            return fromName;
+        }
+        return `${fromName || "Start"} to ${toName || "End"}`;
     };
 
     return (
@@ -252,9 +275,9 @@ const WarehouseDaysOutstandingReport = () => {
                                                 onChange={(e) => setCustomerFrom(e.target.value)}
                                             >
                                                 <option value="">(From)</option>
-                                                {alphabet.map((letter) => (
-                                                    <option key={letter} value={letter}>
-                                                        {letter}
+                                                {clientList.map((client, index) => (
+                                                    <option key={client.id || index} value={client.client_name}>
+                                                        {client.client_name}
                                                     </option>
                                                 ))}
                                             </select>
@@ -264,9 +287,9 @@ const WarehouseDaysOutstandingReport = () => {
                                                 onChange={(e) => setCustomerTo(e.target.value)}
                                             >
                                                 <option value="">(To)</option>
-                                                {alphabet.map((letter) => (
-                                                    <option key={letter} value={letter}>
-                                                        {letter}
+                                                {clientList.map((client, index) => (
+                                                    <option key={client.id || index} value={client.client_name}>
+                                                        {client.client_name}
                                                     </option>
                                                 ))}
                                             </select>
@@ -404,7 +427,7 @@ const WarehouseDaysOutstandingReport = () => {
                                             <table className="table report-table">
                                                 <thead>
                                                     <tr>
-                                                        <th className="text-center" style={{ width: "90px" }}>Client ID</th>
+                                                        {/* <th className="text-center" style={{ width: "90px" }}>Client ID</th> */}
                                                         <th className="text-start">Customer Name</th>
                                                         <th className="text-end" style={{ width: "110px" }}>Total Orders</th>
                                                         <th className="text-end" style={{ width: "100px" }}>120+ Days</th>
@@ -418,7 +441,7 @@ const WarehouseDaysOutstandingReport = () => {
                                                 <tbody>
                                                     {reportData.map((item, index) => (
                                                         <tr key={index}>
-                                                            <td className="text-center">{item.client_id ?? "-"}</td>
+                                                            {/* <td className="text-center">{item.client_id ?? "-"}</td> */}
                                                             <td className="text-start">
                                                                 {(item.customer_name || "").trim() || "Unknown Customer"}
                                                             </td>

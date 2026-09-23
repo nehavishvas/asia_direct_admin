@@ -53,10 +53,10 @@ const CustomerQuotesReport = () => {
     });
 
     const [loader, setLoader] = useState(false);
+    const [clientList, setClientList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
     const limit = 10000;
-    const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
 
     // Fetch report data
@@ -146,8 +146,25 @@ const CustomerQuotesReport = () => {
         }
     };
 
+    const fetchClientList = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}clientlist`);
+            if (response.data && response.data.success) {
+                const list = response.data.data || [];
+                const sortedList = [...list]
+                    .filter((item) => item && item.client_name && item.client_name.trim() !== "")
+                    .sort((a, b) => (a.client_name || "").localeCompare(b.client_name || ""));
+                setClientList(sortedList);
+            }
+        } catch (error) {
+            console.error("Error fetching client list:", error);
+        }
+    };
+
     useEffect(() => {
         checkPermission();
+        fetchClientList();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSearch = (e) => {
@@ -207,8 +224,15 @@ const CustomerQuotesReport = () => {
     // Resolve current selected filter text
     const getCustomerFilterText = () => {
         if (!customerFrom && !customerTo) return "All Customers";
-        if (customerFrom === customerTo) return customerFrom;
-        return `${customerFrom || "A"} to ${customerTo || "Z"}`;
+        const fromClient = clientList.find((c) => String(c.id) === String(customerFrom) || String(c.client_name) === String(customerFrom));
+        const toClient = clientList.find((c) => String(c.id) === String(customerTo) || String(c.client_name) === String(customerTo));
+        const fromName = fromClient ? (fromClient.client_name || fromClient.name) : customerFrom;
+        const toName = toClient ? (toClient.client_name || toClient.name) : customerTo;
+
+        if (customerFrom && customerTo && customerFrom === customerTo) {
+            return fromName;
+        }
+        return `${fromName || "Start"} to ${toName || "End"}`;
     };
 
     const getCategoryFilterText = () => {
@@ -286,9 +310,9 @@ const CustomerQuotesReport = () => {
                                             onChange={(e) => setCustomerFrom(e.target.value)}
                                         >
                                             <option value="">(From)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
+                                            {clientList.map((client, index) => (
+                                                <option key={client.id || index} value={client.id}>
+                                                    {client.client_name}
                                                 </option>
                                             ))}
                                         </select>
@@ -298,9 +322,9 @@ const CustomerQuotesReport = () => {
                                             onChange={(e) => setCustomerTo(e.target.value)}
                                         >
                                             <option value="">(To)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
+                                            {clientList.map((client, index) => (
+                                                <option key={client.id || index} value={client.id}>
+                                                    {client.client_name}
                                                 </option>
                                             ))}
                                         </select>
@@ -333,7 +357,7 @@ const CustomerQuotesReport = () => {
                                     </div>
                                 </div>
 
-                                <div className="col-lg-2 col-md-4 col-sm-6">
+                                <div className="col-lg-1 col-md-4 col-sm-6">
                                     <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Invoice Status</label>
                                     <select
                                         className="form-select form-select-sm"

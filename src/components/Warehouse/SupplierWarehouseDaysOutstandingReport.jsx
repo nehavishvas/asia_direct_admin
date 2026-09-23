@@ -234,7 +234,7 @@ const SupplierWarehouseDaysOutstandingReport = () => {
                                                 <option value="">(From)</option>
                                                 {suppliers &&
                                                     suppliers.map((item) => (
-                                                        <option key={item.id} value={item.name}>
+                                                        <option key={item.id} value={item.id}>
                                                             {item.name}
                                                         </option>
                                                     ))}
@@ -247,7 +247,7 @@ const SupplierWarehouseDaysOutstandingReport = () => {
                                                 <option value="">(To)</option>
                                                 {suppliers &&
                                                     suppliers.map((item) => (
-                                                        <option key={item.id} value={item.name}>
+                                                        <option key={item.id} value={item.id}>
                                                             {item.name}
                                                         </option>
                                                     ))}

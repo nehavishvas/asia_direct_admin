@@ -29,16 +29,14 @@ const SupplierBalancesReport = () => {
     const [categoryFrom, setCategoryFrom] = useState(location.state?.categoryFrom || "");
     const [categoryTo, setCategoryTo] = useState(location.state?.categoryTo || "");
     const [status, setStatus] = useState(location.state?.status || "Both"); // Both, Active, Inactive
-    const [style, setStyle] = useState(location.state?.style || "Summary"); // Detailed, Summary
     const [excludeZeroBalance, setExcludeZeroBalance] = useState(location.state?.excludeZeroBalance || false);
     const [useForeignCurrency, setUseForeignCurrency] = useState(location.state?.useForeignCurrency || true);
 
     const [reportData, setReportData] = useState([]);
     const [summary, setSummary] = useState(null);
+    const [supplierList, setSupplierList] = useState([]);
     const [loader, setLoader] = useState(false);
     const [searched, setSearched] = useState(false);
-
-    const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     const checkPermission = async () => {
         try {
@@ -71,8 +69,24 @@ const SupplierBalancesReport = () => {
         }
     };
 
+    const fetchSupplierList = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}supplier-list`);
+            if (response.data && response.data.success) {
+                const list = response.data.data || [];
+                const sortedList = [...list]
+                    .filter((item) => item && item.name && item.name.trim() !== "")
+                    .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+                setSupplierList(sortedList);
+            }
+        } catch (error) {
+            console.error("Error fetching supplier list:", error);
+        }
+    };
+
     useEffect(() => {
         checkPermission();
+        fetchSupplierList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -89,7 +103,6 @@ const SupplierBalancesReport = () => {
                 category_from: categoryFrom || null,
                 category_to: categoryTo || null,
                 status: status,
-                style: style,
                 exclude_zero_balance: excludeZeroBalance,
                 use_foreign_currency: useForeignCurrency
             };
@@ -124,7 +137,6 @@ const SupplierBalancesReport = () => {
         setCategoryFrom("");
         setCategoryTo("");
         setStatus("Both");
-        setStyle("Summary");
         setExcludeZeroBalance(false);
         setUseForeignCurrency(true);
         setReportData([]);
@@ -144,12 +156,12 @@ const SupplierBalancesReport = () => {
         if (val === "kwacha" || val === "mwk" || val === "k") return "K";
         if (val === "euro" || val === "eur") return "€";
         if (val === "inr") return "₹";
-        
+
         // Fallback: check if supplier name string contains currency indicators
         if (val.includes("usd")) return "$";
         if (val.includes("rand") || val.includes("zar")) return "R";
         if (val.includes("kwacha") || val.includes("mwk")) return "K";
-        
+
         return currencyOrSupplier.length <= 3 ? currencyOrSupplier : "R";
     };
 
@@ -175,8 +187,15 @@ const SupplierBalancesReport = () => {
 
     const getSupplierFilterText = () => {
         if (!supplierFrom && !supplierTo) return "All Suppliers";
-        if (supplierFrom === supplierTo) return supplierFrom;
-        return `${supplierFrom || "A"} to ${supplierTo || "Z"}`;
+        const fromSup = supplierList.find((s) => String(s.id) === String(supplierFrom) || String(s.name) === String(supplierFrom));
+        const toSup = supplierList.find((s) => String(s.id) === String(supplierTo) || String(s.name) === String(supplierTo));
+        const fromName = fromSup ? (fromSup.name || fromSup.supplier_name) : supplierFrom;
+        const toName = toSup ? (toSup.name || toSup.supplier_name) : supplierTo;
+
+        if (supplierFrom && supplierTo && supplierFrom === supplierTo) {
+            return fromName;
+        }
+        return `${fromName || "Start"} to ${toName || "End"}`;
     };
 
     const getCategoryFilterText = () => {
@@ -208,90 +227,90 @@ const SupplierBalancesReport = () => {
                 </div>
             ) : (
                 <>
-            <div className="wpWrapper report-wrapper">
-                <div className="container-fluid no-print">
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                        <button className="btn btn-secondary d-flex align-items-center gap-2" onClick={() => navigate(-1)}>
-                            <ArrowBackIcon /> Back
-                        </button>
-                        {searched && reportData.length > 0 && (
-                            <button className="btn btn-primary d-flex align-items-center gap-2 blueBtn" onClick={handlePrint}>
-                                <PrintIcon /> Print Report
-                            </button>
-                        )}
-                    </div>
+                    <div className="wpWrapper report-wrapper">
+                        <div className="container-fluid no-print">
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                <button className="btn btn-secondary d-flex align-items-center gap-2" onClick={() => navigate(-1)}>
+                                    <ArrowBackIcon /> Back
+                                </button>
+                                {searched && reportData.length > 0 && (
+                                    <button className="btn btn-primary d-flex align-items-center gap-2 blueBtn" onClick={handlePrint}>
+                                        <PrintIcon /> Print Report
+                                    </button>
+                                )}
+                            </div>
 
-                    {/* Filter Card */}
-                    <div className="card shadow-sm border-0 mb-4 bg-light">
-                        <div className="card-body">
-                            <form onSubmit={fetchReportData} className="row g-2 justify-content-center align-items-end">
-                                <div className="col-lg-2 col-md-3 col-sm-6">
-                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Run At Date</label>
-                                    <input
-                                        type="date"
-                                        className="form-control form-control-sm"
-                                        value={runDate}
-                                        onChange={(e) => setRunDate(e.target.value)}
-                                    />
-                                </div>
+                            {/* Filter Card */}
+                            <div className="card shadow-sm border-0 mb-4 bg-light">
+                                <div className="card-body">
+                                    <form onSubmit={fetchReportData} className="row g-2 justify-content-center align-items-end">
+                                        <div className="col-lg-2 col-md-3 col-sm-6">
+                                            <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Run At Date</label>
+                                            <input
+                                                type="date"
+                                                className="form-control form-control-sm"
+                                                value={runDate}
+                                                onChange={(e) => setRunDate(e.target.value)}
+                                            />
+                                        </div>
 
-                                <div className="col-lg-4 col-md-4 col-sm-6">
-                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Supplier</label>
-                                    <div className="d-flex gap-1">
-                                        <select
-                                            className="form-select form-select-sm"
-                                            value={supplierFrom}
-                                            onChange={(e) => setSupplierFrom(e.target.value)}
-                                        >
-                                            <option value="">(From)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <select
-                                            className="form-select form-select-sm"
-                                            value={supplierTo}
-                                            onChange={(e) => setSupplierTo(e.target.value)}
-                                        >
-                                            <option value="">(To)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
+                                        <div className="col-lg-4 col-md-4 col-sm-6">
+                                            <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Supplier</label>
+                                            <div className="d-flex gap-1">
+                                                <select
+                                                    className="form-select form-select-sm"
+                                                    value={supplierFrom}
+                                                    onChange={(e) => setSupplierFrom(e.target.value)}
+                                                >
+                                                    <option value="">(From)</option>
+                                                    {supplierList.map((sup, index) => (
+                                                        <option key={sup.id || index} value={sup.id}>
+                                                            {sup.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <select
+                                                    className="form-select form-select-sm"
+                                                    value={supplierTo}
+                                                    onChange={(e) => setSupplierTo(e.target.value)}
+                                                >
+                                                    <option value="">(To)</option>
+                                                    {supplierList.map((sup, index) => (
+                                                        <option key={sup.id || index} value={sup.id}>
+                                                            {sup.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
 
-                                <div className="col-lg-3 col-md-3 col-sm-6">
-                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Category</label>
-                                    <div className="d-flex gap-1">
-                                        <select
-                                            className="form-select form-select-sm"
-                                            value={categoryFrom}
-                                            onChange={(e) => setCategoryFrom(e.target.value)}
-                                        >
-                                            <option value="">(From)</option>
-                                            <option value="South Africa">South Africa</option>
-                                            <option value="Zambia">Zambia</option>
-                                            <option value="Zimbabwe">Zimbabwe</option>
-                                        </select>
-                                        <select
-                                            className="form-select form-select-sm"
-                                            value={categoryTo}
-                                            onChange={(e) => setCategoryTo(e.target.value)}
-                                        >
-                                            <option value="">(To)</option>
-                                            <option value="South Africa">South Africa</option>
-                                            <option value="Zambia">Zambia</option>
-                                            <option value="Zimbabwe">Zimbabwe</option>
-                                        </select>
-                                    </div>
-                                </div>
+                                        <div className="col-lg-3 col-md-3 col-sm-6">
+                                            <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Category</label>
+                                            <div className="d-flex gap-1">
+                                                <select
+                                                    className="form-select form-select-sm"
+                                                    value={categoryFrom}
+                                                    onChange={(e) => setCategoryFrom(e.target.value)}
+                                                >
+                                                    <option value="">(From)</option>
+                                                    <option value="South Africa">South Africa</option>
+                                                    <option value="Zambia">Zambia</option>
+                                                    <option value="Zimbabwe">Zimbabwe</option>
+                                                </select>
+                                                <select
+                                                    className="form-select form-select-sm"
+                                                    value={categoryTo}
+                                                    onChange={(e) => setCategoryTo(e.target.value)}
+                                                >
+                                                    <option value="">(To)</option>
+                                                    <option value="South Africa">South Africa</option>
+                                                    <option value="Zambia">Zambia</option>
+                                                    <option value="Zimbabwe">Zimbabwe</option>
+                                                </select>
+                                            </div>
+                                        </div>
 
-                                {/* <div className="col-lg-1 col-md-2 col-sm-4">
+                                        {/* <div className="col-lg-1 col-md-2 col-sm-4">
                                     <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Status</label>
                                     <select
                                         className="form-select form-select-sm"
@@ -304,19 +323,8 @@ const SupplierBalancesReport = () => {
                                     </select>
                                 </div> */}
 
-                                {/* <div className="col-lg-1 col-md-2 col-sm-4">
-                                    <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Style</label>
-                                    <select
-                                        className="form-select form-select-sm"
-                                        value={style}
-                                        onChange={(e) => setStyle(e.target.value)}
-                                    >
-                                        <option value="Summary">Summary</option>
-                                        <option value="Detailed">Detailed</option>
-                                    </select>
-                                </div> */}
 
-                                {/* <div className="col-lg-2 col-md-3 col-sm-6 d-flex flex-column justify-content-end align-items-start gap-1 pb-1">
+                                        {/* <div className="col-lg-2 col-md-3 col-sm-6 d-flex flex-column justify-content-end align-items-start gap-1 pb-1">
                                     <div className="form-check form-check-inline m-0">
                                         <input
                                             className="form-check-input"
@@ -339,111 +347,113 @@ const SupplierBalancesReport = () => {
                                     </div>
                                 </div> */}
 
-                                <div className="col-lg-2 col-md-3 col-sm-6 d-flex align-items-center justify-content-end gap-1">
-                                    <button type="submit" className="btn btn-primary blueBtn btn-sm">
-                                        View
-                                    </button>
-                                    <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleReset}>
-                                        Reset
-                                    </button>
+                                        <div className="col-lg-2 col-md-3 col-sm-6 d-flex align-items-center justify-content-end gap-1">
+                                            <button type="submit" className="btn btn-primary blueBtn btn-sm">
+                                                View
+                                            </button>
+                                            <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleReset}>
+                                                Reset
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
-                            </form>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                {/* Printable Report Area */}
-                {searched && (
-                    <div className="card shadow-sm border-0 report-print-area">
-                        <div className="card-body p-4 p-md-5">
-                            {loader ? (
-                                <div className="text-center py-5">
-                                    <div className="spinner-border text-primary spinner-sm" role="status">
-                                        <span className="visually-hidden">Loading...</span>
-                                    </div>
-                                    <p className="mt-2 text-secondary">Generating report data...</p>
-                                </div>
-                            ) : reportData.length > 0 ? (
-                                <>
-                                    {/* Report Header */}
-                                    <div className="report-header mb-4 text-start">
-                                        <h4 className="report-title mb-1 fw-bold text-dark">Supplier Balances - Days Outstanding Report</h4>
-                                        <h6 className="report-subtitle mb-4 fw-bold text-secondary">Asia Direct Africa</h6>
+                        {/* Printable Report Area */}
+                        {searched && (
+                            <div className="card shadow-sm border-0 report-print-area">
+                                <div className="card-body p-4 p-md-5">
+                                    {loader ? (
+                                        <div className="text-center py-5">
+                                            <div className="spinner-border text-primary spinner-sm" role="status">
+                                                <span className="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p className="mt-2 text-secondary">Generating report data...</p>
+                                        </div>
+                                    ) : reportData.length > 0 ? (
+                                        <>
+                                            {/* Report Header */}
+                                            <div className="report-header mb-4 text-start">
+                                                <h4 className="report-title mb-1 fw-bold text-dark">Supplier Balances - Days Outstanding Report</h4>
+                                                <h6 className="report-subtitle mb-4 fw-bold text-secondary">Asia Direct Africa</h6>
 
-                                        <div className="report-meta-info mt-3">
-                                            <div className="row">
-                                                <div className="col-md-6">
-                                                    <div className="d-flex mb-1">
-                                                        <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Supplier:</span>
-                                                        <span className="text-secondary">{getSupplierFilterText()}</span>
-                                                    </div>
-                                                    <div className="d-flex mb-1">
-                                                        <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Category:</span>
-                                                        <span className="text-secondary">{getCategoryFilterText()}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="d-flex mb-1">
-                                                        <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Date:</span>
-                                                        <span className="text-secondary">{formatDateString(runDate)}</span>
+                                                <div className="report-meta-info mt-3">
+                                                    <div className="row">
+                                                        <div className="col-md-6">
+                                                            <div className="d-flex mb-1">
+                                                                <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Supplier:</span>
+                                                                <span className="text-secondary">{getSupplierFilterText()}</span>
+                                                            </div>
+                                                            <div className="d-flex mb-1">
+                                                                <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Category:</span>
+                                                                <span className="text-secondary">{getCategoryFilterText()}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-6">
+                                                            <div className="d-flex mb-1">
+                                                                <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Date:</span>
+                                                                <span className="text-secondary">{formatDateString(runDate)}</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
 
-                                    {/* Report Table */}
-                                    <div className="table-responsive mt-4">
-                                        <table className="table table-bordered report-table">
-                                            <thead className="table-light-grey">
-                                                <tr>
-                                                    <th className="text-start">Supplier</th>
-                                                    <th className="text-end">120+ Days</th>
-                                                    <th className="text-end">90 Days</th>
-                                                    <th className="text-end">60 Days</th>
-                                                    <th className="text-end">30 Days</th>
-                                                    <th className="text-end">Current</th>
-                                                    <th className="text-end">Total Due</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {reportData.map((item, index) => (
-                                                    <tr key={index}>
-                                                        <td className="text-start">{item.supplier_name || "Unknown Supplier"}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.days_120, item.final_base_currency || item.supplier_name)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.days_90, item.final_base_currency || item.supplier_name)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.days_60, item.final_base_currency || item.supplier_name)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.days_30, item.final_base_currency || item.supplier_name)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(item.current, item.final_base_currency || item.supplier_name)}</td>
-                                                        <td className="text-end fw-semibold">{formatCurrencyValue(item.total_due, item.final_base_currency || item.supplier_name)}</td>
-                                                    </tr>
-                                                ))}
-                                                {summary && (
-                                                    <tr className="grand-total-row">
-                                                        <td className="text-start">Total</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.days_120, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.days_90, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.days_60, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.days_30, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.current, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
-                                                        <td className="text-end">{formatCurrencyValue(summary.total_due, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="text-center py-5">
-                                    <p className="text-muted mb-0">No outstanding supplier balances found for the selected filters.</p>
+                                            {/* Report Table */}
+                                            <div className="table-responsive mt-4">
+                                                <table className="table table-bordered report-table">
+                                                    <thead className="table-light-grey">
+                                                        <tr>
+                                                            <th className="text-start">Supplier</th>
+                                                            <th className="text-start">Country</th>
+                                                            <th className="text-end">120+ Days</th>
+                                                            <th className="text-end">90 Days</th>
+                                                            <th className="text-end">60 Days</th>
+                                                            <th className="text-end">30 Days</th>
+                                                            <th className="text-end">Current</th>
+                                                            <th className="text-end">Total Due</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {reportData.map((item, index) => (
+                                                            <tr key={index}>
+                                                                <td className="text-start">{item.supplier_name || "Unknown Supplier"}</td>
+                                                                <td className="text-start">{item.invoice_for_country || item.country_name || item.country || "-"}</td>
+                                                                <td className="text-end">{formatCurrencyValue(item.days_120, item.final_base_currency || item.supplier_name)}</td>
+                                                                <td className="text-end">{formatCurrencyValue(item.days_90, item.final_base_currency || item.supplier_name)}</td>
+                                                                <td className="text-end">{formatCurrencyValue(item.days_60, item.final_base_currency || item.supplier_name)}</td>
+                                                                <td className="text-end">{formatCurrencyValue(item.days_30, item.final_base_currency || item.supplier_name)}</td>
+                                                                <td className="text-end">{formatCurrencyValue(item.current, item.final_base_currency || item.supplier_name)}</td>
+                                                                <td className="text-end fw-semibold">{formatCurrencyValue(item.total_due, item.final_base_currency || item.supplier_name)}</td>
+                                                            </tr>
+                                                        ))}
+                                                        {summary && (
+                                                            <tr className="grand-total-row">
+                                                                <td colSpan="2" className="text-start">Total</td>
+                                                                <td className="text-end">{formatCurrencyValue(summary.days_120, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
+                                                                <td className="text-end">{formatCurrencyValue(summary.days_90, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
+                                                                <td className="text-end">{formatCurrencyValue(summary.days_60, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
+                                                                <td className="text-end">{formatCurrencyValue(summary.days_30, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
+                                                                <td className="text-end">{formatCurrencyValue(summary.current, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
+                                                                <td className="text-end">{formatCurrencyValue(summary.total_due, summary.final_base_currency || reportData?.[0]?.final_base_currency || reportData?.[0]?.supplier_name)}</td>
+                                                            </tr>
+                                                        )}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="text-center py-5">
+                                            <p className="text-muted mb-0">No outstanding supplier balances found for the selected filters.</p>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
-            
-            <style type="text/css">{`
+
+                    <style type="text/css">{`
                  .report-title {
                      font-size: 16px !important;
                  }

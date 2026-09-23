@@ -37,13 +37,29 @@ const CustomerUnallocatedReport = () => {
     const [reportType, setReportType] = useState(location.state?.reportType || "UNALLOCATED");
 
     const [reportData, setReportData] = useState([]);
+    const [clientList, setClientList] = useState([]);
     const [loader, setLoader] = useState(false);
     const [searched, setSearched] = useState(true);
 
-    const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
+    const fetchClientList = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}clientlist`);
+            if (response.data && response.data.success) {
+                const list = response.data.data || [];
+                const sortedList = [...list]
+                    .filter((item) => item && item.client_name && item.client_name.trim() !== "")
+                    .sort((a, b) => (a.client_name || "").localeCompare(b.client_name || ""));
+                setClientList(sortedList);
+            }
+        } catch (error) {
+            console.error("Error fetching client list:", error);
+        }
+    };
 
     useEffect(() => {
         fetchReportData();
+        fetchClientList();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Fetch report data
@@ -158,18 +174,18 @@ const CustomerUnallocatedReport = () => {
                     <div className="card shadow-sm border-0 mb-4 bg-light">
                         <div className="card-body">
                             <form onSubmit={fetchReportData} className="row g-2 justify-content-center align-items-end">
-                                <div className="col-lg-3 col-md-4 col-sm-6">
+                                <div className="col-lg-4 col-md-4 col-sm-6">
                                     <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Date Range</label>
                                     <div className="d-flex gap-1">
                                         <input
                                             type="date"
-                                            className="form-control form-control-sm"
+                                            className="form-control form-control-sm w-50"
                                             value={startDate}
                                             onChange={(e) => setStartDate(e.target.value)}
                                         />
                                         <input
                                             type="date"
-                                            className="form-control form-control-sm"
+                                            className="form-control form-control-sm w-50"
                                             value={endDate}
                                             onChange={(e) => setEndDate(e.target.value)}
                                         />
@@ -185,9 +201,9 @@ const CustomerUnallocatedReport = () => {
                                             onChange={(e) => setCustomerFrom(e.target.value)}
                                         >
                                             <option value="">(From)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
+                                            {clientList.map((client, index) => (
+                                                <option key={client.id || index} value={client.id}>
+                                                    {client.client_name}
                                                 </option>
                                             ))}
                                         </select>
@@ -197,9 +213,9 @@ const CustomerUnallocatedReport = () => {
                                             onChange={(e) => setCustomerTo(e.target.value)}
                                         >
                                             <option value="">(To)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
+                                            {clientList.map((client, index) => (
+                                                <option key={client.id || index} value={client.id}>
+                                                    {client.client_name}
                                                 </option>
                                             ))}
                                         </select>
@@ -232,7 +248,7 @@ const CustomerUnallocatedReport = () => {
                                     </div>
                                 </div>
 
-                                <div className="col-lg-3 col-md-4 col-sm-6">
+                                <div className="col-lg-2 col-md-4 col-sm-6">
                                     <label className="form-label text-secondary fw-semibold mb-1" style={{ fontSize: "12px" }}>Report Type</label>
                                     <select
                                         className="form-select form-select-sm"
@@ -270,10 +286,10 @@ const CustomerUnallocatedReport = () => {
                                 </div>
                             ) : reportData.length > 0 ? (
                                 <>
-                                     {/* Report Header */}
-                                     <div className="report-header mb-4 text-start">
-                                         <h4 className="report-title mb-1 fw-bold text-dark">Customer {reportType === "ALLOCATED" ? "Allocated" : "Unallocated"} Receipts Report</h4>
-                                         <h6 className="report-subtitle mb-4 fw-bold text-secondary">Asia Direct Africa</h6>
+                                    {/* Report Header */}
+                                    <div className="report-header mb-4 text-start">
+                                        <h4 className="report-title mb-1 fw-bold text-dark">Customer {reportType === "ALLOCATED" ? "Allocated" : "Unallocated"} Receipts Report</h4>
+                                        <h6 className="report-subtitle mb-4 fw-bold text-secondary">Asia Direct Africa</h6>
 
                                         <div className="report-meta-info mt-3">
                                             <div className="row">
@@ -281,7 +297,7 @@ const CustomerUnallocatedReport = () => {
                                                     <div className="d-flex mb-1">
                                                         <span className="fw-bold text-dark me-2" style={{ minWidth: "120px" }}>Customer:</span>
                                                         <span className="text-secondary">
-                                                            {!customerFrom && !customerTo ? "All Customers" : `${customerFrom || "A"} to ${customerTo || "Z"}`}
+                                                            {!customerFrom && !customerTo ? "All Customers" : (customerFrom === customerTo ? customerFrom : `${customerFrom || "Start"} to ${customerTo || "End"}`)}
                                                         </span>
                                                     </div>
                                                     <div className="d-flex mb-1">
@@ -314,6 +330,7 @@ const CustomerUnallocatedReport = () => {
                                                     </th>
                                                     <th className="text-start">Document No.</th>
                                                     <th className="text-start">Reference</th>
+                                                    <th className="text-start">Country</th>
                                                     <th className="text-start">Description</th>
                                                     <th className="text-end">Receipt</th>
                                                     <th className="text-end">{reportType === "ALLOCATED" ? "Allocated" : "Unallocated"}</th>
@@ -324,10 +341,10 @@ const CustomerUnallocatedReport = () => {
                                                     <React.Fragment key={custBlock.customer_id || custBlock.customer}>
                                                         {/* Group Subheader for Customer */}
                                                         <tr>
-                                                            <td colSpan="6" className="text-start fw-bold text-dark" style={{ padding: "8px 12px", background: "#f8f9fa" }}>
+                                                            <td colSpan="7" className="text-start fw-bold text-dark" style={{ padding: "8px 12px", background: "#f8f9fa" }}>
                                                                 {custBlock.customer || "Unspecified Customer"}
-                                                                {custBlock.invoice_for_country ? (
-                                                                    <> ({custBlock.invoice_for_country})</>
+                                                                {custBlock.invoice_for_country || custBlock.country_name || custBlock.country ? (
+                                                                    <> ({custBlock.invoice_for_country || custBlock.country_name || custBlock.country})</>
                                                                 ) : null}
                                                             </td>
                                                         </tr>
@@ -337,8 +354,8 @@ const CustomerUnallocatedReport = () => {
                                                                 <td className="text-start">{formatDateString(tx.date)}</td>
                                                                 <td className="text-start">{tx.document_no || "-"}</td>
                                                                 <td className="text-start">{tx.reference || "-"}</td>
+                                                                <td className="text-start">{tx.invoice_for_country || tx.country_name || tx.country || custBlock.invoice_for_country || custBlock.country_name || custBlock.country || "-"}</td>
                                                                 <td className="text-start">{tx.description || "-"}</td>
-                                                                {/* <td className="text-start">{tx.invoice_for_country || "-"}</td> */}
                                                                 <td className="text-end">{formatCurrencyValue(tx.receipt, custBlock.customer)}</td>
                                                                 <td className="text-end">{formatCurrencyValue(tx.unallocated, custBlock.customer)}</td>
                                                             </tr>
@@ -346,7 +363,7 @@ const CustomerUnallocatedReport = () => {
                                                         {/* Group Summary Row */}
                                                         {custBlock.totals && (
                                                             <tr className="fw-semibold" style={{ borderBottom: "2px solid #ccc", background: "#e9ecef" }}>
-                                                                <td colSpan="4" className="text-start fw-bold">Total for {custBlock.customer || "Unspecified Customer"}</td>
+                                                                <td colSpan="5" className="text-start fw-bold">Total for {custBlock.customer || "Unspecified Customer"}</td>
                                                                 <td className="text-end fw-bold">{formatCurrencyValue(custBlock.totals.receipt, custBlock.customer)}</td>
                                                                 <td className="text-end fw-bold">{formatCurrencyValue(custBlock.totals.unallocated, custBlock.customer)}</td>
                                                             </tr>
@@ -356,7 +373,7 @@ const CustomerUnallocatedReport = () => {
                                             </tbody>
                                             <tfoot className="fw-bold" style={{ borderTop: "2px solid #aaa" }}>
                                                 <tr style={{ background: "#e9ecef" }}>
-                                                    <td colSpan="4" className="text-start">Grand Total</td>
+                                                    <td colSpan="5" className="text-start">Grand Total</td>
                                                     <td className="text-end">{formatCurrencyValue(grandTotals.totalReceipt)}</td>
                                                     <td className="text-end">{formatCurrencyValue(grandTotals.totalUnallocated)}</td>
                                                 </tr>
@@ -373,7 +390,7 @@ const CustomerUnallocatedReport = () => {
                     </div>
                 )}
             </div>
-            
+
             <style type="text/css">{`
                  .report-title {
                      font-size: 16px !important;

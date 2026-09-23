@@ -48,10 +48,9 @@ const SupplierInvoicesReport = () => {
     // Report data states
     const [reportData, setReportData] = useState([]);
     const [grandTotal, setGrandTotal] = useState(null);
+    const [supplierList, setSupplierList] = useState([]);
     const [loader, setLoader] = useState(false);
     const [searched, setSearched] = useState(!!location.state);
-
-    const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 
     // Fetch report data
     const fetchReportData = async (e) => {
@@ -124,8 +123,24 @@ const SupplierInvoicesReport = () => {
         }
     };
 
+    const fetchSupplierList = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}supplier-list`);
+            if (response.data && response.data.success) {
+                const list = response.data.data || [];
+                const sortedList = [...list]
+                    .filter((item) => item && item.name && item.name.trim() !== "")
+                    .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+                setSupplierList(sortedList);
+            }
+        } catch (error) {
+            console.error("Error fetching supplier list:", error);
+        }
+    };
+
     useEffect(() => {
         checkPermission();
+        fetchSupplierList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -183,8 +198,15 @@ const SupplierInvoicesReport = () => {
 
     const getSupplierFilterText = () => {
         if (!supplierFrom && !supplierTo) return "All Suppliers";
-        if (supplierFrom === supplierTo) return supplierFrom;
-        return `${supplierFrom || "A"} to ${supplierTo || "Z"}`;
+        const fromSup = supplierList.find((s) => String(s.id) === String(supplierFrom) || String(s.name) === String(supplierFrom));
+        const toSup = supplierList.find((s) => String(s.id) === String(supplierTo) || String(s.name) === String(supplierTo));
+        const fromName = fromSup ? (fromSup.name || fromSup.supplier_name) : supplierFrom;
+        const toName = toSup ? (toSup.name || toSup.supplier_name) : supplierTo;
+
+        if (supplierFrom && supplierTo && supplierFrom === supplierTo) {
+            return fromName;
+        }
+        return `${fromName || "Start"} to ${toName || "End"}`;
     };
 
     const getCategoryFilterText = () => {
@@ -265,9 +287,9 @@ const SupplierInvoicesReport = () => {
                                             onChange={(e) => setSupplierFrom(e.target.value)}
                                         >
                                             <option value="">(From)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
+                                            {supplierList.map((sup, index) => (
+                                                <option key={sup.id || index} value={sup.id}>
+                                                    {sup.name}
                                                 </option>
                                             ))}
                                         </select>
@@ -277,9 +299,9 @@ const SupplierInvoicesReport = () => {
                                             onChange={(e) => setSupplierTo(e.target.value)}
                                         >
                                             <option value="">(To)</option>
-                                            {alphabet.map((letter) => (
-                                                <option key={letter} value={letter}>
-                                                    {letter}
+                                            {supplierList.map((sup, index) => (
+                                                <option key={sup.id || index} value={sup.id}>
+                                                    {sup.name}
                                                 </option>
                                             ))}
                                         </select>
@@ -422,6 +444,7 @@ const SupplierInvoicesReport = () => {
                                                     <th className="text-start">Document No.</th>
                                                     <th className="text-start">Supplier Inv. No.</th>
                                                     <th className="text-start">Supplier</th>
+                                                    <th className="text-start">Country</th>
                                                     <th className="text-start">Due Date</th>
                                                     <th className="text-start">Ant. Pmt.</th>
                                                     <th className="text-end">Exclusive</th>
@@ -437,6 +460,7 @@ const SupplierInvoicesReport = () => {
                                                         <td className="text-start">{item.document_no || "-"}</td>
                                                         <td className="text-start">{item.supplier_invoice_no || "-"}</td>
                                                         <td className="text-start">{item.supplier || "-"}</td>
+                                                        <td className="text-start">{item.invoice_for_country || item.country_name || item.country || "-"}</td>
                                                         <td className="text-start">{formatDateString(item.due_date)}</td>
                                                         <td className="text-start">{item.anticipated_payment ? formatDateString(item.anticipated_payment) : ""}</td>
                                                         <td className="text-end">{formatCurrency(item.exclusive, item.currency)}</td>
