@@ -28,6 +28,7 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import CustomPagination from "../components/common/CustomPagination";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import { FaFileExcel } from "react-icons/fa";
@@ -1752,23 +1753,11 @@ export default function Order() {
                         </tbody>
                       </table>
                     </div>
-                    <div className="text-center d-flex justify-content-end align-items-center">
-                      <button
-                        disabled={currentPage === 1}
-                        className="bg_page"
-                        onClick={() => handlePageChange(currentPage - 1)}
-                      >
-                        <i class="fi fi-rr-angle-small-left page_icon"></i>
-                      </button>
-                      <span className="mx-2">{`Page ${currentPage} of ${totalPage}`}</span>
-                      <button
-                        disabled={currentPage === totalPage}
-                        className="bg_page"
-                        onClick={() => handlePageChange(currentPage + 1)}
-                      >
-                        <i class="fi fi-rr-angle-small-right page_icon"></i>
-                      </button>
-                    </div>
+                    <CustomPagination
+                      currentPage={currentPage}
+                      totalPages={totalPage}
+                      onPageChange={handlePageChange}
+                    />
                   </div>
                 </div>
               </div>

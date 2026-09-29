@@ -25,6 +25,7 @@ import { Autocomplete } from "@mui/material";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
+import CustomPagination from "../common/CustomPagination";
 
 const pageSize = 10;
 const style1 = {
@@ -1193,94 +1194,17 @@ export default function SupplierWarehouse() {
                             })}
                         </tbody>
                       </table>
-                      <div className="text-center d-flex justify-content-end align-items-center gap-2 mt-3 mb-4">
-                        {/* Rows per page dropdown */}
-                        <div className="d-flex align-items-center me-3" style={{ gap: "8px" }}>
-                          <span style={{ fontSize: "13px", fontWeight: "600", color: "#5c6378" }}>Rows per page:</span>
-                          <select
-                            value={limit}
-                            onChange={(e) => {
-                              const newLimit = parseInt(e.target.value, 10);
-                              setLimit(newLimit);
-                              setCurrentPage(1);
-                              getData(1, tab, sortOrder, searchQuery, newLimit);
-                            }}
-                            className="form-select form-select-sm"
-                            style={{ width: "80px", fontSize: "13px", height: "30px", padding: "2px 8px" }}
-                          >
-                            <option value={10}>10</option>
-                            <option value={25}>25</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
-                          </select>
-                        </div>
-                        {/* First Page button */}
-                        <button
-                          disabled={currentPage === 1}
-                          className="bg_page"
-                          onClick={() => handlePageChange(1)}
-                          title="First Page"
-                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                        >
-                          <i className="fa fa-angle-double-left" style={{ fontSize: "14px" }}></i>
-                        </button>
-
-                        {/* Prev Page button */}
-                        <button
-                          disabled={currentPage === 1}
-                          className="bg_page"
-                          onClick={() => handlePageChange(currentPage - 1)}
-                          title="Previous Page"
-                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                        >
-                          <i className="fa fa-angle-left" style={{ fontSize: "14px" }}></i>
-                        </button>
-
-                        {/* Dynamic page selection dropdown */}
-                        <div className="d-flex align-items-center gap-1" style={{ fontSize: "13px", fontWeight: "600", color: "#1b2245" }}>
-                          <span>Page</span>
-                          <select
-                            value={currentPage}
-                            onChange={(e) => {
-                              const val = parseInt(e.target.value, 10);
-                              if (!isNaN(val)) {
-                                handlePageChange(val);
-                              }
-                            }}
-                            className="form-select form-select-sm text-center px-1"
-                            style={{ width: "80px", height: "30px", fontSize: "13px", borderRadius: "4px", padding: "2px 20px 2px 8px" }}
-                          >
-                            {Array.from({ length: totalPage || 1 }, (_, i) => i + 1).map((page) => (
-                              <option key={page} value={page}>
-                                {page}
-                              </option>
-                            ))}
-                          </select>
-                          <span>of {totalPage || 1}</span>
-                        </div>
-
-                        {/* Next Page button */}
-                        <button
-                          disabled={currentPage === totalPage || totalPage === 0}
-                          className="bg_page"
-                          onClick={() => handlePageChange(currentPage + 1)}
-                          title="Next Page"
-                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                        >
-                          <i className="fa fa-angle-right" style={{ fontSize: "14px" }}></i>
-                        </button>
-
-                        {/* Last Page button */}
-                        <button
-                          disabled={currentPage === totalPage || totalPage === 0}
-                          className="bg_page"
-                          onClick={() => handlePageChange(totalPage)}
-                          title="Last Page"
-                          style={{ height: "30px", width: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                        >
-                          <i className="fa fa-angle-double-right" style={{ fontSize: "14px" }}></i>
-                        </button>
-                      </div>
+                      <CustomPagination
+                        currentPage={currentPage}
+                        totalPages={totalPage}
+                        onPageChange={(page) => handlePageChange(page)}
+                        itemsPerPage={limit}
+                        onItemsPerPageChange={(newLimit) => {
+                          setLimit(newLimit);
+                          setCurrentPage(1);
+                          getData(1, tab, sortOrder, searchQuery, newLimit);
+                        }}
+                      />
 
                       <Modal
                         open={handleassignsupplier}

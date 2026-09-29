@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import CustomPagination from "../common/CustomPagination";
 export default function Notificatonandstorage() {
   const pageSize = 10;
   const [data, setData] = useState([]);
@@ -79,25 +80,11 @@ export default function Notificatonandstorage() {
                   )}
                 </tbody>
               </table>
-              <div className="text-center d-flex justify-content-end align-items-center">
-                <button
-                  disabled={currentPage === 1}
-                  className="bg_page"
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                >
-                  <i className="fi fi-rr-angle-small-left page_icon"></i>
-                </button>
-                <span className="mx-2">{`Page ${currentPage} of ${
-                  totalPage || 1
-                }`}</span>
-                <button
-                  disabled={currentPage === totalPage || totalPage === 0}
-                  className="bg_page"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                >
-                  <i className="fi fi-rr-angle-small-right page_icon"></i>
-                </button>
-              </div>
+              <CustomPagination
+                currentPage={currentPage}
+                totalPages={totalPage}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
             </div>
           </div>
         </div>

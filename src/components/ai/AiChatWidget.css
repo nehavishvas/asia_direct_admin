@@ -3,9 +3,11 @@
 /* Floating Action Button (FAB) */
 .ai-fab-container {
   position: fixed;
-  bottom: 70px;
-  right: 24px;
+  bottom: 18px;
+  right: 18px;
   z-index: 10000;
+  touch-action: none;
+  user-select: none;
 }
 
 .ai-fab {
@@ -722,4 +724,18 @@
 .ai-shortcuts-overlay-item span {
   font-size: 11px;
   color: #8c92ac;
+}
+
+/* Hide AI Chatbot & all shadows during print */
+@media print {
+  .ai-fab-container,
+  .ai-fab,
+  .ai-fab::before,
+  .ai-panel {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    box-shadow: none !important;
+    animation: none !important;
+  }
 }

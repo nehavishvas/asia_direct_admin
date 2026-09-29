@@ -8,6 +8,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Modal } from "bootstrap";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import CustomPagination from "../components/common/CustomPagination";
 const pageSize = 10;
 
 const Notification = () => {
@@ -597,42 +598,11 @@ const Notification = () => {
                 })}
               </tbody>
             </table>
-            <div className="text-center d-flex justify-content-end align-items-center">
-              {/* <button
-                disabled={currentPage === 1}
-                onClick={() => handlePageChange(currentPage - 1)}
-                className="bg_page"
-              >
-               <i class="fi fi-rr-angle-small-left page_icon"></i>
-              </button>
-              <span className="mx-2">{`Page ${currentPage} of ${totalPage}`}</span>
-              <button
-                disabled={currentPage === totalPage}
-                onClick={() => handlePageChange(currentPage + 1)}
-                className="bg_page"
-              >
-                  <i class="fi fi-rr-angle-small-right page_icon"></i>
-              </button> */}
-              <button
-                disabled={currentPage === 1}
-                className="bg_page"
-                onClick={() => setCurrentPage(currentPage - 1)}
-              >
-                <i class="fi fi-rr-angle-small-left page_icon"></i>
-              </button>
-
-              <span>
-                Page {currentPage} of {totalPage}
-              </span>
-
-              <button
-                className="bg_page"
-                disabled={currentPage === totalPage}
-                onClick={() => setCurrentPage(currentPage + 1)}
-              >
-                <i class="fi fi-rr-angle-small-right page_icon"></i>
-              </button>
-            </div>
+            <CustomPagination
+              currentPage={currentPage}
+              totalPages={totalPage}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
           </div>
         </div>
 

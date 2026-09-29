@@ -5,6 +5,7 @@ import { Box, Button, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { FiTrash2, FiEye, FiCalendar } from "react-icons/fi";
 import Swal from "sweetalert2";
+import CustomPagination from "../common/CustomPagination";
 const pageSize = 10;
 const toDateKey = (date) => {
   const y = date.getFullYear();
@@ -865,25 +866,11 @@ Status: ${leave.status === 1
                       )}
                     </tbody>
                   </table>
-                  <div className="d-flex justify-content-end align-items-center my-3">
-                    <button
-                      disabled={currentPage === 1}
-                      className="bg_page"
-                      onClick={() => setCurrentPage((prev) => prev - 1)}
-                    >
-                      <i className="fi fi-rr-angle-small-left page_icon"></i>
-                    </button>
-                    <span className="mx-2">
-                      Page {currentPage} of {totalPages || 1}
-                    </span>
-                    <button
-                      disabled={currentPage === totalPages || totalPages === 0}
-                      className="bg_page"
-                      onClick={() => setCurrentPage((prev) => prev + 1)}
-                    >
-                      <i className="fi fi-rr-angle-small-right page_icon"></i>
-                    </button>
-                  </div>
+                  <CustomPagination
+                    currentPage={currentPage}
+                    totalPages={totalPages || 1}
+                    onPageChange={(page) => setCurrentPage(page)}
+                  />
                 </div>
               </div>
             </div>

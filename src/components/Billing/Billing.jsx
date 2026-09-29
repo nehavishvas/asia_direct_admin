@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { Modal, Box } from "@mui/material";
+import CustomPagination from "../common/CustomPagination";
 
 const SearchableDropdown = ({ value, options, onChange, placeholder }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -739,23 +740,11 @@ export default function BillingTable() {
                     )}
                   </tbody>
                 </table>
-                <div className="text-center d-flex justify-content-end align-items-center">
-                  <button
-                    disabled={currentPage === 1}
-                    className="bg_page"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                  >
-                    <i className="fi fi-rr-angle-small-left page_icon"></i>
-                  </button>
-                  <span className="mx-2">{`Page ${currentPage} of ${pagenation.totalPages}`}</span>
-                  <button
-                    disabled={currentPage === pagenation.totalPages}
-                    className="bg_page"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                  >
-                    <i className="fi fi-rr-angle-small-right page_icon"></i>
-                  </button>
-                </div>
+                <CustomPagination
+                  currentPage={currentPage}
+                  totalPages={pagenation.totalPages}
+                  onPageChange={(page) => handlePageChange(page)}
+                />
               </div>
             </div>
           </div>

@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import ViewNewFreightQuoteInvoice from "./ViewNewFreightQuoteInvoice";
+import CustomPagination from "../common/CustomPagination";
 
 const Invoices = () => {
     const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
@@ -322,29 +323,11 @@ const Invoices = () => {
                                     )}
                                 </tbody>
                             </table>
-                            <div className="text-center d-flex justify-content-end align-items-center mt-3">
-                                <button
-                                    disabled={currentPage === 1}
-                                    className="bg_page"
-                                    onClick={() =>
-                                        handlePageChange(currentPage - 1)
-                                    }
-                                >
-                                    <i className="fi fi-rr-angle-small-left page_icon"></i>
-                                </button>
-                                <span className="mx-3">
-                                    {`Page ${currentPage} of ${totalPage}`}
-                                </span>
-                                <button
-                                    disabled={currentPage === totalPage}
-                                    className="bg_page"
-                                    onClick={() =>
-                                        handlePageChange(currentPage + 1)
-                                    }
-                                >
-                                    <i className="fi fi-rr-angle-small-right page_icon"></i>
-                                </button>
-                            </div>
+                            <CustomPagination
+                                currentPage={currentPage}
+                                totalPages={totalPage}
+                                onPageChange={(page) => handlePageChange(page)}
+                            />
                         </div>
                     </div>
                     {printItem && (

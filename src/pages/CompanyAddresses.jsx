@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { FiEdit, FiEye } from "react-icons/fi";
 import CloseIcon from "@mui/icons-material/Close";
+import CustomPagination from "../components/common/CustomPagination";
 
 const pageSize = 10;
 
@@ -427,33 +428,11 @@ export default function CompanyAddresses() {
                   </table>
 
                   {/* PAGINATION */}
-                  {totalPages > 1 && (
-                    <div className="d-flex justify-content-end align-items-end my-3">
-                      <button
-                        disabled={currentPage === 1}
-                        onClick={() => {
-                          setCurrentPage(currentPage - 1);
-                        }}
-                        className="bg_page"
-                      >
-                        <i className="fi fi-rr-angle-small-left page_icon"></i>
-                      </button>
-
-                      <span className="mx-2">
-                        Page {currentPage} of {totalPages}
-                      </span>
-
-                      <button
-                        disabled={currentPage === totalPages}
-                        className="bg_page"
-                        onClick={() => {
-                          setCurrentPage(currentPage + 1);
-                        }}
-                      >
-                        <i className="fi fi-rr-angle-small-right page_icon"></i>
-                      </button>
-                    </div>
-                  )}
+                  <CustomPagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(page) => setCurrentPage(page)}
+                  />
                 </div>
               )}
             </div>

@@ -11,6 +11,7 @@ import CalculateIcon from "@mui/icons-material/Calculate";
 import Swal from "sweetalert2";
 import SupportAgentSharpIcon from "@mui/icons-material/SupportAgentSharp";
 import CloseIcon from "@mui/icons-material/Close";
+import CustomPagination from "../components/common/CustomPagination";
 import {
   Box,
   Button,
@@ -2232,23 +2233,11 @@ export default function UserFreight() {
                         })}
                     </tbody>
                   </table>
-                  <div className="text-center d-flex justify-content-end align-items-center">
-                    <button
-                      disabled={currentPage === 1}
-                      className="bg_page"
-                      onClick={() => handlePageChange(currentPage - 1)}
-                    >
-                      <i class="fi fi-rr-angle-small-left page_icon"></i>
-                    </button>
-                    <span className="mx-2">{`Page ${currentPage} of ${totalPage}`}</span>
-                    <button
-                      disabled={currentPage === totalPage}
-                      className="bg_page"
-                      onClick={() => handlePageChange(currentPage + 1)}
-                    >
-                      <i class="fi fi-rr-angle-small-right page_icon"></i>
-                    </button>
-                  </div>
+                  <CustomPagination
+                    currentPage={currentPage}
+                    totalPages={totalPage}
+                    onPageChange={handlePageChange}
+                  />
                 </div>
               )}
             </div>

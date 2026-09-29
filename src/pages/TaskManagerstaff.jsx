@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { FiEye, FiPlus } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 export default function TaskManagerstaff() {
   const user = JSON.parse(localStorage.getItem("data123"));
   const [openModal, setOpenModal] = useState(false);

@@ -11,6 +11,7 @@ import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { Box, Button, Modal } from "@mui/material";
+import CustomPagination from "./common/CustomPagination";
 const pageSize = 10;
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -352,23 +353,11 @@ export default function ManageRoles() {
                           })}
                       </tbody>
                     </table>
-                    <div className="text-center d-flex justify-content-end align-items-center">
-                      <button
-                        disabled={currentPage === 1}
-                        className="bg_page"
-                        onClick={() => handlePageChange(currentPage - 1)}
-                      >
-                        <i class="fi fi-rr-angle-small-left page_icon"></i>
-                      </button>
-                      <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
-                      <button
-                        disabled={currentPage === totalPages}
-                        className="bg_page"
-                        onClick={() => handlePageChange(currentPage + 1)}
-                      >
-                        <i class="fi fi-rr-angle-small-right page_icon"></i>
-                      </button>
-                    </div>
+                    <CustomPagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={(page) => handlePageChange(page)}
+                    />
                   </div>
                 </div>
                 <Modal

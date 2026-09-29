@@ -6,6 +6,7 @@ import { Box, Button, Modal } from "@mui/material";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
+import CustomPagination from "../common/CustomPagination";
 const pageSize = 10;
 
 export default function Warehouse() {
@@ -417,23 +418,11 @@ export default function Warehouse() {
                             ))}
                         </tbody>
                       </table>
-                      <div className="text-center d-flex justify-content-end align-items-center">
-                        <button
-                          disabled={currentPage === 1}
-                          className="bg_page"
-                          onClick={() => handlePageChange(currentPage - 1)}
-                        >
-                          <i class="fi fi-rr-angle-small-left page_icon"></i>
-                        </button>
-                        <span className="mx-2">{`Page ${currentPage} of ${totalPage}`}</span>
-                        <button
-                          disabled={currentPage === totalPage}
-                          className="bg_page"
-                          onClick={() => handlePageChange(currentPage + 1)}
-                        >
-                          <i class="fi fi-rr-angle-small-right page_icon"></i>
-                        </button>
-                      </div>
+                      <CustomPagination
+                        currentPage={currentPage}
+                        totalPages={totalPage}
+                        onPageChange={handlePageChange}
+                      />
                       <Modal
                         open={isModalOpen}
                         onClose={closeModal}

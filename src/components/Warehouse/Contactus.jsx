@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FiTrash2 } from "react-icons/fi";
+import CustomPagination from "../common/CustomPagination";
 const pageSize = 10;
 export default function Contactus() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -129,28 +130,12 @@ export default function Contactus() {
                     </tr>
                   )}
                 </tbody>
-                {totalPages > 1 && (
-                  <div className="text-end d-flex justify-content-end align-items-center">
-                    <button
-                      disabled={currentPage === 1}
-                      className="bg_page"
-                      onClick={() => setCurrentPage((prev) => prev - 1)}
-                    >
-                      <i class="fi fi-rr-angle-small-left page_icon"></i>
-                    </button>
-                    <span className="mx-2">
-                      Page {currentPage} of {totalPages}
-                    </span>
-                    <button
-                      disabled={currentPage === totalPages}
-                      className="bg_page"
-                      onClick={() => setCurrentPage((prev) => prev + 1)}
-                    >
-                      <i class="fi fi-rr-angle-small-right page_icon"></i>
-                    </button>
-                  </div>
-                )}
               </table>
+              <CustomPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
             </div>
           </div>
         </div>

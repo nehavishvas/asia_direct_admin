@@ -130,6 +130,9 @@ import CustomerBalancesReport from "./components/Billing/CustomerBalancesReport"
 import CustomerStatementReport from "./components/Billing/CustomerStatementReport";
 import CustomerUnallocatedReport from "./components/Billing/CustomerUnallocatedReport";
 import FreightReport from "./components/Billing/FreightReport";
+import FreightAdminByCustomerReport from "./components/Billing/FreightAdminByCustomerReport";
+import FreightAdminByItemReport from "./components/Billing/FreightAdminByItemReport";
+import FreightAdminBySalesRepReport from "./components/Billing/FreightAdminBySalesRepReport";
 import FreightOrdersReport from "./components/Billing/FreightOrdersReport";
 import ShipmentsReport from "./components/Billing/ShipmentsReport";
 import AddNewFreightQuoteInvoice from "./components/Billing/AddNewFreightQuoteInvoice";
@@ -164,7 +167,7 @@ const Uniovwersalpage = lazy(() => import("./components/Uniovwersalpage"));
 export default function App() {
   const [text, setText] = useState("");
   const [permission, setPermission] = useState("");
-  console.log("23-09-26", "16:59");
+  console.log("25-09-26", "18:04");
 
   useEffect(() => {
     const handleDropdownClick = (event) => {
@@ -228,7 +231,17 @@ export default function App() {
                 <Route path="/Admin/customer-statement-report" element={<CustomerStatementReport />} />
                 <Route path="/Admin/customer-unallocated-report" element={<CustomerUnallocatedReport />} />
                 <Route path="/Admin/freight-report" element={<FreightReport />} />
+                <Route path="/Admin/freight-admin-by-customer-report" element={<FreightAdminByCustomerReport />} />
+                <Route path="/Admin/freight-admin-by-item-report" element={<FreightAdminByItemReport />} />
+                <Route path="/Admin/freight-by-admin-item-report" element={<FreightAdminByItemReport />} />
+                <Route path="/Admin/freight-orders-item-report" element={<FreightAdminByItemReport />} />
+                <Route path="/Admin/freight-admin-by-sales-rep-report" element={<FreightAdminBySalesRepReport />} />
+                <Route path="/Admin/freight-by-admin-sales-rep-report" element={<FreightAdminBySalesRepReport />} />
                 <Route path="/Admin/freight-orders-report" element={<FreightOrdersReport />} />
+                <Route path="/Admin/freight-orders-by-customer-report" element={<FreightAdminByCustomerReport />} />
+                <Route path="/Admin/freight-orders-customer-report" element={<FreightAdminByCustomerReport />} />
+                <Route path="/Admin/freight-orders-sales-rep-report" element={<FreightAdminBySalesRepReport />} />
+                <Route path="/Admin/freight-orders-by-sales-rep-report" element={<FreightAdminBySalesRepReport />} />
                 <Route path="/Admin/shipments-report" element={<ShipmentsReport />} />
                 <Route path="/Admin/editquotesinvoice" element={<EditQuotesInvoice />} />
                 <Route path="/Admin/viewquotesinvoice" element={<ViewQuotesInvoice />} />
@@ -335,7 +348,7 @@ export default function App() {
                 <Route
                   index
                   path="/Admin/company-address"
-                  element={<CompanyAddresses/>}
+                  element={<CompanyAddresses />}
                 />
                 <Route
                   index

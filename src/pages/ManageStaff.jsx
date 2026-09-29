@@ -13,6 +13,7 @@ import Swal from "sweetalert2";
 import { Box, Button, Modal } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
+import CustomPagination from "../components/common/CustomPagination";
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -1063,24 +1064,11 @@ export default function ManageStaff() {
                           })}
                       </tbody>
                     </table>
-                    <div className="text-center d-flex justify-content-end align-items-center">
-                      <button
-                        disabled={currentPage === 1}
-                        className="bg_page"
-                        onClick={() => handlePageChange(currentPage - 1)}
-                      >
-                        {" "}
-                        <i className="fi fi-rr-angle-small-left page_icon"></i>
-                      </button>
-                      <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
-                      <button
-                        disabled={currentPage === totalPages}
-                        className="bg_page"
-                        onClick={() => handlePageChange(currentPage + 1)}
-                      >
-                        <i className="fi fi-rr-angle-small-right page_icon"></i>
-                      </button>
-                    </div>
+                    <CustomPagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
                   </div>
                 )}
               </div>

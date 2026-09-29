@@ -22,6 +22,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { CopyAll } from "@mui/icons-material";
 import Swal from "sweetalert2";
 import PrintIcon from "@mui/icons-material/Print";
+import CustomPagination from "../components/common/CustomPagination";
 
 export default function Batches() {
   const userid = JSON.parse(localStorage.getItem("data123"))?.id;
@@ -899,24 +900,11 @@ export default function Batches() {
                 </Box>
               </Modal>
 
-
-              <div className="text-center d-flex justify-content-end align-items-center mt-3">
-                <button
-                  disabled={currentPage === 1}
-                  className="bg_page"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                >
-                  <i class="fi fi-rr-angle-small-left page_icon"></i>
-                </button>
-                <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
-                <button
-                  disabled={currentPage === totalPages}
-                  className="bg_page"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                >
-                  <i class="fi fi-rr-angle-small-right page_icon"></i>
-                </button>
-              </div>
+              <CustomPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
             <Modal
               open={isModalOpen2}

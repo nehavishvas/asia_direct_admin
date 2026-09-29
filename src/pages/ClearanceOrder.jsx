@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import FormControl from "@mui/material/FormControl";
 import { InputLabel, MenuItem, Select } from "@mui/material";
 import Swal from "sweetalert2";
+import CustomPagination from "../components/common/CustomPagination";
 
 const pageSize = 10;
 export default function ClearanceOrder() {
@@ -1339,23 +1340,11 @@ export default function ClearanceOrder() {
                           })}
                       </tbody>
                     </table>
-                    <div className="text-center d-flex justify-content-end align-items-center">
-                      <button
-                        disabled={currentPage === 1}
-                        className="bg_page"
-                        onClick={() => handlePageChange(currentPage - 1)}
-                      >
-                        <i class="fi fi-rr-angle-small-left page_icon"></i>
-                      </button>
-                      <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
-                      <button
-                        disabled={currentPage === totalPages}
-                        className="bg_page"
-                        onClick={() => handlePageChange(currentPage + 1)}
-                      >
-                        <i class="fi fi-rr-angle-small-right page_icon"></i>
-                      </button>
-                    </div>
+                    <CustomPagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
                   </div>
                 </div>
               </div>

@@ -6,6 +6,7 @@ import { Modal, Box } from "@mui/material";
 import { BsThreeDotsVertical, BsPlus } from "react-icons/bs";
 import { FiTrash2 } from "react-icons/fi";
 import Swal from "sweetalert2";
+import CustomPagination from "../common/CustomPagination";
 
 const pageSize = 10;
 export default function Cashbook() {
@@ -1060,23 +1061,11 @@ export default function Cashbook() {
                     )}
                   </tbody>
                 </table>
-                <div className="text-center d-flex justify-content-end align-items-center">
-                  <button
-                    disabled={currentPage === 1}
-                    className="bg_page"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                  >
-                    <i className="fi fi-rr-angle-small-left page_icon"></i>
-                  </button>
-                  <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
-                  <button
-                    disabled={currentPage === totalPages}
-                    className="bg_page"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                  >
-                    <i className="fi fi-rr-angle-small-right page_icon"></i>
-                  </button>
-                </div>
+                <CustomPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(page) => handlePageChange(page)}
+                />
               </div>
             </div>
 

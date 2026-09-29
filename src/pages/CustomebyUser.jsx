@@ -27,6 +27,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { AssignmentTurnedIn } from "@mui/icons-material";
 import Swal from "sweetalert2";
+import CustomPagination from "../components/common/CustomPagination";
 
 const pageSize = 10;
 export default function CustomebyUserap() {
@@ -2052,24 +2053,11 @@ export default function CustomebyUserap() {
                   </table>
                 </div>
               )}
-              <div className="text-center d-flex justify-content-end align-items-center">
-                <button
-                  disabled={currentPage === 1}
-                  className="bg_page"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                >
-                  <i class="fi fi-rr-angle-small-left page_icon"></i>
-                </button>
-                <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
-                <button
-                  disabled={currentPage === totalPages}
-                  className="bg_page"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                >
-                  <i class="fi fi-rr-angle-small-right page_icon"></i>
-                </button>
-              </div>
-
+              <CustomPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
           </div>
           <Modal

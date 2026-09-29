@@ -42,6 +42,7 @@ import Swal from "sweetalert2";
 import { Box, Button, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useLocation } from "react-router-dom";
+import CustomPagination from "../components/common/CustomPagination";
 const pageSize = 10;
 export default function KPIgetdatauser() {
     const location  =useLocation()
@@ -302,33 +303,14 @@ const formdata={
                   </tbody>
                 </table>
                 {/* PAGINATION */}
-                <div className="d-flex justify-content-end align-items-end my-3">
-                  <button
-                    disabled={currentPage === 1}
-                      className="bg_page"
-                    onClick={() => {
-                      setCurrentPage(currentPage - 1);
-                      getdata(currentPage - 1, searchQuery);
-                    }}
-                  >
-                      <i class="fi fi-rr-angle-small-left page_icon"></i>
-                  </button>
-
-                  <span className="mx-2">
-                    Page {currentPage} of {totalPages}
-                  </span>
-
-                  <button
-                    disabled={currentPage === totalPages}
-                      className="bg_page"
-                    onClick={() => {
-                      setCurrentPage(currentPage + 1);
-                      getdata(currentPage + 1, searchQuery);
-                    }}
-                  >
-                   <i class="fi fi-rr-angle-small-right page_icon"></i>
-                  </button>
-                </div>
+                <CustomPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(page) => {
+                    setCurrentPage(page);
+                    getdata(page, searchQuery);
+                  }}
+                />
               </div>
             )}
           </div>

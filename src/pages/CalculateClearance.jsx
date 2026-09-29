@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Modal, Box, Typography, Button } from "@mui/material";
+import CustomPagination from "../components/common/CustomPagination";
 const pageSize = 5;
 export default function Customclearence() {
   const navigate = useNavigate();
@@ -452,25 +453,11 @@ export default function Customclearence() {
                             })}
                         </tbody>
                       </table>
-                      <div className="mt-4">
-                        <button
-                          disabled={currentPage === 1}
-                          className="btn rounded"
-                          style={{ backgroundColor: "red", color: "white" }}
-                          onClick={() => handlePageChange(currentPage - 1)}
-                        >
-                          Previous
-                        </button>
-                        <span>{`Page ${currentPage} of ${totalPage}`}</span>
-                        <button
-                          disabled={currentPage === totalPage}
-                          className="btn rounded"
-                          style={{ backgroundColor: "#011324", color: "white" }}
-                          onClick={() => handlePageChange(currentPage + 1)}
-                        >
-                          Next
-                        </button>
-                      </div>
+                      <CustomPagination
+                        currentPage={currentPage}
+                        totalPages={totalPage}
+                        onPageChange={(page) => handlePageChange(page)}
+                      />
                     </div>
                   </div>
                 </div>

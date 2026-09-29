@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import CustomPagination from "../components/common/CustomPagination";
 const pageSize = 10;
 const Query = () => {
   const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
@@ -565,27 +566,11 @@ const Query = () => {
                 </Modal>
               </div>
             </div>
-            <div className="row">
-              <div className="col-md-12">
-                <div className="text-center d-flex justify-content-end align-items-center">
-                  <button
-                    disabled={currentPage === 1}
-                    className="bg_page"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                  >
-                    <i class="fi fi-rr-angle-small-left page_icon"></i>
-                  </button>
-                  <span className="mx-2">{`Page ${currentPage} of ${totalPage}`}</span>
-                  <button
-                    disabled={currentPage === totalPage}
-                    className="bg_page"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                  >
-                    <i class="fi fi-rr-angle-small-right page_icon"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
+            <CustomPagination
+              currentPage={currentPage}
+              totalPages={totalPage}
+              onPageChange={handlePageChange}
+            />
           </div>
         </div>
       )}

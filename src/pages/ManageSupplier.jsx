@@ -4,6 +4,7 @@ import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import CloseIcon from "@mui/icons-material/Close";
+import CustomPagination from "../components/common/CustomPagination";
 const pageSize = 10;
 const SERVICE_TYPES = [
   { value: "all", label: "All" },
@@ -602,34 +603,14 @@ export default function ManageSupplier() {
                       ))}
                     </tbody>
                   </table>
-                  {/* PAGINATION */}
-                  <div className="d-flex justify-content-end align-items-end">
-                    <button
-                      disabled={currentPage === 1}
-                      onClick={() => {
-                        setCurrentPage(currentPage - 1);
-                        getdata(currentPage - 1, searchQuery);
-                      }}
-                      className="bg_page"
-                    >
-                      <i class="fi fi-rr-angle-small-left page_icon"></i>
-                    </button>
-
-                    <span className="mx-2">
-                      Page {currentPage} of {totalPages}
-                    </span>
-
-                    <button
-                      disabled={currentPage === totalPages}
-                      className="bg_page"
-                      onClick={() => {
-                        setCurrentPage(currentPage + 1);
-                        getdata(currentPage + 1, searchQuery);
-                      }}
-                    >
-                      <i class="fi fi-rr-angle-small-right page_icon"></i>
-                    </button>
-                  </div>
+                  <CustomPagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(page) => {
+                      setCurrentPage(page);
+                      getdata(page, searchQuery);
+                    }}
+                  />
                 </div>
               )}
             </div>

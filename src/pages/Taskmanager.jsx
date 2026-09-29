@@ -504,6 +504,7 @@ import { FiEye } from "react-icons/fi";
 import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import CustomPagination from "../components/common/CustomPagination";
 
 const pageSize = 10;
 
@@ -869,25 +870,11 @@ export default function Taskmanager() {
               </tbody>
             </table>
           </div>
-          <div className="text-center d-flex justify-content-end align-items-center">
-            <button
-              className="bg_page"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
-            >
-              <i class="fi fi-rr-angle-small-left page_icon"></i>
-            </button>
-            <span>
-              Page {currentPage} of {totalPages || 1}
-            </span>
-            <button
-              disabled={currentPage === totalPages}
-              className="bg_page"
-              onClick={() => setCurrentPage(currentPage + 1)}
-            >
-              <i class="fi fi-rr-angle-small-right page_icon"></i>
-            </button>
-          </div>
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages || 1}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
           <Modal open={commentModal} onClose={() => setCommentModal(false)}>
             <Box
               sx={{

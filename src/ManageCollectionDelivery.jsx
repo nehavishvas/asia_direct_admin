@@ -8,6 +8,7 @@ import { FiEdit, FiEye, FiCheckSquare, FiPrinter } from "react-icons/fi";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import logo from './Assests/logo.png';
+import CustomPagination from './components/common/CustomPagination';
 
 const ManageCollectionDelivery = () => {
     const navigate = useNavigate();
@@ -1262,29 +1263,11 @@ const ManageCollectionDelivery = () => {
                                             }
                                         </tbody>
                                     </table>
-                                    <div className="d-flex justify-content-end align-items-end">
-                                        <button
-                                            disabled={currentPage === 1}
-                                            className="bg_page"
-                                            onClick={() => {
-                                                setCurrentPage(currentPage - 1);
-                                            }}
-                                        >
-                                            <i class="fi fi-rr-angle-small-left page_icon"></i>
-                                        </button>
-                                        <span className="mx-2">
-                                            Page {currentPage} of {totalPages}
-                                        </span>
-                                        <button
-                                            disabled={currentPage === totalPages}
-                                            className="bg_page"
-                                            onClick={() => {
-                                                setCurrentPage(currentPage + 1);
-                                            }}
-                                        >
-                                            <i class="fi fi-rr-angle-small-right page_icon"></i>
-                                        </button>
-                                    </div>
+                                    <CustomPagination
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        onPageChange={(page) => setCurrentPage(page)}
+                                    />
                                 </div>
                             )}
                         </div>

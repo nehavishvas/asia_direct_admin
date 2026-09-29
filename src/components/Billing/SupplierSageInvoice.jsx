@@ -6,6 +6,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import Viewsupplierinvoice from "./Viewsupplierinvoice";
+import CustomPagination from "../common/CustomPagination";
 
 const formatValue = (val, dec = 2, isPercent = false) => {
   if (val === null || val === undefined || val === "") {
@@ -369,29 +370,11 @@ export default function SupplierSageInvoice() {
               )}
             </tbody>
           </table>
-          <div className="text-center d-flex justify-content-end align-items-center mt-3">
-            <button
-              disabled={currentPage === 1}
-              className="bg_page"
-              onClick={() =>
-                handlePageChange(currentPage - 1)
-              }
-            >
-              <i className="fi fi-rr-angle-small-left page_icon"></i>
-            </button>
-            <span className="mx-3">
-              {`Page ${currentPage} of ${totalPage}`}
-            </span>
-            <button
-              disabled={currentPage === totalPage}
-              className="bg_page"
-              onClick={() =>
-                handlePageChange(currentPage + 1)
-              }
-            >
-              <i className="fi fi-rr-angle-small-right page_icon"></i>
-            </button>
-          </div>
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPage}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
       {printItem && <Viewsupplierinvoice hiddenPrintItem={printItem} onPrintComplete={() => setPrintItem(null)} />}

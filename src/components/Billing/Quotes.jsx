@@ -6,12 +6,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import ViewQuotesInvoice from "./ViewQuotesInvoice";
+import CustomPagination from "../common/CustomPagination";
 
 const Quotes = () => {
     const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
     const userid = userdata?.id;
     const usertype = userdata?.user_type;
-
     const [data, setData] = useState([]);
     const [loader, setLoader] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -243,8 +243,8 @@ const Quotes = () => {
                                         <th>Reference</th>
                                         <th>Customer Name</th>
                                         <th>Freight Number</th>
-                                        <th>Customer Invoice Number</th>
-                                        <th>Inv Date</th>
+                                        <th>Customer Ref</th>
+                                        <th>Date</th>
                                         <th>Country</th>
                                         <th>Currency</th>
                                         <th>Total</th>
@@ -263,8 +263,8 @@ const Quotes = () => {
                                                     <td>{item.freight_number || "-"}</td>
                                                     <td>{item.customer_invoice_no || "-"}</td>
                                                     <td>
-                                                        {item.inv_date
-                                                            ? new Date(item.inv_date).toLocaleDateString("en-GB")
+                                                        {item.quote_date
+                                                            ? new Date(item.quote_date).toLocaleDateString("en-GB")
                                                             : "-"}
                                                     </td>
                                                     <td>{item.invoice_for_country || "-"}</td>
@@ -359,29 +359,11 @@ const Quotes = () => {
                                     )}
                                 </tbody>
                             </table>
-                            <div className="text-center d-flex justify-content-end align-items-center mt-3">
-                                <button
-                                    disabled={currentPage === 1}
-                                    className="bg_page"
-                                    onClick={() =>
-                                        handlePageChange(currentPage - 1)
-                                    }
-                                >
-                                    <i className="fi fi-rr-angle-small-left page_icon"></i>
-                                </button>
-                                <span className="mx-3">
-                                    {`Page ${currentPage} of ${totalPage}`}
-                                </span>
-                                <button
-                                    disabled={currentPage === totalPage}
-                                    className="bg_page"
-                                    onClick={() =>
-                                        handlePageChange(currentPage + 1)
-                                    }
-                                >
-                                    <i className="fi fi-rr-angle-small-right page_icon"></i>
-                                </button>
-                            </div>
+                            <CustomPagination
+                                currentPage={currentPage}
+                                totalPages={totalPage}
+                                onPageChange={(page) => handlePageChange(page)}
+                            />
                         </div>
                     </div>
                     {printItem && (

@@ -18,6 +18,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ClearIcon from '@mui/icons-material/Clear';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Swal from "sweetalert2";
+import CustomPagination from "../common/CustomPagination";
 
 const pageSize = 10;
 
@@ -254,6 +255,9 @@ export default function MAnageshipments() {
     setSelectedShipment(item);
     setShipmentStatus(item.status || "");
     setStatusModal(true);
+  };
+  const DuplicateOrder = (id) => {
+    navigate("/Admin/addshipment", { state: { duplicateId: id } });
   };
   const handleCloseStatusModal = () => {
     setStatusModal(false);
@@ -913,14 +917,7 @@ export default function MAnageshipments() {
                                     <li>
                                       <p
                                         className="dropdown-item"
-                                        onClick={() =>
-                                          handleopenstatus(
-                                            item.id,
-                                            item.status,
-                                            item.date,
-                                            item.comment
-                                          )
-                                        }
+                                        onClick={() => handleOpenStatusModal(item)}
                                       >
                                         <i
                                           className="fa fa-refresh me-2"
@@ -975,23 +972,11 @@ export default function MAnageshipments() {
                     })}
                 </tbody>
               </table>
-              <div className="text-center d-flex justify-content-end align-items-center">
-                <button
-                  disabled={currentPage === 1}
-                  className="bg_page"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                >
-                  <i className="fi fi-rr-angle-small-left page_icon"></i>
-                </button>
-                <span className="mx-2">{`Page ${currentPage} of ${totalPage}`}</span>
-                <button
-                  disabled={currentPage === totalPage}
-                  className="bg_page"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                >
-                  <i className="fi fi-rr-angle-small-right page_icon"></i>
-                </button>
-              </div>
+              <CustomPagination
+                currentPage={currentPage}
+                totalPages={totalPage}
+                onPageChange={(page) => handlePageChange(page)}
+              />
             </div>
           )}
           <Modal open={statusModal} onClose={handleCloseStatusModal}>

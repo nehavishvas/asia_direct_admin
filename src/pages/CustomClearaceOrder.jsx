@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { AssignmentTurnedIn, Calculate, CopyAll, Download } from "@mui/icons-material";
 import Swal from "sweetalert2";
+import CustomPagination from "../components/common/CustomPagination";
 
 const pageSize = 10;
 const CustomClearaceOrder = () => {
@@ -1057,23 +1058,11 @@ const CustomClearaceOrder = () => {
                     </tbody>
                   </table>
                 </div>
-                <div className="text-center d-flex justify-content-end align-items-center">
-                  <button
-                    disabled={currentPage === 1}
-                    className="bg_page"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                  >
-                    <i class="fi fi-rr-angle-small-left page_icon"></i>
-                  </button>
-                  <span className="mx-2">{`Page ${currentPage} of ${totalPage}`}</span>
-                  <button
-                    disabled={currentPage === totalPage}
-                    className="bg_page"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                  >
-                    <i class="fi fi-rr-angle-small-right page_icon"></i>
-                  </button>
-                </div>
+                <CustomPagination
+                  currentPage={currentPage}
+                  totalPages={totalPage}
+                  onPageChange={handlePageChange}
+                />
               </div>
             </div>
           )}

@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import { FiEye, FiMessageSquare } from "react-icons/fi";
+import CustomPagination from "../components/common/CustomPagination";
 
 export default function SupplierEstimation() {
   const [data, setData] = useState([]);
@@ -114,6 +115,11 @@ export default function SupplierEstimation() {
               )}
             </tbody>
           </table>
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FiEye } from "react-icons/fi";
+import CustomPagination from "../components/common/CustomPagination";
 const pageSize = 5;
 export default function Listshippingestimate() {
   const navigate = useNavigate();
@@ -237,23 +238,11 @@ export default function Listshippingestimate() {
                       })}
                   </tbody>
                 </table>
-                <div>
-                  <button
-                    disabled={currentPage === 1}
-                    className="btn pagePre rounded"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                  >
-                    Previous
-                  </button>
-                  <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
-                  <button
-                    disabled={currentPage === totalPages}
-                    className="btn pageNext rounded"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                  >
-                    Next
-                  </button>
-                </div>
+                <CustomPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(page) => handlePageChange(page)}
+                />
               </div>
             </div>
           </div>

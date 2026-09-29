@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import CustomPagination from "../components/common/CustomPagination";
 const pageSize = 10;
 export default function ClientKpiModule() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -109,31 +110,14 @@ const totalPages = pagenationData?.totalPages || 1;
                     ))}
                   </tbody>
                 </table>
-                <div className="d-flex justify-content-end align-items-end my-3">
-                  <button
-                    disabled={currentPage === 1}
-                      className="bg_page"
-                    onClick={() => {
-                      setCurrentPage(currentPage - 1);
-                      getdata(currentPage - 1, searchQuery);
-                    }}
-                  >
-                      <i class="fi fi-rr-angle-small-left page_icon"></i>
-                  </button>
-                  <span className="mx-2">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    disabled={currentPage === totalPages}
-                      className="bg_page"
-                    onClick={() => {
-                      setCurrentPage(currentPage + 1);
-                      getdata(currentPage + 1, searchQuery);
-                    }}
-                  >
-                   <i class="fi fi-rr-angle-small-right page_icon"></i>
-                  </button>
-                </div>
+                <CustomPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(page) => {
+                    setCurrentPage(page);
+                    getdata(page, searchQuery);
+                  }}
+                />
               </div>
             )}
           </div>

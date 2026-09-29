@@ -161,6 +161,18 @@ export default function AiChatWidget() {
   });
 
   const messagesEndRef = useRef(null);
+  const isDraggingRef = useRef(false);
+  const dragStartPos = useRef({ x: 0, y: 0 });
+  const initialElemPos = useRef({ x: 0, y: 0 });
+
+  const [position, setPosition] = useState(() => {
+    try {
+      const saved = localStorage.getItem('ai_fab_pos');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -197,12 +209,63 @@ export default function AiChatWidget() {
     return 'Good evening';
   };
 
+  const handlePointerDown = (e) => {
+    isDraggingRef.current = false;
+    dragStartPos.current = { x: e.clientX, y: e.clientY };
+    const rect = e.currentTarget.getBoundingClientRect();
+    initialElemPos.current = { x: rect.left, y: rect.top };
+
+    const handlePointerMove = (moveEvent) => {
+      const dx = moveEvent.clientX - dragStartPos.current.x;
+      const dy = moveEvent.clientY - dragStartPos.current.y;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+        isDraggingRef.current = true;
+      }
+      const newX = Math.max(10, Math.min(window.innerWidth - 65, initialElemPos.current.x + dx));
+      const newY = Math.max(10, Math.min(window.innerHeight - 65, initialElemPos.current.y + dy));
+      setPosition({ x: newX, y: newY });
+    };
+
+    const handlePointerUp = () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      if (isDraggingRef.current) {
+        setPosition((pos) => {
+          if (pos) {
+            try {
+              localStorage.setItem('ai_fab_pos', JSON.stringify(pos));
+            } catch {}
+          }
+          return pos;
+        });
+      }
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+  };
+
   const activeName = user?.name || userName || 'User';
 
   if (!open) {
+    const fabStyle = position
+      ? { left: `${position.x}px`, top: `${position.y}px`, bottom: 'auto', right: 'auto' }
+      : { bottom: '18px', right: '18px' };
+
     return (
-      <div className="ai-fab-container">
-        <button type="button" className="ai-fab" onClick={() => setOpen(true)} aria-label="Open Workspace AI Chat">
+      <div className="ai-fab-container" style={fabStyle}>
+        <button
+          type="button"
+          className="ai-fab"
+          onPointerDown={handlePointerDown}
+          onClick={(e) => {
+            if (!isDraggingRef.current) {
+              setOpen(true);
+            }
+          }}
+          title="Drag to move or click to open Workspace AI"
+          aria-label="Open Workspace AI Chat"
+        >
           <FaRobot />
         </button>
       </div>

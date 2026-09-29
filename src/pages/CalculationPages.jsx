@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { RxCrossCircled } from "react-icons/rx";
 import { FaCircleCheck } from "react-icons/fa6";
 import { Navigate, useNavigate } from "react-router-dom";
+import CustomPagination from "../components/common/CustomPagination";
 const pageSize = 5
 export default function CalculationPages() {
     const [data, setData] = useState([])
@@ -120,15 +121,11 @@ export default function CalculationPages() {
                                     }
                                 </tbody>
                             </table>
-                            <div className='mt-4'>
-                                <button disabled={currentPage === 1} className='btn pagePre' onClick={() => handlePageChange(currentPage - 1)} style={{ backgroundColor: "red", color: "white" }}>
-                                    Previous
-                                </button>
-                                <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
-                                <button className='btn btn-success pageNext' disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)} style={{ backgroundColor: "green", color: "white" }}>
-                                    Next
-                                </button>
-                            </div>
+                            <CustomPagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={(page) => handlePageChange(page)}
+                            />
                         </div>
                         
                     </div>

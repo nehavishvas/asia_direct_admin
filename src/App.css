@@ -7189,3 +7189,36 @@ table svg.action-icon-view,
   border: none !important;
   border-bottom: 2px solid #1b2245 !important;
 }
+
+/* Custom Unified Pagination Styles */
+.custom-pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+  margin-bottom: 25px;
+  padding-right: 20px;
+}
+
+button.bg_page:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  background-color: #1d2044 !important;
+  pointer-events: none !important;
+}
+
+/* Global Print Styles to prevent chatbot & widgets from printing */
+@media print {
+  .ai-fab-container,
+  .ai-fab,
+  .ai-panel,
+  .ai-fab::before {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    box-shadow: none !important;
+    animation: none !important;
+  }
+}

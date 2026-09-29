@@ -4,6 +4,7 @@ import axios from "axios";
 
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
+import CustomPagination from "../common/CustomPagination";
 
 export default function ReleasedDashboadrs() {
   const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
@@ -257,37 +258,11 @@ const handlePageChange = (event, value) => {
           </div>
 
           {/* PAGINATION */}
-
-            {/* PAGINATION */}
-
-<div className="text-center d-flex justify-content-end align-items-center mt-3">
-
-  {/* PREVIOUS BUTTON */}
-
-  <button
-    disabled={currentPage === 1}
-    className="bg_page"
-    onClick={() => setCurrentPage(currentPage - 1)}
-  >
-    <i className="fi fi-rr-angle-small-left page_icon"></i>
-  </button>
-
-  {/* PAGE TEXT */}
-
-  <span className="mx-2">
-    {`Page ${currentPage} of ${totalPages}`}
-  </span>
-
-  {/* NEXT BUTTON */}
-
-  <button
-    disabled={currentPage === totalPages}
-    className="bg_page"
-    onClick={() => setCurrentPage(currentPage + 1)}
-  >
-    <i className="fi fi-rr-angle-small-right page_icon"></i>
-  </button>
-</div>
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
 
           
         </div>

@@ -9,7 +9,8 @@ import PrintIcon from "@mui/icons-material/Print";
 export default function BatchReport() {
   const navigate = useNavigate();
   const location = useLocation();
-  const batchId = location.state?.batchId;
+  const queryParams = new URLSearchParams(location.search);
+  const batchId = location.state?.batchId || queryParams.get("batchId") || queryParams.get("id");
 
   const [batchData, setBatchData] = useState(null);
   const [loader, setLoader] = useState(false);
@@ -51,8 +52,36 @@ export default function BatchReport() {
 
   const formatDateString = (dateVal) => {
     if (!dateVal || dateVal === "0000-00-00" || dateVal === "0000-00-00 00:00:00") return "";
+
+    if (typeof dateVal === "string") {
+      const trimmed = dateVal.trim();
+      const parts = trimmed.split(/[\/\-]/);
+      if (parts.length === 3) {
+        // If YYYY-MM-DD
+        if (parts[0].length === 4) {
+          const yyyy = parts[0];
+          const mm = parts[1].padStart(2, "0");
+          const dd = parts[2].split(" ")[0].padStart(2, "0");
+          const yy = yyyy.slice(-2);
+          return `${dd}/${mm}/${yy}`;
+        }
+        // If DD/MM/YYYY or DD/MM/YY
+        const dd = parts[0].padStart(2, "0");
+        const mm = parts[1].padStart(2, "0");
+        let yy = parts[2].split(" ")[0];
+        if (yy.length === 4) {
+          yy = yy.slice(-2);
+        } else {
+          yy = yy.padStart(2, "0");
+        }
+        return `${dd}/${mm}/${yy}`;
+      }
+    }
+
     const date = new Date(dateVal);
-    if (Number.isNaN(date.getTime())) return "";
+    if (Number.isNaN(date.getTime())) {
+      return typeof dateVal === "string" ? dateVal : "";
+    }
     const dd = String(date.getDate()).padStart(2, "0");
     const mm = String(date.getMonth() + 1).padStart(2, "0");
     const yyyy = date.getFullYear();
@@ -61,6 +90,7 @@ export default function BatchReport() {
   };
 
   const formatNumber = (num, decimals = 2) => {
+    if (num === null || num === undefined || num === "") return decimals === 2 ? "0.00" : "0";
     const val = parseFloat(num);
     if (isNaN(val)) return decimals === 2 ? "0.00" : "0";
     return val.toLocaleString("en-US", {
@@ -80,19 +110,23 @@ export default function BatchReport() {
     );
   }
 
+  const company = batchData?.company || {};
   const batch = batchData?.batch || {};
   const routing = batchData?.routing_information || {};
-  const consignments = batchData?.consignments || [];
-  const totals = batchData?.totals || { volume: 0, packages: 0, weight: 0 };
+  const consignments = batchData?.consignments || batchData?.consignment || [];
+  
+  const totalVolume =
+    batchData?.totals?.volume !== undefined && batchData?.totals?.volume !== null
+      ? batchData.totals.volume
+      : consignments.reduce((sum, item) => sum + (parseFloat(item.volume) || 0), 0);
 
-  // Calculate empty rows needed to fill space (to match the template style)
-  const minRows = 15;
-  const emptyRowsCount = Math.max(0, minRows - consignments.length);
-  const emptyRows = Array.from({ length: emptyRowsCount });
+  const totalPackages =
+    batchData?.totals?.packages !== undefined && batchData?.totals?.packages !== null
+      ? batchData.totals.packages
+      : consignments.reduce((sum, item) => sum + (parseFloat(item.packages) || 0), 0);
 
   return (
     <>
-      
       <div className="wpWrapper">
         <div className="container-fluid no-print">
           <div className="d-flex justify-content-between align-items-center mb-4">
@@ -127,18 +161,20 @@ export default function BatchReport() {
               <div className="report-container">
                 {/* Company Header */}
                 <div className="report-header-text">
-                  <h3 className="report-company-name">Asia Direct - Africa (Pty) Ltd</h3>
+                  <h3 className="report-company-name">
+                    {company.name || "Asia Direct - Africa (Pty) Ltd"}
+                  </h3>
                   <p className="report-company-address">
-                    Address: Unit 4, Villa Valencia Office Park, 2 Anemoon Ave, Kempton Park, South Africa, 1619
+                    Address: {company.address || "Unit 4, Villa Valencia Office Park, 2 Anemoon Ave, Kempton Park, South Africa, 1619"}
                   </p>
                   <p className="report-company-reg">
-                    Reg: 2017/057805/07 &nbsp;&nbsp;&bull;&nbsp;&nbsp; Vat: 4740280377
+                    Reg: {company.reg_no || "2017 / 667803 / 07"} &nbsp;&nbsp;&bull;&nbsp;&nbsp; Vat: {company.vat_no || "4740280377"}
                   </p>
                 </div>
 
                 {/* Subtitle / Title */}
                 <div className="report-title-section">
-                  AIR / SEA LCL Consolidation
+                  {batchData?.title || "AIR / SEA LCL Consolidations"}
                 </div>
 
                 {/* Meta details */}
@@ -146,13 +182,13 @@ export default function BatchReport() {
                   <div className="report-meta-item">
                     <div className="report-meta-label">Batch Reference</div>
                     <div className="report-meta-value">
-                      {batch.batch_reference || "-"}
+                      {batchData?.batch_reference || batch.batch_reference || "-"}
                     </div>
                   </div>
                   <div className="report-meta-item">
                     <div className="report-meta-label">Shipping Agent</div>
                     <div className="report-meta-value">
-                      {routing.shipping_agent || batch.agent || batch.forwarding_agent || "-"}
+                      {batchData?.shipping_agent || routing.shipping_agent || batch.agent || batch.forwarding_agent || "-"}
                     </div>
                   </div>
                 </div>
@@ -174,13 +210,13 @@ export default function BatchReport() {
                     </thead>
                     <tbody>
                       <tr>
-                        <td>{routing.freight || batch.freight || "-"}</td>
-                        <td>{routing.release_type || "-"}</td>
+                        <td>{routing.mode || routing.freight || batch.freight || "-"}</td>
+                        <td>{routing.bl_release_type || routing.release_type || "-"}</td>
                         <td>{routing.carrier || batch.carrier || "-"}</td>
-                        <td>{routing.port_of_loading || batch.port_loading || "-"}</td>
-                        <td>{routing.port_of_discharge || batch.port_discharge || "-"}</td>
-                        <td>{formatDateString(routing.ETD) || formatDateString(batch.ETD) || "-"}</td>
-                        <td>{formatDateString(routing.ATD) || formatDateString(batch.date_dispatch) || "-"}</td>
+                        <td>{routing.load || routing.port_of_loading || batch.port_loading || "-"}</td>
+                        <td>{routing.disch || routing.discharge || routing.port_of_discharge || batch.port_discharge || "-"}</td>
+                        <td>{formatDateString(routing.etd || routing.ETD || batch.ETD) || routing.etd || routing.ETD || "-"}</td>
+                        <td>{formatDateString(routing.eta || routing.ETA || routing.atd || routing.ATD || batch.date_dispatch) || routing.eta || routing.ETA || "-"}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -203,28 +239,19 @@ export default function BatchReport() {
                     <tbody>
                       {consignments.map((item, idx) => (
                         <tr key={idx}>
-                          <td>{item.marks || "-"}</td>
-                          <td>{item.goods_description || "-"}</td>
+                          <td>{item.marks || item.mark || "-"}</td>
+                          <td>{item.goods_description || item.description || item.goods || "-"}</td>
                           <td>{formatNumber(item.volume, 2)}</td>
                           <td>{formatNumber(item.packages, 0)}</td>
-                          <td>{item.warehouse_receipt_reference || "-"}</td>
-                          <td>{formatDateString(item.date_received) || "-"}</td>
+                          <td>{item.warehouse_receipt_ref || item.warehouse_receipt_reference || item.wr_reference || "-"}</td>
+                          <td>{formatDateString(item.date_received || item.received_at) || item.date_received || item.received_at || "-"}</td>
                         </tr>
                       ))}
-                      {emptyRows.map((_, idx) => (
-                        <tr key={`empty-${idx}`}>
-                          <td>&nbsp;</td>
-                          <td>&nbsp;</td>
-                          <td>&nbsp;</td>
-                          <td>&nbsp;</td>
-                          <td>&nbsp;</td>
-                          <td>&nbsp;</td>
-                        </tr>
-                      ))}
+
                       <tr className="totals-row">
                         <td colSpan={2} style={{ textAlign: "right", fontWeight: "bold" }}>Total:</td>
-                        <td style={{ fontWeight: "bold" }}>{formatNumber(totals.volume, 2)}</td>
-                        <td style={{ fontWeight: "bold" }}>{formatNumber(totals.packages, 0)}</td>
+                        <td style={{ fontWeight: "bold" }}>{formatNumber(totalVolume, 2)}</td>
+                        <td style={{ fontWeight: "bold" }}>{formatNumber(totalPackages, 0)}</td>
                         <td colSpan={2}>&nbsp;</td>
                       </tr>
                     </tbody>

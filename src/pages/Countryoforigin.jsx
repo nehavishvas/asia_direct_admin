@@ -23,6 +23,7 @@ import { FiEdit, FiTrash2 } from "react-icons/fi";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
+import CustomPagination from "../components/common/CustomPagination";
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -587,28 +588,11 @@ export default function CountryOfOrigin({ countryID = null }) {
                 </Table>
               </div>
             </TableContainer>
-            <div className="text-center d-flex justify-content-end align-items-center">
-              <button
-                disabled={currentPage === 1}
-                className="bg_page"
-                onClick={() => setCurrentPage((prev) => prev - 1)}
-              >
-                <i class="fi fi-rr-angle-small-left page_icon"></i>
-              </button>
-
-              <span className="mx-2">
-                Page {currentPage} of {totalPages}
-              </span>
-
-              <button
-                disabled={currentPage === totalPages}
-                className="bg_page"
-                onClick={() => setCurrentPage((prev) => prev + 1)}
-              >
-                <i class="fi fi-rr-angle-small-right page_icon"></i>
-              </button>
-            </div>
-
+            <CustomPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
           </div>
         </div>
       </div>

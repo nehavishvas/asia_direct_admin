@@ -35,6 +35,7 @@ import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import FolderIcon from "@mui/icons-material/Folder";
 import { Group } from "@mui/icons-material";
 import CompanyAddresses from "../../pages/CompanyAddresses";
 const routes = [
@@ -142,9 +143,47 @@ const routes = [
         name: "Supplier Invoice",
         icon: <ShoppingCartOutlinedIcon />,
       },
+    ],
+  },
+  {
+    path: "",
+    name: "Reports",
+    icon: <InsertDriveFileIcon />,
+    subRoutes: [
       {
-        name: "Reports",
-        icon: <InsertDriveFileIcon />,
+        name: "Customer",
+        icon: <FolderIcon style={{ color: "#f59e0b" }} />,
+        subRoutes: [
+          {
+            path: "/Admin/customer-balance-report",
+            name: "Customer Balance",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+          {
+            path: "/Admin/customer-statement-report",
+            name: "Customer Statement",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+          {
+            path: "/Admin/customer-invoices-report",
+            name: "Customer Invoices",
+            icon: <ReceiptIcon />,
+          },
+          {
+            path: "/Admin/customer-quotes-report",
+            name: "Customer Quotes",
+            icon: <RequestQuoteIcon />,
+          },
+          {
+            path: "/Admin/customer-unallocated-report",
+            name: "Customer Unallocated",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+        ],
+      },
+      {
+        name: "Sales",
+        icon: <FolderIcon style={{ color: "#f59e0b" }} />,
         subRoutes: [
           {
             path: "/Admin/quote-report-item",
@@ -164,6 +203,7 @@ const routes = [
           {
             path: "/Admin/sales-by-item-report",
             name: "Sales by Item",
+
             icon: <ShoppingCartOutlinedIcon />,
           },
           {
@@ -171,29 +211,30 @@ const routes = [
             name: "Sales by Sales Rep",
             icon: <ShoppingCartOutlinedIcon />,
           },
-          {
-            path: "/Admin/supplier-balance-report",
-            name: "Supplier Balance",
-            icon: <ShoppingCartOutlinedIcon />,
-          },
-          {
-            path: "/Admin/supplier-invoice-report",
-            name: "Supplier Invoice",
-            icon: <ShoppingCartOutlinedIcon />,
-          },
-          {
-            path: "/Admin/customer-balance-report",
-            name: "Customer Balance",
-            icon: <ShoppingCartOutlinedIcon />,
-          },
-          {
-            path: "/Admin/customer-statement-report",
-            name: "Customer Statement",
-            icon: <ShoppingCartOutlinedIcon />,
-          },
+        ],
+      },
+      {
+        name: "Shipments",
+        icon: <FolderIcon style={{ color: "#f59e0b" }} />,
+        subRoutes: [
           {
             path: "/Admin/freight-report",
             name: "Freight by Admin Reports",
+            icon: <FlightOutlinedIcon />,
+          },
+          {
+            path: "/Admin/freight-admin-by-customer-report",
+            name: "Freight by Admin -By Customer Report",
+            icon: <FlightOutlinedIcon />,
+          },
+          {
+            path: "/Admin/freight-admin-by-item-report",
+            name: "Freight By Admin - Item Report",
+            icon: <FlightOutlinedIcon />,
+          },
+          {
+            path: "/Admin/freight-admin-by-sales-rep-report",
+            name: "Freight by Admin - Sales Rep Report",
             icon: <FlightOutlinedIcon />,
           },
           {
@@ -202,9 +243,56 @@ const routes = [
             icon: <ShoppingCartOutlinedIcon />,
           },
           {
+            path: "/Admin/freight-orders-by-customer-report",
+            name: "Freight Orders - By Customer Report",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+          {
+            path: "/Admin/freight-orders-item-report",
+            name: "Freight Orders - Item Report",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+          {
+            path: "/Admin/freight-orders-sales-rep-report",
+            name: "Freight Orders - Sales Rep Report",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+          {
             path: "/Admin/shipments-report",
             name: "Shipment Reports",
             icon: <LocalShippingOutlinedIcon />,
+          },
+        ],
+      },
+      {
+        name: "Supplier",
+        icon: <FolderIcon style={{ color: "#f59e0b" }} />,
+        subRoutes: [
+          {
+            path: "/Admin/supplier-balance-report",
+            name: "Supplier Balance",
+            icon: <ShoppingCartOutlinedIcon />,
+          },
+          {
+            path: "/Admin/supplier-invoice-report",
+            name: "Supplier Invoice",
+            icon: <ReceiptIcon />,
+          },
+        ],
+      },
+      {
+        name: "Warehouse",
+        icon: <FolderIcon style={{ color: "#f59e0b" }} />,
+        subRoutes: [
+          {
+            path: "/Admin/warehouse-days-outstanding-report",
+            name: "Warehouse Days Outstanding Report",
+            icon: <WarehouseOutlinedIcon />,
+          },
+          {
+            path: "/Admin/supplier-warehouse-days-outstanding-report",
+            name: "Supplier Warehouse Days Outstanding Report",
+            icon: <WarehouseOutlinedIcon />,
           },
         ],
       },

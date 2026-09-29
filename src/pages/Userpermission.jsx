@@ -11,7 +11,7 @@ const TreeNode = ({ node, handleCheck }) => {
 
   return (
     <div className="ml-4 staffPer" style={isHeading ? { marginTop: "16px" } : {}}>
-      <div 
+      <div
         className={`flex items-center gap-2 p-2 ${isHeading ? "bg-gray-100 font-bold rounded" : ""}`}
         style={isHeading ? { backgroundColor: "#f3f4f6", fontWeight: "bold", padding: "10px 8px" } : {}}
       >
@@ -143,7 +143,6 @@ const sortAndGroupPermissions = (data) => {
   // 4. Account
   const accountChildren = [];
   addNode(accountChildren, pullNodeByAliases(["accounts", "quotes", "invoices", "invoicerecon", "sagecustomerinvoices", "cashbook", "supplierinvoice", "manageinvoices"]), "Accounts");
-  addNode(accountChildren, pullNodeByAliases(["reports", "quoteitemsummary", "salesbycustomer", "salesbycustomersummary", "salesbyitem", "salesbysalesrep", "supplierbalance", "freightreport", "freightordersreport", "shipmentsreport", "freight-report", "freight-orders-report", "shipments-report"]), "Reports");
 
   if (accountChildren.length > 0) {
     finalTree.push({
@@ -153,6 +152,52 @@ const sortAndGroupPermissions = (data) => {
       isChecked: accountChildren.every(c => c.isChecked),
       children: accountChildren
     });
+  }
+
+  // 4.1 Reports
+  const reportsNode = pullNodeByAliases([
+    "reports",
+    "quoteitemsummary",
+    "salesbycustomer",
+    "salesbycustomersummary",
+    "salesbyitem",
+    "salesbysalesrep",
+    "supplierbalance",
+    "supplierinvoice",
+    "customerbalance",
+    "customerstatement",
+    "customerinvoices",
+    "customerquotes",
+    "customerunallocated",
+    "freightreport",
+    "freightadminbycustomerreport",
+    "freightadminbyitemreport",
+    "freightadminbysalesrepreport",
+    "freightordersreport",
+    "freightordersbycustomerreport",
+    "freightorderscustomerreport",
+    "freightorderssalesrepreport",
+    "freightordersbysalesrepreport",
+    "shipmentsreport",
+    "batchreport",
+    "warehousedaysoutstandingreport",
+    "supplierwarehousedaysoutstandingreport",
+    "freight-report",
+    "freight-admin-by-customer-report",
+    "freight-admin-by-item-report",
+    "freight-admin-by-sales-rep-report",
+    "freight-orders-report",
+    "freight-orders-by-customer-report",
+    "freight-orders-customer-report",
+    "freight-orders-sales-rep-report",
+    "freight-orders-by-sales-rep-report",
+    "shipments-report",
+    "batch-report",
+    "warehouse-days-outstanding-report",
+    "supplier-warehouse-days-outstanding-report"
+  ]);
+  if (reportsNode) {
+    addNode(finalTree, reportsNode, "Reports");
   }
 
   // 5. Warehouse
