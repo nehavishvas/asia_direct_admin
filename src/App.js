@@ -117,6 +117,8 @@ import AddQuotesInvoice from "./components/Billing/AddQuotesInvoice";
 import EditQuotesInvoice from "./components/Billing/EditQuotesInvoice";
 import ViewQuotesInvoice from "./components/Billing/ViewQuotesInvoice";
 import CustomerQuotesReport from "./components/Billing/CustomerQuotesReport";
+import QuotesByCustomerReport from "./components/Billing/QuotesByCustomerReport";
+import QuotesBySalesRepReport from "./components/Billing/QuotesBySalesRepReport";
 import QuoteItemReport from "./components/Billing/QuoteItemReport";
 import QuoteReportItem from "./components/Billing/QuoteReportItem";
 import SalesByCustomerReport from "./components/Billing/SalesByCustomerReport";
@@ -167,7 +169,7 @@ const Uniovwersalpage = lazy(() => import("./components/Uniovwersalpage"));
 export default function App() {
   const [text, setText] = useState("");
   const [permission, setPermission] = useState("");
-  console.log("25-09-26", "18:04");
+  console.log("29-09-26", "14:38");
 
   useEffect(() => {
     const handleDropdownClick = (event) => {
@@ -218,6 +220,9 @@ export default function App() {
                 <Route path="/Admin/quotes" element={<Quotes />} />
                 <Route path="/Admin/addquotesinvoice" element={<AddQuotesInvoice />} />
                 <Route path="/Admin/customer-quotes-report" element={<CustomerQuotesReport />} />
+                <Route path="/Admin/quotes-by-customer-report" element={<QuotesByCustomerReport />} />
+                <Route path="/Admin/quotes-by-rep-report" element={<QuotesBySalesRepReport />} />
+                <Route path="/Admin/quotes-by-sales-rep-report" element={<QuotesBySalesRepReport />} />
                 <Route path="/Admin/quote-item-report" element={<QuoteItemReport />} />
                 <Route path="/Admin/quote-report-item" element={<QuoteReportItem />} />
                 <Route path="/Admin/sales-by-customer-report" element={<SalesByCustomerReport />} />

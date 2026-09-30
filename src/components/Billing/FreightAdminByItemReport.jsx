@@ -66,6 +66,7 @@ const FreightAdminByItemReport = () => {
     const [items, setItems] = useState([]);
     const [grandTotal, setGrandTotal] = useState(null);
     const [totalItems, setTotalItems] = useState(0);
+    const [componentList, setComponentList] = useState([]);
     const [loader, setLoader] = useState(false);
     const [searched, setSearched] = useState(false);
 
@@ -153,6 +154,21 @@ const FreightAdminByItemReport = () => {
         }
     };
 
+    const fetchComponentList = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}getNewAdminFrieghtComponentList`);
+            if (response.data && (response.data.success || response.data.data)) {
+                const list = response.data.data || [];
+                const sortedList = [...list]
+                    .filter((item) => item && (item.description || item.name))
+                    .sort((a, b) => ((a.description || a.name || "").localeCompare(b.description || b.name || "")));
+                setComponentList(sortedList);
+            }
+        } catch (error) {
+            console.error("Error fetching admin freight component list:", error);
+        }
+    };
+
     const checkPermission = async () => {
         try {
             setLoader(true);
@@ -188,6 +204,7 @@ const FreightAdminByItemReport = () => {
 
     useEffect(() => {
         checkPermission();
+        fetchComponentList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -216,6 +233,52 @@ const FreightAdminByItemReport = () => {
         const num = parseFloat(val);
         if (isNaN(num)) return "0.0000%";
         return `${num.toFixed(4)}%`;
+    };
+
+    const getRowDimension = (row) => {
+        if (!row) return "0.0000";
+        if (row.dimension_display) return row.dimension_display;
+        if (row.dimension !== undefined && row.dimension !== null) return formatQty(row.dimension);
+        if (row.diamension_display) return row.diamension_display;
+        if (row.diamension !== undefined && row.diamension !== null) return formatQty(row.diamension);
+        return "0.0000";
+    };
+
+    const getRowWeight = (row) => {
+        if (!row) return "0.0000";
+        if (row.weight_display) return row.weight_display;
+        if (row.weight !== undefined && row.weight !== null) return formatQty(row.weight);
+        return "0.0000";
+    };
+
+    const getRowVolume = (row) => {
+        if (!row) return "0.0000";
+        if (row.volume_display) return row.volume_display;
+        if (row.volume !== undefined && row.volume !== null) return formatQty(row.volume);
+        if (row.volumetric_weight_display) return row.volumetric_weight_display;
+        if (row.volumetric_weight !== undefined && row.volumetric_weight !== null) return formatQty(row.volumetric_weight);
+        return "0.0000";
+    };
+
+    const getItemDimension = (item) => {
+        if (!item) return "0.0000";
+        if (item.total_dimension_display) return item.total_dimension_display;
+        if (item.total_dimension !== undefined && item.total_dimension !== null) return formatQty(item.total_dimension);
+        return getRowDimension(item);
+    };
+
+    const getItemWeight = (item) => {
+        if (!item) return "0.0000";
+        if (item.total_weight_display) return item.total_weight_display;
+        if (item.total_weight !== undefined && item.total_weight !== null) return formatQty(item.total_weight);
+        return getRowWeight(item);
+    };
+
+    const getItemVolume = (item) => {
+        if (!item) return "0.0000";
+        if (item.total_volume_display) return item.total_volume_display;
+        if (item.total_volume !== undefined && item.total_volume !== null) return formatQty(item.total_volume);
+        return getRowVolume(item);
     };
 
     const formatDateDisplay = (dateVal) => {
@@ -331,19 +394,16 @@ const FreightAdminByItemReport = () => {
                                                 onChange={(e) => setItemFrom(e.target.value)}
                                             >
                                                 <option value="All">All Items (From)</option>
-                                                <option value="ADMIN">ADMIN - Admin Fees</option>
-                                                <option value="AFT">AFT - Airfreight</option>
-                                                <option value="CAF">CAF - Customs agency surcharge</option>
-                                                <option value="CUS">CUS - Customs Clearance</option>
-                                                <option value="DOC">DOC - Documentation</option>
-                                                <option value="DUTY">DUTY - Customs Duty</option>
-                                                <option value="FRT">FRT - Freight Charges</option>
-                                                <option value="HAND">HAND - Handling Fees</option>
-                                                <option value="INS">INS - Insurance</option>
-                                                <option value="ROA">ROA - Road Freight</option>
-                                                <option value="SEA">SEA - Sea Freight</option>
-                                                <option value="STO">STO - Storage</option>
-                                                <option value="VAT">VAT - Import VAT</option>
+                                                {componentList && componentList.length > 0 &&
+                                                    componentList.map((comp, index) => {
+                                                        const compVal = comp.description || comp.name || comp.code;
+                                                        const compLabel = comp.code ? `${comp.code} - ${comp.description || comp.name}` : (comp.description || comp.name);
+                                                        return (
+                                                            <option key={comp.admin_frieght_component_id || `from_${index}`} value={compVal}>
+                                                                {compLabel}
+                                                            </option>
+                                                        );
+                                                    })}
                                             </select>
                                         </div>
 
@@ -357,19 +417,16 @@ const FreightAdminByItemReport = () => {
                                                 onChange={(e) => setItemTo(e.target.value)}
                                             >
                                                 <option value="All">All Items (To)</option>
-                                                <option value="ADMIN">ADMIN - Admin Fees</option>
-                                                <option value="AFT">AFT - Airfreight</option>
-                                                <option value="CAF">CAF - Customs agency surcharge</option>
-                                                <option value="CUS">CUS - Customs Clearance</option>
-                                                <option value="DOC">DOC - Documentation</option>
-                                                <option value="DUTY">DUTY - Customs Duty</option>
-                                                <option value="FRT">FRT - Freight Charges</option>
-                                                <option value="HAND">HAND - Handling Fees</option>
-                                                <option value="INS">INS - Insurance</option>
-                                                <option value="ROA">ROA - Road Freight</option>
-                                                <option value="SEA">SEA - Sea Freight</option>
-                                                <option value="STO">STO - Storage</option>
-                                                <option value="VAT">VAT - Import VAT</option>
+                                                {componentList && componentList.length > 0 &&
+                                                    componentList.map((comp, index) => {
+                                                        const compVal = comp.description || comp.name || comp.code;
+                                                        const compLabel = comp.code ? `${comp.code} - ${comp.description || comp.name}` : (comp.description || comp.name);
+                                                        return (
+                                                            <option key={comp.admin_frieght_component_id || `to_${index}`} value={compVal}>
+                                                                {compLabel}
+                                                            </option>
+                                                        );
+                                                    })}
                                             </select>
                                         </div>
                                     </div>
@@ -386,13 +443,9 @@ const FreightAdminByItemReport = () => {
                                                 onChange={(e) => setCategoryFrom(e.target.value)}
                                             >
                                                 <option value="All">All Categories (From)</option>
-                                                <option value="Destination Charges">Destination Charges</option>
-                                                <option value="Freight Charges">Freight Charges</option>
-                                                <option value="Origin Charges">Origin Charges</option>
-                                                <option value="Customs Charges">Customs Charges</option>
-                                                <option value="South Africa">South Africa</option>
-                                                <option value="Zambia">Zambia</option>
-                                                <option value="Zimbabwe">Zimbabwe</option>
+                                                <option value="Sea">Sea</option>
+                                                <option value="Air">Air</option>
+                                                <option value="Road">Road</option>
                                             </select>
                                         </div>
 
@@ -406,13 +459,9 @@ const FreightAdminByItemReport = () => {
                                                 onChange={(e) => setCategoryTo(e.target.value)}
                                             >
                                                 <option value="All">All Categories (To)</option>
-                                                <option value="Destination Charges">Destination Charges</option>
-                                                <option value="Freight Charges">Freight Charges</option>
-                                                <option value="Origin Charges">Origin Charges</option>
-                                                <option value="Customs Charges">Customs Charges</option>
-                                                <option value="South Africa">South Africa</option>
-                                                <option value="Zambia">Zambia</option>
-                                                <option value="Zimbabwe">Zimbabwe</option>
+                                                <option value="Sea">Sea</option>
+                                                <option value="Air">Air</option>
+                                                <option value="Road">Road</option>
                                             </select>
                                         </div>
 
@@ -583,10 +632,10 @@ const FreightAdminByItemReport = () => {
                                                         <th className="text-start" style={{ width: "14%" }}>Document No.</th>
                                                         <th className="text-start" style={{ width: "24%" }}>Customer</th>
                                                         <th className="text-end" style={{ width: "10%" }}>Qty Sold</th>
-                                                        <th className="text-end" style={{ width: "13%" }}>Total Cost</th>
-                                                        <th className="text-end" style={{ width: "13%" }}>Total Selling</th>
-                                                        <th className="text-end" style={{ width: "13%" }}>GP Amount</th>
-                                                        <th className="text-end" style={{ width: "10%" }}>GP %</th>
+                                                        <th className="text-end" style={{ width: "11%" }}>Dims (Cbm)</th>
+                                                        <th className="text-end" style={{ width: "11%" }}>Weight (Kgs)</th>
+                                                        <th className="text-end" style={{ width: "11%" }}>Volume (Kgs)</th>
+                                                        <th className="text-end" style={{ width: "9%" }}>GP %</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -619,13 +668,13 @@ const FreightAdminByItemReport = () => {
                                                                                     {row.qty_sold_display || formatQty(row.qty_sold)}
                                                                                 </td>
                                                                                 <td className="text-end">
-                                                                                    {row.total_cost_display || formatCurrency(row.total_cost)}
+                                                                                    {getRowDimension(row)}
                                                                                 </td>
                                                                                 <td className="text-end">
-                                                                                    {row.total_selling_display || formatCurrency(row.total_selling)}
+                                                                                    {getRowWeight(row)}
                                                                                 </td>
                                                                                 <td className="text-end">
-                                                                                    {row.gp_amount_display || formatCurrency(row.gp_amount)}
+                                                                                    {getRowVolume(row)}
                                                                                 </td>
                                                                                 <td className="text-end">
                                                                                     {row.gp_percent_display || formatPercent(row.gp_percent)}
@@ -649,13 +698,13 @@ const FreightAdminByItemReport = () => {
                                                                             {item.total_qty_display || formatQty(item.total_qty)}
                                                                         </td>
                                                                         <td className="text-end fw-bold">
-                                                                            {item.total_cost_display || formatCurrency(item.total_cost)}
+                                                                            {getItemDimension(item)}
                                                                         </td>
                                                                         <td className="text-end fw-bold">
-                                                                            {item.total_selling_display || formatCurrency(item.total_selling)}
+                                                                            {getItemWeight(item)}
                                                                         </td>
                                                                         <td className="text-end fw-bold">
-                                                                            {item.gp_amount_display || formatCurrency(item.gp_amount)}
+                                                                            {getItemVolume(item)}
                                                                         </td>
                                                                         <td className="text-end fw-bold">
                                                                             {item.gp_percent_display || formatPercent(item.gp_percent)}
@@ -687,13 +736,13 @@ const FreightAdminByItemReport = () => {
                                                                 {grandTotal?.qty_sold_display || formatQty(grandTotal?.qty_sold)}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.total_cost_display || formatCurrency(grandTotal?.total_cost)}
+                                                                {getItemDimension(grandTotal)}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.total_selling_display || formatCurrency(grandTotal?.total_selling)}
+                                                                {getItemWeight(grandTotal)}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.gp_amount_display || formatCurrency(grandTotal?.gp_amount)}
+                                                                {getItemVolume(grandTotal)}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
                                                                 {grandTotal?.gp_percent_display || formatPercent(grandTotal?.gp_percent)}
@@ -711,10 +760,10 @@ const FreightAdminByItemReport = () => {
                                                         <th className="text-start" style={{ width: "20%" }}>Item Description</th>
                                                         <th className="text-start" style={{ width: "16%" }}>Category</th>
                                                         <th className="text-end" style={{ width: "10%" }}>Qty Sold</th>
-                                                        <th className="text-end" style={{ width: "13%" }}>Total Cost</th>
-                                                        <th className="text-end" style={{ width: "13%" }}>Total Selling</th>
-                                                        <th className="text-end" style={{ width: "13%" }}>GP Amount</th>
-                                                        <th className="text-end" style={{ width: "10%" }}>GP %</th>
+                                                        <th className="text-end" style={{ width: "11%" }}>Dims (Cbm)</th>
+                                                        <th className="text-end" style={{ width: "11%" }}>Weight (Kgs)</th>
+                                                        <th className="text-end" style={{ width: "11%" }}>Volume (Kgs)</th>
+                                                        <th className="text-end" style={{ width: "9%" }}>GP %</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -725,9 +774,9 @@ const FreightAdminByItemReport = () => {
                                                                 <td className="text-start">{item.item_description || item.item_name || "-"}</td>
                                                                 <td className="text-start">{item.category_name || "-"}</td>
                                                                 <td className="text-end">{item.total_qty_display || formatQty(item.total_qty)}</td>
-                                                                <td className="text-end">{item.total_cost_display || formatCurrency(item.total_cost)}</td>
-                                                                <td className="text-end">{item.total_selling_display || formatCurrency(item.total_selling)}</td>
-                                                                <td className="text-end">{item.gp_amount_display || formatCurrency(item.gp_amount)}</td>
+                                                                <td className="text-end">{getItemDimension(item)}</td>
+                                                                <td className="text-end">{getItemWeight(item)}</td>
+                                                                <td className="text-end">{getItemVolume(item)}</td>
                                                                 <td className="text-end">{item.gp_percent_display || formatPercent(item.gp_percent)}</td>
                                                             </tr>
                                                         ))
@@ -749,13 +798,13 @@ const FreightAdminByItemReport = () => {
                                                                 {grandTotal?.qty_sold_display || formatQty(grandTotal?.qty_sold)}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.total_cost_display || formatCurrency(grandTotal?.total_cost)}
+                                                                {getItemDimension(grandTotal)}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.total_selling_display || formatCurrency(grandTotal?.total_selling)}
+                                                                {getItemWeight(grandTotal)}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.gp_amount_display || formatCurrency(grandTotal?.gp_amount)}
+                                                                {getItemVolume(grandTotal)}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
                                                                 {grandTotal?.gp_percent_display || formatPercent(grandTotal?.gp_percent)}

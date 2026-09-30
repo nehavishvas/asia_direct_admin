@@ -175,6 +175,16 @@ const routes = [
             icon: <RequestQuoteIcon />,
           },
           {
+            path: "/Admin/quotes-by-customer-report",
+            name: "Quotes By Customer",
+            icon: <RequestQuoteIcon />,
+          },
+          {
+            path: "/Admin/quotes-by-rep-report",
+            name: "Quotes by Rep.",
+            icon: <RequestQuoteIcon />,
+          },
+          {
             path: "/Admin/customer-unallocated-report",
             name: "Customer Unallocated",
             icon: <ShoppingCartOutlinedIcon />,
