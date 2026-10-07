@@ -24,16 +24,6 @@ const Quotes = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Track Status Update Modal State
-    const [statusModalOpen, setStatusModalOpen] = useState(false);
-    const [selectedQuote, setSelectedQuote] = useState(null);
-    const [statusForm, setStatusForm] = useState({
-        track_status: "",
-        comment: "",
-        date: new Date().toISOString().split("T")[0]
-    });
-    const [statusSubmitting, setStatusSubmitting] = useState(false);
-
     // Track Status History Modal State
     const [historyModalOpen, setHistoryModalOpen] = useState(false);
     const [selectedHistoryQuote, setSelectedHistoryQuote] = useState(null);
@@ -45,98 +35,25 @@ const Quotes = () => {
     const getTrackStatusBadgeStyle = (status) => {
         switch (status?.toLowerCase()) {
             case "draft":
-                return { backgroundColor: "#f1f3f5", color: "#495057", border: "1px solid #ced4da" };
+                return { backgroundColor: "#f1f3f5", color: "#495057", border: "none" };
             case "pending":
-                return { backgroundColor: "#fff8e6", color: "#b7791f", border: "1px solid #fbd38d" };
+                return { backgroundColor: "#fff8e6", color: "#b7791f", border: "none" };
             case "negotiation":
-                return { backgroundColor: "#ebf8ff", color: "#2b6cb0", border: "1px solid #bee3f8" };
+                return { backgroundColor: "#ebf8ff", color: "#2b6cb0", border: "none" };
             case "accepted":
-                return { backgroundColor: "#f0fff4", color: "#276749", border: "1px solid #9ae6b4" };
+                return { backgroundColor: "#f0fff4", color: "#276749", border: "none" };
             case "rejected":
-                return { backgroundColor: "#fff5f5", color: "#c53030", border: "1px solid #feb2b2" };
+                return { backgroundColor: "#fff5f5", color: "#c53030", border: "none" };
             case "expired":
-                return { backgroundColor: "#edf2f7", color: "#718096", border: "1px solid #e2e8f0" };
+                return { backgroundColor: "#edf2f7", color: "#718096", border: "none" };
             default:
-                return { backgroundColor: "#f1f3f5", color: "#495057", border: "1px solid #ced4da" };
+                return { backgroundColor: "#f1f3f5", color: "#495057", border: "none" };
         }
     };
 
-    const getTrackStatusDotColor = (status) => {
-        switch (status?.toLowerCase()) {
-            case "draft":
-                return "#6c757d";
-            case "pending":
-                return "#dd6b20";
-            case "negotiation":
-                return "#3182ce";
-            case "accepted":
-                return "#38a169";
-            case "rejected":
-                return "#e53e3e";
-            case "expired":
-                return "#a0aec0";
-            default:
-                return "#6c757d";
-        }
-    };
 
-    const handleOpenStatusModal = (item) => {
-        setSelectedQuote(item);
-        setStatusForm({
-            track_status: item.track_status || item.status || "Draft",
-            comment: "",
-            date: new Date().toISOString().split("T")[0]
-        });
-        setStatusModalOpen(true);
-    };
 
-    const handleCloseStatusModal = () => {
-        setStatusModalOpen(false);
-        setSelectedQuote(null);
-        setStatusForm({
-            track_status: "",
-            comment: "",
-            date: new Date().toISOString().split("T")[0]
-        });
-    };
 
-    const handleUpdateTrackStatus = async (e) => {
-        if (e) e.preventDefault();
-        if (!selectedQuote) return;
-
-        if (!statusForm.track_status) {
-            toast.error("Please select a track status");
-            return;
-        }
-
-        try {
-            setStatusSubmitting(true);
-            const payload = {
-                freight_quote_estimate_id: Number(selectedQuote.freight_quote_estimate_id),
-                track_status: statusForm.track_status,
-                comment: statusForm.comment || "",
-                changed_by: Number(userid) || Number(userdata?.staff_id) || Number(userdata?.user_id) || 1
-            };
-
-            const response = await axios.post(
-                `${process.env.REACT_APP_BASE_URL}updateFreightQuoteHistoryStatus`,
-                payload
-            );
-
-            if (response.data && (response.data.success || response.status === 200)) {
-                toast.success(response.data.message || "Track status updated successfully");
-                handleCloseStatusModal();
-                getQuotes(currentPage);
-            } else {
-                toast.error(response.data?.message || "Failed to update track status");
-            }
-        } catch (error) {
-            console.error("Error updating track status:", error);
-            toast.error(error.response?.data?.message || "Something went wrong while updating track status");
-        } finally {
-            setStatusSubmitting(false);
-        }
-    };
 
     // View Track Status History Handler
     const handleViewTrackStatusHistory = async (item) => {
@@ -393,9 +310,8 @@ const Quotes = () => {
                                         <th>Country</th>
                                         <th>Currency</th>
                                         <th>Total</th>
-                                        <th>Amount Due</th>
+                                        <th>Sales Rep</th>
                                         <th>Status</th>
-                                        <th>Track Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -416,70 +332,23 @@ const Quotes = () => {
                                                     <td>{item.invoice_for_country || "-"}</td>
                                                     <td>{item.final_base_currency || "-"}</td>
                                                     <td>{item.sumof_vatincl !== undefined ? item.sumof_vatincl : "0.00"}</td>
-                                                    <td>{item.sumof_vatincl !== undefined ? item.sumof_vatincl : "0.00"}</td>
-                                                    {/* Status (Payment/Invoice Status) */}
+                                                    <td>{item.sales_rep_name || "-"}</td>
+                                                    {/* Track Status Column */}
                                                     <td>
-                                                        {item.status || "-"}
-                                                        {/* <span
+                                                        <span
                                                             style={{
                                                                 padding: "4px 12px",
                                                                 borderRadius: "15px",
                                                                 fontSize: "12px",
-                                                                fontWeight: "500",
-                                                                display: "inline-flex",
-                                                                alignItems: "center",
-                                                                gap: "6px",
-                                                                backgroundColor: "#f1f3f5",
-                                                                color: "#495057",
-                                                                border: "1px solid #dee2e6"
-                                                            }}
-                                                        >
-                                                            <span
-                                                                style={{
-                                                                    width: "6px",
-                                                                    height: "6px",
-                                                                    borderRadius: "50%",
-                                                                    backgroundColor: item.status?.toLowerCase() === "paid" ? "#28a745" : "#6c757d",
-                                                                    display: "inline-block"
-                                                                }}
-                                                            />
-                                                            {item.status || "unpaid"}
-                                                        </span> */}
-                                                    </td>
-                                                    {/* Track Status Column */}
-                                                    <td>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleOpenStatusModal(item)}
-                                                            title="Click to update track status"
-                                                            style={{
-                                                                cursor: "pointer",
-                                                                padding: "5px 12px",
-                                                                borderRadius: "15px",
-                                                                fontSize: "12px",
                                                                 fontWeight: "600",
-                                                                display: "inline-flex",
-                                                                alignItems: "center",
-                                                                gap: "6px",
-                                                                transition: "all 0.2s ease-in-out",
-                                                                background: getTrackStatusBadgeStyle(item.track_status || "Draft").backgroundColor,
-                                                                color: getTrackStatusBadgeStyle(item.track_status || "Draft").color,
-                                                                border: getTrackStatusBadgeStyle(item.track_status || "Draft").border,
-                                                                outline: "none"
+                                                                display: "inline-block",
+                                                                textAlign: "center",
+                                                                border: "none",
+                                                                ...getTrackStatusBadgeStyle(item.track_status || "Draft")
                                                             }}
                                                         >
-                                                            <span
-                                                                style={{
-                                                                    width: "7px",
-                                                                    height: "7px",
-                                                                    borderRadius: "50%",
-                                                                    backgroundColor: getTrackStatusDotColor(item.track_status || "Draft"),
-                                                                    display: "inline-block"
-                                                                }}
-                                                            />
-                                                            <span>{item.track_status || "Draft"}</span>
-                                                            <span style={{ fontSize: "9px", marginLeft: "2px", opacity: 0.7 }}>▼</span>
-                                                        </button>
+                                                            {item.track_status || "Draft"}
+                                                        </span>
                                                     </td>
                                                     <td>
                                                         <div className="dropdown">
@@ -585,198 +454,7 @@ const Quotes = () => {
                         </div>
                     </div>
 
-                    {/* Change Track Status Modal */}
-                    {statusModalOpen && selectedQuote && (
-                        <div
-                            className="modal fade show"
-                            style={{
-                                display: "block",
-                                backgroundColor: "rgba(0, 0, 0, 0.55)",
-                                backdropFilter: "blur(2px)",
-                                zIndex: 1050
-                            }}
-                            tabIndex="-1"
-                        >
-                            <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "520px" }}>
-                                <div
-                                    className="modal-content text-dark"
-                                    style={{
-                                        borderRadius: "12px",
-                                        border: "none",
-                                        boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
-                                        overflow: "hidden"
-                                    }}
-                                >
-                                    {/* Modal Header */}
-                                    <div
-                                        className="modal-header d-flex justify-content-between align-items-center"
-                                        style={{
-                                            background: "#1d2044",
-                                            color: "#fff",
-                                            padding: "16px 20px",
-                                            borderBottom: "none"
-                                        }}
-                                    >
-                                        <div>
-                                            <h5 className="modal-title fw-bold mb-0" style={{ fontSize: "17px", color: "#fff" }}>
-                                                Update Track Status
-                                            </h5>
-                                            <small style={{ color: "#d1d5db", fontSize: "12px" }}>
-                                                Reference: <strong style={{ color: "#fff" }}>{selectedQuote.reference_no || "-"}</strong>
-                                                {selectedQuote.freight_number && ` | Freight: ${selectedQuote.freight_number}`}
-                                            </small>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={handleCloseStatusModal}
-                                            style={{
-                                                background: "transparent",
-                                                border: "none",
-                                                color: "#fff",
-                                                fontSize: "20px",
-                                                cursor: "pointer",
-                                                lineHeight: 1,
-                                                padding: "4px"
-                                            }}
-                                        >
-                                            <CloseIcon />
-                                        </button>
-                                    </div>
 
-                                    {/* Modal Form */}
-                                    <form onSubmit={handleUpdateTrackStatus}>
-                                        <div className="modal-body p-4">
-                                            {/* Summary card */}
-                                            <div
-                                                className="p-3 mb-3 rounded"
-                                                style={{ backgroundColor: "#f8f9fa", border: "1px solid #e9ecef" }}
-                                            >
-                                                <div className="row g-2" style={{ fontSize: "13px" }}>
-                                                    <div className="col-6">
-                                                        <span className="text-muted d-block">Customer:</span>
-                                                        <strong>{selectedQuote.client_name || selectedQuote.supplier_name || "-"}</strong>
-                                                    </div>
-                                                    <div className="col-6">
-                                                        <span className="text-muted d-block">Current Track Status:</span>
-                                                        <span
-                                                            style={{
-                                                                padding: "2px 8px",
-                                                                borderRadius: "10px",
-                                                                fontSize: "11px",
-                                                                fontWeight: "600",
-                                                                ...getTrackStatusBadgeStyle(selectedQuote.track_status || "Draft")
-                                                            }}
-                                                        >
-                                                            {selectedQuote.track_status || "Draft"}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Date (Auto Insert) */}
-                                            <div className="mb-3">
-                                                <label className="form-label fw-semibold" style={{ fontSize: "13px", color: "#333" }}>
-                                                    Date (Auto Insert)
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    className="form-control"
-                                                    value={statusForm.date}
-                                                    readOnly
-                                                    disabled
-                                                    style={{
-                                                        backgroundColor: "#e9ecef",
-                                                        cursor: "not-allowed",
-                                                        fontSize: "14px"
-                                                    }}
-                                                />
-                                                <small className="text-muted" style={{ fontSize: "11px" }}>
-                                                    Auto-filled with current date
-                                                </small>
-                                            </div>
-
-                                            {/* Change Track Status (Drop Down) */}
-                                            <div className="mb-3">
-                                                <label className="form-label fw-semibold" style={{ fontSize: "13px", color: "#333" }}>
-                                                    Change Track Status <span className="text-danger">*</span>
-                                                </label>
-                                                <select
-                                                    className="form-select form-control"
-                                                    value={statusForm.track_status}
-                                                    onChange={(e) => setStatusForm({ ...statusForm, track_status: e.target.value })}
-                                                    required
-                                                    style={{ fontSize: "14px" }}
-                                                >
-                                                    <option value="">-- Select Track Status --</option>
-                                                    {trackStatusOptions.map((opt) => (
-                                                        <option key={opt} value={opt}>
-                                                            {opt}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-
-                                            {/* Status change comment */}
-                                            <div className="mb-2">
-                                                <label className="form-label fw-semibold" style={{ fontSize: "13px", color: "#333" }}>
-                                                    Status Change Comment
-                                                </label>
-                                                <textarea
-                                                    className="form-control"
-                                                    rows="3"
-                                                    placeholder="Enter comment or reason for status update..."
-                                                    value={statusForm.comment}
-                                                    onChange={(e) => setStatusForm({ ...statusForm, comment: e.target.value })}
-                                                    style={{ fontSize: "14px", resize: "vertical" }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Modal Footer */}
-                                        <div
-                                            className="modal-footer d-flex justify-content-end gap-2"
-                                            style={{
-                                                borderTop: "1px solid #dee2e6",
-                                                padding: "12px 20px",
-                                                backgroundColor: "#f8f9fa"
-                                            }}
-                                        >
-                                            <button
-                                                type="button"
-                                                className="btn btn-secondary"
-                                                onClick={handleCloseStatusModal}
-                                                disabled={statusSubmitting}
-                                                style={{ fontSize: "14px", padding: "6px 16px" }}
-                                            >
-                                                Cancel
-                                            </button>
-                                            <button
-                                                type="submit"
-                                                className="blueBtn"
-                                                disabled={statusSubmitting}
-                                                style={{
-                                                    fontSize: "14px",
-                                                    padding: "6px 20px",
-                                                    display: "inline-flex",
-                                                    alignItems: "center",
-                                                    gap: "6px"
-                                                }}
-                                            >
-                                                {statusSubmitting ? (
-                                                    <>
-                                                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                                        Updating...
-                                                    </>
-                                                ) : (
-                                                    "Update Track Status"
-                                                )}
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
                     {/* View Track Status History Modal */}
                     {historyModalOpen && selectedHistoryQuote && (
@@ -871,22 +549,13 @@ const Quotes = () => {
                                                                             borderRadius: "12px",
                                                                             fontSize: "12px",
                                                                             fontWeight: "600",
-                                                                            display: "inline-flex",
-                                                                            alignItems: "center",
-                                                                            gap: "5px",
-                                                                            ...getTrackStatusBadgeStyle(hist.track_status)
+                                                                            display: "inline-block",
+                                                                            textAlign: "center",
+                                                                            border: "none",
+                                                                            ...getTrackStatusBadgeStyle(hist.track_status || hist.status)
                                                                         }}
                                                                     >
-                                                                        <span
-                                                                            style={{
-                                                                                width: "6px",
-                                                                                height: "6px",
-                                                                                borderRadius: "50%",
-                                                                                backgroundColor: getTrackStatusDotColor(hist.status),
-                                                                                display: "inline-block"
-                                                                            }}
-                                                                        />
-                                                                        {hist.track_status || "-"}
+                                                                        {hist.track_status || hist.status || "-"}
                                                                     </span>
                                                                 </td>
                                                                 <td>

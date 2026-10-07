@@ -120,6 +120,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
     due_date: "",
     final_base_currency: "",
     chargable_rate: "",
+    chargeable_unit: "",
     company_id: "",
     company_address: null,
     bank_details: null,
@@ -149,7 +150,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
   const [customsRows, setCustomsRows] = useState([]);
 
   const viewItem = hiddenPrintItem || location.state?.item;
-  const quoteInvoiceId =  viewItem?.quote_invoice_id || (typeof viewItem === "object" ? null : viewItem);
+  const quoteInvoiceId = viewItem?.quote_invoice_id || (typeof viewItem === "object" ? null : viewItem);
   const freightId = viewItem?.freight_id;
 
   useEffect(() => {
@@ -209,6 +210,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
             due_date: invoiceData.due_date || invoiceData.date ? (invoiceData.due_date || invoiceData.date).split("T")[0] : "",
             final_base_currency: invoiceData.final_base_currency || "Select",
             chargable_rate: invoiceData.chargeable || "",
+            chargeable_unit: invoiceData.chargeable_unit || "",
             company_id: invoiceData.company_id || "",
             company_address: invoiceData.company_address || null,
             bank_details: invoiceData.bank_details || null,
@@ -977,9 +979,12 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                               }}
                             >
                               <strong>
-                                {getdata?.client_name || "-"}
+                                {getdata?.client_details?.company_id || "-"} / {getdata?.client_name || "-"}
                                 <br />
-                                {getdata?.address_1 || "-"}
+                                {getdata?.address_1 || "-"}, {getdata?.client_details?.province || "-"}, {getdata?.client_details?.country || "-"}, {getdata?.client_details?.code || "-"}
+                                <br />
+                                {getdata?.client_details?.importer_reference || "-"},{getdata?.client_details?.tax_reference || "-"}
+                                <br />
                               </strong>
                             </td>
                           </tr>
@@ -1037,7 +1042,9 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Chargeable</strong>
-                                <span>{freight.chargable_rate ? formatValue(freight.chargable_rate, 3) : "-"}</span>
+                                <span className="text-end" style={{ textAlign: "right" }}>
+                                  {freight.chargable_rate ? `${formatValue(freight.chargable_rate, 3)}${freight.chargeable_unit ? ` ${freight.chargeable_unit}` : ""}` : "-"}
+                                </span>
                               </div>
                             </td>
                           </tr>
@@ -1402,7 +1409,7 @@ export default function ViewNewFreightQuoteInvoice({ hiddenPrintItem, onPrintCom
           </section>
         </div>
       </div>
-      
+
     </>
   );
 }

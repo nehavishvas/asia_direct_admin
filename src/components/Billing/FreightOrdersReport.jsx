@@ -39,7 +39,7 @@ const FreightOrdersReport = () => {
 
     // Report data states
     const [reportData, setReportData] = useState([]);
-    const [loader, setLoader] = useState(false);
+    const [loader, setLoader] = useState(true);
     const [searched, setSearched] = useState(false);
 
     const getStatusLabel = (statusVal, item = {}) => {
@@ -150,9 +150,9 @@ const FreightOrdersReport = () => {
 
     const checkPermission = async () => {
         try {
-            setLoader(true);
             if (!userid || !usertype) {
                 setHasPermission(false);
+                setLoader(false);
                 return;
             }
             const postdata = {
@@ -166,21 +166,21 @@ const FreightOrdersReport = () => {
             );
             if ((response.data && response.data.success === true) || usertype === "1" || usertype === 1 || String(usertype).toLowerCase() === "admin") {
                 setHasPermission(true);
-                fetchReportData(startDate, endDate);
+                await fetchReportData(startDate, endDate);
             } else {
                 setHasPermission(false);
+                setLoader(false);
                 toast.error("You don't have permission to access this page");
             }
         } catch (error) {
             if (usertype === "1" || usertype === 1 || String(usertype).toLowerCase() === "admin") {
                 setHasPermission(true);
-                fetchReportData(startDate, endDate);
+                await fetchReportData(startDate, endDate);
             } else {
                 setHasPermission(false);
+                setLoader(false);
                 toast.error(error.response?.data?.message || "You don't have permission to access this page");
             }
-        } finally {
-            setLoader(false);
         }
     };
 
@@ -214,7 +214,7 @@ const FreightOrdersReport = () => {
 
     return (
         <>
-            {loader && !searched ? (
+            {loader && hasPermission === null ? (
                 <div className="loader-container">
                     <div className="loader"></div>
                     <p className="loader-text">Loading...</p>
@@ -289,11 +289,9 @@ const FreightOrdersReport = () => {
                         <div className="card shadow-sm border-0 report-print-area">
                             <div className="card-body p-4 p-md-5">
                                 {loader ? (
-                                    <div className="text-center py-5">
-                                        <div className="spinner-border text-primary spinner-sm" role="status">
-                                            <span className="visually-hidden">Loading...</span>
-                                        </div>
-                                        <p className="mt-2 text-secondary">Generating report...</p>
+                                    <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
+                                        <div className="loader"></div>
+                                        <p className="loader-text">Loading report data...</p>
                                     </div>
                                 ) : (
                                     <>

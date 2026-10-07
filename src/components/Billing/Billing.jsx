@@ -345,7 +345,7 @@ export default function BillingTable() {
       );
     }
   };
-  
+
   return (
     <>
       {loader || hasPermission === null ? (
@@ -397,159 +397,23 @@ export default function BillingTable() {
                   <thead>
                     <tr>
                       <th>Date</th>
+                      <th>Invoice Date</th>
                       <th>Transaction</th>
                       <th>Shipment Ref</th>
                       <th>Customer</th>
                       <th>Invoice Ref</th>
-                      <th>Invoice Amount</th>
+                      <th>Order Invoice</th>
+                      {/* <th>Invoice Amount</th> */}
                       <th>Invoice (AD)</th>
                       <th>Due Date</th>
-                      <th>Currency</th>
+                      {/* <th>Currency</th> */}
+                      <th>Invoice Currency</th>
                       <th>Payment</th>
                       <th>Balance</th>
+                      <th>Sum of Final Amount</th>
                       <th>Invoice (POP)</th>
                     </tr>
                   </thead>
-                  {/* <tbody>
-                    {tableData &&
-                      tableData.length > 0 &&
-                      tableData.map((item) => {
-                        console.log(item);
-                        return (
-                          <>
-                            <tr key={item.invoice_id}>
-                              <td>
-                                {new Date(item.date).toLocaleDateString(
-                                  "en-GB"
-                                ) == "01/01/1970"
-                                  ? ""
-                                  : new Date(item.date).toLocaleDateString(
-                                      "en-GB"
-                                    )}
-                              </td>
-                              <td>
-                                <select
-                                  value={
-                                    selectedInvoices[item.invoice_id]
-                                      ?.transaction || item.transaction
-                                  }
-                                  onChange={(e) =>
-                                    handleDropdownChange(
-                                      "transaction",
-                                      e.target.value,
-                                      item
-                                    )
-                                  }
-                                >
-                                  <option value="Select">Select</option>
-                                  {item.invoice_amt > 0 ? (
-                                    <option value="Invoice">INV</option>
-                                  ) : (
-                                    ""
-                                  )}
-                                  {item.invoice_amt < 0 ? (
-                                    <option value="Credit Note">CRN</option>
-                                  ) : (
-                                    ""
-                                  )}
-                                  {item.invoice_amt > 0 ? (
-                                    <option value="Adjustment">ADJ</option>
-                                  ) : (
-                                    ""
-                                  )}
-                                  {item.invoice_amt < 0 ? (
-                                    <option value="Write-off">WO</option>
-                                  ) : (
-                                    ""
-                                  )}
-                                </select>
-                              </td>
-                              <td>{item.order_number || "N/A"}</td>
-                              <td>{item.client_name || "N/A"}</td>
-                              <td>
-                                <select
-                                  value={
-                                    selectedInvoices[item.invoice_id]
-                                      ?.sage_invoice_id || item.sage_invoice_id
-                                  }
-                                  onChange={(e) =>
-                                    handleDropdownChange(
-                                      "sage_invoice_id",
-                                      e.target.value,
-                                      item
-                                    )
-                                  }
-                                >
-                                  <option value="Select">Select</option>
-                                  {getAvailableOptions(item).map(
-                                    (option, index) => (
-                                      <option key={index} value={option.id}>
-                                        {option.document_number}
-                                      </option>
-                                    )
-                                  )}
-                                </select>
-                              </td>
-                              <td>{item.invoice_amt}</td>
-                              <td>
-                                {item.invoice_id === null ? (
-                                  ""
-                                ) : (
-                                  <input
-                                    type="date"
-                                    value={
-                                      selectedDueDates[item.invoice_id] ||
-                                      (item.due_date
-                                        ? new Date(item.due_date)
-                                            .toISOString()
-                                            .split("T")[0]
-                                        : "")
-                                    }
-                                    onChange={(e) =>
-                                      handleDueDateChange(e, item)
-                                    }
-                                  />
-                                )}
-                              </td>
-                              <td>
-                                {item.invoice_id === null ? (
-                                  ""
-                                ) : (
-                                  <select
-                                    value={
-                                      selectedInvoices[item.invoice_id]
-                                        ?.invoice_currency ||
-                                      item.invoice_currency
-                                    }
-                                    onChange={(e) =>
-                                      handleDropdownChange(
-                                        "invoice_currency",
-                                        e.target.value,
-                                        item
-                                      )
-                                    }
-                                  >
-                                    <option value="Select">Select</option>
-                                    <option value="ZAR">ZAR</option>
-                                    <option value="USD">USD</option>
-                                    <option value="Euro">Euro</option>
-                                    <option value="GBP">GBP</option>
-                                    <option value="KWA">KWA</option>
-                                  </select>
-                                )}
-                              </td>
-                              <td>{item.payment}</td>
-                              <td>
-                                {/* {item.balance === 0
-                                  ? item.invoice_amt
-                                  : item.balance} */}
-                  {/* {item.balance}
-                              </td>
-                            </tr>
-                          </>
-                        );
-                      })}
-                  </tbody> */}
                   <tbody>
                     {tableData && tableData.length > 0 ? (
                       tableData.map((item, index) => {
@@ -560,12 +424,18 @@ export default function BillingTable() {
                               {new Date(item.date).toLocaleDateString(
                                 "en-GB"
                               ) == "01/01/1970"
-                                ? ""
+                                ? "-"
                                 : new Date(item.date).toLocaleDateString(
                                   "en-GB"
                                 )}
                             </td>
-
+                            <td>{new Date(item.quote_invoice_date).toLocaleDateString(
+                              "en-GB"
+                            ) == "01/01/1970"
+                              ? "-"
+                              : new Date(item.quote_invoice_date).toLocaleDateString(
+                                "en-GB"
+                              )}</td>
                             <td>
                               <select
                                 value={
@@ -583,7 +453,6 @@ export default function BillingTable() {
                                 }
                               >
                                 <option value="Select">Select</option>
-
                                 {item.invoice_amt > 0 && (
                                   <>
                                     <option value="Invoice">INV</option>
@@ -592,7 +461,6 @@ export default function BillingTable() {
                                     </option>
                                   </>
                                 )}
-
                                 {item.invoice_amt < 0 && (
                                   <>
                                     <option value="Credit Note">
@@ -630,8 +498,8 @@ export default function BillingTable() {
                               />
                             </td>
 
-                            <td>{item.invoice_amt}</td>
-
+                            <td>{item.reference_no || "-"}</td>
+                            {/* <td>{item.invoice_amt || "-"}</td> */}
                             <td className="text-center">
                               {item.freight_invoice_docs && item.freight_invoice_docs.filter((doc) => doc.document_name === "Invoice (AD)").length > 0 ? (
                                 item.freight_invoice_docs
@@ -674,8 +542,7 @@ export default function BillingTable() {
                                 />
                               )}
                             </td>
-
-                            <td>
+                            {/* <td>
                               {item.invoice_id === null ? (
                                 ""
                               ) : (
@@ -702,11 +569,11 @@ export default function BillingTable() {
                                   <option value="KWA">KWA</option>
                                 </select>
                               )}
-                            </td>
-
-                            <td>{item.payment}</td>
-
-                            <td>{item.balance}</td>
+                            </td> */}
+                            <td>{item.quote_invoice_currency || "-"}</td>
+                            <td>{item.payment || "-"}</td>
+                            <td>{item.balance || "-"}</td>
+                            <td>{item.sumof_finalamount || "-"}</td>
                             <td className="text-center">
                               {item.freight_pop_docs && item.freight_pop_docs.filter((doc) => doc.document_name === "POP (AD)").length > 0 ? (
                                 item.freight_pop_docs
@@ -782,7 +649,7 @@ export default function BillingTable() {
               ></iframe>
             </Box>
           </Modal>
-          
+
         </div>
       )}
     </>

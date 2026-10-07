@@ -603,17 +603,28 @@ export default function DownloadNewFreightQuoteInvoice() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
       doc.setTextColor(20, 20, 20);
-      doc.text(String(getdata?.client_name || ""), margin + lPad, ly + 2.5);
-      ly += 5;
+      const clientLine1 = `${getdata?.client_details?.company_id || "-"} / ${getdata?.client_name || "-"}`;
+      doc.text(clientLine1, margin + lPad, ly + 2.5);
+      ly += 4.5;
 
-      doc.setFont("helvetica", "normal");
+      doc.setFont("helvetica", "bold");
       doc.setFontSize(8.5);
-      const addressLineHeight = 4;
-      const addressLines = doc.splitTextToSize(String(getdata?.address_1 || ""), lW);
+      const addressParts = [
+        getdata?.address_1 || "-",
+        getdata?.client_details?.province || "-",
+        getdata?.client_details?.country || "-",
+        getdata?.client_details?.code || "-"
+      ].join(", ");
+      const addressLineHeight = 3.8;
+      const addressLines = doc.splitTextToSize(addressParts, lW);
       addressLines.forEach((line, idx) => {
         doc.text(line, margin + lPad, ly + 2.5 + idx * addressLineHeight);
       });
-      ly += addressLines.length * addressLineHeight + 1;
+      ly += addressLines.length * addressLineHeight + 0.5;
+
+      const clientLine3 = `${getdata?.client_details?.importer_reference || "-"},${getdata?.client_details?.tax_reference || "-"}`;
+      doc.text(clientLine3, margin + lPad, ly + 2.5);
+      ly += 4.5;
 
       drawSectionBar(doc, margin, ly, contentWidth / 2, barH, "Cargo Details ISO Commodity");
       ly += barH;
@@ -626,7 +637,7 @@ export default function DownloadNewFreightQuoteInvoice() {
         ["Gross Weight (kgs)", getdata?.weight || ""],
         ["Dimensions (M3)", getdata?.dimension || ""],
         ["Volumetric (kgs)", getdata?.volumetric_weight || ""],
-        ["Chargeable", freight?.chargable_rate ? formatValue(freight?.chargable_rate, 3) : ""],
+        ["Chargeable", freight?.chargable_rate ? `${formatValue(freight?.chargable_rate, 3)}${freight?.chargeable_unit ? ` ${freight.chargeable_unit}` : ""}` : ""],
       ];
       leftFields.forEach(([label, value]) => {
         drawRow(doc, margin + lPad, ly, lW, label, value);
@@ -1190,9 +1201,12 @@ export default function DownloadNewFreightQuoteInvoice() {
                         <tr>
                           <td style={{ fontSize: 13, padding: "0px 6px" }}>
                             <strong>
-                              {getdata?.client_name}
+                              {getdata?.client_details?.company_id || "-"} / {getdata?.client_name || "-"}
                               <br />
-                              {getdata?.address_1}
+                              {getdata?.address_1 || "-"}, {getdata?.client_details?.province || "-"}, {getdata?.client_details?.country || "-"}, {getdata?.client_details?.code || "-"}
+                              <br />
+                              {getdata?.client_details?.importer_reference || "-"},{getdata?.client_details?.tax_reference || "-"}
+                              <br />
                             </strong>
                           </td>
                         </tr>
@@ -1251,7 +1265,7 @@ export default function DownloadNewFreightQuoteInvoice() {
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}><strong>Chargeable</strong></p>
-                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>{freight?.chargable_rate ? formatValue(freight?.chargable_rate, 3) : "-"}</p>
+                              <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2, textAlign: "right" }}>{freight?.chargable_rate ? `${formatValue(freight?.chargable_rate, 3)}${freight?.chargeable_unit ? ` ${freight.chargeable_unit}` : ""}` : "-"}</p>
                             </div>
                           </td>
                         </tr>
@@ -1546,7 +1560,7 @@ export default function DownloadNewFreightQuoteInvoice() {
           </section>
         </div>
       </div>
-      
+
     </>
   );
 }

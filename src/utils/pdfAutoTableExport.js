@@ -169,15 +169,24 @@ export const buildEstimateMeta = ({ freight = {}, getdata = {}, logoSrc }) => ({
     address: getdata?.address_1 || "",
   },
   cargo: {
-    commodity: getdata?.product_desc,
+    commodity: getdata?.product_desc || getdata?.commodity,
     hazardous:
-      getdata?.hazardous?.toLowerCase?.() === "no" ? "No" : getdata?.hazard_type,
+      getdata?.hazardous?.toLowerCase?.() === "no" ? "No" : (getdata?.hazard_type || getdata?.hazardous),
     packages: getdata?.no_of_packages,
     packageType: getdata?.package_type,
     grossWeight: getdata?.weight,
     dimensions: getdata?.dimension,
     volumetric: getdata?.volumetric_weight,
-    chargeable: getdata?.chargable_rate,
+    chargeable: (() => {
+      const rate = freight?.chargable_rate ?? getdata?.chargable_rate ?? freight?.chargeable ?? getdata?.chargeable;
+      const unit = freight?.chargeable_unit ?? getdata?.chargeable_unit;
+      if (rate !== undefined && rate !== null && rate !== "") {
+        const num = parseFloat(String(rate).replace(/,/g, ""));
+        const formatted = isNaN(num) ? String(rate) : num.toLocaleString("en-US", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+        return unit && unit !== "Select" ? `${formatted} ${unit}` : formatted;
+      }
+      return "";
+    })(),
   },
   rateOfExchange: {
     baseCurrency: freight?.final_base_currency,

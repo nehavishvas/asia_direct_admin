@@ -30,6 +30,7 @@ export default function MAnageFreightDetails() {
   }, []);
 
   const getalldata = async () => {
+    if (!info?.order_id) return;
     try {
       console.log(info?.order_id);
       const datapost = { orderId: info?.order_id };
@@ -37,8 +38,8 @@ export default function MAnageFreightDetails() {
         `${process.env.REACT_APP_BASE_URL}OrderDetailsById`,
         datapost,
       );
-      setData(response.data.data[0]);
-      console.log(response.data.data[0]);
+      setData(response.data.data?.[0] || {});
+      console.log(response.data.data?.[0]);
     } catch (error) {
       console.log(error);
     }
@@ -51,9 +52,10 @@ export default function MAnageFreightDetails() {
   console.log(info);
   useEffect(() => {
     getdata();
-  }, []);
+  }, [info?.freight_id]);
 
   const getdata = () => {
+    if (!info?.freight_id) return;
     axios
       .post(`${process.env.REACT_APP_BASE_URL}get-shipestimate`, {
         freight_id: info.freight_id,
@@ -63,11 +65,12 @@ export default function MAnageFreightDetails() {
         console.log(response.data.data);
       })
       .catch((error) => {
-        console.log(error.response.data);
+        console.log(error.response?.data);
       });
   };
 
   const getordertracking = () => {
+    if (!info?.order_id) return;
     const data1 = {
       order_id: `OR000${info.order_id}`,
     };
@@ -75,18 +78,18 @@ export default function MAnageFreightDetails() {
       .post(`${process.env.REACT_APP_BASE_URL}get-order-status`, data1)
       .then((response) => {
         console.log(response.data);
-        setData0(response?.data?.data[0]);
-        setData111(response?.data?.data[1]);
-        setData2(response?.data?.data[2]);
-        setData3(response?.data?.data[3]);
-        setData4(response?.data?.data[4]);
-        setData5(response?.data?.data[5]);
-        setData6(response?.data?.data[6]);
-        setData7(response?.data?.data[7]);
-        setData8(response?.data?.data[8]);
-        setData9(response?.data?.data[9]);
-        setData10(response?.data?.data[10]);
-        setData11(response?.data?.data[11]);
+        setData0(response?.data?.data?.[0] || {});
+        setData111(response?.data?.data?.[1] || {});
+        setData2(response?.data?.data?.[2] || {});
+        setData3(response?.data?.data?.[3] || {});
+        setData4(response?.data?.data?.[4] || {});
+        setData5(response?.data?.data?.[5] || {});
+        setData6(response?.data?.data?.[6] || {});
+        setData7(response?.data?.data?.[7] || {});
+        setData8(response?.data?.data?.[8] || {});
+        setData9(response?.data?.data?.[9] || {});
+        setData10(response?.data?.data?.[10] || {});
+        setData11(response?.data?.data?.[11] || {});
       })
       .catch((error) => {
         console.log(error);
@@ -94,7 +97,7 @@ export default function MAnageFreightDetails() {
   };
   useEffect(() => {
     getordertracking();
-  }, []);
+  }, [info?.order_id]);
   const handleclicknav = () => {
     navigate("/Admin/order");
   };

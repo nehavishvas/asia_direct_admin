@@ -61,7 +61,7 @@ const FreightAdminByCustomerReport = () => {
     const [totals, setTotals] = useState(null);
     const [grandTotal, setGrandTotal] = useState(null);
     const [clientList, setClientList] = useState([]);
-    const [loader, setLoader] = useState(false);
+    const [loader, setLoader] = useState(true);
     const [searched, setSearched] = useState(false);
 
     const handleReset = () => {
@@ -116,9 +116,9 @@ const FreightAdminByCustomerReport = () => {
                 active: activeStatus === "both" || activeStatus === "Both" ? "Both" : (activeStatus || "Both"),
                 from_category: categoryFrom || "All",
                 to_category: categoryTo || "All",
-                start_date: startDate ? formatToDDMMYYYY(startDate) : "",
+                start_date: startDate || "",
                 start_date_formatted: startDateFormatted,
-                end_date: endDate ? formatToDDMMYYYY(endDate) : "",
+                end_date: endDate || "",
                 end_date_formatted: endDateFormatted,
                 include_credit_notes: includeCreditNotes,
                 style: style || "Detailed"
@@ -129,12 +129,14 @@ const FreightAdminByCustomerReport = () => {
                 filters: filtersPayload
             };
 
+            const endpoint = isFreightOrders ? "newSalesByCustomerOrderReport" : "newSalesByCustomerReport";
+
             const response = await axios.post(
-                `${process.env.REACT_APP_BASE_URL}newSalesByCustomerReport`,
+                `${process.env.REACT_APP_BASE_URL}${endpoint}`,
                 payload
             );
 
-            if (response.data && response.data.success) {
+            if (response.data && (response.data.success || response.data.customers || response.data.data)) {
                 const resData = response.data.data && typeof response.data.data === "object" && !Array.isArray(response.data.data)
                     ? response.data.data
                     : response.data;
@@ -147,7 +149,7 @@ const FreightAdminByCustomerReport = () => {
                 setCustomers([]);
             }
         } catch (error) {
-            console.error("Error fetching freight by customer report:", error);
+            console.error(`Error fetching ${pageTitle}:`, error);
             toast.error(error.response?.data?.message || "Failed to fetch report data");
             setCustomers([]);
         } finally {
@@ -157,15 +159,14 @@ const FreightAdminByCustomerReport = () => {
 
     const checkPermission = async () => {
         try {
-            setLoader(true);
             if (!userid || !usertype) {
                 setHasPermission(true);
-                fetchReportData();
+                await fetchReportData();
                 return;
             }
             const postdata = {
                 staff_id: userid,
-                route_url: location.pathname || "/Admin/freight-admin-by-customer-report",
+                route_url: location.pathname || (isFreightOrders ? "/Admin/freight-orders-by-customer-report" : "/Admin/freight-admin-by-customer-report"),
                 user_type: usertype,
             };
             const response = await axios.post(
@@ -174,18 +175,14 @@ const FreightAdminByCustomerReport = () => {
             );
             if (response.data && response.data.success === true) {
                 setHasPermission(true);
-                fetchReportData();
+                await fetchReportData();
             } else {
-                // If not explicitly blocked or permission check is permissive
                 setHasPermission(true);
-                fetchReportData();
+                await fetchReportData();
             }
         } catch (error) {
-            // Default to allow view if permission check fails or is not yet in backend
             setHasPermission(true);
-            fetchReportData();
-        } finally {
-            setLoader(false);
+            await fetchReportData();
         }
     };
 
@@ -193,7 +190,7 @@ const FreightAdminByCustomerReport = () => {
         checkPermission();
         fetchClientList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [location.pathname]);
 
     // Format currency helper
     const formatCurrency = (amount, currencySymbol = "R") => {
@@ -213,6 +210,22 @@ const FreightAdminByCustomerReport = () => {
         if (qty === null || qty === undefined || qty === "" || parseFloat(qty) === 0) return "";
         const num = parseFloat(qty);
         if (isNaN(num)) return "";
+        return num.toFixed(4);
+    };
+
+    // Format dims helper
+    const formatDims = (dims) => {
+        if (dims === null || dims === undefined || dims === "" || parseFloat(dims) === 0) return "";
+        const num = parseFloat(dims);
+        if (isNaN(num)) return typeof dims === "string" ? dims : "";
+        return num.toFixed(4);
+    };
+
+    // Format weight helper
+    const formatWeight = (weight) => {
+        if (weight === null || weight === undefined || weight === "" || parseFloat(weight) === 0) return "";
+        const num = parseFloat(weight);
+        if (isNaN(num)) return typeof weight === "string" ? weight : "";
         return num.toFixed(4);
     };
 
@@ -449,11 +462,9 @@ const FreightAdminByCustomerReport = () => {
                     <div className="card shadow-sm border-0 report-print-area">
                         <div className="card-body p-4 p-md-5">
                             {loader ? (
-                                <div className="text-center py-5">
-                                    <div className="spinner-border text-primary spinner-sm" role="status">
-                                        <span className="visually-hidden">Loading...</span>
-                                    </div>
-                                    <p className="mt-2 text-secondary">Generating report...</p>
+                                <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
+                                    <div className="loader"></div>
+                                    <p className="loader-text">Loading report data...</p>
                                 </div>
                             ) : searched ? (
                                 <>
@@ -480,12 +491,6 @@ const FreightAdminByCustomerReport = () => {
                                                     {reportInfo?.end_date || (endDate ? formatToDDMMYYYY(endDate) : "-")}
                                                 </span>
                                             </div>
-                                            {/* <div className="d-flex justify-content-end gap-3">
-                                                <span className="fw-bold text-dark">Page:</span>
-                                                <span className="text-dark" style={{ minWidth: "90px", textAlign: "right" }}>
-                                                    {reportInfo?.page || "1/1"}
-                                                </span>
-                                            </div> */}
                                         </div>
                                     </div>
 
@@ -494,17 +499,14 @@ const FreightAdminByCustomerReport = () => {
                                         {style === "Detailed" ? (
                                             <table className="custom-sales-report-table">
                                                 <thead>
-                                                    <tr className="header-row-top">
-                                                        <th colSpan="3" className="text-start pb-1">Name</th>
-                                                        <th className="text-end pb-1" style={{ width: "15%" }}>Qty</th>
-                                                        <th className="text-end pb-1" style={{ width: "20%" }}>Total Selling</th>
-                                                    </tr>
-                                                    <tr className="header-row-bottom">
-                                                        <th className="text-start pt-0 pb-2" style={{ width: "12%" }}>Date</th>
-                                                        <th className="text-start pt-0 pb-2" style={{ width: "18%" }}>Reference</th>
-                                                        <th className="text-start pt-0 pb-2" style={{ width: "35%" }}>Description</th>
-                                                        <th className="text-end pt-0 pb-2"></th>
-                                                        <th className="text-end pt-0 pb-2"></th>
+                                                    <tr className="header-row">
+                                                        <th className="text-start" style={{ width: "12%" }}>Date</th>
+                                                        <th className="text-start" style={{ width: "15%" }}>Reference</th>
+                                                        <th className="text-start" style={{ width: "35%" }}>Description</th>
+                                                        <th className="text-start" style={{ width: "10%" }}>Freight</th>
+                                                        <th className="text-start" style={{ width: "10%" }}>Option</th>
+                                                        <th className="text-end" style={{ width: "9%" }}>Dims (Cbm)</th>
+                                                        <th className="text-end" style={{ width: "9%" }}>Weight (Kgs)</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -513,7 +515,7 @@ const FreightAdminByCustomerReport = () => {
                                                             <React.Fragment key={customer.customer_id || `cust_${custIdx}`}>
                                                                 {/* Customer Name Header */}
                                                                 <tr className="customer-row">
-                                                                    <td colSpan="5" className="customer-name">
+                                                                    <td colSpan="7" className="customer-name">
                                                                         {customer.customer_name || customer.name || "Unknown Customer"}
                                                                     </td>
                                                                 </tr>
@@ -525,6 +527,10 @@ const FreightAdminByCustomerReport = () => {
                                                                             {invoice.items && invoice.items.length > 0 ? (
                                                                                 invoice.items.map((item, itemIdx) => {
                                                                                     const isFirst = itemIdx === 0;
+                                                                                    const itemFreight = item.freight || invoice.freight || "-";
+                                                                                    const itemOption = item.type || item.fcl_lcl || invoice.type || invoice.fcl_lcl || "-";
+                                                                                    const itemDims = item.dimension_display || item.diamension_display || (item.dimension !== undefined && item.dimension !== null && item.dimension !== "" ? formatDims(item.dimension) : (item.diamension !== undefined && item.diamension !== null && item.diamension !== "" ? formatDims(item.diamension) : (isFirst ? (invoice.dimension_display || invoice.diamension_display || (invoice.dimension !== undefined && invoice.dimension !== null && invoice.dimension !== "" ? formatDims(invoice.dimension) : "")) : "")));
+                                                                                    const itemWeight = item.weight_display || (item.weight !== undefined && item.weight !== null && item.weight !== "" ? formatWeight(item.weight) : (isFirst ? (invoice.weight_display || (invoice.weight !== undefined && invoice.weight !== null && invoice.weight !== "" ? formatWeight(invoice.weight) : "")) : ""));
                                                                                     return (
                                                                                         <tr key={`item_${itemIdx}`} className="invoice-item-row">
                                                                                             <td className="text-start">
@@ -536,11 +542,17 @@ const FreightAdminByCustomerReport = () => {
                                                                                             <td className="text-start">
                                                                                                 {item.description || "-"}
                                                                                             </td>
-                                                                                            <td className="text-end">
-                                                                                                {item.qty_display || formatQty(item.qty)}
+                                                                                            <td className="text-start">
+                                                                                                {isFirst ? itemFreight : (item.freight || "")}
+                                                                                            </td>
+                                                                                            <td className="text-start">
+                                                                                                {isFirst ? itemOption : (item.type || item.fcl_lcl || "")}
                                                                                             </td>
                                                                                             <td className="text-end">
-                                                                                                {item.total_selling_display || formatCurrency(item.total_selling)}
+                                                                                                {itemDims}
+                                                                                            </td>
+                                                                                            <td className="text-end">
+                                                                                                {itemWeight}
                                                                                             </td>
                                                                                         </tr>
                                                                                     );
@@ -554,37 +566,35 @@ const FreightAdminByCustomerReport = () => {
                                                                                         {invoice.reference || invoice.reference_no || "-"}
                                                                                     </td>
                                                                                     <td className="text-start">-</td>
-                                                                                    <td className="text-end">
-                                                                                        {invoice.total_qty_display || formatQty(invoice.total_qty)}
-                                                                                    </td>
-                                                                                    <td className="text-end">
-                                                                                        {invoice.total_selling_display || formatCurrency(invoice.total_selling)}
-                                                                                    </td>
+                                                                                    <td className="text-start">{invoice.freight || "-"}</td>
+                                                                                    <td className="text-start">{invoice.type || invoice.fcl_lcl || "-"}</td>
+                                                                                    <td className="text-end">{invoice.dimension_display || invoice.diamension_display || (invoice.dimension !== undefined && invoice.dimension !== null && invoice.dimension !== "" ? formatDims(invoice.dimension) : "")}</td>
+                                                                                    <td className="text-end">{invoice.weight_display || (invoice.weight !== undefined && invoice.weight !== null && invoice.weight !== "" ? formatWeight(invoice.weight) : "")}</td>
                                                                                 </tr>
                                                                             )}
 
                                                                             {/* Invoice Total Row */}
                                                                             <tr className="invoice-total-row">
-                                                                                <td colSpan="3" className="text-start fw-bold">
+                                                                                <td colSpan="5" className="text-start fw-bold">
                                                                                     Total:&nbsp;&nbsp;&nbsp;{invoice.reference || invoice.reference_no}
                                                                                 </td>
                                                                                 <td className="text-end fw-bold invoice-total-border">
-                                                                                    {invoice.total_qty_display || formatQty(invoice.total_qty)}
+                                                                                    {invoice.dimension_display || invoice.diamension_display || (invoice.dimension !== undefined && invoice.dimension !== null && invoice.dimension !== "" ? formatDims(invoice.dimension) : (invoice.diamension !== undefined && invoice.diamension !== null && invoice.diamension !== "" ? formatDims(invoice.diamension) : ""))}
                                                                                 </td>
                                                                                 <td className="text-end fw-bold invoice-total-border">
-                                                                                    {invoice.total_selling_display || formatCurrency(invoice.total_selling)}
+                                                                                    {invoice.weight_display || (invoice.weight !== undefined && invoice.weight !== null && invoice.weight !== "" ? formatWeight(invoice.weight) : "")}
                                                                                 </td>
                                                                             </tr>
 
                                                                             {/* Spacer between invoices */}
                                                                             <tr className="spacer-row">
-                                                                                <td colSpan="5"></td>
+                                                                                <td colSpan="7"></td>
                                                                             </tr>
                                                                         </React.Fragment>
                                                                     ))
                                                                 ) : (
                                                                     <tr>
-                                                                        <td colSpan="5" className="text-center text-muted py-2">
+                                                                        <td colSpan="7" className="text-center text-muted py-2">
                                                                             No invoices found for this customer.
                                                                         </td>
                                                                     </tr>
@@ -593,23 +603,21 @@ const FreightAdminByCustomerReport = () => {
                                                         ))
                                                     ) : (
                                                         <tr>
-                                                            <td colSpan="5" className="text-center text-muted py-4">
+                                                            <td colSpan="7" className="text-center text-muted py-4">
                                                                 No data available for the selected filters.
                                                             </td>
                                                         </tr>
                                                     )}
-
-                                                    {/* Grand Total Row */}
-                                                    {customers.length > 0 && (
-                                                        <tr className="grand-total-row">
-                                                            <td colSpan="3" className="text-start fw-bold">
-                                                                Total:
+                                                    {grandTotal && customers.length > 0 && (
+                                                        <tr className="grand-total-row" style={{ borderTop: "2px solid #000" }}>
+                                                            <td colSpan="5" className="text-start fw-bold" style={{ fontSize: "11px", paddingTop: "8px", paddingBottom: "8px" }}>
+                                                                Grand Total:
                                                             </td>
-                                                            <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.total_qty_display || totals?.total_qty_display || formatQty(grandTotal?.total_qty)}
+                                                            <td className="text-end fw-bold" style={{ fontSize: "11px", paddingTop: "8px", paddingBottom: "8px", borderTop: "2px solid #000" }}>
+                                                                {grandTotal.total_dimension_display || grandTotal.dimension_display || grandTotal.diamension_display || (grandTotal.total_dimension !== undefined ? formatDims(grandTotal.total_dimension) : (grandTotal.dimension !== undefined ? formatDims(grandTotal.dimension) : ""))}
                                                             </td>
-                                                            <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.total_selling_display || totals?.total_selling_display || formatCurrency(grandTotal?.total_selling)}
+                                                            <td className="text-end fw-bold" style={{ fontSize: "11px", paddingTop: "8px", paddingBottom: "8px", borderTop: "2px solid #000" }}>
+                                                                {grandTotal.total_weight_display || grandTotal.weight_display || (grandTotal.total_weight !== undefined ? formatWeight(grandTotal.total_weight) : (grandTotal.weight !== undefined ? formatWeight(grandTotal.weight) : ""))}
                                                             </td>
                                                         </tr>
                                                     )}
@@ -619,17 +627,14 @@ const FreightAdminByCustomerReport = () => {
                                             /* Summary Style Table (matching Summary format) */
                                             <table className="custom-sales-report-table">
                                                 <thead>
-                                                    <tr className="header-row-top">
-                                                        <th colSpan="3" className="text-start pb-1">Name</th>
-                                                        <th className="text-end pb-1" style={{ width: "15%" }}>Qty</th>
-                                                        <th className="text-end pb-1" style={{ width: "20%" }}>Total Selling</th>
-                                                    </tr>
-                                                    <tr className="header-row-bottom">
-                                                        <th className="text-start pt-0 pb-2" style={{ width: "12%" }}>Date</th>
-                                                        <th className="text-start pt-0 pb-2" style={{ width: "18%" }}>Reference</th>
-                                                        <th className="text-start pt-0 pb-2" style={{ width: "35%" }}>Description</th>
-                                                        <th className="text-end pt-0 pb-2"></th>
-                                                        <th className="text-end pt-0 pb-2"></th>
+                                                    <tr className="header-row">
+                                                        <th className="text-start" style={{ width: "12%" }}>Date</th>
+                                                        <th className="text-start" style={{ width: "15%" }}>Reference</th>
+                                                        <th className="text-start" style={{ width: "35%" }}>Description</th>
+                                                        <th className="text-start" style={{ width: "10%" }}>Freight</th>
+                                                        <th className="text-start" style={{ width: "10%" }}>Option</th>
+                                                        <th className="text-end" style={{ width: "9%" }}>Dims (Cbm)</th>
+                                                        <th className="text-end" style={{ width: "9%" }}>Weight (Kgs)</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -638,7 +643,7 @@ const FreightAdminByCustomerReport = () => {
                                                             <React.Fragment key={customer.customer_id || `cust_sum_${custIdx}`}>
                                                                 {/* Customer Name Header */}
                                                                 <tr className="customer-row">
-                                                                    <td colSpan="5" className="customer-name">
+                                                                    <td colSpan="7" className="customer-name">
                                                                         {customer.customer_name || customer.name || "Unknown Customer"}
                                                                     </td>
                                                                 </tr>
@@ -654,11 +659,13 @@ const FreightAdminByCustomerReport = () => {
                                                                                 {invoice.reference || invoice.reference_no || "-"}
                                                                             </td>
                                                                             <td className="text-start"></td>
+                                                                            <td className="text-start">{invoice.freight || "-"}</td>
+                                                                            <td className="text-start">{invoice.type || invoice.fcl_lcl || "-"}</td>
                                                                             <td className="text-end">
-                                                                                {invoice.total_qty_display || (invoice.total_qty !== undefined && invoice.total_qty !== null ? formatQty(invoice.total_qty) : "")}
+                                                                                {invoice.dimension_display || invoice.diamension_display || (invoice.dimension !== undefined && invoice.dimension !== null && invoice.dimension !== "" ? formatDims(invoice.dimension) : (invoice.diamension !== undefined && invoice.diamension !== null && invoice.diamension !== "" ? formatDims(invoice.diamension) : ""))}
                                                                             </td>
                                                                             <td className="text-end">
-                                                                                {invoice.total_selling_display || formatCurrency(invoice.total_selling)}
+                                                                                {invoice.weight_display || (invoice.weight !== undefined && invoice.weight !== null && invoice.weight !== "" ? formatWeight(invoice.weight) : "")}
                                                                             </td>
                                                                         </tr>
                                                                     ))
@@ -666,42 +673,40 @@ const FreightAdminByCustomerReport = () => {
 
                                                                 {/* Total for Customer Row */}
                                                                 <tr className="customer-total-row">
-                                                                    <td colSpan="3" className="text-start fw-bold">
+                                                                    <td colSpan="5" className="text-start fw-bold">
                                                                         Total for Customer:&nbsp;&nbsp;&nbsp;{customer.customer_name || customer.name}
                                                                     </td>
                                                                     <td className="text-end fw-bold customer-total-border">
-                                                                        {customer.total_qty_display || formatQty(customer.total_qty)}
+                                                                        {customer.total_dimension_display || customer.dimension_display || customer.diamension_display || (customer.total_dimension !== undefined ? formatDims(customer.total_dimension) : (customer.dimension !== undefined ? formatDims(customer.dimension) : (customer.diamension !== undefined ? formatDims(customer.diamension) : "")))}
                                                                     </td>
                                                                     <td className="text-end fw-bold customer-total-border">
-                                                                        {customer.total_selling_display || formatCurrency(customer.total_selling)}
+                                                                        {customer.total_weight_display || customer.weight_display || (customer.total_weight !== undefined ? formatWeight(customer.total_weight) : (customer.weight !== undefined ? formatWeight(customer.weight) : ""))}
                                                                     </td>
                                                                 </tr>
 
                                                                 {/* Spacer between customers */}
                                                                 <tr className="spacer-row" style={{ height: "16px" }}>
-                                                                    <td colSpan="5"></td>
+                                                                    <td colSpan="7"></td>
                                                                 </tr>
                                                             </React.Fragment>
                                                         ))
                                                     ) : (
                                                         <tr>
-                                                            <td colSpan="5" className="text-center text-muted py-4">
+                                                            <td colSpan="7" className="text-center text-muted py-4">
                                                                 No data available for the selected filters.
                                                             </td>
                                                         </tr>
                                                     )}
-
-                                                    {/* Grand Total for Summary */}
-                                                    {customers.length > 0 && (
-                                                        <tr className="grand-total-row">
-                                                            <td colSpan="3" className="text-start fw-bold">
+                                                    {grandTotal && customers.length > 0 && (
+                                                        <tr className="grand-total-row" style={{ borderTop: "2px solid #000" }}>
+                                                            <td colSpan="5" className="text-start fw-bold" style={{ fontSize: "11px", paddingTop: "8px", paddingBottom: "8px" }}>
                                                                 Grand Total:
                                                             </td>
-                                                            <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.total_qty_display || totals?.total_qty_display || formatQty(grandTotal?.total_qty)}
+                                                            <td className="text-end fw-bold" style={{ fontSize: "11px", paddingTop: "8px", paddingBottom: "8px", borderTop: "2px solid #000" }}>
+                                                                {grandTotal.total_dimension_display || grandTotal.dimension_display || grandTotal.diamension_display || (grandTotal.total_dimension !== undefined ? formatDims(grandTotal.total_dimension) : (grandTotal.dimension !== undefined ? formatDims(grandTotal.dimension) : ""))}
                                                             </td>
-                                                            <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.total_selling_display || totals?.total_selling_display || formatCurrency(grandTotal?.total_selling)}
+                                                            <td className="text-end fw-bold" style={{ fontSize: "11px", paddingTop: "8px", paddingBottom: "8px", borderTop: "2px solid #000" }}>
+                                                                {grandTotal.total_weight_display || grandTotal.weight_display || (grandTotal.total_weight !== undefined ? formatWeight(grandTotal.total_weight) : (grandTotal.weight !== undefined ? formatWeight(grandTotal.weight) : ""))}
                                                             </td>
                                                         </tr>
                                                     )}
@@ -727,20 +732,16 @@ const FreightAdminByCustomerReport = () => {
                     font-family: Arial, Helvetica, sans-serif;
                     color: #000;
                 }
-                .custom-sales-report-table thead tr.header-row-top th {
+                .custom-sales-report-table thead tr.header-row th {
+                    background-color: #1b2245 !important;
+                    color: #ffffff !important;
                     border: none;
                     font-size: 11px;
                     font-weight: bold;
-                    color: #000;
-                    padding: 2px 8px;
-                }
-                .custom-sales-report-table thead tr.header-row-bottom th {
-                    border: none;
-                    border-bottom: 1.5px solid #000;
-                    font-size: 11px;
-                    font-weight: bold;
-                    color: #000;
-                    padding: 2px 8px 6px 8px;
+                    padding: 8px 8px;
+                    vertical-align: middle;
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
                 }
                 .custom-sales-report-table tbody tr.customer-row td.customer-name {
                     font-size: 12px;
@@ -753,7 +754,7 @@ const FreightAdminByCustomerReport = () => {
                 .custom-sales-report-table tbody tr.invoice-item-row td {
                     font-size: 11px;
                     color: #000;
-                    padding: 2px 8px;
+                    padding: 3px 8px;
                     border: none;
                 }
                 .custom-sales-report-table tbody tr.invoice-total-row td {
@@ -779,20 +780,10 @@ const FreightAdminByCustomerReport = () => {
                     border: none;
                     padding: 0;
                 }
-                .custom-sales-report-table tbody tr.grand-total-row td {
-                    font-size: 11px;
-                    color: #000;
-                    padding: 8px 8px;
-                    border: none;
-                }
-                .custom-sales-report-table tbody tr.grand-total-row td.grand-total-border {
-                    border-top: 1.5px solid #000;
-                    border-bottom: 3.5px double #000;
-                }
 
                 @page {
-                    size: portrait;
-                    margin: 10mm;
+                    size: landscape;
+                    margin: 8mm;
                 }
                 @media print {
                     html, body, #root, #root > div, .App, .admin-layout, .layout-main, .wpWrapper, .report-wrapper {
@@ -807,6 +798,8 @@ const FreightAdminByCustomerReport = () => {
                     body {
                         background-color: #ffffff !important;
                         color: #000000 !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
                     }
                     .no-print,
                     .no-print *,

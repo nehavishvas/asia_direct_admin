@@ -226,6 +226,20 @@ const sortAndGroupPermissions = (data) => {
     });
   }
 
+  // 5.1 Scanning and Tracking Orders
+  const scanningChildren = [];
+  addNode(scanningChildren, pullNodeByAliases(["shipmentbarcode", "shipmentandbarcode", "shipment&barcode", "shipment_barcode", "scanningandtrackingorders", "scanningandtracking"]), "Shipment & Barcode");
+
+  if (scanningChildren.length > 0) {
+    finalTree.push({
+      id: "heading-scanningtracking",
+      menu_name: "Scanning & Tracking Orders",
+      type: "heading",
+      isChecked: scanningChildren.every(c => c.isChecked),
+      children: scanningChildren
+    });
+  }
+
   // 6. Imports
   const importsChildren = [];
   addNode(importsChildren, pullNodeByAliases(["excel", "oploadfile"]), "Excel");

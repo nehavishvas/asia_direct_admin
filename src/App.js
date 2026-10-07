@@ -142,6 +142,7 @@ import EditNewFreightQuoteInvoice from "./components/Billing/EditNewFreightQuote
 import ViewNewFreightQuoteInvoice from "./components/Billing/ViewNewFreightQuoteInvoice";
 import DownloadNewFreightQuoteInvoice from "./components/Billing/DownloadNewFreightQuoteInvoice";
 import CompanyAddresses from "./pages/CompanyAddresses";
+import ShipmentBarcode from "./pages/ShipmentBarcode";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Users = lazy(() => import("./pages/Users"));
 const Messages = lazy(() => import("./pages/Messages"));
@@ -169,7 +170,7 @@ const Uniovwersalpage = lazy(() => import("./components/Uniovwersalpage"));
 export default function App() {
   const [text, setText] = useState("");
   const [permission, setPermission] = useState("");
-  console.log("29-09-26", "14:38");
+  console.log("07-10-26", "17:55 PM");
 
   useEffect(() => {
     const handleDropdownClick = (event) => {
@@ -503,6 +504,11 @@ export default function App() {
                   index
                   path="/Admin/manage-collection-delivery"
                   element={<ManageCollectionDelivery />}
+                />
+                <Route
+                  index
+                  path="/Admin/shipment-barcode"
+                  element={<ShipmentBarcode />}
                 />
                 <Route
                   index

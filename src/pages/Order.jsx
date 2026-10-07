@@ -50,7 +50,6 @@ const getTodayDateString = () => {
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 };
-
 const pageSize = 10;
 
 export default function Order() {
@@ -377,42 +376,90 @@ export default function Order() {
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
-  const handledelivery = (id) => {
-    const alldaatat = data.filter((item) => {
-      return item.id === id;
-    });
-    console.log(alldaatat[0]);
-    navigate("/Admin/updateaddress", { state: { data: alldaatat[0] } });
+  const getItemData = (itemOrId) => {
+    if (itemOrId && typeof itemOrId === "object") {
+      return itemOrId;
+    }
+    const foundInPagination = pagenation?.data?.find(
+      (item) => item.id === itemOrId || item.order_id === itemOrId || item.freight_id === itemOrId
+    );
+    if (foundInPagination) return foundInPagination;
+    return data?.find(
+      (item) => item.id === itemOrId || item.order_id === itemOrId || item.freight_id === itemOrId
+    );
   };
-  const Shippinginstruction = (id) => {
-    const alldaatat = data.filter((item) => {
-      return item.id === id;
-    });
-    console.log(alldaatat[0]);
-    navigate("/Admin/bookinginstruction", { state: { data: alldaatat[0] } });
+
+  const handledelivery = (itemOrId) => {
+    const selected = getItemData(itemOrId);
+    console.log(selected);
+    navigate("/Admin/updateaddress", { state: { data: selected } });
   };
-  const Shippingorderedit = (item) => {
-    const alldaatat = data.filter((item1) => {
-      return item1.freight_id === item.freight_id;
-    });
+  const Shippinginstruction = (itemOrId) => {
+    const selected = getItemData(itemOrId);
+    console.log(selected);
+    navigate("/Admin/bookinginstruction", { state: { data: selected } });
+  };
+  const Shippingorderedit = (itemOrFreightId) => {
+    const getUSer = getItemData(itemOrFreightId);
+    if (!getUSer) return;
     setIsOpen(true);
-    setInputdata(alldaatat[0]);
-    console.log(alldaatat);
-    // navigate("/Admin/bookinginstruction", { state: { data: alldaatat[0] } });
-  };
-
-  const handledeliveryEye = (id) => {
-    console.log(id);
-    console.log(pagenation);
-    const alldaatat = pagenation.data.filter((item) => {
-      return item.id === id;
+    setInputdata({
+      ...getUSer,
+      freight_id: getUSer.freight_id || getUSer.id,
+      order_id: getUSer.order_id,
+      client_ref: getUSer.client_ref,
+      type: getUSer.type,
+      freight: getUSer.freight,
+      incoterm: getUSer.incoterm,
+      dimension: getUSer.dimension,
+      weight: getUSer.weight,
+      comment: getUSer.comment,
+      fcl_lcl: getUSer.fcl_lcl,
+      no_of_packages: getUSer.no_of_packages,
+      package_type: getUSer.package_type,
+      commodity: getUSer.commodity,
+      hazardous: getUSer.hazardous,
+      country_of_origin: getUSer.collection_from || getUSer.country_of_origin,
+      collection_from: getUSer.collection_from || getUSer.country_of_origin,
+      destination_country: getUSer.delivery_to || getUSer.destination_country,
+      delivery_to: getUSer.delivery_to || getUSer.destination_country,
+      supplier_address: getUSer.supplier_address,
+      port_of_loading: getUSer.port_of_loading,
+      post_of_discharge: getUSer.post_of_discharge,
+      place_of_delivery: getUSer.place_of_delivery,
+      transit_time: getUSer.transit_time,
+      add_attachments: getUSer.add_attachments,
+      nature_of_hazard: getUSer.nature_of_hazard,
+      volumetric_weight: getUSer.volumetric_weight,
+      shipment_ref: getUSer.shipment_ref,
+      assign_for_estimate: getUSer.assign_for_estimate,
+      assign_to_transporter: getUSer.assign_to_transporter,
+      assign_warehouse: getUSer.assign_warehouse,
+      assign_to_clearing: getUSer.assign_to_clearing,
+      send_to_warehouse: getUSer.send_to_warehouse,
+      shipment_origin: getUSer.shipment_origin,
+      shipment_des: getUSer.shipment_des,
+      priority: getUSer.priority,
+      is_active: getUSer.is_active,
+      ready_for_collection: getUSer.ready_for_collection,
+      quote_received: getUSer.quote_received,
+      client_quoted: getUSer.client_quoted,
+      insurance: getUSer.insurance,
+      product_desc: getUSer.product_desc,
+      client_ref_name: getUSer.client_ref_name,
+      document: getUSer.add_attachment_file,
+      sales_representative: getUSer.sales_id,
     });
-    console.log(alldaatat[0]);
-    console.log(alldaatat);
-    navigate("/Admin/OrderDetails", { state: { data: alldaatat[0] } });
+    console.log(getUSer);
   };
 
-  const track = async (id) => {
+  const handledeliveryEye = (itemOrId) => {
+    const selected = getItemData(itemOrId);
+    console.log(selected);
+    navigate("/Admin/OrderDetails", { state: { data: selected } });
+  };
+
+  const track = async (itemOrId) => {
     try {
       const permission = await axios.post(
         `${process.env.REACT_APP_BASE_URL}CheckPermission`,
@@ -423,8 +470,8 @@ export default function Order() {
         }
       );
       if (permission.data.success) {
-        const allData = data.filter((item) => item.id === id);
-        navigate("/Admin/trackorder", { state: { data: allData } });
+        const selected = getItemData(itemOrId);
+        navigate("/Admin/trackorder", { state: { data: [selected] } });
       } else {
         toast.error("Permission Denied: You don’t have access to this page");
       }
@@ -466,13 +513,13 @@ export default function Order() {
       toast.error(error.response?.data?.message || "Permission Denied: You don’t have access to this page");
     }
   };
-  const track12345 = (id) => {
-    const alldaatat = data.filter((item) => {
-      return item.id === id;
-    });
-    navigate("/Admin/OrderDetail", { state: { data: alldaatat } });
+
+  const track12345 = (itemOrId) => {
+    const selected = getItemData(itemOrId);
+    navigate("/Admin/OrderDetail", { state: { data: [selected] } });
   };
-  const handlenavival = async (id) => {
+
+  const handlenavival = async (itemOrId) => {
     try {
       const datapost = {
         staff_id: userid,
@@ -484,9 +531,9 @@ export default function Order() {
         datapost
       );
       if (permission.data.success) {
-        const alldata = data?.filter((item) => item.id === id);
-        console.log(alldata);
-        navigate("/Admin/updatedelivery", { state: { data: alldata[0] } });
+        const selected = getItemData(itemOrId);
+        console.log(selected);
+        navigate("/Admin/updatedelivery", { state: { data: selected } });
       } else {
         toast.error("Permission Denied: You don’t have access to this page");
       }
@@ -495,6 +542,7 @@ export default function Order() {
       toast.error(error.response?.data?.message || "Permission Denied: You don’t have access to this page");
     }
   };
+
   const filteredData = data.filter((item) => {
     return (
       item?.client_name?.toLowerCase()?.includes(searchQuery?.toLowerCase()) ||
@@ -523,6 +571,7 @@ export default function Order() {
       item?.freight_number?.toLowerCase()?.includes(searchQuery?.toLowerCase())
     );
   });
+
   const totalPage = Math.ceil(pagenation.totalRecords / 10);
   const startIndex = (currentPage - 1) * 10;
   const endIndex = startIndex + 10;
@@ -531,32 +580,29 @@ export default function Order() {
     setCurrentPage(page);
     getorder(page, searchQuery, false);
   };
-  const handleclicknaviwaybill = (freight_id) => {
-    const alldata = data?.filter((item) => {
-      return item.freight_id === freight_id;
-    });
-    console.log(alldata);
-    navigate("/Admin/waybill", { state: { data: alldata[0] } });
+
+  const handleclicknaviwaybill = (itemOrFreightId) => {
+    const selected = getItemData(itemOrFreightId);
+    console.log(selected);
+    navigate("/Admin/waybill", { state: { data: selected } });
   };
-  const handleclicknaviauthority = (id) => {
-    const alldata = data?.filter((item) => {
-      return item.id === id;
-    });
-    console.log(alldata);
-    navigate("/Admin/letterofauhtority", { state: { data: alldata[0] } });
+
+  const handleclicknaviauthority = (itemOrId) => {
+    const selected = getItemData(itemOrId);
+    console.log(selected);
+    navigate("/Admin/letterofauhtority", { state: { data: selected } });
   };
-  const handleclicknavibilloflaadding = (id) => {
-    const alldata = data?.filter((item) => {
-      return item.id === id;
-    });
-    navigate("/Admin/billofladding", { state: { data: alldata[0] } });
+
+  const handleclicknavibilloflaadding = (itemOrId) => {
+    const selected = getItemData(itemOrId);
+    navigate("/Admin/billofladding", { state: { data: selected } });
   };
-  const handleclicknavibilloflaadding11 = (id) => {
-    const alldata = data?.filter((item) => {
-      return item.id === id;
-    });
-    navigate("/Admin/customesClearings", { state: { data: alldata[0] } });
+
+  const handleclicknavibilloflaadding11 = (itemOrId) => {
+    const selected = getItemData(itemOrId);
+    navigate("/Admin/customesClearings", { state: { data: selected } });
   };
+
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -569,6 +615,7 @@ export default function Order() {
       setFile(selectedFile);
     }
   };
+
   const postData = () => {
     setLoader(true);
     closeModal();
@@ -610,6 +657,7 @@ export default function Order() {
   useEffect(() => {
     getwarehouyse();
   }, []);
+
   const getwarehouyse = () => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}getWarehouse`)
@@ -620,6 +668,7 @@ export default function Order() {
         toast.error(error.response.data.message);
       });
   };
+
   const handleclickrestore = (item) => {
     console.log(item);
     const data123 = {
@@ -636,6 +685,7 @@ export default function Order() {
         console.log(error.response.data);
       });
   };
+
   const track12311 = (alldata) => {
     console.log([alldata]);
     if (alldata.added_by === "1") {
@@ -738,12 +788,13 @@ export default function Order() {
   // function to close modal
   const closeModalclose = () => setIsOpen(false);
 
-  const handleupdate = (freight_id) => {
-    const setUSer = data.filter((item) => item.freight_id === freight_id);
-    const getUSer = setUSer[0];
+  const handleupdate = (itemOrFreightId) => {
+    const getUSer = getItemData(itemOrFreightId);
+    if (!getUSer) return;
     console.log(getUSer);
     setInputdata({
-      freight_id: freight_id,
+      freight_id: getUSer.freight_id || getUSer.id,
+      order_id: getUSer.order_id,
       client_ref: getUSer.client_ref,
       type: getUSer.type,
       freight: getUSer.freight,
@@ -756,8 +807,10 @@ export default function Order() {
       package_type: getUSer.package_type,
       commodity: getUSer.commodity,
       hazardous: getUSer.hazardous,
-      country_of_origin: getUSer.collection_from,
-      destination_country: getUSer.delivery_to,
+      country_of_origin: getUSer.collection_from || getUSer.country_of_origin,
+      collection_from: getUSer.collection_from || getUSer.country_of_origin,
+      destination_country: getUSer.delivery_to || getUSer.destination_country,
+      delivery_to: getUSer.delivery_to || getUSer.destination_country,
       supplier_address: getUSer.supplier_address,
       port_of_loading: getUSer.port_of_loading,
       post_of_discharge: getUSer.post_of_discharge,
@@ -1459,7 +1512,7 @@ export default function Order() {
                                                           fontSize: "15px",
                                                         }}
                                                         onClick={() => {
-                                                          handledeliveryEye(item?.id);
+                                                          handledeliveryEye(item);
                                                         }}
                                                       >
                                                         <FiEye className="action-icon-view me-2" /> View
@@ -1489,7 +1542,7 @@ export default function Order() {
                                                       }}
                                                       onClick={() => {
                                                         Shippinginstruction(
-                                                          item?.id
+                                                          item
                                                         );
                                                       }}
                                                     >
@@ -1520,7 +1573,7 @@ export default function Order() {
                                                         fontSize: "15px",
                                                       }}
                                                       onClick={() => {
-                                                        track(item?.id);
+                                                        track(item);
                                                       }}
                                                     >
                                                       <RoomIcon /> Track Order
@@ -1574,7 +1627,7 @@ export default function Order() {
                                                         fontSize: "15px",
                                                       }}
                                                       onClick={() => {
-                                                        handledelivery(item?.id);
+                                                        handledelivery(item);
                                                       }}
                                                     >
                                                       <DownloadingIcon /> Loading
@@ -1588,7 +1641,7 @@ export default function Order() {
                                                         fontSize: "15px",
                                                       }}
                                                       onClick={() => {
-                                                        handlenavival(item?.id);
+                                                        handlenavival(item);
                                                       }}
                                                     >
                                                       <LocalShippingIcon /> Delivery
@@ -1664,7 +1717,7 @@ export default function Order() {
                                                     }}
                                                     onClick={() => {
                                                       handleclicknaviwaybill(
-                                                        item?.freight_id
+                                                        item
                                                       );
                                                     }}
                                                   >
@@ -1678,7 +1731,7 @@ export default function Order() {
                                                     }}
                                                     onClick={() => {
                                                       handleclicknaviauthority(
-                                                        item?.id
+                                                        item
                                                       );
                                                     }}
                                                   >
@@ -1693,7 +1746,7 @@ export default function Order() {
                                                     }}
                                                     onClick={() => {
                                                       handleclicknavibilloflaadding(
-                                                        item?.id
+                                                        item
                                                       );
                                                     }}
                                                   >
@@ -1708,7 +1761,7 @@ export default function Order() {
                                                     }}
                                                     onClick={() => {
                                                       handleclicknavibilloflaadding11(
-                                                        item?.id
+                                                        item
                                                       );
                                                     }}
                                                   >

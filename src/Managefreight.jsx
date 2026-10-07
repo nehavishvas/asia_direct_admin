@@ -10,7 +10,11 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import { useNavigate } from "react-router-dom";
-import { MdDriveFileMoveOutline } from "react-icons/md";
+import {
+  MdDriveFileMoveOutline,
+  MdOutlineTrackChanges,
+  MdHistory,
+} from "react-icons/md";
 import {
   Modal,
   Box,
@@ -121,7 +125,103 @@ export default function Managefreight() {
     send_to_warehouse: "",
     cargo_pickup: "",
     sales_representative: "",
+    quote_tracking_status: "",
   });
+
+  // Track Quote Status Update Modal State
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [selectedFreightForStatus, setSelectedFreightForStatus] = useState(null);
+  const [statusForm, setStatusForm] = useState({
+    status: "",
+    comment: "",
+    date: new Date().toISOString().split("T")[0],
+  });
+  const [statusSubmitting, setStatusSubmitting] = useState(false);
+
+  // Track Quote Status History Modal State
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [selectedHistoryFreight, setSelectedHistoryFreight] = useState(null);
+  const [historyList, setHistoryList] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  const trackStatusOptions = [
+    "Draft",
+    "Pending",
+    "Negotiation",
+    "Accepted",
+    "Rejected",
+    "Expired",
+  ];
+
+  const getTrackStatusBadgeStyle = (status) => {
+    switch (status?.toLowerCase()) {
+      case "draft":
+        return {
+          backgroundColor: "#f1f3f5",
+          color: "#495057",
+          border: "1px solid #ced4da",
+        };
+      case "pending":
+        return {
+          backgroundColor: "#fff8e6",
+          color: "#b7791f",
+          border: "1px solid #fbd38d",
+        };
+      case "negotiation":
+        return {
+          backgroundColor: "#ebf8ff",
+          color: "#2b6cb0",
+          border: "1px solid #bee3f8",
+        };
+      case "accepted":
+      case "approved":
+        return {
+          backgroundColor: "#f0fff4",
+          color: "#276749",
+          border: "1px solid #9ae6b4",
+        };
+      case "rejected":
+      case "declined":
+        return {
+          backgroundColor: "#fff5f5",
+          color: "#c53030",
+          border: "1px solid #feb2b2",
+        };
+      case "expired":
+        return {
+          backgroundColor: "#edf2f7",
+          color: "#718096",
+          border: "1px solid #e2e8f0",
+        };
+      default:
+        return {
+          backgroundColor: "#f1f3f5",
+          color: "#495057",
+          border: "1px solid #ced4da",
+        };
+    }
+  };
+
+  const getTrackStatusDotColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case "draft":
+        return "#6c757d";
+      case "pending":
+        return "#dd6b20";
+      case "negotiation":
+        return "#3182ce";
+      case "accepted":
+      case "approved":
+        return "#38a169";
+      case "rejected":
+      case "declined":
+        return "#e53e3e";
+      case "expired":
+        return "#a0aec0";
+      default:
+        return "#6c757d";
+    }
+  };
   const [show1, setShow1] = useState(false);
   const [selectedDocs, setSelectedDocs] = useState([]);
   const docOptions = [
@@ -570,6 +670,9 @@ export default function Managefreight() {
         ?.includes(searchQuery?.toLowerCase()) ||
       item?.freight?.toLowerCase()?.includes(searchQuery?.toLowerCase()) ||
       item?.incoterm?.toLowerCase()?.includes(searchQuery?.toLowerCase()) ||
+      item?.quote_tracking_status
+        ?.toLowerCase()
+        ?.includes(searchQuery?.toLowerCase()) ||
       item?.freight?.toLowerCase()?.includes(searchQuery?.toLowerCase()) ||
       item?.freight_number?.toLowerCase()?.includes(searchQuery?.toLowerCase())
     );
@@ -945,6 +1048,131 @@ export default function Managefreight() {
   const querryinQChat = (item) => {
     console.log("supplier item", item);
     navigate("/Admin/QuotationInFreightSupplier", { state: { data: item } });
+  };
+
+  const handleOpenStatusModal = (item) => {
+    setSelectedFreightForStatus(item);
+    const initialStatus =
+      item?.quote_tracking_status &&
+      item?.quote_tracking_status !== "null" &&
+      String(item?.quote_tracking_status).trim() !== ""
+        ? item.quote_tracking_status
+        : "Draft";
+    setStatusForm({
+      status: initialStatus,
+      comment: "",
+      date: new Date().toISOString().split("T")[0],
+    });
+    setStatusModalOpen(true);
+  };
+
+  const handleCloseStatusModal = () => {
+    setStatusModalOpen(false);
+    setSelectedFreightForStatus(null);
+    setStatusForm({
+      status: "",
+      comment: "",
+      date: new Date().toISOString().split("T")[0],
+    });
+  };
+
+  const handleUpdateTrackStatus = async (e) => {
+    if (e) e.preventDefault();
+    if (!selectedFreightForStatus) return;
+
+    if (!statusForm.status) {
+      toast.error("Please select a status");
+      return;
+    }
+
+    try {
+      setStatusSubmitting(true);
+      const estimateId = selectedFreightForStatus.freight_quote_estimate_id
+        ? Number(selectedFreightForStatus.freight_quote_estimate_id)
+        : selectedFreightForStatus.quote_estimate_id
+        ? Number(selectedFreightForStatus.quote_estimate_id)
+        : null;
+
+      const payload = {
+        freight_quote_estimate_id: estimateId,
+        freight_id: selectedFreightForStatus.freight_id
+          ? Number(selectedFreightForStatus.freight_id)
+          : Number(selectedFreightForStatus.id),
+        status: statusForm.status,
+        track_status: statusForm.status,
+        comment: statusForm.comment || "",
+        changed_by: Number(userid) || 1,
+      };
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}updateFreightQuoteHistoryStatus`,
+        payload
+      );
+
+      if (response.data && (response.data.success || response.status === 200)) {
+        toast.success(
+          response.data.message || "Track status updated successfully"
+        );
+        handleCloseStatusModal();
+        frightData(currentPage);
+      } else {
+        toast.error(
+          response.data?.message || "Failed to update track status"
+        );
+      }
+    } catch (error) {
+      console.error("Error updating track status:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Something went wrong while updating track status"
+      );
+    } finally {
+      setStatusSubmitting(false);
+    }
+  };
+
+  const handleViewTrackStatusHistory = async (item) => {
+    setSelectedHistoryFreight(item);
+    setHistoryModalOpen(true);
+    setHistoryLoading(true);
+    setHistoryList([]);
+    try {
+      const estimateId = item.freight_quote_estimate_id
+        ? Number(item.freight_quote_estimate_id)
+        : item.quote_estimate_id
+        ? Number(item.quote_estimate_id)
+        : null;
+
+      const payload = {
+        freight_id: item.freight_id ? Number(item.freight_id) : Number(item.id),
+      };
+      if (estimateId) {
+        payload.freight_quote_estimate_id = estimateId;
+      }
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}viewFreightQuoteStatusHistory`,
+        payload
+      );
+      if (response.data && response.data.success) {
+        setHistoryList(response.data.data || []);
+      } else {
+        setHistoryList([]);
+      }
+    } catch (error) {
+      console.error("Error fetching status history:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to fetch status history"
+      );
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  const handleCloseHistoryModal = () => {
+    setHistoryModalOpen(false);
+    setSelectedHistoryFreight(null);
+    setHistoryList([]);
   };
 
   const handleExportExcel = async () => {
@@ -1378,6 +1606,12 @@ export default function Managefreight() {
                             const daaaa = new Date(
                               item?.freight_created_at,
                             ).toLocaleDateString("en-GB");
+                            const quoteTrackingStatus =
+                              item?.quote_tracking_status &&
+                              item?.quote_tracking_status !== "null" &&
+                              String(item?.quote_tracking_status).trim() !== ""
+                                ? item.quote_tracking_status
+                                : "Draft";
                             return (
                               <>
                                 <tr key={index}>
@@ -1458,6 +1692,40 @@ export default function Managefreight() {
                                                   style={{ cursor: "pointer" }}
                                                   className="dropdown-item li_icon"
                                                   onClick={() => {
+                                                    handleOpenStatusModal(item);
+                                                  }}
+                                                >
+                                                  <MdOutlineTrackChanges
+                                                    style={{
+                                                      color: "rgb(27 34 69)",
+                                                      marginRight: "10px",
+                                                      width: "20px",
+                                                      height: "20px",
+                                                    }}
+                                                  />
+                                                  Update Quote Status
+                                                </a>
+                                                <a
+                                                  style={{ cursor: "pointer" }}
+                                                  className="dropdown-item li_icon"
+                                                  onClick={() => {
+                                                    handleViewTrackStatusHistory(item);
+                                                  }}
+                                                >
+                                                  <MdHistory
+                                                    style={{
+                                                      color: "rgb(27 34 69)",
+                                                      marginRight: "10px",
+                                                      width: "20px",
+                                                      height: "20px",
+                                                    }}
+                                                  />
+                                                  Quote Status History
+                                                </a>
+                                                <a
+                                                  style={{ cursor: "pointer" }}
+                                                  className="dropdown-item li_icon"
+                                                  onClick={() => {
                                                     handlelcickseedata1212(
                                                       item,
                                                     );
@@ -1521,7 +1789,7 @@ export default function Managefreight() {
                                                   />{" "}
                                                   Declined
                                                 </a>
-                                                <a
+                                                {/* <a
                                                   className="dropdown-item li_icon"
                                                   onClick={() => {
                                                     hanldeclicknavi2(
@@ -1547,7 +1815,7 @@ export default function Managefreight() {
                                                       Estimate Quote
                                                     </p>
                                                   </div>
-                                                </a>
+                                                </a> */}
                                                 <a
                                                   className="dropdown-item li_icon"
                                                   onClick={() => {
@@ -1701,13 +1969,13 @@ export default function Managefreight() {
                                         </div>
                                       </div>
                                     </div>
-                                    <div className="d-flex justify-content-between">
-                                      <div>
+                                    <div className="d-flex justify-content-between align-items-center flex-wrap">
+                                      <div className="d-flex align-items-center">
                                         <p
                                           type="radio"
                                           className="input_user mb-0"
                                         />
-                                        <label className="status d-flex align-items-center">
+                                        <label className="status d-flex align-items-center mb-0">
                                           {item.status == 1 ? (
                                             <>
                                               <span className="dot bg-success me-2"></span>
@@ -1756,6 +2024,56 @@ export default function Managefreight() {
                                             </>
                                           )}
                                         </label>
+                                      </div>
+                                      <div className="d-flex align-items-center gap-1">
+                                        <span
+                                          className="text-secondary small me-1"
+                                          style={{ fontSize: "12px", fontWeight: "600" }}
+                                        >
+                                          Quote Status:
+                                        </span>
+                                        <span
+                                          onClick={() => handleOpenStatusModal(item)}
+                                          title="Click to change Quote Status"
+                                          style={{
+                                            padding: "3px 10px",
+                                            borderRadius: "12px",
+                                            fontSize: "12px",
+                                            fontWeight: "600",
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            gap: "5px",
+                                            cursor: "pointer",
+                                            transition: "all 0.2s ease",
+                                            ...getTrackStatusBadgeStyle(quoteTrackingStatus),
+                                          }}
+                                        >
+                                          <span
+                                            style={{
+                                              width: "6px",
+                                              height: "6px",
+                                              borderRadius: "50%",
+                                              backgroundColor: getTrackStatusDotColor(quoteTrackingStatus),
+                                              display: "inline-block",
+                                            }}
+                                          />
+                                          {quoteTrackingStatus}
+                                          <FiEdit style={{ fontSize: "10px", opacity: 0.7, marginLeft: "2px" }} />
+                                        </span>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleViewTrackStatusHistory(item)}
+                                          title="View Status History"
+                                          className="btn btn-sm p-0 ms-1 border-0"
+                                          style={{
+                                            color: "#6c757d",
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            cursor: "pointer",
+                                          }}
+                                        >
+                                          <MdHistory style={{ fontSize: "17px" }} />
+                                        </button>
                                       </div>
                                       <div className="d-flex">
                                         <div className="me-2">
@@ -3243,6 +3561,381 @@ export default function Managefreight() {
             </Modal>
             {/* )} */}
 
+            {/* Update Track Quote Status Modal */}
+            {statusModalOpen && selectedFreightForStatus && (
+              <div
+                className="modal fade show"
+                style={{
+                  display: "block",
+                  backgroundColor: "rgba(0, 0, 0, 0.55)",
+                  backdropFilter: "blur(2px)",
+                  zIndex: 1050,
+                }}
+                tabIndex="-1"
+              >
+                <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "520px" }}>
+                  <div
+                    className="modal-content text-dark"
+                    style={{
+                      borderRadius: "12px",
+                      border: "none",
+                      boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {/* Modal Header */}
+                    <div
+                      className="modal-header d-flex justify-content-between align-items-center"
+                      style={{
+                        background: "#1d2044",
+                        color: "#fff",
+                        padding: "16px 20px",
+                        borderBottom: "none",
+                      }}
+                    >
+                      <div>
+                        <h5 className="modal-title fw-bold mb-0" style={{ fontSize: "17px", color: "#fff" }}>
+                          Update Track Quote Status
+                        </h5>
+                        <small style={{ color: "#d1d5db", fontSize: "12px" }}>
+                          Freight: <strong style={{ color: "#fff" }}>{selectedFreightForStatus.freight_number || "-"}</strong>
+                          {selectedFreightForStatus.client_name && ` | ${selectedFreightForStatus.client_name}`}
+                        </small>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleCloseStatusModal}
+                        disabled={statusSubmitting}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          color: "#fff",
+                          fontSize: "20px",
+                          cursor: "pointer",
+                          lineHeight: 1,
+                          padding: "4px",
+                        }}
+                      >
+                        <CloseIcon />
+                      </button>
+                    </div>
+
+                    {/* Modal Form */}
+                    <form onSubmit={handleUpdateTrackStatus}>
+                      <div className="modal-body p-4">
+                        {/* Summary card */}
+                        <div
+                          className="p-3 mb-3 rounded"
+                          style={{ backgroundColor: "#f8f9fa", border: "1px solid #e9ecef" }}
+                        >
+                          <div className="row g-2" style={{ fontSize: "13px" }}>
+                            <div className="col-6">
+                              <span className="text-muted d-block">Client:</span>
+                              <strong>{selectedFreightForStatus.client_name || "-"}</strong>
+                            </div>
+                            <div className="col-6">
+                              <span className="text-muted d-block">Current Status:</span>
+                              <span
+                                style={{
+                                  padding: "2px 8px",
+                                  borderRadius: "10px",
+                                  fontSize: "11px",
+                                  fontWeight: "600",
+                                  ...getTrackStatusBadgeStyle(
+                                    selectedFreightForStatus.quote_tracking_status || "Draft"
+                                  ),
+                                }}
+                              >
+                                {selectedFreightForStatus.quote_tracking_status || "Draft"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Date (Auto Insert) */}
+                        <div className="mb-3">
+                          <label className="form-label fw-semibold" style={{ fontSize: "13px", color: "#333" }}>
+                            Date (Auto Insert)
+                          </label>
+                          <input
+                            type="date"
+                            className="form-control"
+                            value={statusForm.date}
+                            readOnly
+                            disabled
+                            style={{
+                              backgroundColor: "#e9ecef",
+                              cursor: "not-allowed",
+                              fontSize: "14px",
+                            }}
+                          />
+                          <small className="text-muted" style={{ fontSize: "11px" }}>
+                            Auto-filled with current date
+                          </small>
+                        </div>
+
+                        {/* Change Status Dropdown */}
+                        <div className="mb-3">
+                          <label className="form-label fw-semibold" style={{ fontSize: "13px", color: "#333" }}>
+                            Change Track Status <span className="text-danger">*</span>
+                          </label>
+                          <select
+                            className="form-select form-control"
+                            value={statusForm.status}
+                            onChange={(e) =>
+                              setStatusForm({ ...statusForm, status: e.target.value })
+                            }
+                            required
+                            style={{ fontSize: "14px" }}
+                          >
+                            <option value="">-- Select Status --</option>
+                            {trackStatusOptions.map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Status change comment */}
+                        <div className="mb-2">
+                          <label className="form-label fw-semibold" style={{ fontSize: "13px", color: "#333" }}>
+                            Status Change Comment
+                          </label>
+                          <textarea
+                            className="form-control"
+                            rows="3"
+                            placeholder="Enter comment or reason for status update..."
+                            value={statusForm.comment}
+                            onChange={(e) =>
+                              setStatusForm({ ...statusForm, comment: e.target.value })
+                            }
+                            style={{ fontSize: "14px", resize: "vertical" }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Modal Footer */}
+                      <div
+                        className="modal-footer d-flex justify-content-end gap-2"
+                        style={{
+                          borderTop: "1px solid #dee2e6",
+                          padding: "12px 20px",
+                          backgroundColor: "#f8f9fa",
+                        }}
+                      >
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          onClick={handleCloseStatusModal}
+                          disabled={statusSubmitting}
+                          style={{ fontSize: "14px", padding: "6px 16px" }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="blueBtn"
+                          disabled={statusSubmitting}
+                          style={{
+                            fontSize: "14px",
+                            padding: "6px 20px",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "6px",
+                          }}
+                        >
+                          {statusSubmitting ? (
+                            <>
+                              <span
+                                className="spinner-border spinner-border-sm"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                              Updating...
+                            </>
+                          ) : (
+                            "Update Track Status"
+                          )}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* View Track Status History Modal */}
+            {historyModalOpen && selectedHistoryFreight && (
+              <div
+                className="modal fade show"
+                style={{
+                  display: "block",
+                  backgroundColor: "rgba(0, 0, 0, 0.55)",
+                  backdropFilter: "blur(2px)",
+                  zIndex: 1050,
+                }}
+                tabIndex="-1"
+              >
+                <div className="modal-dialog modal-dialog-centered modal-lg" style={{ maxWidth: "750px" }}>
+                  <div
+                    className="modal-content text-dark"
+                    style={{
+                      borderRadius: "12px",
+                      border: "none",
+                      boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {/* Modal Header */}
+                    <div
+                      className="modal-header d-flex justify-content-between align-items-center"
+                      style={{
+                        background: "#1d2044",
+                        color: "#fff",
+                        padding: "16px 20px",
+                        borderBottom: "none",
+                      }}
+                    >
+                      <div>
+                        <h5 className="modal-title fw-bold mb-0" style={{ fontSize: "17px", color: "#fff" }}>
+                          Track Status History
+                        </h5>
+                        <small style={{ color: "#d1d5db", fontSize: "12px" }}>
+                          Freight: <strong style={{ color: "#fff" }}>{selectedHistoryFreight.freight_number || "-"}</strong>
+                          {selectedHistoryFreight.client_name && ` | Client: ${selectedHistoryFreight.client_name}`}
+                        </small>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleCloseHistoryModal}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          color: "#fff",
+                          fontSize: "20px",
+                          cursor: "pointer",
+                          lineHeight: 1,
+                          padding: "4px",
+                        }}
+                      >
+                        <CloseIcon />
+                      </button>
+                    </div>
+
+                    {/* Modal Body */}
+                    <div className="modal-body p-4" style={{ maxHeight: "70vh", overflowY: "auto" }}>
+                      {historyLoading ? (
+                        <div className="text-center py-5">
+                          <div className="spinner-border text-primary" role="status"></div>
+                          <p className="mt-2 text-muted" style={{ fontSize: "13px" }}>Loading status history...</p>
+                        </div>
+                      ) : historyList.length === 0 ? (
+                        <div className="text-center py-5 text-muted">
+                          <p style={{ fontSize: "15px" }}>No status history found for this freight quote.</p>
+                        </div>
+                      ) : (
+                        <div className="table-responsive">
+                          <table className="table table-bordered align-middle mb-0" style={{ fontSize: "13px" }}>
+                            <thead style={{ backgroundColor: "#f8f9fa" }}>
+                              <tr>
+                                <th style={{ width: "60px" }}>#</th>
+                                <th>Track Status</th>
+                                <th>Comment</th>
+                                <th>Changed By</th>
+                                <th>Changed Date & Time</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {historyList.map((hist, idx) => (
+                                <tr key={hist.id || idx}>
+                                  <td className="fw-semibold text-muted">{idx + 1}</td>
+                                  <td>
+                                    <span
+                                      style={{
+                                        padding: "4px 10px",
+                                        borderRadius: "12px",
+                                        fontSize: "12px",
+                                        fontWeight: "600",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: "5px",
+                                        ...getTrackStatusBadgeStyle(hist.status || hist.track_status),
+                                      }}
+                                    >
+                                      <span
+                                        style={{
+                                          width: "6px",
+                                          height: "6px",
+                                          borderRadius: "50%",
+                                          backgroundColor: getTrackStatusDotColor(hist.status || hist.track_status),
+                                          display: "inline-block",
+                                        }}
+                                      />
+                                      {hist.status || hist.track_status || "-"}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    {hist.comment ? (
+                                      <span style={{ color: "#333" }}>{hist.comment}</span>
+                                    ) : (
+                                      <span className="text-muted fst-italic">No comment</span>
+                                    )}
+                                  </td>
+                                  <td>
+                                    {hist.changed_by_name ? (
+                                      <strong>{hist.changed_by_name}</strong>
+                                    ) : hist.changed_by ? (
+                                      <span className="badge bg-light text-dark border">
+                                        {hist.changed_by}
+                                      </span>
+                                    ) : (
+                                      "-"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {hist.changed_at ? (
+                                      <span style={{ color: "#555" }}>
+                                        {hist.changed_at}
+                                      </span>
+                                    ) : hist.created_at ? (
+                                      <span style={{ color: "#555" }}>
+                                        {hist.created_at}
+                                      </span>
+                                    ) : (
+                                      "-"
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Modal Footer */}
+                    <div
+                      className="modal-footer d-flex justify-content-end"
+                      style={{
+                        borderTop: "1px solid #dee2e6",
+                        padding: "12px 20px",
+                        backgroundColor: "#f8f9fa",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={handleCloseHistoryModal}
+                        style={{ fontSize: "14px", padding: "6px 16px" }}
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div >
         </div >
       </div >

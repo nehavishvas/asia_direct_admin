@@ -45,6 +45,29 @@ const VAT_OPTIONS = [
 const safeNumber = (val) => { const n = Number(val); return isNaN(n) ? 0 : n; };
 const fmt = (v) => safeNumber(v).toFixed(2);
 
+const cleanParseFloat = (val) => {
+  if (val === null || val === undefined || val === "") return 0;
+  const clean = String(val).replace(/,/g, "").replace(/%/g, "").trim();
+  const num = parseFloat(clean);
+  return isNaN(num) ? 0 : num;
+};
+
+const formatValue = (val, dec = 2, isPercent = false) => {
+  if (val === null || val === undefined || val === "") {
+    return isPercent ? "0.00 %" : "0.00";
+  }
+  const cleanVal = String(val).replace(/,/g, '').replace(/%/g, '').trim();
+  const num = parseFloat(cleanVal);
+  if (isNaN(num)) {
+    return val;
+  }
+  const formatted = num.toLocaleString("en-US", {
+    minimumFractionDigits: dec,
+    maximumFractionDigits: dec
+  });
+  return isPercent ? `${formatted} %` : formatted;
+};
+
 // ─── component ──────────────────────────────────────────────────────────────
 
 export default function Viewsupplierinvoice({ hiddenPrintItem, onPrintComplete }) {
@@ -57,6 +80,7 @@ export default function Viewsupplierinvoice({ hiddenPrintItem, onPrintComplete }
     due_date: "",
     final_base_currency: "Select",
     chargable_rate: "",
+    chargeable_unit: "",
     company_id: "",
     company_address: null,
   });
@@ -129,7 +153,8 @@ export default function Viewsupplierinvoice({ hiddenPrintItem, onPrintComplete }
           invoice_for_country: inv.invoice_for_country || "",
           due_date: inv.due_date ? inv.due_date.split("T")[0] : "",
           final_base_currency: inv.final_base_currency || "Select",
-          chargable_rate: inv.chargeable || "",
+          chargable_rate: inv.chargeable ? formatValue(inv.chargeable, 3) : "",
+          chargeable_unit: inv.chargeable_unit || inv.chargable_unit || "",
           company_id: inv.company_id || "",
           company_address: inv.company_address || null,
           created_at: inv.created_at || "",
@@ -203,6 +228,12 @@ export default function Viewsupplierinvoice({ hiddenPrintItem, onPrintComplete }
           initialInvoiceData?.address_1 ||
           res.data.details?.[0]?.address_1 || "";
         setGetdata(s);
+        if (s.chargeable_unit || s.chargable_unit) {
+          setFreight((prev) => ({
+            ...prev,
+            chargeable_unit: prev.chargeable_unit || s.chargeable_unit || s.chargable_unit || "",
+          }));
+        }
       }
     } catch (e) { console.error("Error loading shipment:", e); }
   };
@@ -212,7 +243,7 @@ export default function Viewsupplierinvoice({ hiddenPrintItem, onPrintComplete }
   const resolveRowUnit = (unitType) => {
     if (!unitType || unitType === "Select") return 0;
     if (String(unitType) === "1") return 1;
-    const rate = parseFloat(freight.chargable_rate);
+    const rate = cleanParseFloat(freight.chargable_rate);
     return isNaN(rate) ? 0 : rate;
   };
 
@@ -443,7 +474,7 @@ export default function Viewsupplierinvoice({ hiddenPrintItem, onPrintComplete }
         ["Vessel", getdata?.vessel || ""],
         ["ETD", shipmentDate("ETD")],
         ["ATD", shipmentDate("ATD")],
-        ["Chargeable", freight.chargable_rate || ""],
+        ["Chargeable", freight.chargable_rate ? `${formatValue(freight.chargable_rate, 3)}${freight.chargeable_unit ? ` ${freight.chargeable_unit}` : ""}` : ""],
         ["Status", getdata?.status || ""],
         ["Origin Agent", getdata?.origin_agent || ""],
         ["Freight", getdata?.freight || ""],
@@ -882,7 +913,12 @@ export default function Viewsupplierinvoice({ hiddenPrintItem, onPrintComplete }
                                 ["Vessel", getdata?.vessel],
                                 ["ETD", shipmentDate("ETD")],
                                 ["ATD", shipmentDate("ATD")],
-                                ["Chargeable", freight.chargable_rate],
+                                [
+                                  "Chargeable",
+                                  freight.chargable_rate
+                                    ? `${formatValue(freight.chargable_rate, 3)}${freight.chargeable_unit ? ` ${freight.chargeable_unit}` : ""}`
+                                    : "-",
+                                ],
                                 ["Status", getdata?.status],
                                 ["Origin Agent", getdata?.origin_agent],
                                 ["Freight", getdata?.freight],

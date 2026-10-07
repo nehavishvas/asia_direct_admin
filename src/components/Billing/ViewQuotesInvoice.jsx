@@ -129,6 +129,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
     due_date: "",
     final_base_currency: "Select",
     chargable_rate: "",
+    chargeable_unit: "",
     company_id: "",
     company_address: null,
     bank_details: null,
@@ -231,6 +232,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
             due_date: invoiceData.due_date || invoiceData.date ? (invoiceData.due_date || invoiceData.date).split("T")[0] : "",
             final_base_currency: invoiceData.final_base_currency || "Select",
             chargable_rate: invoiceData.chargeable || "",
+            chargeable_unit: invoiceData.chargeable_unit || "",
             company_id: invoiceData.company_id || "",
             company_address: invoiceData.company_address || null,
             bank_details: invoiceData.bank_details || null,
@@ -479,7 +481,7 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
         ["Gross Weight (kgs)", getdata?.weight || ""],
         ["Dimensions (M3)", getdata?.dimension || ""],
         ["Volumetric (kgs)", getdata?.volumetric_weight || ""],
-        ["Chargeable", freight.chargable_rate ? formatValue(freight.chargable_rate, 3) : ""],
+        ["Chargeable", freight.chargable_rate ? `${formatValue(freight.chargable_rate, 3)}${freight.chargeable_unit ? ` ${freight.chargeable_unit}` : ""}` : ""],
       ];
       leftFields.forEach(([label, value]) => {
         drawRow(doc, margin + lPad, ly, lW, label, value);
@@ -1358,7 +1360,9 @@ export default function ViewQuotesInvoice({ hiddenPrintItem, onPrintComplete }) 
                               </div>
                               <div className="d-flex justify-content-between my-1">
                                 <strong>Chargeable</strong>
-                                <span>{freight.chargable_rate ? formatValue(freight.chargable_rate, 3) : "-"}</span>
+                                <span className="text-end" style={{ textAlign: "right" }}>
+                                  {freight.chargable_rate ? `${formatValue(freight.chargable_rate, 3)}${freight.chargeable_unit ? ` ${freight.chargeable_unit}` : ""}` : "-"}
+                                </span>
                               </div>
                             </td>
                           </tr>

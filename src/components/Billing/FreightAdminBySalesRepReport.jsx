@@ -61,7 +61,7 @@ const FreightAdminBySalesRepReport = () => {
     const [grandTotal, setGrandTotal] = useState(null);
     const [totalSalesReps, setTotalSalesReps] = useState(0);
     const [staffList, setStaffList] = useState([]);
-    const [loader, setLoader] = useState(false);
+    const [loader, setLoader] = useState(true);
     const [searched, setSearched] = useState(false);
 
     const handleReset = () => {
@@ -129,34 +129,42 @@ const FreightAdminBySalesRepReport = () => {
                 filters: filtersPayload
             };
 
+            const endpoint = isFreightOrders ? "newSalesBySalesRepOrderReport" : "newSalesBySalesRepReport";
+
             let response;
             try {
                 response = await axios.post(
-                    `${process.env.REACT_APP_BASE_URL}newSalesBySalesRepReport`,
+                    `${process.env.REACT_APP_BASE_URL}${endpoint}`,
                     payload
                 );
             } catch (postErr) {
-                console.warn("newSalesBySalesRepReport endpoint failed, attempting getSalesBySalesRepReport:", postErr);
-                response = await axios.post(
-                    `${process.env.REACT_APP_BASE_URL}getSalesBySalesRepReport`,
-                    payload
-                );
+                console.warn(`${endpoint} endpoint failed:`, postErr);
+                if (!isFreightOrders) {
+                    response = await axios.post(
+                        `${process.env.REACT_APP_BASE_URL}getSalesBySalesRepReport`,
+                        payload
+                    );
+                } else {
+                    throw postErr;
+                }
             }
 
-            if (response && response.data && (response.data.success || response.data.status === 200 || response.data.data)) {
-                const resData = response.data;
-                const repsList = resData.data || resData.sales_reps || resData.salesReps || (Array.isArray(resData) ? resData : []);
+            if (response && response.data && (response.data.success || response.data.status === 200 || response.data.data || response.data.sales_reps)) {
+                const resData = response.data.data && typeof response.data.data === "object" && !Array.isArray(response.data.data)
+                    ? response.data.data
+                    : response.data;
+                const repsList = resData.sales_reps || resData.salesReps || resData.data || (Array.isArray(resData) ? resData : []);
                 setReportData(repsList);
-                setReportInfo(resData.report_info || null);
-                setGrandTotal(resData.grand_total || resData.totals || null);
-                setTotalSalesReps(resData.totalSalesReps || resData.total_sales_reps || repsList.length);
+                setReportInfo(resData.report_info || response.data.report_info || null);
+                setGrandTotal(resData.grand_total || response.data.grand_total || resData.totals || response.data.totals || null);
+                setTotalSalesReps(resData.totalSalesReps || resData.total_sales_reps || response.data.totalSalesReps || repsList.length);
             } else {
                 toast.error(response?.data?.message || "Failed to fetch report data");
                 setReportData([]);
                 setGrandTotal(null);
             }
         } catch (error) {
-            console.error("Error fetching Freight by Admin - Sales Rep Report:", error);
+            console.error(`Error fetching ${pageTitle}:`, error);
             toast.error(error.response?.data?.message || "Failed to fetch report data");
             setReportData([]);
             setGrandTotal(null);
@@ -167,15 +175,14 @@ const FreightAdminBySalesRepReport = () => {
 
     const checkPermission = async () => {
         try {
-            setLoader(true);
             if (!userid || !usertype) {
                 setHasPermission(true);
-                fetchReportData();
+                await fetchReportData();
                 return;
             }
             const postdata = {
                 staff_id: userid,
-                route_url: location.pathname || "/Admin/freight-admin-by-sales-rep-report",
+                route_url: location.pathname || (isFreightOrders ? "/Admin/freight-orders-sales-rep-report" : "/Admin/freight-admin-by-sales-rep-report"),
                 user_type: usertype,
             };
             const response = await axios.post(
@@ -184,16 +191,14 @@ const FreightAdminBySalesRepReport = () => {
             );
             if (response.data && response.data.success === true) {
                 setHasPermission(true);
-                fetchReportData();
+                await fetchReportData();
             } else {
                 setHasPermission(true);
-                fetchReportData();
+                await fetchReportData();
             }
         } catch (error) {
             setHasPermission(true);
-            fetchReportData();
-        } finally {
-            setLoader(false);
+            await fetchReportData();
         }
     };
 
@@ -201,7 +206,7 @@ const FreightAdminBySalesRepReport = () => {
         checkPermission();
         fetchStaffList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [location.pathname]);
 
     // Format Helpers
     const formatCurrency = (amount, currencySymbol = "R") => {
@@ -220,6 +225,20 @@ const FreightAdminBySalesRepReport = () => {
         if (qty === null || qty === undefined || qty === "") return "0.0000";
         const num = parseFloat(qty);
         if (isNaN(num)) return "0.0000";
+        return num.toFixed(4);
+    };
+
+    const formatDims = (dims) => {
+        if (dims === null || dims === undefined || dims === "" || parseFloat(dims) === 0) return "-";
+        const num = parseFloat(dims);
+        if (isNaN(num)) return typeof dims === "string" ? dims : "-";
+        return num.toFixed(4);
+    };
+
+    const formatWeight = (weight) => {
+        if (weight === null || weight === undefined || weight === "" || parseFloat(weight) === 0) return "-";
+        const num = parseFloat(weight);
+        if (isNaN(num)) return typeof weight === "string" ? weight : "-";
         return num.toFixed(4);
     };
 
@@ -447,11 +466,9 @@ const FreightAdminBySalesRepReport = () => {
                     <div className="card shadow-sm border-0 report-print-area">
                         <div className="card-body p-4 p-md-5">
                             {loader ? (
-                                <div className="text-center py-5">
-                                    <div className="spinner-border text-primary spinner-sm" role="status">
-                                        <span className="visually-hidden">Loading...</span>
-                                    </div>
-                                    <p className="mt-2 text-secondary">Generating report...</p>
+                                <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
+                                    <div className="loader"></div>
+                                    <p className="loader-text">Loading report data...</p>
                                 </div>
                             ) : searched ? (
                                 <>
@@ -492,69 +509,55 @@ const FreightAdminBySalesRepReport = () => {
                                             <table className="freight-sales-rep-report-table">
                                                 <thead>
                                                     <tr className="table-header-row">
-                                                        <th className="text-start" style={{ width: "38%" }}>Sales Rep</th>
-                                                        <th className="text-end" style={{ width: "12%" }}>Qty</th>
-                                                        <th className="text-end" style={{ width: "13%" }}>Total Cost</th>
-                                                        <th className="text-end" style={{ width: "13%" }}>Total Selling</th>
-                                                        <th className="text-end" style={{ width: "13%" }}>GP Amount</th>
-                                                        <th className="text-end" style={{ width: "11%" }}>GP %</th>
+                                                        <th className="text-start" style={{ width: "40%" }}>Sales Rep</th>
+                                                        <th className="text-start" style={{ width: "15%" }}>Freight</th>
+                                                        <th className="text-start" style={{ width: "15%" }}>Option</th>
+                                                        <th className="text-end" style={{ width: "15%" }}>Dims (Cbm)</th>
+                                                        <th className="text-end" style={{ width: "15%" }}>Weight (Kgs)</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {reportData && reportData.length > 0 ? (
                                                         reportData.map((rep, repIdx) => {
                                                             const repName = rep.sales_rep_name || rep.sales_rep || "Unknown Sales Rep";
+                                                            const firstRow = (rep.rows && rep.rows[0]) || (rep.invoices && rep.invoices[0]) || {};
                                                             return (
                                                                 <tr key={rep.sales_rep_id || `rep_sum_${repIdx}`} className="sales-rep-row-data">
                                                                     <td className="text-start fw-bold">
                                                                         {repName}
                                                                     </td>
-                                                                    <td className="text-end">
-                                                                        {rep.total_qty_display || formatQty(rep.total_qty)}
+                                                                    <td className="text-start">
+                                                                        {rep.freight || firstRow.freight || "-"}
+                                                                    </td>
+                                                                    <td className="text-start">
+                                                                        {rep.type || rep.fcl_lcl || firstRow.type || firstRow.fcl_lcl || "-"}
                                                                     </td>
                                                                     <td className="text-end">
-                                                                        {rep.total_cost_display || formatCurrency(rep.total_cost)}
+                                                                        {rep.total_dimension_display || rep.total_diamension_display || rep.dimension_display || (rep.total_dimension !== undefined && rep.total_dimension !== null && rep.total_dimension !== "" ? formatDims(rep.total_dimension) : (rep.dimension !== undefined && rep.dimension !== null && rep.dimension !== "" ? formatDims(rep.dimension) : (rep.total_cbm ? formatDims(rep.total_cbm) : "-")))}
                                                                     </td>
                                                                     <td className="text-end">
-                                                                        {rep.total_selling_display || formatCurrency(rep.total_selling)}
-                                                                    </td>
-                                                                    <td className="text-end">
-                                                                        {rep.gp_amount_display || formatCurrency(rep.gp_amount)}
-                                                                    </td>
-                                                                    <td className="text-end">
-                                                                        {rep.gp_percent_display || formatPercent(rep.gp_percent)}
+                                                                        {rep.total_weight_display || rep.weight_display || (rep.total_weight !== undefined && rep.total_weight !== null && rep.total_weight !== "" ? formatWeight(rep.total_weight) : (rep.weight !== undefined && rep.weight !== null && rep.weight !== "" ? formatWeight(rep.weight) : "-"))}
                                                                     </td>
                                                                 </tr>
                                                             );
                                                         })
                                                     ) : (
                                                         <tr>
-                                                            <td colSpan="6" className="text-center text-muted py-4">
+                                                            <td colSpan="5" className="text-center text-muted py-4">
                                                                 No data found for the selected criteria.
                                                             </td>
                                                         </tr>
                                                     )}
-
-                                                    {/* Grand Total Row */}
-                                                    {reportData && reportData.length > 0 && grandTotal && (
+                                                    {grandTotal && reportData && reportData.length > 0 && (
                                                         <tr className="grand-total-row">
-                                                            <td className="text-start fw-bold grand-total-border">
+                                                            <td colSpan="3" className="text-start fw-bold grand-total-border">
                                                                 Grand Total:
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.qty_display || formatQty(grandTotal?.qty)}
+                                                                {grandTotal.total_dimension_display || grandTotal.dimension_display || grandTotal.diamension_display || (grandTotal.total_dimension !== undefined && grandTotal.total_dimension !== null ? formatDims(grandTotal.total_dimension) : (grandTotal.dimension !== undefined && grandTotal.dimension !== null ? formatDims(grandTotal.dimension) : ""))}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.total_cost_display || formatCurrency(grandTotal?.total_cost)}
-                                                            </td>
-                                                            <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.total_selling_display || formatCurrency(grandTotal?.total_selling)}
-                                                            </td>
-                                                            <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.gp_amount_display || formatCurrency(grandTotal?.gp_amount)}
-                                                            </td>
-                                                            <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.gp_percent_display || formatPercent(grandTotal?.gp_percent)}
+                                                                {grandTotal.total_weight_display || grandTotal.weight_display || (grandTotal.total_weight !== undefined && grandTotal.total_weight !== null ? formatWeight(grandTotal.total_weight) : (grandTotal.weight !== undefined && grandTotal.weight !== null ? formatWeight(grandTotal.weight) : ""))}
                                                             </td>
                                                         </tr>
                                                     )}
@@ -564,27 +567,26 @@ const FreightAdminBySalesRepReport = () => {
                                             <table className="freight-sales-rep-report-table">
                                                 <thead>
                                                     <tr className="table-header-row">
-                                                        <th className="text-start" style={{ width: "11%" }}>Date</th>
-                                                        <th className="text-start" style={{ width: "13%" }}>Reference</th>
-                                                        <th className="text-start" style={{ width: "26%" }}>Customer</th>
-                                                        <th className="text-end" style={{ width: "10%" }}>Qty</th>
-                                                        <th className="text-end" style={{ width: "12%" }}>Total Cost</th>
-                                                        <th className="text-end" style={{ width: "14%" }}>Total Selling</th>
-                                                        <th className="text-end" style={{ width: "14%" }}>GP Amount</th>
-                                                        <th className="text-end" style={{ width: "10%" }}>GP %</th>
+                                                        <th className="text-start" style={{ width: "12%" }}>Date</th>
+                                                        <th className="text-start" style={{ width: "14%" }}>Reference</th>
+                                                        <th className="text-start" style={{ width: "32%" }}>Customer</th>
+                                                        <th className="text-start" style={{ width: "11%" }}>Freight</th>
+                                                        <th className="text-start" style={{ width: "11%" }}>Option</th>
+                                                        <th className="text-end" style={{ width: "10%" }}>Dims (Cbm)</th>
+                                                        <th className="text-end" style={{ width: "10%" }}>Weight (Kgs)</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {reportData && reportData.length > 0 ? (
                                                         reportData.map((rep, repIdx) => {
                                                             const repName = rep.sales_rep_name || rep.sales_rep || "Unknown Sales Rep";
-                                                            const invoices = rep.invoices || [];
+                                                            const invoices = (rep.invoices && rep.invoices.length > 0) ? rep.invoices : (rep.rows && rep.rows.length > 0 ? rep.rows : []);
 
                                                             return (
                                                                 <React.Fragment key={rep.sales_rep_id || `rep_${repIdx}`}>
                                                                     {/* Sales Rep Name Header */}
                                                                     <tr className="sales-rep-title-row">
-                                                                        <td colSpan="8" className="text-start">
+                                                                        <td colSpan="7" className="text-start">
                                                                             {repName}
                                                                         </td>
                                                                     </tr>
@@ -594,28 +596,25 @@ const FreightAdminBySalesRepReport = () => {
                                                                         invoices.map((inv, invIdx) => (
                                                                             <tr key={inv.invoice_id || `inv_${repIdx}_${invIdx}`} className="sales-rep-row-data">
                                                                                 <td className="text-start">
-                                                                                    {inv.date || formatDateDisplay(inv.raw_date)}
+                                                                                    {inv.date || formatDateDisplay(inv.raw_date || inv.quote_date || inv.created_at)}
                                                                                 </td>
                                                                                 <td className="text-start">
-                                                                                    {inv.reference || inv.reference_no || "-"}
+                                                                                    {inv.reference || inv.reference_no || inv.document_no || "-"}
                                                                                 </td>
                                                                                 <td className="text-start">
-                                                                                    {inv.customer || "Cash Client - ZAR"}
+                                                                                    {inv.customer || inv.client_name || "Cash Client - ZAR"}
+                                                                                </td>
+                                                                                <td className="text-start">
+                                                                                    {inv.freight || rep.freight || "-"}
+                                                                                </td>
+                                                                                <td className="text-start">
+                                                                                    {inv.type || inv.fcl_lcl || rep.type || rep.fcl_lcl || "-"}
                                                                                 </td>
                                                                                 <td className="text-end">
-                                                                                    {inv.qty_display || formatQty(inv.qty)}
+                                                                                    {inv.dimension_display || inv.diamension_display || (inv.dimension !== undefined && inv.dimension !== null && inv.dimension !== "" ? formatDims(inv.dimension) : (inv.diamension !== undefined && inv.diamension !== null && inv.diamension !== "" ? formatDims(inv.diamension) : (inv.cbm !== undefined && inv.cbm !== null && inv.cbm !== "" ? formatDims(inv.cbm) : "-")))}
                                                                                 </td>
                                                                                 <td className="text-end">
-                                                                                    {inv.total_cost_display || formatCurrency(inv.total_cost)}
-                                                                                </td>
-                                                                                <td className="text-end">
-                                                                                    {inv.total_selling_display || formatCurrency(inv.total_selling)}
-                                                                                </td>
-                                                                                <td className="text-end">
-                                                                                    {inv.gp_amount_display || formatCurrency(inv.gp_amount)}
-                                                                                </td>
-                                                                                <td className="text-end">
-                                                                                    {inv.gp_percent_display || formatPercent(inv.gp_percent)}
+                                                                                    {inv.weight_display || (inv.weight !== undefined && inv.weight !== null && inv.weight !== "" ? formatWeight(inv.weight) : (inv.weight_kg !== undefined && inv.weight_kg !== null && inv.weight_kg !== "" ? formatWeight(inv.weight_kg) : (inv.weight_kgs !== undefined && inv.weight_kgs !== null && inv.weight_kgs !== "" ? formatWeight(inv.weight_kgs) : "-")))}
                                                                                 </td>
                                                                             </tr>
                                                                         ))
@@ -623,61 +622,41 @@ const FreightAdminBySalesRepReport = () => {
 
                                                                     {/* Sales Rep Subtotal Row */}
                                                                     <tr className="sales-rep-subtotal-row">
-                                                                        <td colSpan="3" className="text-start">
+                                                                        <td colSpan="5" className="text-start">
                                                                             Total for Sales Rep: {repName}
                                                                         </td>
                                                                         <td className="text-end">
-                                                                            {rep.total_qty_display || formatQty(rep.total_qty)}
+                                                                            {rep.total_dimension_display || rep.total_diamension_display || rep.dimension_display || (rep.total_dimension !== undefined && rep.total_dimension !== null && rep.total_dimension !== "" ? formatDims(rep.total_dimension) : (rep.total_diamension !== undefined && rep.total_diamension !== null && rep.total_diamension !== "" ? formatDims(rep.total_diamension) : (rep.total_cbm !== undefined && rep.total_cbm !== null && rep.total_cbm !== "" ? formatDims(rep.total_cbm) : "")))}
                                                                         </td>
                                                                         <td className="text-end">
-                                                                            {rep.total_cost_display || formatCurrency(rep.total_cost)}
-                                                                        </td>
-                                                                        <td className="text-end">
-                                                                            {rep.total_selling_display || formatCurrency(rep.total_selling)}
-                                                                        </td>
-                                                                        <td className="text-end">
-                                                                            {rep.gp_amount_display || formatCurrency(rep.gp_amount)}
-                                                                        </td>
-                                                                        <td className="text-end">
-                                                                            {rep.gp_percent_display || formatPercent(rep.gp_percent)}
+                                                                            {rep.total_weight_display || rep.weight_display || (rep.total_weight !== undefined && rep.total_weight !== null && rep.total_weight !== "" ? formatWeight(rep.total_weight) : (rep.weight !== undefined && rep.weight !== null && rep.weight !== "" ? formatWeight(rep.weight) : ""))}
                                                                         </td>
                                                                     </tr>
 
                                                                     {/* Spacer Row between reps */}
                                                                     <tr className="spacer-row">
-                                                                        <td colSpan="8"></td>
+                                                                        <td colSpan="7"></td>
                                                                     </tr>
                                                                 </React.Fragment>
                                                             );
                                                         })
                                                     ) : (
                                                         <tr>
-                                                            <td colSpan="8" className="text-center text-muted py-4">
+                                                            <td colSpan="7" className="text-center text-muted py-4">
                                                                 No data found for the selected criteria.
                                                             </td>
                                                         </tr>
                                                     )}
-
-                                                    {/* Grand Total Row */}
-                                                    {reportData && reportData.length > 0 && grandTotal && (
+                                                    {grandTotal && reportData && reportData.length > 0 && (
                                                         <tr className="grand-total-row">
-                                                            <td colSpan="3" className="text-start fw-bold grand-total-border">
+                                                            <td colSpan="5" className="text-start fw-bold grand-total-border">
                                                                 Grand Total:
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.qty_display || formatQty(grandTotal?.qty)}
+                                                                {grandTotal.total_dimension_display || grandTotal.dimension_display || grandTotal.diamension_display || (grandTotal.total_dimension !== undefined && grandTotal.total_dimension !== null ? formatDims(grandTotal.total_dimension) : (grandTotal.dimension !== undefined && grandTotal.dimension !== null ? formatDims(grandTotal.dimension) : ""))}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.total_cost_display || formatCurrency(grandTotal?.total_cost)}
-                                                            </td>
-                                                            <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.total_selling_display || formatCurrency(grandTotal?.total_selling)}
-                                                            </td>
-                                                            <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.gp_amount_display || formatCurrency(grandTotal?.gp_amount)}
-                                                            </td>
-                                                            <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.gp_percent_display || formatPercent(grandTotal?.gp_percent)}
+                                                                {grandTotal.total_weight_display || grandTotal.weight_display || (grandTotal.total_weight !== undefined && grandTotal.total_weight !== null ? formatWeight(grandTotal.total_weight) : (grandTotal.weight !== undefined && grandTotal.weight !== null ? formatWeight(grandTotal.weight) : ""))}
                                                             </td>
                                                         </tr>
                                                     )}

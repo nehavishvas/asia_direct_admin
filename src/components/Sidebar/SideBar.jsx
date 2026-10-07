@@ -36,6 +36,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import FolderIcon from "@mui/icons-material/Folder";
+import QrCodeScannerOutlinedIcon from "@mui/icons-material/QrCodeScannerOutlined";
 import { Group } from "@mui/icons-material";
 import CompanyAddresses from "../../pages/CompanyAddresses";
 const routes = [
@@ -332,6 +333,18 @@ const routes = [
         path: "/Admin/manage-collection-delivery",
         name: "Collection & Delivery",
         icon: <LanguageOutlinedIcon />
+      },
+    ],
+  },
+  {
+    path: "",
+    name: "Scanning & Tracking Orders",
+    icon: <QrCodeScannerOutlinedIcon />,
+    subRoutes: [
+      {
+        path: "/Admin/shipment-barcode",
+        name: "Shipment & Barcode",
+        icon: <LocalShippingOutlinedIcon />,
       },
     ],
   },

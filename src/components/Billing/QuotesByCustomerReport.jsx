@@ -46,7 +46,7 @@ const QuotesByCustomerReport = () => {
     // Response states
     const [reportData, setReportData] = useState([]);
     const [clientList, setClientList] = useState([]);
-    const [loader, setLoader] = useState(false);
+    const [loader, setLoader] = useState(true);
     const [searched, setSearched] = useState(false);
 
     const handleReset = () => {
@@ -136,15 +136,14 @@ const QuotesByCustomerReport = () => {
 
     const checkPermission = async () => {
         try {
-            setLoader(true);
             if (!userid || !usertype) {
                 setHasPermission(true);
-                fetchReportData();
+                await fetchReportData();
                 return;
             }
             if (usertype?.toLowerCase() === "admin" || usertype?.toLowerCase() === "superadmin" || userdata?.role === "admin") {
                 setHasPermission(true);
-                fetchReportData();
+                await fetchReportData();
                 return;
             }
             const postdata = {
@@ -158,7 +157,7 @@ const QuotesByCustomerReport = () => {
             );
             if (response.data && response.data.success === true) {
                 setHasPermission(true);
-                fetchReportData();
+                await fetchReportData();
             } else {
                 const fallbackCheck = await axios.post(
                     `${process.env.REACT_APP_BASE_URL}CheckPermission`,
@@ -166,17 +165,15 @@ const QuotesByCustomerReport = () => {
                 );
                 if (fallbackCheck.data && fallbackCheck.data.success === true) {
                     setHasPermission(true);
-                    fetchReportData();
+                    await fetchReportData();
                 } else {
                     setHasPermission(true);
-                    fetchReportData();
+                    await fetchReportData();
                 }
             }
         } catch (error) {
             setHasPermission(true);
-            fetchReportData();
-        } finally {
-            setLoader(false);
+            await fetchReportData();
         }
     };
 
@@ -514,11 +511,9 @@ const QuotesByCustomerReport = () => {
                         <div className="card shadow-sm border-0 report-print-area">
                             <div className="card-body p-4 p-md-5">
                                 {loader ? (
-                                    <div className="text-center py-5">
-                                        <div className="spinner-border text-primary spinner-sm" role="status">
-                                            <span className="visually-hidden">Loading...</span>
-                                        </div>
-                                        <p className="mt-2 text-secondary">Generating report...</p>
+                                    <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
+                                        <div className="loader"></div>
+                                        <p className="loader-text">Loading report data...</p>
                                     </div>
                                 ) : searched ? (
                                     <>

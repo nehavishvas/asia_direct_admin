@@ -104,6 +104,20 @@ const VAT_OPTIONS = [
   { value: "Manual VAT (Capital Goods)", label: "Manual VAT (Capital Goods)" }
 ];
 
+const CHARGEABLE_UNIT_OPTIONS = [
+  "Kgs",
+  "Cbm",
+  "Container/s",
+  "Per%",
+  "Lumpsum",
+  "Truck/s",
+  "Ton/s",
+  "20 Gp",
+  "40 Gp",
+  "40 Hq",
+  "40 Nor",
+];
+
 const formatCountryName = (country) => {
   if (!country) return "";
   const cleaned = country.trim().toLowerCase();
@@ -134,6 +148,7 @@ export default function EditNewFreightQuoteInvoice() {
     due_date: "",
     final_base_currency: "Select",
     chargable_rate: "",
+    chargeable_unit: "",
     company_id: "",
     company_address: null,
     client_id: null,
@@ -249,6 +264,7 @@ export default function EditNewFreightQuoteInvoice() {
           setFreight((prev) => ({
             ...prev,
             chargable_rate: orderInfo.chargable_rate ? formatValue(orderInfo.chargable_rate, 3) : (orderInfo.chargeable ? formatValue(orderInfo.chargeable, 3) : ""),
+            chargeable_unit: orderInfo.chargeable_unit || prev.chargeable_unit || "",
           }));
           if (parseInt(orderId) !== parseInt(freight.order_id)) {
             initializeDefaultRows();
@@ -342,6 +358,7 @@ export default function EditNewFreightQuoteInvoice() {
             invoice_for_country: getCountry(estimateData.invoice_for_country, estimateData.company_address) || prev.invoice_for_country,
             final_base_currency: estimateData.final_base_currency || prev.final_base_currency,
             chargable_rate: estimateData.chargeable !== undefined ? formatValue(estimateData.chargeable, 3) : prev.chargable_rate,
+            chargeable_unit: estimateData.chargeable_unit || prev.chargeable_unit || "",
             company_id: estimateData.company_id || estimateData.company_address?.id || prev.company_id,
             company_address: estimateData.company_address || prev.company_address,
             client_id: estimateData.client_id || prev.client_id,
@@ -419,6 +436,7 @@ export default function EditNewFreightQuoteInvoice() {
             due_date: toLocalDateString(invoiceData.due_date || invoiceData.date),
             final_base_currency: invoiceData.final_base_currency || "Select",
             chargable_rate: invoiceData.chargeable ? formatValue(invoiceData.chargeable, 3) : "",
+            chargeable_unit: invoiceData.chargeable_unit || "",
             company_id: invoiceData.company_id || "",
             company_address: invoiceData.company_address || null,
             created_at: invoiceData.created_at || "",
@@ -815,10 +833,10 @@ export default function EditNewFreightQuoteInvoice() {
       toast.error("Please select an order first.");
       return;
     }
-    // if (!selectedSupplier) {
-    //   toast.error("Please select a supplier first.");
-    //   return;
-    // }
+    if (!freight.chargeable_unit || freight.chargeable_unit === "Select") {
+      toast.error("Please select Chargeable Unit");
+      return;
+    }
 
     try {
       const allComponents = [];
@@ -899,6 +917,8 @@ export default function EditNewFreightQuoteInvoice() {
         sumof_finalamount: sumofRoe || 0,
         sumof_vatincl: totalVatInclusive || 0,
         chargeable: cleanParseFloat(freight.chargable_rate) || 0,
+        chargeable_unit: freight.chargeable_unit || "",
+        chargable_unit: freight.chargeable_unit || "",
         quote_type: freight.quote_type || "ADMIN",
         components: allComponents,
         quote_validity: freight.quote_validity || "",
@@ -1486,9 +1506,12 @@ export default function EditNewFreightQuoteInvoice() {
                               }}
                             >
                               <strong>
-                                {getdata?.client_name || "-"}
+                                {getdata?.client_details?.company_id || "-"} / {getdata?.client_name || "-"}
                                 <br />
-                                {getdata?.address_1 || "-"}
+                                {getdata?.address_1 || "-"}, {getdata?.client_details?.province || "-"}, {getdata?.client_details?.country || "-"}, {getdata?.client_details?.code || "-"}
+                                <br />
+                                {getdata?.client_details?.importer_reference || "-"},{getdata?.client_details?.tax_reference || "-"}
+                                <br />
                               </strong>
                             </td>
                           </tr>
@@ -1544,32 +1567,57 @@ export default function EditNewFreightQuoteInvoice() {
                                 <strong>Volumetric (kgs)</strong>
                                 <span>{getdata?.volumetric_weight || "-"}</span>
                               </div>
-                              <div className="d-flex justify-content-between align-items-center my-1">
-                                <strong>Chargeable</strong>
-                                <input
-                                  type="text"
-                                  name="chargable_rate"
-                                  className="form-control form-control-sm w-50"
-                                  style={{ height: 28 }}
-                                  value={freight.chargable_rate}
-                                  onChange={handlechangecalc}
-                                  onKeyPress={handlepresss}
-                                  onBlur={(e) => {
-                                    setFreight((prev) => ({
-                                      ...prev,
-                                      chargable_rate: e.target.value ? formatValue(e.target.value, 3) : ""
-                                    }));
-                                  }}
-                                  onFocus={(e) => {
-                                    setFreight((prev) => ({
-                                      ...prev,
-                                      chargable_rate: String(e.target.value || "")
-                                        .replace(/,/g, "")
-                                        .replace(/%/g, "")
-                                        .trim()
-                                    }));
-                                  }}
-                                />
+                              <div className="d-flex justify-content-between align-items-center my-1 flex-wrap gap-1">
+                                <strong style={{ whiteSpace: "nowrap" }}>Chargeable</strong>
+                                <div className="d-flex align-items-center justify-content-end gap-1 ms-auto" style={{ width: "55%", minWidth: "145px" }}>
+                                  <input
+                                    type="text"
+                                    name="chargable_rate"
+                                    className="form-control form-control-sm text-end"
+                                    style={{ height: 28, width: "45%", minWidth: "55px", flex: 1, padding: "2px 6px", fontSize: 13, boxSizing: "border-box", textAlign: "right" }}
+                                    value={freight.chargable_rate}
+                                    onChange={handlechangecalc}
+                                    onKeyPress={handlepresss}
+                                    onBlur={(e) => {
+                                      setFreight((prev) => ({
+                                        ...prev,
+                                        chargable_rate: e.target.value ? formatValue(e.target.value, 3) : ""
+                                      }));
+                                    }}
+                                    onFocus={(e) => {
+                                      setFreight((prev) => ({
+                                        ...prev,
+                                        chargable_rate: String(e.target.value || "")
+                                          .replace(/,/g, "")
+                                          .replace(/%/g, "")
+                                          .trim()
+                                      }));
+                                    }}
+                                  />
+                                  <select
+                                    name="chargeable_unit"
+                                    className="form-select form-select-sm"
+                                    style={{
+                                      height: 28,
+                                      width: "55%",
+                                      minWidth: "80px",
+                                      flex: 1,
+                                      padding: "2px 20px 2px 6px",
+                                      fontSize: 12,
+                                      boxSizing: "border-box",
+                                      textAlign: "left"
+                                    }}
+                                    value={freight.chargeable_unit || ""}
+                                    onChange={handlechangecalc}
+                                  >
+                                    <option value="">Select</option>
+                                    {CHARGEABLE_UNIT_OPTIONS.map((unit) => (
+                                      <option key={unit} value={unit} style={{ textAlign: "left" }}>
+                                        {unit}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
                               </div>
                             </td>
                           </tr>
@@ -1907,7 +1955,7 @@ export default function EditNewFreightQuoteInvoice() {
           </div>
         </div>
       </div>
-      
+
     </>
   );
 }

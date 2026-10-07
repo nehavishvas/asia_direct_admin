@@ -57,6 +57,43 @@ const VAT_OPTIONS = [
   { value: "Manual VAT (Capital Goods)", label: "Manual VAT (Capital Goods)" }
 ];
 
+const CHARGEABLE_UNIT_OPTIONS = [
+  "Kgs",
+  "Cbm",
+  "Container/s",
+  "Per%",
+  "Lumpsum",
+  "Truck/s",
+  "Ton/s",
+  "20 Gp",
+  "40 Gp",
+  "40 Hq",
+  "40 Nor",
+];
+
+const cleanParseFloat = (val) => {
+  if (val === null || val === undefined || val === "") return 0;
+  const clean = String(val).replace(/,/g, "").replace(/%/g, "").trim();
+  const num = parseFloat(clean);
+  return isNaN(num) ? 0 : num;
+};
+
+const formatValue = (val, dec = 2, isPercent = false) => {
+  if (val === null || val === undefined || val === "") {
+    return isPercent ? "0.00 %" : "0.00";
+  }
+  const cleanVal = String(val).replace(/,/g, '').replace(/%/g, '').trim();
+  const num = parseFloat(cleanVal);
+  if (isNaN(num)) {
+    return val;
+  }
+  const formatted = num.toLocaleString("en-US", {
+    minimumFractionDigits: dec,
+    maximumFractionDigits: dec
+  });
+  return isPercent ? `${formatted} %` : formatted;
+};
+
 const handlepresss = (e) => {
   if (e.charCode < 42 || e.charCode > 57) {
     e.preventDefault();
@@ -74,6 +111,7 @@ export default function Editsupplierinvoiceedit() {
     due_date: "",
     final_base_currency: "Select",
     chargable_rate: "",
+    chargeable_unit: "",
     company_id: "",
     company_address: null,
   });
@@ -235,7 +273,8 @@ export default function Editsupplierinvoiceedit() {
             customer_invoice_no: estimateData.customer_invoice_no || prev.customer_invoice_no,
             invoice_for_country: estimateData.invoice_for_country || prev.invoice_for_country,
             final_base_currency: estimateData.final_base_currency || prev.final_base_currency,
-            chargable_rate: estimateData.chargeable !== undefined ? estimateData.chargeable : prev.chargable_rate,
+            chargable_rate: estimateData.chargeable !== undefined ? (estimateData.chargeable ? formatValue(estimateData.chargeable, 3) : "") : prev.chargable_rate,
+            chargeable_unit: estimateData.chargeable_unit || estimateData.chargable_unit || prev.chargeable_unit || "",
             company_id: estimateData.company_id || estimateData.company_address?.id || prev.company_id,
             company_address: estimateData.company_address || prev.company_address,
           }));
@@ -302,7 +341,8 @@ export default function Editsupplierinvoiceedit() {
             invoice_for_country: invoiceData.invoice_for_country || "",
             due_date: toLocalDateString(invoiceData.due_date),
             final_base_currency: invoiceData.final_base_currency || "Select",
-            chargable_rate: invoiceData.chargeable || "",
+            chargable_rate: invoiceData.chargeable ? formatValue(invoiceData.chargeable, 3) : "",
+            chargeable_unit: invoiceData.chargeable_unit || invoiceData.chargable_unit || "",
             company_id: invoiceData.company_id || "",
             company_address: invoiceData.company_address || null,
             created_at: invoiceData.created_at || "",
@@ -448,7 +488,7 @@ export default function Editsupplierinvoiceedit() {
   const resolveRowUnit = (unitType) => {
     if (!unitType || unitType === "Select") return 0;
     if (String(unitType) === "1") return 1;
-    const rate = parseFloat(freight.chargable_rate);
+    const rate = cleanParseFloat(freight.chargable_rate);
     return Number.isNaN(rate) ? 0 : rate;
   };
 
@@ -666,6 +706,10 @@ export default function Editsupplierinvoiceedit() {
       toast.error("Please select a supplier first.");
       return;
     }
+    if (!freight.chargeable_unit || freight.chargeable_unit === "Select") {
+      toast.error("Please select Chargeable Unit");
+      return;
+    }
 
     try {
       const allComponents = [];
@@ -674,22 +718,22 @@ export default function Editsupplierinvoiceedit() {
         id: row.db_id || null,
         admin_frieght_component_id: row.admin_frieght_component_id || null,
         description: row.description || "",
-        qty: parseFloat(row.qty) || 0,
+        qty: cleanParseFloat(row.qty) || 0,
         currency: row.currency || "",
-        cost: parseFloat(row.cost) || 0,
+        cost: cleanParseFloat(row.cost) || 0,
         unit_type: row.unitType === "1" ? "L/S" : (row.unitType === "2" ? "W/M" : ""),
-        unit: parseFloat(calc.unit) || 0,
-        total_cost: parseFloat(calc.tCost) || 0,
-        gp_percent: parseFloat(row.gp_percent) || 0,
-        sales_price: parseFloat(calc.salesPrice) || 0,
-        roe: parseFloat(row.roe) || 0,
-        final_amount: parseFloat(calc.finalAmt) || 0,
+        unit: cleanParseFloat(calc.unit) || 0,
+        total_cost: cleanParseFloat(calc.tCost) || 0,
+        gp_percent: cleanParseFloat(row.gp_percent) || 0,
+        sales_price: cleanParseFloat(calc.salesPrice) || 0,
+        roe: cleanParseFloat(row.roe) || 0,
+        final_amount: cleanParseFloat(calc.finalAmt) || 0,
         vat_type: row.vatTyp || "",
-        disc_percent: parseFloat(row.discPercent) || 0,
-        discount: parseFloat(calc.disc) || 0,
-        exclusive: parseFloat(calc.exclusive) || 0,
-        vat: parseFloat(calc.vat) || 0,
-        vat_incl: parseFloat(calc.inclusive) || 0,
+        disc_percent: cleanParseFloat(row.discPercent) || 0,
+        discount: cleanParseFloat(calc.disc) || 0,
+        exclusive: cleanParseFloat(calc.exclusive) || 0,
+        vat: cleanParseFloat(calc.vat) || 0,
+        vat_incl: cleanParseFloat(calc.inclusive) || 0,
         comment: row.comment || "",
         section_name: name
       });
@@ -734,7 +778,9 @@ export default function Editsupplierinvoiceedit() {
         invoice_for_country: freight.invoice_for_country || "",
         due_date: freight.due_date ? new Date(freight.due_date).toISOString() : null,
         final_base_currency: freight.final_base_currency || "Select",
-        chargeable: parseFloat(freight.chargable_rate) || 0,
+        chargeable: cleanParseFloat(freight.chargable_rate) || 0,
+        chargeable_unit: freight.chargeable_unit || "",
+        chargable_unit: freight.chargeable_unit || "",
         sumof_totalcost: parseFloat(sumofall) || 0,
         sumof_finalamount: parseFloat(sumofRoe) || 0,
         sumof_vatincl: parseFloat(totalVatInclusive) || 0,
@@ -1468,25 +1514,91 @@ export default function Editsupplierinvoiceedit() {
                                   display: "flex",
                                   justifyContent: "space-between",
                                   alignItems: "center",
+                                  marginTop: 5,
                                 }}
                               >
                                 <p
                                   style={{
                                     fontSize: 13,
                                     marginBottom: "unset",
-                                    marginTop: 5,
                                   }}
                                 >
                                   <strong>Chargeable</strong>
                                 </p>
-                                <input
-                                  type="text"
-                                  onKeyPress={handlepresss}
-                                  name="chargable_rate"
-                                  value={freight.chargable_rate || ""}
-                                  onChange={handlechangecalc}
-                                  style={{ width: "40%", padding: "2px", border: "1px solid #ccc", marginTop: 5 }}
-                                />
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    gap: "6px",
+                                    width: "55%",
+                                    justifyContent: "flex-end",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <input
+                                    type="text"
+                                    name="chargable_rate"
+                                    className="form-control form-control-sm text-end"
+                                    style={{
+                                      height: 28,
+                                      width: "45%",
+                                      minWidth: "60px",
+                                      padding: "2px 6px",
+                                      fontSize: 12,
+                                      boxSizing: "border-box",
+                                      textAlign: "right",
+                                    }}
+                                    value={
+                                      freight.chargable_rate !== undefined && freight.chargable_rate !== null
+                                        ? freight.chargable_rate
+                                        : ""
+                                    }
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      setFreight((prev) => ({
+                                        ...prev,
+                                        chargable_rate: val,
+                                      }));
+                                    }}
+                                    onBlur={(e) => {
+                                      setFreight((prev) => ({
+                                        ...prev,
+                                        chargable_rate: e.target.value ? formatValue(e.target.value, 3) : "",
+                                      }));
+                                    }}
+                                    onFocus={(e) => {
+                                      setFreight((prev) => ({
+                                        ...prev,
+                                        chargable_rate: String(e.target.value || "")
+                                          .replace(/,/g, "")
+                                          .replace(/%/g, "")
+                                          .trim(),
+                                      }));
+                                    }}
+                                  />
+                                  <select
+                                    name="chargeable_unit"
+                                    className="form-select form-select-sm"
+                                    style={{
+                                      height: 28,
+                                      width: "55%",
+                                      minWidth: "80px",
+                                      flex: 1,
+                                      padding: "2px 20px 2px 6px",
+                                      fontSize: 12,
+                                      boxSizing: "border-box",
+                                      textAlign: "left",
+                                    }}
+                                    value={freight.chargeable_unit || ""}
+                                    onChange={handlechangecalc}
+                                  >
+                                    <option value="">Select</option>
+                                    {CHARGEABLE_UNIT_OPTIONS.map((unit) => (
+                                      <option key={unit} value={unit} style={{ textAlign: "left" }}>
+                                        {unit}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
                               </div>
                               <div
                                 style={{

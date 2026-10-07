@@ -9,7 +9,7 @@ import PrintIcon from "@mui/icons-material/Print";
 const FreightAdminByItemReport = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const isFreightOrders = location.pathname.includes("freight-orders-item");
+    const isFreightOrders = location.pathname.includes("freight-orders");
     const pageTitle = isFreightOrders ? "Freight Orders - Item Report" : "Freight By Admin - Item Report";
     const userdata = JSON.parse(localStorage.getItem("data123") || "{}");
     const userid = userdata?.id;
@@ -67,7 +67,7 @@ const FreightAdminByItemReport = () => {
     const [grandTotal, setGrandTotal] = useState(null);
     const [totalItems, setTotalItems] = useState(0);
     const [componentList, setComponentList] = useState([]);
-    const [loader, setLoader] = useState(false);
+    const [loader, setLoader] = useState(true);
     const [searched, setSearched] = useState(false);
 
     const handleReset = () => {
@@ -112,14 +112,22 @@ const FreightAdminByItemReport = () => {
                 end_date_formatted: endDateFormatted,
                 item_from: itemFrom || "All",
                 item_to: itemTo || "All",
+                from_item: itemFrom || "All",
+                to_item: itemTo || "All",
                 category_from: categoryFrom || "All",
                 category_to: categoryTo || "All",
+                from_category: categoryFrom || "All",
+                to_category: categoryTo || "All",
                 sales_account: salesAccount || "All",
                 status: status || "Both",
+                active: status || "Both",
                 item_type: itemType || "Both",
                 cost: cost || "Average Cost",
                 style: style || "Detailed",
-                include_credit_notes: includeCreditNotes
+                include_credit_notes: includeCreditNotes,
+                from_sales_rep: "All",
+                to_sales_rep: "All",
+                sales_type: "All"
             };
 
             const payload = {
@@ -127,25 +135,29 @@ const FreightAdminByItemReport = () => {
                 filters: filtersPayload
             };
 
+            const endpoint = isFreightOrders ? "newSalesByItemOrderReport" : "newSalesByItemReport";
+
             const response = await axios.post(
-                `${process.env.REACT_APP_BASE_URL}newSalesByItemReport`,
+                `${process.env.REACT_APP_BASE_URL}${endpoint}`,
                 payload
             );
 
-            if (response.data && (response.data.success || response.data.status === 200 || response.data.items)) {
-                const resData = response.data;
+            if (response.data && (response.data.success || response.data.status === 200 || response.data.items || response.data.data)) {
+                const resData = response.data.data && typeof response.data.data === "object" && !Array.isArray(response.data.data)
+                    ? response.data.data
+                    : response.data;
                 const itemsList = resData.items || resData.data?.items || (Array.isArray(resData.data) ? resData.data : []);
                 setItems(itemsList);
-                setReportInfo(resData.report_info || resData.data?.report_info || null);
-                setGrandTotal(resData.grand_total || resData.data?.grand_total || resData.totals || null);
-                setTotalItems(resData.totalItems || resData.total_items || itemsList.length);
+                setReportInfo(resData.report_info || response.data.report_info || null);
+                setGrandTotal(resData.grand_total || response.data.grand_total || resData.totals || response.data.totals || null);
+                setTotalItems(resData.totalItems || resData.total_items || response.data.totalItems || itemsList.length);
             } else {
                 toast.error(response.data?.message || "Failed to fetch report data");
                 setItems([]);
                 setGrandTotal(null);
             }
         } catch (error) {
-            console.error("Error fetching Freight By Admin - Item Report:", error);
+            console.error(`Error fetching ${pageTitle}:`, error);
             toast.error(error.response?.data?.message || "Failed to fetch report data");
             setItems([]);
             setGrandTotal(null);
@@ -171,15 +183,14 @@ const FreightAdminByItemReport = () => {
 
     const checkPermission = async () => {
         try {
-            setLoader(true);
             if (!userid || !usertype) {
                 setHasPermission(true);
-                fetchReportData();
+                await fetchReportData();
                 return;
             }
             const postdata = {
                 staff_id: userid,
-                route_url: location.pathname || "/Admin/freight-admin-by-item-report",
+                route_url: location.pathname || (isFreightOrders ? "/Admin/freight-orders-item-report" : "/Admin/freight-admin-by-item-report"),
                 user_type: usertype,
             };
             const response = await axios.post(
@@ -188,17 +199,14 @@ const FreightAdminByItemReport = () => {
             );
             if (response.data && response.data.success === true) {
                 setHasPermission(true);
-                fetchReportData();
+                await fetchReportData();
             } else {
-                // Fallback to true if not restricted
                 setHasPermission(true);
-                fetchReportData();
+                await fetchReportData();
             }
         } catch (error) {
             setHasPermission(true);
-            fetchReportData();
-        } finally {
-            setLoader(false);
+            await fetchReportData();
         }
     };
 
@@ -206,7 +214,7 @@ const FreightAdminByItemReport = () => {
         checkPermission();
         fetchComponentList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [location.pathname]);
 
     // Format Helpers
     const formatCurrency = (amount, currencySymbol = "R") => {
@@ -583,11 +591,9 @@ const FreightAdminByItemReport = () => {
                     <div className="card shadow-sm border-0 report-print-area">
                         <div className="card-body p-4 p-md-5">
                             {loader ? (
-                                <div className="text-center py-5">
-                                    <div className="spinner-border text-primary spinner-sm" role="status">
-                                        <span className="visually-hidden">Loading...</span>
-                                    </div>
-                                    <p className="mt-2 text-secondary">Generating report...</p>
+                                <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
+                                    <div className="loader"></div>
+                                    <p className="loader-text">Loading report data...</p>
                                 </div>
                             ) : searched ? (
                                 <>
@@ -635,7 +641,7 @@ const FreightAdminByItemReport = () => {
                                                         <th className="text-end" style={{ width: "11%" }}>Dims (Cbm)</th>
                                                         <th className="text-end" style={{ width: "11%" }}>Weight (Kgs)</th>
                                                         <th className="text-end" style={{ width: "11%" }}>Volume (Kgs)</th>
-                                                        <th className="text-end" style={{ width: "9%" }}>GP %</th>
+                                                        <th className="text-start" style={{ width: "9%" }}>Option</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -676,8 +682,8 @@ const FreightAdminByItemReport = () => {
                                                                                 <td className="text-end">
                                                                                     {getRowVolume(row)}
                                                                                 </td>
-                                                                                <td className="text-end">
-                                                                                    {row.gp_percent_display || formatPercent(row.gp_percent)}
+                                                                                <td className="text-start">
+                                                                                    {row.type || row.fcl_lcl || item.type || item.fcl_lcl || "-"}
                                                                                 </td>
                                                                             </tr>
                                                                         ))
@@ -706,8 +712,8 @@ const FreightAdminByItemReport = () => {
                                                                         <td className="text-end fw-bold">
                                                                             {getItemVolume(item)}
                                                                         </td>
-                                                                        <td className="text-end fw-bold">
-                                                                            {item.gp_percent_display || formatPercent(item.gp_percent)}
+                                                                        <td className="text-start fw-bold">
+                                                                            {item.type || item.fcl_lcl || ""}
                                                                         </td>
                                                                     </tr>
 
@@ -725,28 +731,24 @@ const FreightAdminByItemReport = () => {
                                                             </td>
                                                         </tr>
                                                     )}
-
-                                                    {/* Grand Total Row */}
-                                                    {items && items.length > 0 && (
+                                                    {grandTotal && items && items.length > 0 && (
                                                         <tr className="grand-total-row">
-                                                            <td colSpan="3" className="text-start fw-bold">
-                                                                Total
+                                                            <td colSpan="3" className="text-start fw-bold grand-total-border">
+                                                                Grand Total:
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.qty_sold_display || formatQty(grandTotal?.qty_sold)}
+                                                                {grandTotal.qty_sold_display || grandTotal.total_qty_display || (grandTotal.qty_sold !== undefined ? formatQty(grandTotal.qty_sold) : (grandTotal.total_qty !== undefined ? formatQty(grandTotal.total_qty) : ""))}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {getItemDimension(grandTotal)}
+                                                                {grandTotal.total_dimension_display || grandTotal.dimension_display || grandTotal.diamension_display || (grandTotal.total_dimension !== undefined ? formatQty(grandTotal.total_dimension) : (grandTotal.dimension !== undefined ? formatQty(grandTotal.dimension) : ""))}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {getItemWeight(grandTotal)}
+                                                                {grandTotal.total_weight_display || grandTotal.weight_display || (grandTotal.total_weight !== undefined ? formatQty(grandTotal.total_weight) : (grandTotal.weight !== undefined ? formatQty(grandTotal.weight) : ""))}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {getItemVolume(grandTotal)}
+                                                                {grandTotal.total_volume_display || grandTotal.volume_display || grandTotal.total_volumetric_weight_display || (grandTotal.total_volume !== undefined ? formatQty(grandTotal.total_volume) : (grandTotal.volume !== undefined ? formatQty(grandTotal.volume) : ""))}
                                                             </td>
-                                                            <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.gp_percent_display || formatPercent(grandTotal?.gp_percent)}
-                                                            </td>
+                                                            <td className="grand-total-border"></td>
                                                         </tr>
                                                     )}
                                                 </tbody>
@@ -763,7 +765,7 @@ const FreightAdminByItemReport = () => {
                                                         <th className="text-end" style={{ width: "11%" }}>Dims (Cbm)</th>
                                                         <th className="text-end" style={{ width: "11%" }}>Weight (Kgs)</th>
                                                         <th className="text-end" style={{ width: "11%" }}>Volume (Kgs)</th>
-                                                        <th className="text-end" style={{ width: "9%" }}>GP %</th>
+                                                        <th className="text-start" style={{ width: "9%" }}>Option</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -777,7 +779,7 @@ const FreightAdminByItemReport = () => {
                                                                 <td className="text-end">{getItemDimension(item)}</td>
                                                                 <td className="text-end">{getItemWeight(item)}</td>
                                                                 <td className="text-end">{getItemVolume(item)}</td>
-                                                                <td className="text-end">{item.gp_percent_display || formatPercent(item.gp_percent)}</td>
+                                                                <td className="text-start">{item.type || item.fcl_lcl || "-"}</td>
                                                             </tr>
                                                         ))
                                                     ) : (
@@ -787,28 +789,24 @@ const FreightAdminByItemReport = () => {
                                                             </td>
                                                         </tr>
                                                     )}
-
-                                                    {/* Grand Total Row */}
-                                                    {items && items.length > 0 && (
+                                                    {grandTotal && items && items.length > 0 && (
                                                         <tr className="grand-total-row">
-                                                            <td colSpan="3" className="text-start fw-bold">
-                                                                Total
+                                                            <td colSpan="3" className="text-start fw-bold grand-total-border">
+                                                                Grand Total:
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.qty_sold_display || formatQty(grandTotal?.qty_sold)}
+                                                                {grandTotal.qty_sold_display || grandTotal.total_qty_display || (grandTotal.qty_sold !== undefined ? formatQty(grandTotal.qty_sold) : (grandTotal.total_qty !== undefined ? formatQty(grandTotal.total_qty) : ""))}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {getItemDimension(grandTotal)}
+                                                                {grandTotal.total_dimension_display || grandTotal.dimension_display || grandTotal.diamension_display || (grandTotal.total_dimension !== undefined ? formatQty(grandTotal.total_dimension) : (grandTotal.dimension !== undefined ? formatQty(grandTotal.dimension) : ""))}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {getItemWeight(grandTotal)}
+                                                                {grandTotal.total_weight_display || grandTotal.weight_display || (grandTotal.total_weight !== undefined ? formatQty(grandTotal.total_weight) : (grandTotal.weight !== undefined ? formatQty(grandTotal.weight) : ""))}
                                                             </td>
                                                             <td className="text-end fw-bold grand-total-border">
-                                                                {getItemVolume(grandTotal)}
+                                                                {grandTotal.total_volume_display || grandTotal.volume_display || grandTotal.total_volumetric_weight_display || (grandTotal.total_volume !== undefined ? formatQty(grandTotal.total_volume) : (grandTotal.volume !== undefined ? formatQty(grandTotal.volume) : ""))}
                                                             </td>
-                                                            <td className="text-end fw-bold grand-total-border">
-                                                                {grandTotal?.gp_percent_display || formatPercent(grandTotal?.gp_percent)}
-                                                            </td>
+                                                            <td className="grand-total-border"></td>
                                                         </tr>
                                                     )}
                                                 </tbody>
@@ -818,7 +816,7 @@ const FreightAdminByItemReport = () => {
                                 </>
                             ) : (
                                 <div className="text-center py-5">
-                                    <p className="text-muted mb-0">Please click 'View' to generate the Freight By Admin - Item Report.</p>
+                                    <p className="text-muted mb-0">Please click 'View' to generate the {pageTitle}.</p>
                                 </div>
                             )}
                         </div>

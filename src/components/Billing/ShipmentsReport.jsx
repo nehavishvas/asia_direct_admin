@@ -45,7 +45,7 @@ const ShipmentsReport = () => {
 
     // Report data states
     const [reportData, setReportData] = useState([]);
-    const [loader, setLoader] = useState(false);
+    const [loader, setLoader] = useState(true);
     const [searched, setSearched] = useState(false);
 
     const fetchCountries = async () => {
@@ -153,9 +153,9 @@ const ShipmentsReport = () => {
 
     const checkPermission = async () => {
         try {
-            setLoader(true);
             if (!userid || !usertype) {
                 setHasPermission(false);
+                setLoader(false);
                 return;
             }
             const postdata = {
@@ -170,22 +170,22 @@ const ShipmentsReport = () => {
             if ((response.data && response.data.success === true) || usertype === "1" || usertype === 1 || String(usertype).toLowerCase() === "admin") {
                 setHasPermission(true);
                 fetchCountries();
-                fetchReportData(startDate, endDate, shipmentType, searchQuery, freight, origin, destination);
+                await fetchReportData(startDate, endDate, shipmentType, searchQuery, freight, origin, destination);
             } else {
                 setHasPermission(false);
+                setLoader(false);
                 toast.error("You don't have permission to access this page");
             }
         } catch (error) {
             if (usertype === "1" || usertype === 1 || String(usertype).toLowerCase() === "admin") {
                 setHasPermission(true);
                 fetchCountries();
-                fetchReportData(startDate, endDate, shipmentType, searchQuery, freight, origin, destination);
+                await fetchReportData(startDate, endDate, shipmentType, searchQuery, freight, origin, destination);
             } else {
                 setHasPermission(false);
+                setLoader(false);
                 toast.error(error.response?.data?.message || "You don't have permission to access this page");
             }
-        } finally {
-            setLoader(false);
         }
     };
 
@@ -241,7 +241,7 @@ const ShipmentsReport = () => {
 
     return (
         <>
-            {loader && !searched ? (
+            {loader && hasPermission === null ? (
                 <div className="loader-container">
                     <div className="loader"></div>
                     <p className="loader-text">Loading...</p>
@@ -405,11 +405,9 @@ const ShipmentsReport = () => {
                         <div className="card shadow-sm border-0 report-print-area">
                             <div className="card-body p-4 p-md-5">
                                 {loader ? (
-                                    <div className="text-center py-5">
-                                        <div className="spinner-border text-primary spinner-sm" role="status">
-                                            <span className="visually-hidden">Loading...</span>
-                                        </div>
-                                        <p className="mt-2 text-secondary">Generating report...</p>
+                                    <div className="loader-container" style={{ height: "40vh", background: "transparent" }}>
+                                        <div className="loader"></div>
+                                        <p className="loader-text">Loading report data...</p>
                                     </div>
                                 ) : (
                                     <>

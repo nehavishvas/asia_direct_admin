@@ -55,6 +55,20 @@ const VAT_OPTIONS = [
   { value: "Manual VAT (Capital Goods)", label: "Manual VAT (Capital Goods)" }
 ];
 
+const CHARGEABLE_UNIT_OPTIONS = [
+  "Kgs",
+  "Cbm",
+  "Container/s",
+  "Per%",
+  "Lumpsum",
+  "Truck/s",
+  "Ton/s",
+  "20 Gp",
+  "40 Gp",
+  "40 Hq",
+  "40 Nor"
+];
+
 const cleanParseFloat = (val) => {
   if (val === null || val === undefined || val === "") return 0;
   const cleaned = String(val).replace(/,/g, '').replace(/%/g, '').trim();
@@ -204,6 +218,7 @@ export default function ShippingEstimate() {
           invoice_for_country: estimateData.invoice_for_country || prev?.invoice_for_country || "",
           final_base_currency: estimateData.final_base_currency || prev?.final_base_currency || "Select",
           chargable_rate: estimateData.chargeable ?? prev?.chargable_rate ?? "",
+          chargeable_unit: estimateData.chargeable_unit ?? prev?.chargeable_unit ?? "",
           company_id: estimateData.company_id || estimateData.company_address?.id || prev?.company_id || "",
           company_country: estimateData.company_address?.country || prev?.company_country || "",
           quote_validity: estimateData.quote_validity || prev?.quote_validity || "",
@@ -922,6 +937,7 @@ export default function ShippingEstimate() {
         sumof_finalamount: parseFloat(sumofRoe) || 0,
         sumof_vatincl: parseFloat(totalVatInclusive) || 0,
         chargeable: parseFloat(freight.chargable_rate) || 0,
+        chargeable_unit: freight.chargeable_unit || "",
         components: allComponents,
         quote_validity: freight.quote_validity || "",
         payment_terms: freight.payment_terms || "",
@@ -1775,19 +1791,73 @@ export default function ShippingEstimate() {
                                           {getdata?.volumetric_weight}
                                         </p>
                                       </div>
-                                      <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+
+                                       <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                          alignItems: "center",
+                                          flexWrap: "wrap",
+                                          gap: "4px",
+                                        }}
+                                      >
+                                        <p
+                                          style={{
+                                            fontSize: 13,
+                                            marginBottom: "unset",
+                                            marginTop: 2,
+                                            whiteSpace: "nowrap",
+                                          }}
+                                        >
                                           <strong>Chargeable</strong>
                                         </p>
-                                        <p style={{ fontSize: 13, marginBottom: "unset", marginTop: 2 }}>
+                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "4px", width: "55%", minWidth: "145px", marginLeft: "auto" }}>
                                           <input
                                             type="text"
                                             onKeyPress={handlepresss}
                                             name="chargable_rate"
-                                            value={freight.chargable_rate}
+                                            value={freight.chargable_rate || ""}
                                             onChange={handlechangecalc}
+                                            style={{
+                                              height: 28,
+                                              width: "45%",
+                                              minWidth: "55px",
+                                              flex: 1,
+                                              border: "1px solid #ccc",
+                                              borderRadius: 4,
+                                              padding: "2px 6px",
+                                              fontSize: 13,
+                                              boxSizing: "border-box",
+                                              textAlign: "right",
+                                            }}
                                           />
-                                        </p>
+                                          <select
+                                            name="chargeable_unit"
+                                            style={{
+                                              height: 28,
+                                              width: "55%",
+                                              minWidth: "80px",
+                                              flex: 1,
+                                              fontSize: 12,
+                                              padding: "2px 20px 2px 6px",
+                                              border: "1px solid #ccc",
+                                              borderRadius: 4,
+                                              background: "#fff",
+                                              outline: "none",
+                                              boxSizing: "border-box",
+                                              textAlign: "left",
+                                            }}
+                                            value={freight.chargeable_unit || ""}
+                                            onChange={handlechangecalc}
+                                          >
+                                            <option value="">Select</option>
+                                            {CHARGEABLE_UNIT_OPTIONS.map((unit) => (
+                                              <option key={unit} value={unit} style={{ textAlign: "left" }}>
+                                                {unit}
+                                              </option>
+                                            ))}
+                                          </select>
+                                        </div>
                                       </div>
                                     </td>
                                   </tr>

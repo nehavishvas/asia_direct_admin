@@ -1135,6 +1135,7 @@ p.text-primary {
   font-weight: 600;
   margin: 0px;
   font-size: 17px !important;
+  color: white !important;
 }
 
 button.btn-close {
@@ -6983,10 +6984,10 @@ td .action-icons-group {
   /* Uniform gap everywhere without margins */
 }
 
-.action-icons-group button,
-td .action-icons-group button,
-.tableICon td .action-icons-group button,
-td .d-flex:not(.dropdown-menu) > button:not(.dropdown-item) {
+.action-icons-group button:not(.btn):not(.shipment-details-btn):not(.tms-action-view-btn):not(.tms-action-regen-btn):not(.tms-action-gen-btn):not(.tms-action-track-btn),
+td .action-icons-group button:not(.btn):not(.shipment-details-btn):not(.tms-action-view-btn):not(.tms-action-regen-btn):not(.tms-action-gen-btn):not(.tms-action-track-btn),
+.tableICon td .action-icons-group button:not(.btn):not(.shipment-details-btn):not(.tms-action-view-btn):not(.tms-action-regen-btn):not(.tms-action-gen-btn):not(.tms-action-track-btn),
+td .d-flex:not(.dropdown-menu) > button:not(.dropdown-item):not(.btn):not(.shipment-details-btn):not(.tms-action-view-btn):not(.tms-action-regen-btn):not(.tms-action-gen-btn):not(.tms-action-track-btn) {
   background: transparent !important;
   border: none !important;
   padding: 0 !important;

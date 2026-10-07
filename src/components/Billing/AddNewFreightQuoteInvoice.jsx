@@ -110,6 +110,20 @@ const VAT_OPTIONS = [
   { value: "Manual VAT (Capital Goods)", label: "Manual VAT (Capital Goods)" }
 ];
 
+const CHARGEABLE_UNIT_OPTIONS = [
+  "Kgs",
+  "Cbm",
+  "Container/s",
+  "Per%",
+  "Lumpsum",
+  "Truck/s",
+  "Ton/s",
+  "20 Gp",
+  "40 Gp",
+  "40 Hq",
+  "40 Nor",
+];
+
 export default function AddNewFreightQuoteInvoice() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -121,6 +135,7 @@ export default function AddNewFreightQuoteInvoice() {
     due_date: "",
     final_base_currency: "Select",
     chargable_rate: "",
+    chargeable_unit: "",
     company_id: "",
     company_address: null,
     freight_quote_estimate_id: null,
@@ -226,6 +241,7 @@ export default function AddNewFreightQuoteInvoice() {
           setFreight((prev) => ({
             ...prev,
             chargable_rate: orderInfo.chargable_rate ? formatValue(orderInfo.chargable_rate, 3) : (orderInfo.chargeable ? formatValue(orderInfo.chargeable, 3) : ""),
+            chargeable_unit: orderInfo.chargeable_unit || prev.chargeable_unit || "",
           }));
           initializeDefaultRows();
         }
@@ -835,6 +851,7 @@ export default function AddNewFreightQuoteInvoice() {
         sumof_finalamount: sumofRoe || 0,
         sumof_vatincl: totalVatInclusive || 0,
         chargeable: cleanParseFloat(freight.chargable_rate) || 0,
+        chargeable_unit: freight.chargeable_unit || "",
         quote_type: "ADMIN",
         components: allComponents,
         freight_quote_estimate_id: freight.freight_quote_estimate_id || (location.state?.copyInvoiceData?.freight_quote_estimate_id || null),
@@ -1368,32 +1385,57 @@ export default function AddNewFreightQuoteInvoice() {
                                 <strong>Volumetric (kgs)</strong>
                                 <span>{getdata?.volumetric_weight || "-"}</span>
                               </div>
-                              <div className="d-flex justify-content-between align-items-center my-1">
-                                <strong>Chargeable</strong>
-                                <input
-                                  type="text"
-                                  name="chargable_rate"
-                                  className="form-control form-control-sm w-50"
-                                  style={{ height: 28 }}
-                                  value={freight.chargable_rate}
-                                  onChange={handlechangecalc}
-                                  onKeyPress={handlepresss}
-                                  onBlur={(e) => {
-                                    setFreight((prev) => ({
-                                      ...prev,
-                                      chargable_rate: e.target.value ? formatValue(e.target.value, 3) : ""
-                                    }));
-                                  }}
-                                  onFocus={(e) => {
-                                    setFreight((prev) => ({
-                                      ...prev,
-                                      chargable_rate: String(e.target.value || "")
-                                        .replace(/,/g, "")
-                                        .replace(/%/g, "")
-                                        .trim()
-                                    }));
-                                  }}
-                                />
+                              <div className="d-flex justify-content-between align-items-center my-1 flex-wrap gap-1">
+                                <strong style={{ whiteSpace: "nowrap" }}>Chargeable</strong>
+                                <div className="d-flex align-items-center justify-content-end gap-1 ms-auto" style={{ width: "55%", minWidth: "145px" }}>
+                                  <input
+                                    type="text"
+                                    name="chargable_rate"
+                                    className="form-control form-control-sm text-end"
+                                    style={{ height: 28, width: "45%", minWidth: "55px", flex: 1, padding: "2px 6px", fontSize: 13, boxSizing: "border-box", textAlign: "right" }}
+                                    value={freight.chargable_rate}
+                                    onChange={handlechangecalc}
+                                    onKeyPress={handlepresss}
+                                    onBlur={(e) => {
+                                      setFreight((prev) => ({
+                                        ...prev,
+                                        chargable_rate: e.target.value ? formatValue(e.target.value, 3) : ""
+                                      }));
+                                    }}
+                                    onFocus={(e) => {
+                                      setFreight((prev) => ({
+                                        ...prev,
+                                        chargable_rate: String(e.target.value || "")
+                                          .replace(/,/g, "")
+                                          .replace(/%/g, "")
+                                          .trim()
+                                      }));
+                                    }}
+                                  />
+                                  <select
+                                    name="chargeable_unit"
+                                    className="form-select form-select-sm"
+                                    style={{
+                                      height: 28,
+                                      width: "55%",
+                                      minWidth: "80px",
+                                      flex: 1,
+                                      padding: "2px 20px 2px 6px",
+                                      fontSize: 12,
+                                      boxSizing: "border-box",
+                                      textAlign: "left"
+                                    }}
+                                    value={freight.chargeable_unit || ""}
+                                    onChange={handlechangecalc}
+                                  >
+                                    <option value="">Select</option>
+                                    {CHARGEABLE_UNIT_OPTIONS.map((unit) => (
+                                      <option key={unit} value={unit} style={{ textAlign: "left" }}>
+                                        {unit}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
                               </div>
                             </td>
                           </tr>
