@@ -608,13 +608,60 @@ export default function ShipmentBarcode() {
   };
 
   // ---------------------------------------------------------------------------------
-  // 10. Fetch Zebra ZPL Code (GET /api/warehouse/labels/zpl?reference=...)
+  // 10. Download Printable Labels (Printable PDF Format instead of raw ZPL)
   // ---------------------------------------------------------------------------------
+  const handleDownloadPrintableZpl = async (reference) => {
+    const ref =
+      reference ||
+      selectedShipmentDetail?.suggested_warehouse_ref ||
+      selectedShipmentDetail?.associated_orders?.[0]?.warehouse_reference ||
+      selectedShipmentDetail?.associated_orders?.[0]?.order_number ||
+      generatedBarcodeResult?.order_number ||
+      generatedBarcodeResult?.warehouse_reference ||
+      selectedShipmentDetail?.shipment_number;
+
+    if (!ref) {
+      toast.error("Reference is required to download printable labels");
+      return;
+    }
+
+    setZplLoading(true);
+    try {
+      const baseUrl = getApiBaseUrl();
+      const response = await axios.get(`${baseUrl}warehouse/labels/pdf`, {
+        params: { reference: ref },
+        headers: getAuthHeaders(),
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      // Force direct download of printable PDF format instead of raw ZPL
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.setAttribute("download", `printable_labels_${ref}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+
+      toast.success(`Printable labels downloaded (printable_labels_${ref}.pdf)`);
+    } catch (error) {
+      console.error("Error downloading printable labels:", error);
+      toast.error(error?.response?.data?.message || "Failed to download printable labels");
+    } finally {
+      setZplLoading(false);
+    }
+  };
+
+  // Fetch Zebra ZPL Code (GET /api/warehouse/labels/zpl?reference=...)
   const handleFetchZplCode = async (reference) => {
     const ref =
       reference ||
       generatedBarcodeResult?.order_number ||
       generatedBarcodeResult?.warehouse_reference ||
+      selectedShipmentDetail?.suggested_warehouse_ref ||
       selectedShipmentDetail?.shipment_number;
 
     if (!ref) {
@@ -644,21 +691,49 @@ export default function ShipmentBarcode() {
     }
   };
 
-  const handleDownloadZplFile = () => {
-    if (!zplCode) return;
-    const blob = new Blob([zplCode], { type: "text/plain;charset=utf-8" });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
+  const handleDownloadZplFile = async () => {
     const ref =
       generatedBarcodeResult?.order_number ||
       generatedBarcodeResult?.warehouse_reference ||
+      selectedShipmentDetail?.suggested_warehouse_ref ||
+      selectedShipmentDetail?.associated_orders?.[0]?.warehouse_reference ||
       "labels";
-    link.href = url;
-    link.setAttribute("download", `zebra_labels_${ref}.zpl`);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    toast.success("ZPL file downloaded!");
+
+    try {
+      const baseUrl = getApiBaseUrl();
+      const response = await axios.get(`${baseUrl}warehouse/labels/pdf`, {
+        params: { reference: ref },
+        headers: getAuthHeaders(),
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.setAttribute("download", `printable_labels_${ref}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+      toast.success(`Printable labels downloaded (printable_labels_${ref}.pdf)!`);
+    } catch (error) {
+      console.error("Error downloading printable labels:", error);
+      // Fallback: if PDF fails, download raw zpl
+      if (zplCode) {
+        const blob = new Blob([zplCode], { type: "text/plain;charset=utf-8" });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `zebra_labels_${ref}.zpl`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        toast.success("ZPL file downloaded!");
+      } else {
+        toast.error("Failed to download labels");
+      }
+    }
   };
 
   // Browser Label Print
@@ -1638,18 +1713,24 @@ export default function ShipmentBarcode() {
                 {/* Overview Cards Grid */}
                 <div className="row g-3 mb-4">
                   <div className="col-lg-3 col-sm-6">
-                    <div className="p-3 bg-white rounded border shadow-sm h-100">
+                    <div className="p-3 bg-white rounded border shadow-sm h-100" style={{ overflow: "hidden", wordBreak: "break-word" }}>
                       <small className="text-muted d-block">Order Reference</small>
-                      <h5 className="fw-bold mb-1 font-monospace" style={{ color: "#1b2245" }}>
+                      <h5 className="fw-bold mb-1 font-monospace text-truncate" style={{ color: "#1b2245" }} title={trackingData.order_summary?.order_number || trackingData.box?.order_number || "N/A"}>
                         {trackingData.order_summary?.order_number || trackingData.box?.order_number || "N/A"}
                       </h5>
-                      <small className="text-muted d-block">
+                      <small className="text-muted d-block text-truncate">
                         Ref: <strong>{trackingData.order_summary?.warehouse_reference || trackingData.box?.warehouse_order_number || "N/A"}</strong>
                       </small>
                       {trackingData.box?.barcode_string && (
                         <span
                           className="badge bg-light text-dark border mt-1 font-monospace"
-                          style={{ fontSize: "11px" }}
+                          style={{
+                            fontSize: "11px",
+                            whiteSpace: "normal",
+                            wordBreak: "break-all",
+                            maxWidth: "100%",
+                            display: "inline-block",
+                          }}
                         >
                           Box: {trackingData.box.barcode_string}
                         </span>
@@ -1658,12 +1739,28 @@ export default function ShipmentBarcode() {
                   </div>
 
                   <div className="col-lg-3 col-sm-6">
-                    <div className="p-3 bg-white rounded border shadow-sm h-100">
+                    <div className="p-3 bg-white rounded border shadow-sm h-100" style={{ overflow: "hidden", wordBreak: "break-word" }}>
                       <small className="text-muted d-block">Consignment Status</small>
                       <div className="mt-1">
                         <span
-                          className="badge text-white px-3 py-1 rounded-pill"
-                          style={{ backgroundColor: "#1b2245", fontSize: "12px" }}
+                          className="badge text-white px-3 py-1"
+                          style={{
+                            backgroundColor: "#1b2245",
+                            fontSize: "12px",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                            lineHeight: "1.35",
+                            display: "inline-block",
+                            maxWidth: "100%",
+                            textAlign: "center",
+                            borderRadius: "12px",
+                          }}
+                          title={
+                            trackingData.order_summary?.current_track_status ||
+                            trackingData.box?.order_track_status ||
+                            trackingData.box?.current_status ||
+                            "Dispatched"
+                          }
                         >
                           {trackingData.order_summary?.current_track_status ||
                             trackingData.box?.order_track_status ||
@@ -1671,10 +1768,10 @@ export default function ShipmentBarcode() {
                             "Dispatched"}
                         </span>
                       </div>
-                      <small className="text-muted mt-2 d-block">
+                      <small className="text-muted mt-2 d-block text-truncate">
                         Origin: <strong>{trackingData.box?.origin_name || "Warehouse"}</strong>
                       </small>
-                      <small className="text-muted d-block">
+                      <small className="text-muted d-block text-truncate">
                         Dest: <strong>{trackingData.box?.dest_name || "South Africa"}</strong>
                       </small>
                     </div>
@@ -2213,20 +2310,21 @@ export default function ShipmentBarcode() {
                           cursor: "pointer",
                         }}
                         onClick={() =>
-                          handleFetchZplCode(
+                          handleDownloadPrintableZpl(
                             selectedShipmentDetail.suggested_warehouse_ref ||
+                            selectedShipmentDetail.associated_orders?.[0]?.warehouse_reference ||
                             selectedShipmentDetail.shipment_number
                           )
                         }
                         disabled={zplLoading}
-                        title="Get Zebra Thermal ZPL Code for this shipment"
+                        title="Download printable barcode labels (PDF format instead of ZPL)"
                       >
                         {zplLoading ? (
                           <span className="spinner-border spinner-border-sm" role="status"></span>
                         ) : (
-                          <FiCode style={{ color: "#334155" }} />
+                          <FiDownload style={{ color: "#334155" }} />
                         )}
-                        <span style={{ color: "#334155" }}>ZPL Code</span>
+                        <span style={{ color: "#334155" }}>ZPL (Printable PDF)</span>
                       </button>
                     </div>
                   </div>
@@ -2681,20 +2779,20 @@ export default function ShipmentBarcode() {
                     <button
                       className="btn btn-sm btn-outline-light d-flex align-items-center gap-1 shadow-sm"
                       onClick={() =>
-                        handleFetchZplCode(
+                        handleDownloadPrintableZpl(
                           generatedBarcodeResult.order_number ||
                           generatedBarcodeResult.warehouse_reference
                         )
                       }
                       disabled={zplLoading}
-                      title="Get Zebra Thermal ZPL Code"
+                      title="Download Printable Labels (PDF format instead of ZPL)"
                     >
                       {zplLoading ? (
                         <span className="spinner-border spinner-border-sm" role="status"></span>
                       ) : (
-                        <FiCode style={{ fontSize: "14px" }} />
+                        <FiDownload style={{ fontSize: "14px" }} />
                       )}
-                      <span>Zebra ZPL</span>
+                      <span>ZPL (Printable PDF)</span>
                     </button>
 
                     <button
@@ -2970,7 +3068,7 @@ export default function ShipmentBarcode() {
                     className="btn btn-primary d-flex align-items-center gap-2"
                     onClick={handleDownloadZplFile}
                   >
-                    <FiDownload /> Download .zpl File
+                    <FiDownload /> Download Printable Labels (.pdf)
                   </button>
                 </div>
               </div>

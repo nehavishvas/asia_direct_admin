@@ -95,7 +95,19 @@ const formatNumber = (value, dec = 2, isPercent = false) => {
 export default function ShippingEstimate() {
   const [update, setUpdate] = useState([0]);
   const location = useLocation();
-  const [freight, setFreight] = useState({});
+  const rawStateData = location?.state?.data;
+  const getdata122 = Array.isArray(rawStateData) ? (rawStateData[0] || {}) : (rawStateData || {});
+  const [freight, setFreight] = useState(() => {
+    const passedFreight = location?.state?.freight || {};
+    const unitVal = passedFreight.chargeable_unit || passedFreight.chargable_unit || getdata122?.chargeable_unit || getdata122?.chargable_unit || "";
+    const rateVal = passedFreight.chargable_rate || passedFreight.chargeable || getdata122?.chargeable || getdata122?.chargable_rate || getdata122?.chargable || "";
+    return {
+      ...passedFreight,
+      chargable_rate: rateVal,
+      chargeable_unit: unitVal,
+      chargable_unit: unitVal,
+    };
+  });
   const [origin, setOrigin] = useState([0]);
   const [showData, setShowData] = useState(true);
   const [quotationID, setQuotationID] = useState("");
@@ -107,7 +119,7 @@ export default function ShippingEstimate() {
   const [client, setClient] = useState([]);
   const [suppluierquot, setSuppluierquot] = useState([]);
   const [supplierdata, setSupplierdata] = useState([]);
-  const [getdata, setGetdata] = useState(location?.state?.data[0] || []);
+  const [getdata, setGetdata] = useState(getdata122);
   const [dat, setDat] = useState([]);
   const [openmodal, setOpenmodal] = useState(false);
   const [selected, setSelected] = useState([]); // selected IDs
@@ -158,8 +170,6 @@ export default function ShippingEstimate() {
     fetchDropdowns();
   }, []);
 
-  const getdata122 = location?.state?.data[0];
-  console.log(getdata122);
   useEffect(() => {
     getFreightDataById();
     getFreightQuoteEstimate();
@@ -170,8 +180,10 @@ export default function ShippingEstimate() {
   console.log("Stored:", localStorage.getItem("freightid"));
 
   const getFreightDataById = async () => {
+    const fId = getdata122?.freight_id || getdata122?.id || localFreigtId || getdata?.freight_id || getdata?.id;
+    if (!fId) return;
     const payload = {
-      freight_id: localFreigtId,
+      freight_id: fId,
     };
     console.log(payload, "payload");
     try {
@@ -180,7 +192,16 @@ export default function ShippingEstimate() {
         payload,
       );
       if (response?.data?.data?.length > 0) {
-        setGetdata(response.data.data[0]);
+        const item = response.data.data[0];
+        setGetdata(item);
+        const itemUnit = item?.chargeable_unit || item?.chargable_unit;
+        const itemRate = item?.chargeable ?? item?.chargable_rate ?? item?.chargable;
+        setFreight(prev => ({
+          ...prev,
+          chargeable_unit: prev.chargeable_unit || prev.chargable_unit || itemUnit || "",
+          chargable_unit: prev.chargeable_unit || prev.chargable_unit || itemUnit || "",
+          chargable_rate: prev.chargable_rate ?? (itemRate !== undefined && itemRate !== null ? itemRate : ""),
+        }));
       }
     } catch (error) {
       console.error("Error fetching freight data by id:", error);
@@ -189,10 +210,11 @@ export default function ShippingEstimate() {
 
   const getFreightQuoteEstimate = async () => {
     const payload = {};
-    if (getdata122?.freight_quote_estimate_id) {
-      payload.freight_quote_estimate_id = parseInt(getdata122.freight_quote_estimate_id);
+    const estimateId = getdata122?.freight_quote_estimate_id || getdata122?.quote_estimate_id || getdata?.freight_quote_estimate_id;
+    if (estimateId) {
+      payload.freight_quote_estimate_id = parseInt(estimateId);
     }
-    const fId = getdata122?.freight_id;
+    const fId = getdata122?.freight_id || getdata122?.id || getdata?.freight_id || localFreigtId;
     if (fId) {
       payload.freight_id = parseInt(fId);
     }
@@ -209,6 +231,9 @@ export default function ShippingEstimate() {
 
         if (!estimateData) return;
 
+        const unitVal = estimateData.chargeable_unit || estimateData.chargable_unit || getdata122?.chargeable_unit || getdata122?.chargable_unit || "";
+        const rateVal = estimateData.chargeable ?? estimateData.chargable_rate ?? estimateData.chargable ?? getdata122?.chargeable ?? getdata122?.chargable_rate ?? "";
+
         // Update freight metadata
         setFreight(prev => ({
           ...prev,
@@ -217,8 +242,9 @@ export default function ShippingEstimate() {
           customer_invoice_no: estimateData.customer_invoice_no || prev?.customer_invoice_no || "",
           invoice_for_country: estimateData.invoice_for_country || prev?.invoice_for_country || "",
           final_base_currency: estimateData.final_base_currency || prev?.final_base_currency || "Select",
-          chargable_rate: estimateData.chargeable ?? prev?.chargable_rate ?? "",
-          chargeable_unit: estimateData.chargeable_unit ?? prev?.chargeable_unit ?? "",
+          chargable_rate: rateVal !== "" ? rateVal : (prev?.chargable_rate ?? ""),
+          chargeable_unit: unitVal || prev?.chargeable_unit || prev?.chargable_unit || "",
+          chargable_unit: unitVal || prev?.chargeable_unit || prev?.chargable_unit || "",
           company_id: estimateData.company_id || estimateData.company_address?.id || prev?.company_id || "",
           company_country: estimateData.company_address?.country || prev?.company_country || "",
           quote_validity: estimateData.quote_validity || prev?.quote_validity || "",
@@ -292,6 +318,9 @@ export default function ShippingEstimate() {
     setFreight((prevInputData) => ({
       ...prevInputData,
       [name]: value,
+      ...(name === "chargeable_unit" ? { chargable_unit: value } : {}),
+      ...(name === "chargable_unit" ? { chargeable_unit: value } : {}),
+      ...(name === "chargable_rate" ? { chargeable: value, chargable: value } : {}),
     }));
   };
 
@@ -922,10 +951,29 @@ export default function ShippingEstimate() {
         }
       });
 
+      const quoteEstimateId =
+        getdata122?.freight_quote_estimate_id ||
+        getdata122?.quote_estimate_id ||
+        freight?.freight_quote_estimate_id ||
+        freight?.id ||
+        getdata?.freight_quote_estimate_id ||
+        getdata?.quote_estimate_id;
+
+      const fId =
+        getdata?.freight_id ||
+        getdata122?.freight_id ||
+        getdata122?.id ||
+        getdata?.id ||
+        freight?.freight_id ||
+        localFreigtId;
+
+      const currentUnit = freight.chargeable_unit || freight.chargable_unit || "";
+      const currentRate = parseFloat(freight.chargable_rate) || 0;
+
       const payload = {
-        freight_id: parseInt(getdata.freight_id),
-        client_id: parseInt(getdata.client_id || getdata.id || getdata.client_ref),
-        client_name: getdata.client_name,
+        freight_id: parseInt(fId),
+        client_id: parseInt(getdata.client_id || getdata.id || getdata.client_ref || getdata122?.client_id || getdata122?.id),
+        client_name: getdata.client_name || getdata122?.client_name,
         supplier_id: parseInt(freight.supplier_id) || null,
         customer_invoice_no: freight.customer_invoice_no || "",
         invoice_for_country: freight.invoice_for_country || "",
@@ -936,12 +984,20 @@ export default function ShippingEstimate() {
         sumof_totalcost: parseFloat(sumofall) || 0,
         sumof_finalamount: parseFloat(sumofRoe) || 0,
         sumof_vatincl: parseFloat(totalVatInclusive) || 0,
-        chargeable: parseFloat(freight.chargable_rate) || 0,
-        chargeable_unit: freight.chargeable_unit || "",
+        chargeable: currentRate,
+        chargable: currentRate,
+        chargable_rate: currentRate,
+        chargeable_unit: currentUnit,
+        chargable_unit: currentUnit,
         components: allComponents,
         quote_validity: freight.quote_validity || "",
         payment_terms: freight.payment_terms || "",
       };
+
+      if (quoteEstimateId) {
+        payload.freight_quote_estimate_id = parseInt(quoteEstimateId);
+        payload.id = parseInt(quoteEstimateId);
+      }
 
       console.log("[Add Invoice] add-freight-quotes-estimate payload:", payload);
       const response = await axios.post(
@@ -1055,14 +1111,20 @@ export default function ShippingEstimate() {
       .post(`${process.env.REACT_APP_BASE_URL}get-shipestimate`, data123456)
       .then((response) => {
         console.log(response.data.data);
-        if (isEstimateLoaded.current) return;
+        if (isEstimateLoaded.current || isFreightLoadedFromApi.current) return;
         isFreightLoadedFromApi.current = true;
         const rawData = response.data.data;
         const normalizedFreight = Array.isArray(rawData) ? (rawData[0] || {}) : (rawData || {});
-        setFreight(normalizedFreight);
+        setFreight(prev => ({
+          ...normalizedFreight,
+          ...prev,
+          chargeable_unit: prev.chargeable_unit || prev.chargable_unit || normalizedFreight.chargeable_unit || normalizedFreight.chargable_unit || "",
+          chargable_unit: prev.chargeable_unit || prev.chargable_unit || normalizedFreight.chargeable_unit || normalizedFreight.chargable_unit || "",
+          chargable_rate: prev.chargable_rate ?? normalizedFreight.chargeable ?? normalizedFreight.chargable_rate ?? "",
+        }));
       })
       .catch((error) => {
-        console.log(error.response.data);
+        console.log(error.response?.data || error.message);
       });
   };
 
@@ -1208,6 +1270,8 @@ export default function ShippingEstimate() {
 
     const currentFreightState = {
       ...freight,
+      chargeable_unit: freight.chargeable_unit || freight.chargable_unit || "",
+      chargable_unit: freight.chargeable_unit || freight.chargable_unit || "",
       components: allComponents
     };
 
@@ -1847,7 +1911,11 @@ export default function ShippingEstimate() {
                                               boxSizing: "border-box",
                                               textAlign: "left",
                                             }}
-                                            value={freight.chargeable_unit || ""}
+                                            value={
+                                              CHARGEABLE_UNIT_OPTIONS.find(
+                                                (unit) => unit.toLowerCase() === String(freight.chargeable_unit || freight.chargable_unit || "").trim().toLowerCase()
+                                              ) || (freight.chargeable_unit || freight.chargable_unit || "")
+                                            }
                                             onChange={handlechangecalc}
                                           >
                                             <option value="">Select</option>
@@ -1856,6 +1924,14 @@ export default function ShippingEstimate() {
                                                 {unit}
                                               </option>
                                             ))}
+                                            {(freight.chargeable_unit || freight.chargable_unit) &&
+                                              !CHARGEABLE_UNIT_OPTIONS.some(
+                                                (unit) => unit.toLowerCase() === String(freight.chargeable_unit || freight.chargable_unit).trim().toLowerCase()
+                                              ) && (
+                                                <option value={freight.chargeable_unit || freight.chargable_unit}>
+                                                  {freight.chargeable_unit || freight.chargable_unit}
+                                                </option>
+                                              )}
                                           </select>
                                         </div>
                                       </div>

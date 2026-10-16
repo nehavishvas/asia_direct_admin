@@ -190,6 +190,11 @@ const routes = [
             name: "Customer Unallocated",
             icon: <ShoppingCartOutlinedIcon />,
           },
+          {
+            path: "/Admin/sage-invoice-report",
+            name: "Sage Invoice Report",
+            icon: <ReceiptIcon />,
+          },
         ],
       },
       {

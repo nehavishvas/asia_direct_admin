@@ -179,7 +179,7 @@ export const buildEstimateMeta = ({ freight = {}, getdata = {}, logoSrc }) => ({
     volumetric: getdata?.volumetric_weight,
     chargeable: (() => {
       const rate = freight?.chargable_rate ?? getdata?.chargable_rate ?? freight?.chargeable ?? getdata?.chargeable;
-      const unit = freight?.chargeable_unit ?? getdata?.chargeable_unit;
+      const unit = freight?.chargeable_unit ?? freight?.chargable_unit ?? getdata?.chargeable_unit ?? getdata?.chargable_unit;
       if (rate !== undefined && rate !== null && rate !== "") {
         const num = parseFloat(String(rate).replace(/,/g, ""));
         const formatted = isNaN(num) ? String(rate) : num.toLocaleString("en-US", { minimumFractionDigits: 3, maximumFractionDigits: 3 });

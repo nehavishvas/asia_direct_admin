@@ -397,7 +397,7 @@ export default function BillingTable() {
                   <thead>
                     <tr>
                       <th>Date</th>
-                      <th>Invoice Date</th>
+                      {/* <th>Invoice Date</th> */}
                       <th>Transaction</th>
                       <th>Shipment Ref</th>
                       <th>Customer</th>
@@ -410,7 +410,7 @@ export default function BillingTable() {
                       <th>Invoice Currency</th>
                       <th>Payment</th>
                       <th>Balance</th>
-                      <th>Sum of Final Amount</th>
+                      {/* <th>Sum of Final Amount</th> */}
                       <th>Invoice (POP)</th>
                     </tr>
                   </thead>
@@ -429,13 +429,13 @@ export default function BillingTable() {
                                   "en-GB"
                                 )}
                             </td>
-                            <td>{new Date(item.quote_invoice_date).toLocaleDateString(
+                            {/* <td>{new Date(item.quote_invoice_date).toLocaleDateString(
                               "en-GB"
                             ) == "01/01/1970"
                               ? "-"
                               : new Date(item.quote_invoice_date).toLocaleDateString(
                                 "en-GB"
-                              )}</td>
+                              )}</td> */}
                             <td>
                               <select
                                 value={
@@ -573,7 +573,7 @@ export default function BillingTable() {
                             <td>{item.quote_invoice_currency || "-"}</td>
                             <td>{item.payment || "-"}</td>
                             <td>{item.balance || "-"}</td>
-                            <td>{item.sumof_finalamount || "-"}</td>
+                            {/* <td>{item.sumof_finalamount || "-"}</td> */}
                             <td className="text-center">
                               {item.freight_pop_docs && item.freight_pop_docs.filter((doc) => doc.document_name === "POP (AD)").length > 0 ? (
                                 item.freight_pop_docs

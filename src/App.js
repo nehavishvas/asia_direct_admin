@@ -128,6 +128,7 @@ import SalesBySalesRepReport from "./components/Billing/SalesBySalesRepReport";
 import SupplierBalancesReport from "./components/Billing/SupplierBalancesReport";
 import SupplierInvoicesReport from "./components/Billing/SupplierInvoicesReport";
 import CustomerInvoicesReport from "./components/Billing/CustomerInvoicesReport";
+import SageInvoiceReport from "./components/Billing/SageInvoiceReport";
 import CustomerBalancesReport from "./components/Billing/CustomerBalancesReport";
 import CustomerStatementReport from "./components/Billing/CustomerStatementReport";
 import CustomerUnallocatedReport from "./components/Billing/CustomerUnallocatedReport";
@@ -170,7 +171,7 @@ const Uniovwersalpage = lazy(() => import("./components/Uniovwersalpage"));
 export default function App() {
   const [text, setText] = useState("");
   const [permission, setPermission] = useState("");
-  console.log("07-10-26", "17:55 PM");
+  console.log("16-10-26", "5:55 PM");
 
   useEffect(() => {
     const handleDropdownClick = (event) => {
@@ -233,6 +234,7 @@ export default function App() {
                 <Route path="/Admin/supplier-balance-report" element={<SupplierBalancesReport />} />
                 <Route path="/Admin/supplier-invoice-report" element={<SupplierInvoicesReport />} />
                 <Route path="/Admin/customer-invoices-report" element={<CustomerInvoicesReport />} />
+                <Route path="/Admin/sage-invoice-report" element={<SageInvoiceReport />} />
                 <Route path="/Admin/customer-balance-report" element={<CustomerBalancesReport />} />
                 <Route path="/Admin/customer-statement-report" element={<CustomerStatementReport />} />
                 <Route path="/Admin/customer-unallocated-report" element={<CustomerUnallocatedReport />} />

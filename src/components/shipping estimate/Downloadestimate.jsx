@@ -866,8 +866,9 @@ export default function Downlaodestimate() {
       customer_invoice_no: estimateData.customer_invoice_no || prev?.customer_invoice_no || "",
       invoice_for_country: estimateData.invoice_for_country || prev?.invoice_for_country || "",
       final_base_currency: estimateData.final_base_currency || prev?.final_base_currency || "Select",
-      chargable_rate: estimateData.chargeable ?? prev?.chargable_rate ?? "",
-      chargeable_unit: estimateData.chargeable_unit ?? prev?.chargeable_unit ?? "",
+      chargable_rate: estimateData.chargeable ?? estimateData.chargable_rate ?? estimateData.chargable ?? prev?.chargable_rate ?? "",
+      chargeable_unit: estimateData.chargeable_unit || estimateData.chargable_unit || prev?.chargeable_unit || prev?.chargable_unit || "",
+      chargable_unit: estimateData.chargeable_unit || estimateData.chargable_unit || prev?.chargeable_unit || prev?.chargable_unit || "",
     }));
 
     if (estimateData.components && estimateData.components.length > 0) {
@@ -1224,6 +1225,9 @@ export default function Downlaodestimate() {
     setFreight((prevInputData) => ({
       ...prevInputData,
       [name]: value,
+      ...(name === "chargeable_unit" ? { chargable_unit: value } : {}),
+      ...(name === "chargable_unit" ? { chargeable_unit: value } : {}),
+      ...(name === "chargable_rate" ? { chargeable: value, chargable: value } : {}),
     }));
   };
   const originRowsData = originRows.map(row => ({
@@ -1376,9 +1380,18 @@ export default function Downlaodestimate() {
         sumof_finalamount: sumofRoe || 0,
         sumof_vatincl: totalVatInclusive || 0,
         chargeable: cleanParseFloat(freight.chargable_rate) || 0,
-        chargeable_unit: freight.chargeable_unit || "",
+        chargable: cleanParseFloat(freight.chargable_rate) || 0,
+        chargable_rate: cleanParseFloat(freight.chargable_rate) || 0,
+        chargeable_unit: freight.chargeable_unit || freight.chargable_unit || "",
+        chargable_unit: freight.chargeable_unit || freight.chargable_unit || "",
         components: allComponents,
       };
+
+      const quoteEstimateId = getQuoteEstimateId();
+      if (quoteEstimateId) {
+        payload.freight_quote_estimate_id = parseInt(quoteEstimateId);
+        payload.id = parseInt(quoteEstimateId);
+      }
 
       console.log("[Add Invoice] add-freight-quotes-estimate payload:", payload);
       const response = await axios.post(
@@ -2634,7 +2647,11 @@ export default function Downlaodestimate() {
                                         boxSizing: "border-box",
                                         textAlign: "left",
                                       }}
-                                      value={freight.chargeable_unit || ""}
+                                      value={
+                                        CHARGEABLE_UNIT_OPTIONS.find(
+                                          (unit) => unit.toLowerCase() === String(freight.chargeable_unit || freight.chargable_unit || "").trim().toLowerCase()
+                                        ) || (freight.chargeable_unit || freight.chargable_unit || "")
+                                      }
                                       onChange={handlechangecalc}
                                     >
                                       <option value="">Select</option>
@@ -2643,6 +2660,14 @@ export default function Downlaodestimate() {
                                           {unit}
                                         </option>
                                       ))}
+                                      {(freight.chargeable_unit || freight.chargable_unit) &&
+                                        !CHARGEABLE_UNIT_OPTIONS.some(
+                                          (unit) => unit.toLowerCase() === String(freight.chargeable_unit || freight.chargable_unit).trim().toLowerCase()
+                                        ) && (
+                                          <option value={freight.chargeable_unit || freight.chargable_unit}>
+                                            {freight.chargeable_unit || freight.chargable_unit}
+                                          </option>
+                                        )}
                                     </select>
                                   </div>
                                 </div>
